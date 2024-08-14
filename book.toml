@@ -1,5 +1,5 @@
 [book]
-authors = ["waymobetta"]
+authors = ["jon roethke"]
 language = "en"
 multilingual = false
 src = "src"
@@ -7,6 +7,7 @@ title = "arch-book"
 
 [output.html]
 git-repository-url = "https://github.com/arch-network/arch-book"
+edit-url-template = "https://github.com/arch-network/arch-book/edit/main/{path}"
 
 [rust]
 edition = "2021"
