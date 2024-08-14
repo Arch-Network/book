@@ -1,8 +1,6 @@
 # Starting the stack
 
-Within the [arch-local repository](https://github.com/Arch-Network/arch-local) there is a `compose.yaml` file. This is a descriptor for the multi-container Arch Network stack. 
-
-It contains a pre-configured definition of the components required for local development.
+Within the [arch-local repository](https://github.com/Arch-Network/arch-local) there is a `compose.yaml` file. This is a descriptor for the pre-configured multi-container definition of the components required for standing up a local development environment.
 
 ### Configure Docker
 

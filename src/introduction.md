@@ -2,8 +2,19 @@
 
 Welcome to the Arch Network developer documentation.
 
-As a developer building on the Arch Network, this guide will provide you with the essential knowledge to successfully create and deploy programs. The Arch Network harnesses the power of the RISC0 Zero-Knowledge Virtual Machine (ZKVM) to execute programs securely and privately, ensuring that all computation proofs are verified by a robust network of verifier nodes.
+This book will guide you through installation of Arch's developer stack as well as provide you with the essential knowledge to create, deploy and interact with Arch smart contracts.
 
-Arch Network is leveraging the security and ubiquity of Bitcoin to enhance decentralized applications by providing a computation environment. Arch facilitates complex operations on Bitcoin UTXOs through smart contracts executed in a zero-knowledge environment.
+Arch Network leverages the security and ubiquity of Bitcoin to enhance decentralized applications by providing a computation environment. Arch facilitates complex operations on Bitcoin UTXOs through smart contracts executed in a zero-knowledge environment.
 
-This book will guide you through installation and onboarding all the way to understanding the intricacies of Arch smart contracts.
+### Prerequirements
+
+#### Rust
+This book explores Arch Network's smart contracts. It is not a [Rust](https://rust-lang.org) tutorial, and it assumes basic Rust knowledge. It is strongly recommended to understand the language first before proceeding. 
+
+#### Bitcoin
+Additionally, it is helpful to understand how [Bitcoin](https://bitcoin.org) works, especially the [UTXO model](https://en.wikipedia.org/wiki/Unspent_transaction_output). A good resource is [Saylor Academy's Bitcoin for Developers course](https://learn.saylor.org/course/view.php?id=500) as well as [Mastering Bitcoin](https://github.com/bitcoinbook/bitcoinbook) by [Andreas Antonopoulos](https://aantonop.com/).
+
+### Contributing
+This book is maintained on [Github](https://github.com/arch-network/arch-book) and auto deployed from there. Please create an issue or pull request if you find any mistakes, bugs, or ambiguities. See [CONTRIBUTING.md][contrib] for additional details.
+
+[contrib]: https://github.com/arch-network/arch-book/blob/main/CONTRIBUTING.md
