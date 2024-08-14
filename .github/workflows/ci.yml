@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
+    - name: Update rustup
+      run: rustup self update
     - name: Install mdbook
       run: |
         mkdir bin
@@ -22,6 +24,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
+    - name: Update rustup
+      run: rustup self update
+    - name: Install Rust
+      run: |
+        rustup set profile minimal
+        rustup toolchain install nightly -c rust-docs
+        rustup override set nightly
     - name: Install mdbook
       run: |
         mkdir bin
