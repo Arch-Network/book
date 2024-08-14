@@ -9,7 +9,7 @@ Arch Network leverages the security and ubiquity of Bitcoin to enhance decentral
 ### Prerequirements
 
 #### Rust
-This book explores Arch Network's smart contracts. It is not a [Rust](https://rust-lang.org) tutorial, and it assumes basic Rust knowledge. It is strongly recommended to understand the language first before proceeding. 
+This book explores Arch Network's smart contracts. It is not a [Rust](https://www.rust-lang.org) tutorial, and it assumes basic Rust knowledge. It is strongly recommended to understand the language first before proceeding. 
 
 #### Bitcoin
 Additionally, it is helpful to understand how [Bitcoin](https://bitcoin.org) works, especially the [UTXO model](https://en.wikipedia.org/wiki/Unspent_transaction_output). A good resource is [Saylor Academy's Bitcoin for Developers course](https://learn.saylor.org/course/view.php?id=500) as well as [Mastering Bitcoin](https://github.com/bitcoinbook/bitcoinbook) by [Andreas Antonopoulos](https://aantonop.com/).
