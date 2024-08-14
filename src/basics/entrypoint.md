@@ -6,14 +6,14 @@ We'll navigate to the [`main.rs`](https://github.com/Arch-Network/arch-local/blo
 
 On [line 9 of `main.rs`](https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/program/src/main.rs#L9), we see a Rust macro called `entrypoint!()` which takes the argument `handler`, a [dispatcher function](#dispatcher-handler) which is explained further below.
 
-```rust
+```rust,ignore
 #[cfg(target_os = "zkvm")]
 entrypoint!(handler);
 ```
 
 But where did it come from?
 
-```rust
+```rust,ignore
 use sdk::{entrypoint, Pubkey, UtxoInfo};
 ```
 
@@ -41,15 +41,13 @@ Upon successful execution, the new UTXO authorities, new UTXO Data and Bitcoin t
 
 Here we'll discuss Arch Network's dispatcher function: `handler()` as defined in [`main.rs`](https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/program/src/main.rs#L12-L28).
 
-```rust
+```rust,ignore
 #[cfg(target_os = "zkvm")]
 fn handler(
     program_id: &Pubkey, 
     utxos: &[UtxoInfo], 
     instruction_data: &[u8],
-    ) -> Result<Vec<u8>> {
-...
-}
+    ) -> Result<Vec<u8>> { /* ... */ }
 ```
 
 In the Arch Network's smart contract architecture, the dispatcher function serves as the primary entrypoint for handling incoming instructions. 
