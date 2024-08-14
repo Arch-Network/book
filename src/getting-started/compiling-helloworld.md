@@ -3,11 +3,11 @@
 Now that all of the dependencies are installed and we have successfully started our stack of development nodes, we can finally compile our contract and interact with it.
 
 ### Build
-Access the `examples/helloworld` folder and build the program.
+Access the `examples/helloworld` directory and build the program.
 
 This step will compile the example `helloworld` program into a RISC-V ELF file (the executable format expected by the zkVM).
 
-You will find the generated file at: `./target/helloworld.elf`
+You will find the generated file at: `./target/program.elf`
 
 ```bash
 cd examples/helloworld
@@ -15,7 +15,7 @@ cargo build
 ```
 
 ### Test
-Now that our program is successfully compiled, we can rust the corresponding test which will submit an Arch Network transaction, executing the `helloworld` program. 
+Now that our program is successfully compiled, we can run the corresponding test which will submit an Arch Network transaction, executing the program. 
 
 ```bash
 cargo test -- --nocapture
