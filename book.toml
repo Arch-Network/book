@@ -4,3 +4,9 @@ language = "en"
 multilingual = false
 src = "src"
 title = "arch-book"
+
+[output.html]
+git-repository-url = "https://github.com/arch-network/arch-book"
+
+[rust]
+edition = "2021"
