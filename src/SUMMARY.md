@@ -13,7 +13,7 @@
 # Smart contracts and beyond
 - [Basics](basics/basics.md)
     - [Entry points](basics/entrypoint.md)
-    - []()
+    - [Contract interaction](basics/interaction.md)
 
 ---
 []()
