@@ -56,3 +56,11 @@ jobs:
           AWS_S3_BUCKET: 'docs.arch.network'
           AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+      - name: Invalidate CloudFront Distribution
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: E1KLTXFGPDK2XK
+          PATHS: "/*"
+          AWS_REGION: "us-east-1"
+          AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
