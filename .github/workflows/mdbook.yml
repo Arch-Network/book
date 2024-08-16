@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   # Build job
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     env:
       MDBOOK_VERSION: 0.4.36
@@ -42,19 +42,18 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Build with mdBook
         run: mdbook build
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Inject Static Pages
+        run: |
+          mkdir book/book
+          mv book/* book/book/
+          cp static/index.html book/
+      - name: Deploy to S3
+        uses: jakejarvis/s3-sync-action@master
         with:
-          path: ./book
-
-  # Deployment job
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          args: --delete
+        env:
+          AWS_REGION: 'us-east-1'
+          SOURCE_DIR: 'book'
+          AWS_S3_BUCKET: 'docs.arch.network'
+          AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
