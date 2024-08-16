@@ -3,7 +3,7 @@ authors = ["jon roethke"]
 language = "en"
 multilingual = false
 src = "src"
-title = "arch-book"
+title = "The Arch Book"
 
 [output.html]
 git-repository-url = "https://github.com/arch-network/arch-book"
