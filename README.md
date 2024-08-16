@@ -1,6 +1,6 @@
 # The Arch Book
 
-![Build Status](https://github.com/arch-network/arch-book.github.io/actions/workflows/ci.yml/badge.svg)
+![Build Status](https://github.com/arch-network/book/actions/workflows/ci.yml/badge.svg)
 
 ### Requirements
 
@@ -31,4 +31,4 @@ mdbook serve --open
 ### Contributing
 See [CONTRIBUTING.md][contrib].
 
-[contrib]: https://github.com/arch-network/arch-book/blob/main/CONTRIBUTING.md
+[contrib]: https://github.com/arch-network/book/blob/main/CONTRIBUTING.md

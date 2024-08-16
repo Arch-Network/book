@@ -15,6 +15,6 @@ This book explores Arch Network's smart contracts. It is not a [Rust](https://ww
 Additionally, it is helpful to understand how [Bitcoin](https://bitcoin.org) works, especially the [UTXO model](https://en.wikipedia.org/wiki/Unspent_transaction_output). A good resource is [Saylor Academy's Bitcoin for Developers course](https://learn.saylor.org/course/view.php?id=500) as well as [Mastering Bitcoin](https://github.com/bitcoinbook/bitcoinbook) by [Andreas Antonopoulos](https://aantonop.com/).
 
 ### Contributing
-This book is maintained on [Github](https://github.com/arch-network/arch-book) and auto deployed from there. Please create an issue or pull request if you find any mistakes, bugs, or ambiguities. See [CONTRIBUTING.md][contrib] for additional details.
+This book is maintained on [Github](https://github.com/arch-network/book) and auto deployed from there. Please create an issue or pull request if you find any mistakes, bugs, or ambiguities. See [CONTRIBUTING.md][contrib] for additional details.
 
-[contrib]: https://github.com/arch-network/arch-book/blob/main/CONTRIBUTING.md
+[contrib]: https://github.com/arch-network/book/blob/main/CONTRIBUTING.md

@@ -6,8 +6,8 @@ src = "src"
 title = "The Arch Book"
 
 [output.html]
-git-repository-url = "https://github.com/arch-network/arch-book"
-edit-url-template = "https://github.com/arch-network/arch-book/edit/main/{path}"
+git-repository-url = "https://github.com/arch-network/book"
+edit-url-template = "https://github.com/arch-network/book/edit/main/{path}"
 
 [rust]
 edition = "2021"
