@@ -45,7 +45,7 @@ jobs:
       - name: Inject Static Pages
         run: |
           mkdir book/book
-          mv book/* book/book/
+          mv book/* book/book/ || return 0
           cp static/index.html book/
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@master
