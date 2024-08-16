@@ -28,6 +28,8 @@ cargo binstall -y cargo-risczero@0.21.0
 cargo risczero install
 ```
 
+**NOTE:** If you receive the following error: `Release r0.1.79.0 does not have a prebuilt toolchain for host x86_64-apple-darwin`, you must run: `cargo risczero build-toolchain` instead of: `cargo risczero install`.
+
 ### Clone the arch-local repository
 Finally, we'll be using a repository specifically made to demonstrate Arch's capabilities and get started quickly. This repo contains a local Arch Network development environment, as well as some example programs that we'll touch on later in this book.
 
