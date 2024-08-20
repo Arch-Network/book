@@ -1,6 +1,6 @@
 # Entrypoint
 
-Every Arch program includes a single entrypoint used to invoke the program. The [dispatcher function](#dispatcher-function) is then used to process the data passed into the entrypoint.
+Every Arch program includes a single entrypoint used to invoke the program. The `$process_instruction` then handles the data passed into the entrypoint.
 
 ```rust,ignore
 #[cfg(target_os = "zkvm")]
