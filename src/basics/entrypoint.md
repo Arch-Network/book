@@ -4,42 +4,34 @@ We'll navigate to the [`main.rs`](https://github.com/Arch-Network/arch-local/blo
 
 ## `entrypoint!()`
 
-On [line 9 of `main.rs`](https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/program/src/main.rs#L9), we see a Rust macro called `entrypoint!()` which takes the argument `handler`, a [dispatcher function](#dispatcher-handler) which is explained further below.
+Every Arch program includes a single entrypoint used to invoke the program. The [dispatcher function](#dispatcher-function) is then used to process the data passed into the entrypoint.
 
 ```rust,ignore
 #[cfg(target_os = "zkvm")]
 entrypoint!(handler);
 ```
 
-But where did it come from?
-
-```rust,ignore
-use sdk::{entrypoint, Pubkey, UtxoInfo};
-```
-
-We import it on [line 6](https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/program/src/main.rs#L6) from a library called `sdk` which gets imported from a local resource location denoted by the relative path within the [`Cargo.toml`](https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/program/Cargo.toml#L16) of our `helloworld` directory. 
-
-```toml
-sdk = { path = "../../../sdk" }
-```
-
-Now that we know where it came from, let's walk through what's going on.
-
 #### Initialization and Data Reading:
 The entrypoint begins by initializing and reading serialized data from the execution environment (`ExecutorEnv`), which includes everything needed for contract execution. It then deserializes this data to obtain the `Instruction`, an object which contains all necessary details like the program ID and associated UTXO information.
 
 #### Authority and Data Processing:
-It retrieves authority information and associated data for each UTXO. These are crucial for determining permissions and understanding the context of each UTXO as it relates to the smart contract's logic.
+It retrieves authority information and associated data for each UTXO. These are crucial for determining permissions and understanding the context of each UTXO as it relates to the smart contract's logic. The UTXOs are then managed by the program.
 
 #### Business Logic Execution:
-With all relevant data and mappings prepared, the smart contract processes the instruction using a designated function. This could involve transactions, state updates, or other contract-specific operations.
+With all relevant data and mappings prepared, the program processes the instruction using a designated function; this could involve transactions, state updates, or other program-specific operations.
 
 #### Result Commitment:
 Upon successful execution, the new UTXO authorities, new UTXO Data and Bitcoin transaction are committed back to the network.
 
-## Dispatcher: `handler()`: 
+## Dispatcher function: 
 
-Here we'll discuss Arch Network's dispatcher function: `handler()` as defined in [`main.rs`](https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/program/src/main.rs#L12-L28).
+Here we'll discuss Arch Network's dispatcher function as defined in [`main.rs`](https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/program/src/main.rs#L12-L28).
+
+This dispatcher function requires the following parameters:
+
+- program_id - Unique identifier of the currently executing program.
+- utxos - Slice reference of [UtxoInfo]() needed to execute an instruction.
+- instruction_data - Serialized data containing program instructions.
 
 ```rust,ignore
 #[cfg(target_os = "zkvm")]
@@ -47,12 +39,14 @@ fn handler(
     program_id: &Pubkey, 
     utxos: &[UtxoInfo], 
     instruction_data: &[u8],
-    ) -> Result<Vec<u8>> { /* ... */ }
+) -> Result<Vec<u8>> { 
+    ...
+}
 ```
 
 In the Arch Network's smart contract architecture, the dispatcher function serves as the primary entrypoint for handling incoming instructions. 
 
-This function, typically named `handler()`, is responsible for parsing and directing the execution flow based on the type of transaction or method specified. It's a critical component that developers must implement to ensure that their smart contract can appropriately respond to different operational requests.
+This function is responsible for parsing and directing the execution flow based on the type of transaction or method specified. It's a critical component that developers must implement to ensure that their smart contract can appropriately respond to different operational requests.
 
 The dispatcher function is defined as part of the smart contract and is designated as the entrypoint by the [entrypoint!](#entrypoint) macro. This macro binds the `handler()` function to be the first receiver of any execution call made by the Arch Network's virtual machine, effectively making it the gatekeeper for all incoming instructions.
 
