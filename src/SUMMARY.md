@@ -7,13 +7,13 @@
     - [Requirements](getting-started/requirements.md)
     - [Starting the stack](getting-started/starting-stack.md)
         - [Nodes](concepts/nodes.md)
-    - [Compiling and executing helloworld](getting-started/compiling-helloworld.md)
+    - [Compiling and executing](getting-started/compiling-executing.md)
     - [Resources](getting-started/resources.md)
 
-# Smart contracts and beyond
+# Programs and beyond
 - [Basics](basics/basics.md)
     - [Entry points](basics/entrypoint.md)
-    - [Contract interaction](basics/interaction.md)
+    - [Program interaction](basics/interaction.md)
 
 # Reference
 - [SDK](sdk/sdk.md)

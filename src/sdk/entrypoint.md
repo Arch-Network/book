@@ -3,68 +3,40 @@
 Every Arch program includes a single entrypoint used to invoke the program. The `$process_instruction` then handles the data passed into the entrypoint.
 
 ```rust,ignore
-#[cfg(target_os = "zkvm")]
-entrypoint!(handler);
+entrypoint!(process_instruction);
 ```
+[Implementation]
 
 The below details the expanded `entrypoint!()` macro.
+
+[Source]
 
 ```rust,ignore
 #[macro_export]
 macro_rules! entrypoint {
     ($process_instruction:ident) => {
-        use $crate::*;
-        risc0_zkvm::guest::entry!(entrypoint);
-        use std::collections::HashMap;
-
-        pub fn entrypoint() {
-            let serialized_instruction: Vec<u8> = risc0_zkvm::guest::env::read();
-            let instruction: Instruction = borsh::from_slice(&serialized_instruction).unwrap();
-            let program_id: Pubkey = instruction.program_id;
-            let authorities: HashMap<String, Vec<u8>> = risc0_zkvm::guest::env::read();
-            let data: HashMap<String, Vec<u8>> = risc0_zkvm::guest::env::read();
-
-            let utxos = instruction
-                .utxos
-                .iter()
-                .map(|utxo| {
-                    use std::cell::RefCell;
-
-                    UtxoInfo {
-                        txid: utxo.txid.clone(),
-                        vout: utxo.vout,
-                        authority: RefCell::new(Pubkey::from_slice(
-                            &authorities
-                                .get(&utxo.id())
-                                .expect("this utxo does not exist")
-                                .to_vec(),
-                        )),
-                        data: RefCell::new(
-                            data.get(&utxo.id())
-                                .expect("this utxo does not exist")
-                                .to_vec(),
-                        ),
-                    }
-                })
-                .collect::<Vec<UtxoInfo>>();
-
-            let instruction_data: Vec<u8> = instruction.data;
-
+        /// # Safety
+        #[no_mangle]
+        pub unsafe extern "C" fn entrypoint(input: *mut u8) -> u64 {
+            use std::collections::HashMap;
+            let (program_id, utxos, instruction_data) =
+                unsafe { $crate::entrypoint::deserialize(input) };
             match $process_instruction(&program_id, &utxos, &instruction_data) {
-                Ok(tx_hex) => {
-                    let mut new_authorities: HashMap<String, Vec<u8>> = HashMap::new();
-                    let mut new_data: HashMap<String, Vec<u8>> = HashMap::new();
-                    utxos.iter().for_each(|utxo| {
-                        new_authorities.insert(utxo.id(), utxo.authority.clone().into_inner().serialize().to_vec());
-                        new_data.insert(utxo.id(), utxo.data.clone().into_inner());
-                    });
-                    risc0_zkvm::guest::env::commit(
-                        &borsh::to_vec(&(new_authorities, new_data, tx_hex)).unwrap(),
-                    )
+                Ok(()) => {
+                    return 0;
                 }
-                Err(e) => panic!("err: {:?}", e),
+                Err(e) => {
+                    $crate::msg!("program return an error {:?}", e);
+                    return 1;
+                }
             }
         }
+        $crate::custom_heap_default!();
+        $crate::custom_panic_default!();
     };
 }
 ```
+
+[Source]: https://github.com/Arch-Network/arch-local/blob/main/program/src/entrypoint.rs#L147-L169
+[Implementation]: https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/program/src/lib.rs#L22C1-L22C34
+
