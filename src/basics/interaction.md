@@ -14,7 +14,7 @@ This test initializes a new instance of RPC client, constructs, signs and sends 
 
 After that, the Arch Network [validator] nodes will execute the program logic within the context of the Arch VM, signing-off on the execution then passing the results to the [leader] who will ultimately submit signed Bitcoin transactions back to the Bitcoin network.
 
-[leader]: ../concepts/nodes.md#leader
-[validator]: ../concepts/nodes.md#validator
+[leader]: ../concepts/nodes.md
+[validator]: ../concepts/nodes.md
 [line 22: lib.rs]: https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/src/lib.rs#L22-L122
 
