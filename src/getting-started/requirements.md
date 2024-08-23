@@ -26,15 +26,6 @@ sudo apt-get update
 sudo apt-get install gcc-multilib
 ```
 
-⚠️ **NOTE:** If you are a Linux user and do not already have gcc-multilib installed you will see an error like the below when trying to execute `cargo-build-sbf`.
-
-```bash
-cargo:warning=/usr/include/stdint.h:26:10: fatal error: 'bits/libc-header-start.h' file not found
-  cargo:warning=   26 | #include <bits/libc-header-start.h>
-  cargo:warning=      |          ^~~~~~~~~~~~~~~~~~~~~~~~~~
-  cargo:warning=1 error generated.
-```
-
 ### Install Solana CLI
 
 To compile the examples, the [Solana] CLI toolchain must be installed. Execute the following commands to install the toolchain to your local system.

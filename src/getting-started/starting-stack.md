@@ -11,6 +11,17 @@ First, ensure that your Docker client is up-to-date and that the `DOCKER_DEFAULT
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 ```
 
+**NOTE:** Additionally, if you have an Intel chip (ie, x86_64), you may encounter the following error when executing `docker compose up`; we recommend removing the `--platform=linux/arm64` flag within [Line 1: Dockerfile]:
+
+```bash
+=> ERROR [init-bootnode 2/3] RUN set -ex && apt-get update && apt-get install -qq --no-install-recommends curl jq               0.6s
+------
+ > [init-bootnode 2/3] RUN set -ex && apt-get update && apt-get install -qq --no-install-recommends curl jq:
+0.314 exec /bin/sh: exec format error
+------
+failed to solve: process "/bin/sh -c set -ex \t&& apt-get update \t&& apt-get install -qq --no-install-recommends curl jq" did not complete successfully: exit code: 1
+```
+
 ### Start
 Once Docker is up and running, start the stack by issuing the following command:
 ```bash
