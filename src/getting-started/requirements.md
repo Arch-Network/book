@@ -44,12 +44,12 @@ sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 
 #### Steps:
 
-- Uninstall rust
+1. Uninstall rust
 ```bash
 rustup uninstall self
 ```
 
-- Ensure rust is completely removed
+2. Ensure rust is completely removed
 ```bash
 rustup --version
 
@@ -57,12 +57,12 @@ rustup --version
 zsh: command not found: rustup
 ```
 
-- Reinstall rust
+3. Reinstall rust
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-- Reinstall solana
+4. Reinstall solana
 ```bash
 sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 ```
@@ -73,7 +73,8 @@ sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 Finally, we'll be using a repository specifically made to demonstrate Arch's capabilities and get started quickly. This repo contains a local Arch Network development environment, as well as some example programs that we'll touch on later in this book.
 
 ```bash
-git clone https://github.com/arch-Network/arch-local && cd arch-local
+git clone https://github.com/arch-Network/arch-local && \
+cd arch-local
 ```
 
 [eBPF]: https://ebpf.io/

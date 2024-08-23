@@ -7,7 +7,7 @@ Access the `examples/helloworld/program` folder:
 ```bash
 cd examples/helloworld/program
 ```
-- Build the example program
+Build the example program
 ```bash
 cargo-build-sbf
 ```
