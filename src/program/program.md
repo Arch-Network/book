@@ -11,10 +11,34 @@ Additionally, programs can send instructions to other programs which, in turn, w
 ### Components:
 #### 1. [Entrypoint]
 
+Every Arch program includes a single entrypoint used to invoke the program. A [dispatcher function], typically named `process_instruction`, is then used to handle the data passed into the entrypoint. 
+
+`process_instruction` requires the following parameters:
+
+- `program_id` - Unique identifier of the currently executing program.
+- `accounts` - Slice reference containing accounts needed to execute an instruction.
+- `instruction_data` - Serialized data containing program instructions.
+
+_These parameters are required for every [instruction] to be processed.__
+
+```rust,ignore
+pub fn process_instruction(
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    instruction_data: &[u8],
+) -> Result<(), ProgramError> {
+...
+}
+```
+
+
 #### 2. [Instruction]
 
+The `instruction_data` is deserialized after being passed into the entrypoint. From there, if there are multiple instructions, a `match` statement can be utilized to point the logic flow to the appropriate handler function previously defined within the program which can continue processing the instruction.
+
 #### 3. Process Instruction
-    - 
+
+If a program has multiple instructions, corresponding handler functions should be defined to include the specific logic unique to the instruction.
 
 #### 4. State
 
@@ -58,5 +82,7 @@ pub fn invoke(instruction: &Instruction, account_infos: &[AccountInfo]) -> Progr
 [entrypoint]: ./entrypoint.md
 [instruction]: ./instruction.md
 [transaction]: ./transaction.md
+[dispatcher function]: ../basics/entrypoint.md#dispatcher-function
+[lib.rs]: https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/program/src/lib.rs
 [program.rs]: https://github.com/Arch-Network/arch-local/blob/main/program/src/program.rs
 
