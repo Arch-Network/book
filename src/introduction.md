@@ -17,7 +17,6 @@ Additionally, it is helpful to understand how Bitcoin works, especially the UTXO
 ### Contributing
 Please create an issue or pull request if you find any mistakes, bugs, or ambiguities. See [CONTRIBUTING.md] for additional details.
 
-
 [rust]: https://www.rust-lang.org
 [Bitcoin]: https://bitcoin.org
 [UTXOs]: https://learnmeabitcoin.com/technical/transaction/utxo
@@ -25,3 +24,4 @@ Please create an issue or pull request if you find any mistakes, bugs, or ambigu
 [Mastering Bitcoin]: https://github.com/bitcoinbook/bitcoinbook
 [Andreas Antonopoulos]: https://aantonop.com/
 [CONTRIBUTING.md]: ../CONTRIBUTING.md
+

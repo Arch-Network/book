@@ -5,11 +5,6 @@ Every Arch program includes a single entrypoint used to invoke the program. The 
 ```rust,ignore
 entrypoint!(process_instruction);
 ```
-[Implementation]
-
-The below details the expanded `entrypoint!()` macro.
-
-[Source]
 
 ```rust,ignore
 #[macro_export]
@@ -36,7 +31,7 @@ macro_rules! entrypoint {
     };
 }
 ```
+[entrypoint.rs]
 
-[Source]: https://github.com/Arch-Network/arch-local/blob/main/program/src/entrypoint.rs#L147-L169
-[Implementation]: https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/program/src/lib.rs#L22C1-L22C34
+[entrypoint.rs]: https://github.com/Arch-Network/arch-local/blob/main/program/src/entrypoint.rs
 

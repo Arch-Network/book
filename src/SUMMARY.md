@@ -16,15 +16,19 @@
     - [Program interaction](basics/interaction.md)
 
 # Reference
+- [Program](program/program.md)
+    - [Account](program/account.md)
+    - [Entrypoint](program/entrypoint.md)
+    - [Instruction](program/instruction.md)
+    - [Message](program/message.md)
+    - [Pubkey](program/pubkey.md)
+    - [Syscall](program/syscall.md)
+    - [System Instruction](program/system-instruction.md)
+    - [UTXO](program/utxo.md) 
 - [SDK](sdk/sdk.md)
-    - [Entrypoint](sdk/entrypoint.md)
-    - [Instruction](sdk/instruction.md)
-    - [Message](sdk/message.md)
-    - [Pubkey](sdk/pubkey.md)
+    - [Processed Transaction](sdk/processed-transaction.md)
     - [Runtime Transaction](sdk/runtime-transaction.md)
     - [Signature](sdk/signature.md)
-    - [Syscalls](sdk/syscalls.md)
-    - [UTXO](sdk/utxo.md) 
 
 ---
 []()
