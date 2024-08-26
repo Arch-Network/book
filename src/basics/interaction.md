@@ -1,13 +1,22 @@
-# Contract interaction
+# Program interaction
 
-Continuing with our example program: `helloworld`, we can find an implementation example of how to communicate with a smart contract starting on [line 21 of lib.rs](https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/src/lib.rs#L23-L106) within the `back_2_back()` test function.
+Continuing with our example program: [helloworld], we find an implementation example of how to communicate with a [program] within the `test_deploy_call()` function.
 
 ```rust,ignore
 #[test]
-#[serial]
-fn back_2_back() { /* ... */ }
+fn test_deploy_call() { 
+...
+}
 ```
+[lib.rs]
 
-This test initializes a new instance of RPC client, constructs a runtime transaction, and then includes this within the `send_transaction()` RPC call made to the Arch Network.
+This test initializes a new instance of RPC client, constructs, signs and sends 4 transactions, and then polls the network for the processed transaction results.
 
-After that, the Arch Network will execute the program logic within the context of the [zkVM](../concepts/nodes.md#the-zkvm), validate and sign-off on the execution, then post the results back to the Bitcoin network.
+After that, the Arch Network [validator] nodes will execute the program logic within the context of the Arch VM, signing-off on the execution then passing the results to the [leader] who will ultimately submit signed Bitcoin transactions back to the Bitcoin network.
+
+[leader]: ../concepts/nodes.md
+[program]: ../program/program.md
+[validator]: ../concepts/nodes.md
+[helloworld]: https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld
+[lib.rs]: https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/src/lib.rs
+
