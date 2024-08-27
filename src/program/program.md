@@ -1,6 +1,6 @@
 # Program
 
-A program is a special kind of [account] that contain executable [eBPF] bytecode, denoted by the `Account.is_executable: true` field. This allows an account to receive arbitrary [instruction] data via a [transaction] to be processed by the runtime.
+A program is a special kind of [account] that contains executable [eBPF] bytecode, denoted by the `Account.is_executable: true` field. This allows an account to receive arbitrary [instruction] data via a [transaction] to be processed by the runtime.
 
 Every program is stateless, meaning that it can only read/write data to other accounts and that it **cannot** write to its own account; this, in-part, is how parallelized execution is made possible. 
 
