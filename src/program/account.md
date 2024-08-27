@@ -6,6 +6,13 @@ Everything on Arch is an account, and anyone can publicly read from any account;
 
 If an account `is_executable: true`, then the account is considered to be a [program]; conversely, if an account `is_executable: false`, then it is considered to be a data account, meaning that it only serves to hold and manage state of a program.
 
+#### Key Concepts
+- Accounts can store up to 10MB of data, which can consist of either executable program code or program state
+- Every account has a [UTXO]. The UTXO is used to anchor the state change to bitcoin.
+- New Account Creation: Only the System Program can create a new account
+- Space Allocation: Sets the byte capacity for the data field of an account
+- Data Modification: Modifies the data field of an account
+
 ```rust,ignore
 #[derive(Clone)]
 #[repr(C)]
@@ -30,6 +37,7 @@ pub struct AccountMeta {
 [account.rs]
 
 
+[UTXO]: ./utxo.md
 [eBPF]: https://ebpf.io
 [program]: ./program.md
 [account.rs]: https://github.com/Arch-Network/arch-local/blob/main/program/src/account.rs
