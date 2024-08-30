@@ -14,6 +14,8 @@
 - [Basics](basics/basics.md)
     - [Entry points](basics/entrypoint.md)
     - [Program interaction](basics/interaction.md)
+- [Guides](guides/guides.md)
+    - [How to write an Arch program](guides/how-to-write-arch-program.md)
 
 # Reference
 - [Program](program/program.md)
@@ -29,6 +31,3 @@
     - [Processed Transaction](sdk/processed-transaction.md)
     - [Runtime Transaction](sdk/runtime-transaction.md)
     - [Signature](sdk/signature.md)
-
----
-[]()
