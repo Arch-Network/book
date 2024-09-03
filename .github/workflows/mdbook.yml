@@ -32,6 +32,8 @@ jobs:
       MDBOOK_VERSION: 0.4.36
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - name: Setup mdBook
         uses: peaceiris/actions-mdbook@v2
         with:
@@ -45,7 +47,7 @@ jobs:
         run: |
           mkdir book/book
           mv book/* book/book/ || true
-          cp static/index.html book/
+          cp static/* book/
       - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@master
         with:
