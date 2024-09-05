@@ -12,7 +12,6 @@
 
 # Programs and beyond
 - [Basics](basics/basics.md)
-    - [Entry points](basics/entrypoint.md)
     - [Program interaction](basics/interaction.md)
 
 # Reference
