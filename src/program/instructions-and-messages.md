@@ -1,4 +1,6 @@
-# Instructions
+# Instructions and Messages
+
+## Instructions
 
 An instruction specifies the `program_id`, which is a unique resource identifier for the [program], a collection of [accounts] needed to execute the instruction, as well as a slice of bytes which, once deserialized, includes the actions for the program to take.
 
@@ -12,7 +14,23 @@ pub struct Instruction {
 ```
 [instruction.rs]
 
+## Messages
+
+A message structure contains a slice of signing keys as well as a slice of [instruction] data.
+
+```rust,ignore
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
+pub struct Message {
+    pub signers: Vec<Pubkey>,
+    pub instructions: Vec<Instruction>,
+}
+```
+[message.rs]
+
+
 [program]: ./program.md
 [accounts]: ./account.md
+[instruction]: #instructions
+[message.rs]: https://github.com/Arch-Network/arch-local/blob/main/program/src/message.rs
 [instruction.rs]: https://github.com/Arch-Network/arch-local/blob/main/program/src/instruction.rs
 
