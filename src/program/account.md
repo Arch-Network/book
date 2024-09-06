@@ -19,8 +19,8 @@ If an account `is_executable: true`, then the account is considered to be a [pro
 pub struct AccountInfo<'a> {
     pub key: &'a Pubkey, // address of the account
     pub utxo: &'a UtxoMeta, // utxo has this account key in script_pubkey
-    pub data: Rc<RefCell<&'a mut [u8]>>, // if program, program bytecode; if data account, program state
-    pub owner: &'a Pubkey, // owner of an account is always a program
+    pub data: Rc<RefCell<&'a mut [u8]>>, 
+    pub owner: &'a Pubkey, 
     pub is_signer: bool,
     pub is_writable: bool,
     pub is_executable: bool, // true: program; false: data account
