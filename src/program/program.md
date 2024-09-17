@@ -2,22 +2,14 @@
 
 A program is a special kind of [account] that contains executable [eBPF] bytecode, denoted by the `Account.is_executable: true` field. This allows an account to receive arbitrary [instruction] data via a [transaction] to be processed by the runtime.
 
-Every program is stateless, meaning that it can only read/write data to other accounts and that it **cannot** write to its own account; this, in-part, is how parallelized execution is made possible. 
+Every program is stateless, meaning that it can only read/write data to other accounts and that it **cannot** write to its own account; this, in-part, is how parallelized execution is made possible (see [State] for more info).
 
-Any program can be the owner of an account allowing it to be modified. Therefore, if a program receives instruction that results in state being altered, it, as an account owner, would write to its child account holding state and update it accordingly.
-
-Additionally, programs can send instructions to other programs which, in turn, would receive this instruction and provide instruction to its corresponding child account if state were to be updated or read from.
+> ⚠️ Additionally, programs can send instructions to other programs which, in turn, receive instructions and thus extend program composability further. This is known as cross-program invocation (CPI) and will be detailed in future sections.
 
 ### Components:
 #### 1. [Entrypoint]
 
-Every Arch program includes a single entrypoint used to invoke the program. A [dispatcher function], typically named `process_instruction`, is then used to handle the data passed into the entrypoint. 
-
-`process_instruction` requires the following parameters:
-
-- `program_id` - Unique identifier of the currently executing program.
-- `accounts` - Slice reference containing accounts needed to execute an instruction.
-- `instruction_data` - Serialized data containing program instructions.
+Every Arch program includes a single entrypoint used to invoke the program. A [handler function], often named `process_instruction`, is then used to handle the data passed into the entrypoint. 
 
 _These parameters are required for every [instruction] to be processed.__
 
@@ -38,51 +30,23 @@ The `instruction_data` is deserialized after being passed into the entrypoint. F
 
 #### 3. Process Instruction
 
-If a program has multiple instructions, corresponding handler functions should be defined to include the specific logic unique to the instruction.
+If a program has multiple instructions, a corresponding [handler function] should be defined to include the specific logic unique to the instruction.
 
 #### 4. State
 
-Since programs are stateless, during initialization of the program, a new child account is created with the program being the child account's owner.
-    
-The program will include a struct to define the structure of its state, defined as a byte array, which the child account will store and manage (within its `data` field).
+Since programs are stateless, a "data" [account] is needed to hold state for a user. This is a non-executable account that holds program data.
 
-```rust,ignore
-pub fn invoke(instruction: &Instruction, account_infos: &[AccountInfo]) -> ProgramResult {
-    for account_meta in instruction.accounts.iter() {
-        for account_info in account_infos.iter() {
-            if account_meta.pubkey == *account_info.key {
-                if account_meta.is_writable {
-                    let _ = account_info.try_borrow_mut_data()?;
-                } else {
-                    let _ = account_info.try_borrow_data()?;
-                }
-                break;
-            }
-        }
-    }
+If a program receives instruction that results in a user's state being altered, the program would manage this user's state via a mapping within the program's logic. This mapping would link the user's [pubkey] with a data [account] where the state would live for that specific program.
+ 
+The program will likely include a struct to define the structure of its state and make it easier to work with. The deserialization of account data occurs during program invocation. After an update is made, state data gets re-serialized into a byte array and stored within the `data` field of the [account].
 
-    let instruction = StableInstruction::from(instruction.clone());
-    let result = unsafe {
-        crate::syscalls::sol_invoke_signed_rust(
-            &instruction as *const _ as *const u8,
-            account_infos as *const _ as *const u8,
-            account_infos.len() as u64,
-        )
-    };
-    match result {
-        crate::entrypoint::SUCCESS => Ok(()),
-        _ => Err(result.into()),
-    }
-}
-```
-[program.rs]
-
+[State]: #4-state
 [eBPF]: https://ebpf.io
 [account]: ./accounts.md
+[pubkey]: ./pubkey.md
 [entrypoint]: ./entrypoint.md
 [instruction]: ./instruction.md
 [transaction]: ./transaction.md
-[dispatcher function]: ../basics/entrypoint.md#dispatcher-function
+[handler function]: ./entrypoint.md#handler-function
 [lib.rs]: https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/program/src/lib.rs
-[program.rs]: https://github.com/Arch-Network/arch-local/blob/main/program/src/program.rs
 

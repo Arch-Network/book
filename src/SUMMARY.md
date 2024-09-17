@@ -12,15 +12,13 @@
 
 # Programs and beyond
 - [Basics](basics/basics.md)
-    - [Entry points](basics/entrypoint.md)
     - [Program interaction](basics/interaction.md)
 
 # Reference
 - [Program](program/program.md)
     - [Account](program/account.md)
     - [Entrypoint](program/entrypoint.md)
-    - [Instruction](program/instruction.md)
-    - [Message](program/message.md)
+    - [Instructions and Messages](program/instructions-and-messages.md)
     - [Pubkey](program/pubkey.md)
     - [Syscall](program/syscall.md)
     - [System Instruction](program/system-instruction.md)
