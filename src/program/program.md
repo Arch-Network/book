@@ -45,7 +45,7 @@ The program will likely include a struct to define the structure of its state an
 [account]: ./accounts.md
 [pubkey]: ./pubkey.md
 [entrypoint]: ./entrypoint.md
-[instruction]: ./instructions-and-messages.md
+[instruction]: ./instructions-and-messages.md#instructions
 [transaction]: ./transaction.md
 [handler function]: ./entrypoint.md#handler-function
 [lib.rs]: https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/program/src/lib.rs
