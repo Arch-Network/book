@@ -4,7 +4,7 @@ A program is a special kind of [account] that contains executable [eBPF] bytecod
 
 Every program is stateless, meaning that it can only read/write data to other accounts and that it **cannot** write to its own account; this, in-part, is how parallelized execution is made possible (see [State] for more info).
 
-> ⚠️ Additionally, programs can send instructions to other programs which, in turn, receive instructions and thus extend program composability further. This is known as cross-program invocation (CPI) and will be detailed in future sections.
+> 💡 Additionally, programs can send instructions to other programs which, in turn, receive instructions and thus extend program composability further. This is known as cross-program invocation (CPI) and will be detailed in future sections.
 
 ### Components:
 #### 1. [Entrypoint]
