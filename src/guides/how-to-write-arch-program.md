@@ -239,7 +239,7 @@ Congratulations, you've walked through constructing the [helloworld] program. In
 [UTXO]: ../program/utxo.md
 [account]: ../program/account.md
 [program]: ../program/program.md
-[instruction]: ../program/instruction.md
+[instruction]: ../program/instructions-and-messages.html#instructions
 [arch-local]: https://github.com/Arch-Network/arch-local
 [helloworld]: https://github.com/Arch-Network/arch-local/blob/main/examples/helloworld/
 [Bitcoin crate]: https://docs.rs/bitcoin/latest/bitcoin/index.html
