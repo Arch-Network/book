@@ -13,7 +13,7 @@ For this guide, we will be walking through the [helloworld] example program loca
 
 ## Program
 
-A smart contracts on Arch is known as a [program].
+A smart contract on Arch is known as a [program].
 
 ```rust,ignore
 use arch_program::{
