@@ -16,8 +16,6 @@ First, ensure that your Docker client is up-to-date and that the `DOCKER_DEFAULT
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 ```
 
-**NOTE:** Additionally, if you have an Intel chip (ie, x86_64), you may encounter the following error when executing `docker compose up`; we recommend removing the `--platform=linux/arm64` flag within [Line 1: Dockerfile]:
-
 #### Declare your `config.toml`
 
 Before using `arch-cli`, you need to set up a `config.toml` file. By default, the CLI will look for this file in the following locations:
@@ -71,7 +69,7 @@ key_path = "src/app/keys/program.json"
 
 By following these steps, you ensure that your CLI can be run from any location and still correctly locate and load its configuration files on Windows, macOS, and Linux.
 
-### Initiatlize
+### Initialize
 
 The `init` subcommand sets up a new Arch Network project with the necessary folder structure, boilerplate code, and Docker configurations.
 
@@ -103,14 +101,12 @@ All required dependencies are installed.
 Building Arch Network program...
 Creating project structure...
 Creating boilerplate files...
-  ℹ File already exists, skipping: src/app/backend/index.ts
-  ℹ File already exists, skipping: src/app/backend/package.json
   ℹ Existing program directory found, preserving it
   ℹ Existing frontend directory found, preserving it
   ✓ New Arch Network app initialized successfully!
 ```
 
-Your project will now have the following structure:
+Your project should now have the following structure:
 ```bash
 my-arch-project/
 ├── src/
@@ -135,7 +131,7 @@ my-arch-project/
 
 ### Start the services
 
-Now that the arch-cli is properly configured and we've initialized a new project, our next step will be to start the development infrastructure: the nodes and the block explorer.
+Now that the arch-cli is properly configured and we've initialized a new project, our next step will be to start the development cluster which will provision the Arch network nodes, an ordinals indexing service and a block explorer.
 
 ```bash
 arch-cli server start
@@ -147,19 +143,52 @@ Welcome to the Arch Network CLI
   → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
 Starting the development server...
   ✓ Bitcoin started.
-[+] Running 5/5
-  ✓ Development server started successfully.
+[+] Running 10/10
+ ✔ leader Pulled 6.7s
+ ✔ validator-2 Pulled 6.7s
+ ✔ validator-1 Pulled 6.7s
+ ✔ init Pulled 6.7s
+ ✔ bootnode Pulled 6.6s
+[+] Running 7/7
+ ✔ Network arch-cli_arch-network Created 0.0s
+ ✔ Network arch-cli_default Created 0.0s
+ ✔ Container arch-cli-init-1  Started 0.5s
+ ✔ Container arch-cli-bootnode-1  Started 0.3s
+ ✔ Container arch-cli-leader-1  Started 0.4s
+ ✔ Container arch-cli-validator-1-1  Started 0.5s
+ ✔ Container arch-cli-validator-2-1  Started 0.6s
+  ✓ Development server started successfully
 ```
 
 ### Manage the services
 
 The following commands can be used stop, check the status of, and view logs for the development environment, including the Bitcoin regtest network and Arch Network nodes.
 
+```bash
+arch-cli server status
+```
+
+The following is an example output from querying the server status.
+
+```bash
+Welcome to the Arch Network CLI
+  → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
+Checking development server status...
+  → Checking Bitcoin regtest network status...
+    ✓ bitcoin is running
+    ✓ electrs is running
+    ✓ btc-rpc-explorer is running
+  → Checking Arch Network nodes status...
+    ✓ bootnode is running
+    ✓ leader is running
+    ✓ validator-1 is running
+    ✓ validator-2 is running
+```
+
 We'll reference these later in the book. For now, familiarize yourself with starting and stopping the stack.
 
 ```bash
 arch-cli server stop
-arch-cli server status
 arch-cli server logs [<service>]
 ```
 
