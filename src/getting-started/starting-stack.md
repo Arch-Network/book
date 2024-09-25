@@ -27,7 +27,7 @@ If the configuration file is not found, a default configuration file will be cre
 
 You can also specify a custom configuration file location by setting the `ARCH_CLI_CONFIG` environment variable:
 
-```
+```bash
 export ARCH_CLI_CONFIG=/path/to/your/config.toml
 ```
 
