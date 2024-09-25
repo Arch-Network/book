@@ -5,8 +5,9 @@ The following dependencies are needed to proceed. Install these before moving to
 - [Rust](#install-rust)
 - [Docker](#install-docker)
 - [A C++ Compiler (gcc/clang)](#install-c-compiler)
+- [Node.js v19+](#install-nodejs)
 - [Solana CLI](#install-solana-cli)
-- [Arch-local](#clone-the-arch-local-repository)
+- [Arch-cli](#clone-the-arch-cli-repository)
 
 ### Install Rust
 First, to work with Arch programs you will need Rust installed on your machine. If you don't have it, you can find installation instructions on [the Rust website].
@@ -25,6 +26,10 @@ For Linux (Debian/Ubuntu) users, this must be installed if it isn't already. We 
 sudo apt-get update
 sudo apt-get install gcc-multilib
 ```
+
+### Install Node.js
+
+Please make sure you have [Node.js] version 19 or higher installed as [npm] is required to run the various front-ends within the repository. 
 
 ### Install Solana CLI
 
@@ -69,17 +74,25 @@ sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 
 > If you are still experiencing errors, join our [Discord dev-chat] channel for more support.
 
-### Clone the arch-local repository
-Finally, we'll be using a repository specifically made to demonstrate Arch's capabilities and get started quickly. This repo contains a local Arch Network development environment, as well as some example programs that we'll touch on later in this book.
+### Clone and install the arch-cli
+
+Finally, we'll be using a repository specifically made to demonstrate Arch's capabilities and get you started building quickly: the `arch-cli`. 
+
+This repo provides a local Arch Network development environment, a command-line tool to setup new projects, deploy programs and more, as well as provides an example dapp to showcase Arch functionality that we will touch on later in this book. The `arch-cli` also ships with a mini block explorer for additional visibility.
 
 ```bash
-git clone https://github.com/arch-Network/arch-local && \
-cd arch-local
+git clone https://github.com/arch-Network/arch-cli && \
+cd arch-cli
+
+# install
+cargo install --path .
 ```
 
+[npm]: https://github.com/npm/cli
 [eBPF]: https://ebpf.io/
-[rust]: https://www.rust-lang.org 
+[rust]: https://www.rust-lang.org
 [Solana]: https://github.com/solana-labs/solana
+[Node.js]: https://nodejs.org/en/download/package-manager
 [Homebrew]: https://brew.sh/
 [Solana Docs]: https://docs.solanalabs.com/cli/install#macos--linux
 [the Rust website]: https://www.rust-lang.org/tools/install
