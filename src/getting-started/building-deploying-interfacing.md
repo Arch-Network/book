@@ -1,4 +1,4 @@
-# Building, Deploying and Interfacing
+# Building, deploying and interfacing
 
 Now that all of the dependencies are installed and we have successfully started our stack of development nodes, we can finally compile our program and interact with it.
 

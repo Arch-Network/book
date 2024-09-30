@@ -29,3 +29,5 @@
     - [Processed Transaction](sdk/processed-transaction.md)
     - [Runtime Transaction](sdk/runtime-transaction.md)
     - [Signature](sdk/signature.md)
+- [RPC](rpc/rpc.md)
+    - [Methods](rpc/methods.md)
