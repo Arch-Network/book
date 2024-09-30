@@ -3,7 +3,15 @@
 ### Table of Contents
 - [sendTransaction](#sendtransaction)
 - [sendTransactions](#sendtransactions)
-- []
+- [readAccountInfo](#readaccountinfo)
+- [getAccountAddress](#getaccountaddress)
+- [getProgram](#getprogram)
+- [getBestBlockHash](#getbestblockhash)
+- [getBlock](#getblock)
+- [getBlockCount](#getblockcount)
+- [getBlockHash](#getblockhash)
+- [getProcessedTransaction](#getprocessedtransaction)
+- [getAccountInfo](#getaccountinfo)
 ---
 ### `sendTransaction`
 
