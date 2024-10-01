@@ -1,21 +1,35 @@
 # Methods
 
 ### Table of Contents
-- [sendTransaction](#sendtransaction)
-- [sendTransactions](#sendtransactions)
-- [readAccountInfo](#readaccountinfo)
-- [getAccountAddress](#getaccountaddress)
-- [getProgram](#getprogram)
-- [getBestBlockHash](#getbestblockhash)
-- [getBlock](#getblock)
-- [getBlockCount](#getblockcount)
-- [getBlockHash](#getblockhash)
-- [getProcessedTransaction](#getprocessedtransaction)
-- [getAccountInfo](#getaccountinfo)
+- [sendTransaction]
+- [sendTransactions]
+- [readAccountInfo]
+- [getAccountAddress]
+- [getProgram]
+- [getBestBlockHash]
+- [getBlock]
+- [getBlockCount]
+- [getBlockHash]
+- [getProcessedTransaction]
+- [getAccountInfo]
 ---
+## Arch RPC Node
+By default, running the [arch-node] validator software will start the RPC service. For those wishing to run only the RPC server and not participate as an Arch validator, 
+
+## Arch-TypeScript-SDK
+
 ### `sendTransaction`
 
-**Description:** Sends a single transaction to the node.
+**Description:** Relays a single transaction to the nodes for execution. 
+
+The following pre-flight checks are performed:
+1. It verifies the transaction size limit.
+2. It verifies the transaction signatures.
+3. It verifies that the UTXOs are not already spent.
+
+_The same checks are performed on [sendTransactions]._
+
+If these checks pass, the transaction is forwarded to the rest of the nodes for processing.
 
 **Method:** `POST`
 
@@ -24,7 +38,19 @@
 
 **Returns:** Result of the transaction processing.
 
-Example:
+```bash
+curl -vLX POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "jsonrpc":"2.0",
+  "id":"id",
+  "method":"send_transaction",
+  "params":["runtime_transaction"]
+  }' \
+ https://localhost:9001/
+```
+
+SDK Example:
 ```ts
 const result = await rpcConnection.sendTransaction(transaction);
 ```
@@ -33,6 +59,15 @@ const result = await rpcConnection.sendTransaction(transaction);
 
 **Description:**  Sends multiple transactions in a single batch request.
 
+The following pre-flight checks are performed:
+1. It verifies the transaction size limit.
+2. It verifies the transaction signatures.
+3. It verifies that the UTXOs are not already spent.
+
+_The same checks are performed on [sendTransaction]._
+
+If these checks pass, the transaction is forwarded to the rest of the nodes for processing.
+
 **Method:** `POST`
 
 **Parameters:**
@@ -40,7 +75,19 @@ const result = await rpcConnection.sendTransaction(transaction);
 
 **Returns:** Result of the batch transaction processing.
 
-Example:
+```bash
+curl -vLX POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "jsonrpc":"2.0",
+  "id":"id",
+  "method":"send_transactions",
+  "params":["[runtime_transaction]"]
+  }' \
+ https://localhost:9001/
+```
+
+SDK Example:
 ```ts
 const result = await rpcConnection.sendTransactions(transactions);
 ```
@@ -56,7 +103,19 @@ const result = await rpcConnection.sendTransactions(transactions);
 
 **Returns:** An `AccountInfoResult` object containing details of the account.
 
-Example:
+```bash
+curl -vLX POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "jsonrpc":"2.0",
+  "id":"id",
+  "method":"read_account_info",
+  "params":["pubkey"]
+  }' \
+ https://localhost:9001/
+```
+
+SDK Example:
 ```ts
 const accountInfo = await rpcConnection.readAccountInfo(pubkey);
 ```
@@ -72,7 +131,19 @@ const accountInfo = await rpcConnection.readAccountInfo(pubkey);
 
 **Returns:** The account address as a string.
 
-Example:
+```bash
+curl -vLX POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "jsonrpc":"2.0",
+  "id":"id",
+  "method":"get_account_address",
+  "params":["pubkey"]
+  }' \
+ https://localhost:9001/
+```
+
+SDK Example:
 ```ts
 const accountAddress = await rpcConnection.getAccountAddress(pubkey);
 ```
@@ -88,7 +159,19 @@ const accountAddress = await rpcConnection.getAccountAddress(pubkey);
 
 **Returns:** The program data as a string.
 
-Example:
+```bash
+curl -vLX POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "jsonrpc":"2.0",
+  "id":"id",
+  "method":"get_program",
+  "params":["programId"]
+  }' \
+ https://localhost:9001/
+```
+
+SDK Example:
 ```ts
 const program = await rpcConnection.getProgram(programId);
 ```
@@ -104,7 +187,19 @@ const program = await rpcConnection.getProgram(programId);
 
 **Returns:** A string representing the best block hash.
 
-Example:
+```bash
+curl -vLX POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "jsonrpc":"2.0",
+  "id":"id",
+  "method":"get_best_block_hash",
+  "params":[]
+  }' \
+ https://localhost:9001/
+```
+
+SDK Example:
 ```ts
 const bestBlockHash = await rpcConnection.getBestBlockHash();
 ```
@@ -122,7 +217,19 @@ const bestBlockHash = await rpcConnection.getBestBlockHash();
 
 **Error Handling:** Returns `undefined` if the block is not found (404).
 
-Example:
+```bash
+curl -vLX POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "jsonrpc":"2.0",
+  "id":"id",
+  "method":"get_block",
+  "params":["blockHash"]
+  }' \
+ https://localhost:9001/
+```
+
+SDK Example:
 ```ts
 const block = await rpcConnection.getBlock(blockHash);
 ```
@@ -138,7 +245,19 @@ const block = await rpcConnection.getBlock(blockHash);
 
 **Returns:** A number representing the block count.
 
-Example:
+```bash
+curl -vLX POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "jsonrpc":"2.0",
+  "id":"id",
+  "method":"get_block_count",
+  "params":[]
+  }' \
+ https://localhost:9001/
+```
+
+SDK Example:
 ```ts
 const blockCount = await rpcConnection.getBlockCount();
 ```
@@ -154,7 +273,19 @@ const blockCount = await rpcConnection.getBlockCount();
 
 **Returns:** A string representing the block hash.
 
-Example:
+```bash
+curl -vLX POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "jsonrpc":"2.0",
+  "id":"id",
+  "method":"get_block_hash",
+  "params":["block_height"]
+  }' \
+ https://localhost:9001/
+```
+
+SDK Example:
 ```ts
 const blockHash = await rpcConnection.getBlockHash(blockHeight);
 ```
@@ -172,7 +303,19 @@ const blockHash = await rpcConnection.getBlockHash(blockHeight);
 
 **Error Handling:** Returns `undefined` if the transaction is not found (404).
 
-Example:
+```bash
+curl -vLX POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "jsonrpc":"2.0",
+  "id":"id",
+  "method":"get_processed_transaction",
+  "params":["txid"]
+  }' \
+ https://localhost:9001/
+```
+
+SDK Example:
 ```ts
 const transaction = await rpcConnection.getProcessedTransaction(txid);
 ```
@@ -188,8 +331,33 @@ const transaction = await rpcConnection.getProcessedTransaction(txid);
 
 **Returns:** Account information as a result.
 
-Example:
+```bash
+curl -vLX POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "jsonrpc":"2.0",
+  "id":"id",
+  "method":"get_account_info",
+  "params":["address"]
+  }' \
+ https://localhost:9001/
+```
+
+SDK Example:
 ```ts
 const accountInfo = await rpcConnection.getAccountInfo(address);
 ```
+
+[arch-node]: https://github.com/arch-network/arch-node
+[sendTransaction]: #sendtransaction
+[sendTransactions]: #sendtransactions
+[readAccountInfo]: #readaccountinfo
+[getAccountAddress]: #getaccountaddress
+[getProgram]: #getprogram
+[getBestBlockHash]: #getbestblockhash
+[getBlock]: #getblock
+[getBlockCount]: #getblockcount
+[getBlockHash]: #getblockhash
+[getProcessedTransaction]: #getprocessedtransaction
+[getAccountInfo]: #getaccountinfo
 
