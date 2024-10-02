@@ -34,7 +34,7 @@ If these checks pass, the transaction is forwarded to the rest of the nodes for 
 **Method:** `POST`
 
 **Parameters:**
-    `params: RuntimeTransaction` - A runtime transaction object representing the transaction to be sent.
+    `params: RuntimeTransaction` - A [Runtime Transaction] object representing the transaction to be sent.
 
 **Returns:** Result of the transaction processing.
 
@@ -71,7 +71,7 @@ If these checks pass, the transaction is forwarded to the rest of the nodes for 
 **Method:** `POST`
 
 **Parameters:**
-    `params: Array<RuntimeTransaction>` - An array of runtime transaction objects to be sent.
+    `params: <array>` - An array of runtime transaction objects to be sent.
 
 **Returns:** Result of the batch transaction processing.
 
@@ -166,7 +166,7 @@ curl -vLX POST \
   "jsonrpc":"2.0",
   "id":"id",
   "method":"get_program",
-  "params":["programId"]
+  "params":["program_id"]
   }' \
  https://localhost:9001/
 ```
@@ -224,7 +224,7 @@ curl -vLX POST \
   "jsonrpc":"2.0",
   "id":"id",
   "method":"get_block",
-  "params":["blockHash"]
+  "params":["block_hash"]
   }' \
  https://localhost:9001/
 ```
@@ -360,4 +360,4 @@ const accountInfo = await rpcConnection.getAccountInfo(address);
 [getBlockHash]: #getblockhash
 [getProcessedTransaction]: #getprocessedtransaction
 [getAccountInfo]: #getaccountinfo
-
+[Runtime Transaction]: ../sdk/runtime-transaction.md
