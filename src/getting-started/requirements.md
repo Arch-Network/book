@@ -45,16 +45,16 @@ sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 >
 > Ref: [Solana Docs].
 
-⚠️ **NOTE:** Installing [rust] through [Homebrew] likely leads to issues working with `cargo-build-sbf`. Below are some steps to get around this.
+> ⚠️ **NOTE:** Installing [rust] through [Homebrew] likely leads to issues working with `cargo-build-sbf`. Below are some steps to get around this.
 
 #### Steps:
 
-1. Uninstall rust
+1. Uninstall rust.
 ```bash
 rustup uninstall self
 ```
 
-2. Ensure rust is completely removed
+2. Ensure rust is completely removed.
 ```bash
 rustup --version
 
@@ -62,12 +62,12 @@ rustup --version
 zsh: command not found: rustup
 ```
 
-3. Reinstall rust
+3. Reinstall rust.
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-4. Reinstall solana
+4. Reinstall solana.
 ```bash
 sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 ```
@@ -76,9 +76,9 @@ sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 
 ### Clone and install the arch-cli
 
-Finally, we'll be using a repository specifically made to demonstrate Arch's capabilities and get you started building quickly: the `arch-cli`. 
+Finally, we'll be using a repository specifically made to demonstrate Arch's capabilities and get you started building quickly: `arch-cli`. 
 
-This repo provides a local Arch Network development environment, a command-line tool to setup new projects, deploy programs and more, as well as provides an example dapp to showcase Arch functionality that we will touch on later in this book. The `arch-cli` also ships with a mini block explorer for additional visibility.
+The `arch-cli` [repo] provides a local Arch Network development environment, a command-line tool to setup new projects, deploy programs and more, as well as provides an example dapp to showcase Arch functionality that we will touch on later in this book. The `arch-cli` also ships with a mini block explorer for additional visibility into transactions and block production.
 
 ```bash
 git clone https://github.com/arch-Network/arch-cli && \
@@ -92,6 +92,7 @@ cargo install --path .
 [gcc-multilib]: https://packages.debian.org/sid/gcc-multilib
 [npm]: https://github.com/npm/cli
 [eBPF]: https://ebpf.io/
+[repo]: https://github.com/arch-Network/arch-cli
 [rust]: https://www.rust-lang.org
 [Solana]: https://github.com/solana-labs/solana
 [Node.js]: https://nodejs.org/en/download/package-manager
