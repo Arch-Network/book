@@ -3,14 +3,13 @@
 ### Table of Contents
 - [sendTransaction]
 - [sendTransactions]
-- [readAccountInfo]
+- [getAccountInfo]
 - [getAccountAddress]
 - [getProgramAccounts]
 - [getBlock]
 - [getBlockCount]
 - [getBlockHash]
 - [getProcessedTransaction]
-- [getAccountInfo]
 - [startDkg]
 - [isNodeReady]
 - [resetNetwork]
@@ -107,7 +106,7 @@ https://localhost:9001/
 }
 ```
 
-### `readAccountInfo`
+### `getAccountInfo`
 
 **Description:**  Reads account information for a specific public key.
 
@@ -124,7 +123,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
 {
     "jsonrpc":"2.0",
     "id":1,
-    "method":"read_account_info",
+    "method":"get_account_info",
     "params":[
         [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
     ]
@@ -517,14 +516,13 @@ https://localhost:9001/
 [arch-node]: https://github.com/arch-network/arch-node
 [sendTransaction]: #sendtransaction
 [sendTransactions]: #sendtransactions
-[readAccountInfo]: #readaccountinfo
+[getAccountInfo]: #getaccountinfo
 [getAccountAddress]: #getaccountaddress
 [getProgramAccounts]: #getprogramaccounts
 [getBlock]: #getblock
 [getBlockCount]: #getblockcount
 [getBlockHash]: #getblockhash
 [getProcessedTransaction]: #getprocessedtransaction
-[getAccountInfo]: #getaccountinfo
 [startDkg]: #startdkg
 [isNodeReady]: #isnodeready
 [resetNetwork]: #resetnetwork
