@@ -13,6 +13,7 @@
 - [getAccountInfo]
 - [startDkg]
 - [isNodeReady]
+- [resetNetwork]
 ---
 ### `sendTransaction`
 
@@ -483,6 +484,36 @@ https://localhost:9001/
 }
 ```
 
+### resetNetwork
+
+**Description:** Resets the network state.
+
+**Parameters:**
+    None.
+
+**Returns:** A success message if the network reset is successful.
+
+**Request:**
+```bash
+curl -vL POST -H 'Content-Type: application/json' -d '
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "method":"reset_network",
+  "params":[]
+}' \
+https://localhost:9001/
+```
+
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": "Success!",
+  "id": "1"
+}
+```
+
 [arch-node]: https://github.com/arch-network/arch-node
 [sendTransaction]: #sendtransaction
 [sendTransactions]: #sendtransactions
@@ -496,6 +527,7 @@ https://localhost:9001/
 [getAccountInfo]: #getaccountinfo
 [startDkg]: #startdkg
 [isNodeReady]: #isnodeready
+[resetNetwork]: #resetnetwork
 [Runtime Transaction]: ../sdk/runtime-transaction.md
 [Pubkey]: ../program/pubkey.md
 
