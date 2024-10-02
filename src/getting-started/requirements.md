@@ -21,7 +21,7 @@ Next, Docker is required to run Arch's containerized node infrastructure locally
 
 For MacOS users, this *should* already be installed alongside [gcc] so you can skip this section.
 
-For Linux (Debian/Ubuntu) users, this must be installed if it isn't already. We will manually install the gcc-multilib.
+For Linux (Debian/Ubuntu) users, this must be installed if it isn't already. We will manually install the [gcc-multilib].
 ```bash
 sudo apt-get update
 sudo apt-get install gcc-multilib
@@ -89,6 +89,7 @@ cargo install --path .
 ```
 
 [GCC]: https://gcc.gnu.org/
+[gcc-multilib]: https://packages.debian.org/sid/gcc-multilib
 [npm]: https://github.com/npm/cli
 [eBPF]: https://ebpf.io/
 [rust]: https://www.rust-lang.org
