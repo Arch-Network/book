@@ -5,19 +5,15 @@
 - [sendTransactions]
 - [readAccountInfo]
 - [getAccountAddress]
-- [getProgram]
-- [getBestBlockHash]
+- [getProgramAccounts]
 - [getBlock]
 - [getBlockCount]
 - [getBlockHash]
 - [getProcessedTransaction]
 - [getAccountInfo]
+- [startDkg]
+- [isNodeReady]
 ---
-## Arch RPC Node
-By default, running the [arch-node] validator software will start the RPC service. For those wishing to run only the RPC server and not participate as an Arch validator, 
-
-## Arch-TypeScript-SDK
-
 ### `sendTransaction`
 
 **Description:** Relays a single transaction to the nodes for execution. 
@@ -34,25 +30,31 @@ If these checks pass, the transaction is forwarded to the rest of the nodes for 
 **Method:** `POST`
 
 **Parameters:**
-    `params: RuntimeTransaction` - A [Runtime Transaction] object representing the transaction to be sent.
+    `params: <serialized_object>` - A serialized [Runtime Transaction] object representing the transaction to be sent.
 
-**Returns:** Result of the transaction processing.
+**Returns:** A string containing the transaction IDs (`txid`) of the submitted transaction.
 
+**Request:**
 ```bash
-curl -vLX POST \
-  -H 'Content-Type: application/json' \
-  -d '{
+curl -vL POST -H 'Content-Type: application/json' -d '
+{
   "jsonrpc":"2.0",
-  "id":"id",
+  "id":1,
   "method":"send_transaction",
-  "params":["runtime_transaction"]
-  }' \
- https://localhost:9001/
+  "params": [
+    [1,2,3,4,...]
+  ]
+}' \
+https://localhost:9001/
 ```
 
-SDK Example:
-```ts
-const result = await rpcConnection.sendTransaction(transaction);
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "id": "1"
+}
 ```
 
 ### `sendTransactions`
@@ -71,25 +73,37 @@ If these checks pass, the transaction is forwarded to the rest of the nodes for 
 **Method:** `POST`
 
 **Parameters:**
-    `params: <array>` - An array of runtime transaction objects to be sent.
+    `params: <array[serialized_object]>` - An array of serialized [Runtime Transaction] objects to be sent.
 
-**Returns:** Result of the batch transaction processing.
+**Returns:** An array of strings containing the transaction IDs (`txids`) of the submitted transactions.
 
+**Request:**
 ```bash
-curl -vLX POST \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "jsonrpc":"2.0",
-  "id":"id",
-  "method":"send_transactions",
-  "params":["[runtime_transaction]"]
-  }' \
- https://localhost:9001/
+curl -vL POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"send_transactions",
+    "params": [
+        [
+            [1,2,3,4,...],
+            [5,6,7,8,...]
+        ]
+    ]
+}' \
+https://localhost:9001/
 ```
 
-SDK Example:
-```ts
-const result = await rpcConnection.sendTransactions(transactions);
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": [
+    "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
+  ],
+  "id": "1"
+}
 ```
 
 ### `readAccountInfo`
@@ -99,25 +113,36 @@ const result = await rpcConnection.sendTransactions(transactions);
 **Method:** `POST`
 
 **Parameters:**
-    `pubkey: Pubkey` - A public key for the account.
+    `pubkey: <byte_array>` - The public key ([Pubkey]) of the account.
 
 **Returns:** An `AccountInfoResult` object containing details of the account.
 
+**Request:**
 ```bash
-curl -vLX POST \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "jsonrpc":"2.0",
-  "id":"id",
-  "method":"read_account_info",
-  "params":["pubkey"]
-  }' \
- https://localhost:9001/
+curl -vL POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"read_account_info",
+    "params":[
+        [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
+    ]
+}' \
+https://localhost:9001/
 ```
 
-SDK Example:
-```ts
-const accountInfo = await rpcConnection.readAccountInfo(pubkey);
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "data": [1,2,3,4,...],
+    "owner": [80,82,242,228,43,246,248,133,88,238,139,124,88,96,107,32,71,40,52,251,90,42,66,176,66,32,147,203,137,211,253,40],
+    "utxo": "txid:vout",
+    "is_executable": false
+  },
+  "id": "1"
+}
 ```
 
 ### `getAccountAddress`
@@ -127,81 +152,88 @@ const accountInfo = await rpcConnection.readAccountInfo(pubkey);
 **Method:** `POST`
 
 **Parameters:**
-    `pubkey: Pubkey` - A public key for the account.
+    `pubkey: <byte_array>` - The public key ([Pubkey]) of the account.
 
 **Returns:** The account address as a string.
 
+**Request:**
 ```bash
-curl -vLX POST \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "jsonrpc":"2.0",
-  "id":"id",
-  "method":"get_account_address",
-  "params":["pubkey"]
-  }' \
- https://localhost:9001/
+curl -vL POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_account_address",
+    "params":[
+        [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32] 
+    ]
+}' \
+https://localhost:9001/
 ```
 
-SDK Example:
-```ts
-const accountAddress = await rpcConnection.getAccountAddress(pubkey);
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq",
+  "id": "1"
+}
 ```
 
-### `getProgram`
+### `getProgramAccounts`
+Fetches all accounts owned by the specified program ID.
 
-**Description:**  Retrieves the program associated with the provided program ID.
+**Parameters:** `program_id: <byte_array>` - Pubkey of the program to query, as an array of 32 bytes.
 
-**Method:** `POST`
+`filters` (optional) - Array of filter objects, each filter should be either:    
+- `{ "DataSize": <size> }` where `<size>` is the required size of the account data
+- `{ "DataContent": { "offset": <offset>, "bytes": <byte_array> } }` where `<offset>` is the offset into the account data, and `<byte_array>` is an array of bytes to match
 
-**Parameters:**
-    `programId: string` - A string representing the program ID.
+**Returns:** An array of account objects, each containing:
+- `pubkey: <byte_array>`: The account's public key.
+- `account: <object>`: An object containing the account's data and metadata.
 
-**Returns:** The program data as a string.
-
+**Request:**
 ```bash
-curl -vLX POST \
-  -H 'Content-Type: application/json' \
-  -d '{
+curl -vL POST -H 'Content-Type: application/json' -d '
+{
   "jsonrpc":"2.0",
-  "id":"id",
-  "method":"get_program",
-  "params":["program_id"]
-  }' \
- https://localhost:9001/
+  "id":1,
+  "method": "get_program_accounts",
+  "params": [
+    [80,82,242,228,43,246,248,133,88,238,139,124,88,96,107,32,71,40,52,251,90,42,66,176,66,32,147,203,137,211,253,40],
+    [
+      {
+        "DataSize": 165
+      },
+      {
+        "DataContent": {
+          "offset": 0,
+          "bytes": [1, 2, 3, 4]
+        }
+      }
+    ]
+  ]
+}' \
+https://localhost:9001/
 ```
 
-SDK Example:
-```ts
-const program = await rpcConnection.getProgram(programId);
-```
-
-### `getBestBlockHash`
-
-**Description:**  Fetches the best (most recent) block hash from the node.
-
-**Method:** `POST`
-
-**Parameters:**
-    None.
-
-**Returns:** A string representing the best block hash.
-
-```bash
-curl -vLX POST \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "jsonrpc":"2.0",
-  "id":"id",
-  "method":"get_best_block_hash",
-  "params":[]
-  }' \
- https://localhost:9001/
-```
-
-SDK Example:
-```ts
-const bestBlockHash = await rpcConnection.getBestBlockHash();
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": [
+    {
+      "pubkey": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32],
+      "account": {
+        "data": [1,2,3,4,...],
+        "owner": [80,82,242,228,43,246,248,133,88,238,139,124,88,96,107,32,71,40,52,251,90,42,66,176,66,32,147,203,137,211,253,40],
+        "utxo": "txid:vout",
+        "is_executable": false
+      }
+    }
+  ],
+  "id": "1"
+}
 ```
 
 ### `getBlock`
@@ -211,55 +243,67 @@ const bestBlockHash = await rpcConnection.getBestBlockHash();
 **Method:** `POST`
 
 **Parameters:**
-    `blockHash: string` - A string representing the block hash.
+    `blockHash: <string>` - A string representing the block hash.
 
 **Returns:** A `Block` object or `undefined` if the block is not found.
 
 **Error Handling:** Returns `undefined` if the block is not found (404).
 
+**Request:**
 ```bash
-curl -vLX POST \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "jsonrpc":"2.0",
-  "id":"id",
-  "method":"get_block",
-  "params":["block_hash"]
-  }' \
- https://localhost:9001/
+curl -vL POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_block",
+    "params":[
+        "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f" 
+    ]
+}' \
+https://localhost:9001/
 ```
 
-SDK Example:
-```ts
-const block = await rpcConnection.getBlock(blockHash);
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": {
+    /* Block object */
+  },
+  "id": "1"
+}
 ```
 
 ### `getBlockCount`
 
-**Description:**  Retrieves the total number of blocks in the blockchain.
+**Description:**  Retrieves the current block count.
 
 **Method:** `POST`
 
 **Parameters:**
     None.
 
-**Returns:** A number representing the block count.
+**Returns:** The current block count as a number. 
 
+**Request:**
 ```bash
-curl -vLX POST \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "jsonrpc":"2.0",
-  "id":"id",
-  "method":"get_block_count",
-  "params":[]
-  }' \
- https://localhost:9001/
+curl -vL POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_block_count",
+    "params":[]
+}' \
+https://localhost:9001/
 ```
 
-SDK Example:
-```ts
-const blockCount = await rpcConnection.getBlockCount();
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": 680000,
+  "id": "1"
+}
 ```
 
 ### `getBlockHash`
@@ -269,25 +313,29 @@ const blockCount = await rpcConnection.getBlockCount();
 **Method:** `POST`
 
 **Parameters:**
-    `blockHeight: number` - The block height for which to retrieve the block hash.
+    `blockHeight: <number>` - The block height for which to retrieve the block hash.
 
 **Returns:** A string representing the block hash.
 
+**Request:**
 ```bash
-curl -vLX POST \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "jsonrpc":"2.0",
-  "id":"id",
-  "method":"get_block_hash",
-  "params":["block_height"]
-  }' \
- https://localhost:9001/
+curl -vL POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_block_hash",
+    "params":["680000"]
+}' \
+https://localhost:9001/
 ```
 
-SDK Example:
-```ts
-const blockHash = await rpcConnection.getBlockHash(blockHeight);
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
+  "id": "1"
+}
 ```
 
 ### `getProcessedTransaction`
@@ -297,55 +345,142 @@ const blockHash = await rpcConnection.getBlockHash(blockHeight);
 **Method:** `POST`
 
 **Parameters:**
-    `txid: string` - A string representing the transaction ID.
+    `txid: <string>` - A string representing the transaction ID.
 
 **Returns:** A `ProcessedTransaction` object or undefined if the transaction is not found.
 
 **Error Handling:** Returns `undefined` if the transaction is not found (404).
 
+**Request:**
 ```bash
-curl -vLX POST \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "jsonrpc":"2.0",
-  "id":"id",
-  "method":"get_processed_transaction",
-  "params":["txid"]
-  }' \
- https://localhost:9001/
+curl -vL POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_processed_transaction",
+    "params":[
+        "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+    ]
+}' \
+https://localhost:9001/
 ```
 
-SDK Example:
-```ts
-const transaction = await rpcConnection.getProcessedTransaction(txid);
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "runtime_transaction": { /* RuntimeTransaction object */ },
+    "status": "Confirmed",
+    "bitcoin_txids": ["txid1", "txid2"]
+  },
+  "id": "1"
+}
 ```
 
 ### `getAccountInfo`
 
-**Description:**  Retrieves detailed information about an account using its address.
+**Description:**  Retrieves detailed information for the specified account.
 
 **Method:** `POST`
 
 **Parameters:**
-    `address: string` - A string representing the account address.
+    `pubkey: <byte_array>` - The public key ([Pubkey]) of the account to query, as an array of 32 bytes.
 
-**Returns:** Account information as a result.
+**Returns:** An object containing the account's information:
+- `data`: The account's data as a byte array.
+- `owner`: The account's owner as a byte array (`program_id`).
+- `utxo`: The UTXO associated with this account.
+- `is_executable`: A boolean indicating if the account contains executable code.
 
+**Request:**
 ```bash
-curl -vLX POST \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "jsonrpc":"2.0",
-  "id":"id",
-  "method":"get_account_info",
-  "params":["address"]
-  }' \
- https://localhost:9001/
+curl -vL POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_account_info",
+    "params":[
+        [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
+    ]
+}' \
+https://localhost:9001/
 ```
 
-SDK Example:
-```ts
-const accountInfo = await rpcConnection.getAccountInfo(address);
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "data": [1,2,3,4,...],
+    "owner": [80,82,242,228,43,246,248,133,88,238,139,124,88,96,107,32,71,40,52,251,90,42,66,176,66,32,147,203,137,211,253,40],
+    "utxo": "txid:vout",
+    "is_executable": false
+  },
+  "id": "1"
+}
+```
+
+### `startDkg`
+
+**Description:** Initiates the Distributed Key Generation (DKG) process.
+
+**Method:** `POST`
+
+**Parameters:**
+    None.
+
+**Returns:** A success message if the DKG process is initiated.
+
+**Request:**
+```bash
+curl -vL POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"start_dkg",
+    "params":[]
+}' \
+https://localhost:9001/
+```
+
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": "DKG process initiated",
+  "id": "1"
+}
+```
+
+### `isNodeReady`
+
+**Description:** Checks if the node is ready to process requests.
+
+**Parameters:**
+    None.
+
+**Returns:** A boolean indicating whether the node is ready.
+
+**Request:**
+```bash
+curl -vL POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"is_node_ready",
+    "params":[]
+}' \
+https://localhost:9001/
+```
+
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": true,
+  "id": "1"
+}
 ```
 
 [arch-node]: https://github.com/arch-network/arch-node
@@ -353,11 +488,14 @@ const accountInfo = await rpcConnection.getAccountInfo(address);
 [sendTransactions]: #sendtransactions
 [readAccountInfo]: #readaccountinfo
 [getAccountAddress]: #getaccountaddress
-[getProgram]: #getprogram
-[getBestBlockHash]: #getbestblockhash
+[getProgramAccounts]: #getprogramaccounts
 [getBlock]: #getblock
 [getBlockCount]: #getblockcount
 [getBlockHash]: #getblockhash
 [getProcessedTransaction]: #getprocessedtransaction
 [getAccountInfo]: #getaccountinfo
+[startDkg]: #startdkg
+[isNodeReady]: #isnodeready
 [Runtime Transaction]: ../sdk/runtime-transaction.md
+[Pubkey]: ../program/pubkey.md
+
