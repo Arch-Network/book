@@ -88,6 +88,7 @@ cd arch-cli
 cargo install --path .
 ```
 
+[GCC]: https://gcc.gnu.org/
 [npm]: https://github.com/npm/cli
 [eBPF]: https://ebpf.io/
 [rust]: https://www.rust-lang.org
