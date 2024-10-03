@@ -4,7 +4,7 @@ Interact with Arch nodes directly with the JSON RPC API via this list of availab
 
 > INFO:
 >
-> For client-side needs, use the [@saturn/arch-sdk] library as an interface for the RPC methods to interact with an Arch node.
+> For client-side needs, use the [@saturnbtcio/arch-sdk] library as an interface for the RPC methods to interact with an Arch node.
 
 ### Endpoint
 Default port: `9001`
@@ -26,5 +26,5 @@ The response output will be a JSON object with the following fields:
 - `result: <array|boolean|number|object|string>` - requested data, success confirmation or boolean flag.
 
 
-[@saturn/arch-sdk]: https://www.npmjs.com/package/@saturnbtcio/arch-sdk
+[@saturnbtcio/arch-sdk]: https://www.npmjs.com/package/@saturnbtcio/arch-sdk
 
