@@ -45,7 +45,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
     [1,2,3,4,...]
   ]
 }' \
-https://localhost:9001/
+http://localhost:9001/
 ```
 
 **Response:**
@@ -91,7 +91,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
         ]
     ]
 }' \
-https://localhost:9001/
+http://localhost:9001/
 ```
 
 **Response:**
@@ -128,7 +128,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
         [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32] 
     ]
 }' \
-https://localhost:9001/
+http://localhost:9001/
 ```
 
 **Response:**
@@ -175,7 +175,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
     ]
   ]
 }' \
-https://localhost:9001/
+http://localhost:9001/
 ```
 
 **Response:**
@@ -221,7 +221,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
         "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f" 
     ]
 }' \
-https://localhost:9001/
+http://localhost:9001/
 ```
 
 **Response:**
@@ -255,7 +255,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
     "method":"get_block_count",
     "params":[]
 }' \
-https://localhost:9001/
+http://localhost:9001/
 ```
 
 **Response:**
@@ -287,7 +287,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
     "method":"get_block_hash",
     "params":["680000"]
 }' \
-https://localhost:9001/
+http://localhost:9001/
 ```
 
 **Response:**
@@ -323,7 +323,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
         "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
     ]
 }' \
-https://localhost:9001/
+http://localhost:9001/
 ```
 
 **Response:**
@@ -365,7 +365,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
         [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
     ]
 }' \
-https://localhost:9001/
+http://localhost:9001/
 ```
 
 **Response:**
@@ -402,7 +402,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
     "method":"start_dkg",
     "params":[]
 }' \
-https://localhost:9001/
+http://localhost:9001/
 ```
 
 **Response:**
@@ -432,7 +432,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
     "method":"is_node_ready",
     "params":[]
 }' \
-https://localhost:9001/
+http://localhost:9001/
 ```
 
 **Response:**
@@ -462,7 +462,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
   "method":"reset_network",
   "params":[]
 }' \
-https://localhost:9001/
+http://localhost:9001/
 ```
 
 **Response:**
@@ -474,7 +474,7 @@ https://localhost:9001/
 }
 ```
 
-[arch-node]: https://github.com/arch-network/arch-node
+[arch-node]: http://github.com/arch-network/arch-node
 [sendTransaction]: #sendtransaction
 [sendTransactions]: #sendtransactions
 [readAccountInfo]: #readaccountinfo
