@@ -26,7 +26,7 @@ class GraffitiMessage {
 ```
 
 And here's the data structure found in our `src/app/program/src/lib.rs`.
-```rust
+```rust,ignore
 #[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
 pub struct GraffitiMessage {
     pub timestamp: i64,
