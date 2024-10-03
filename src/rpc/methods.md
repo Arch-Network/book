@@ -3,13 +3,13 @@
 ### Table of Contents
 - [sendTransaction]
 - [sendTransactions]
-- [getAccountInfo]
 - [getAccountAddress]
 - [getProgramAccounts]
 - [getBlock]
 - [getBlockCount]
 - [getBlockHash]
 - [getProcessedTransaction]
+- [readAccountInfo]
 - [startDkg]
 - [isNodeReady]
 - [resetNetwork]
@@ -102,45 +102,6 @@ https://localhost:9001/
     "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
     "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890"
   ],
-  "id": "1"
-}
-```
-
-### `getAccountInfo`
-
-**Description:**  Reads account information for a specific public key.
-
-**Method:** `POST`
-
-**Parameters:**
-    `pubkey: <byte_array>` - The public key ([Pubkey]) of the account.
-
-**Returns:** An `AccountInfoResult` object containing details of the account.
-
-**Request:**
-```bash
-curl -vL POST -H 'Content-Type: application/json' -d '
-{
-    "jsonrpc":"2.0",
-    "id":1,
-    "method":"get_account_info",
-    "params":[
-        [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
-    ]
-}' \
-https://localhost:9001/
-```
-
-**Response:**
-```json
-{
-  "jsonrpc": "2.0",
-  "result": {
-    "data": [1,2,3,4,...],
-    "owner": [80,82,242,228,43,246,248,133,88,238,139,124,88,96,107,32,71,40,52,251,90,42,66,176,66,32,147,203,137,211,253,40],
-    "utxo": "txid:vout",
-    "is_executable": false
-  },
   "id": "1"
 }
 ```
@@ -378,7 +339,7 @@ https://localhost:9001/
 }
 ```
 
-### `getAccountInfo`
+### `readAccountInfo`
 
 **Description:**  Retrieves detailed information for the specified account.
 
@@ -399,7 +360,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
 {
     "jsonrpc":"2.0",
     "id":1,
-    "method":"get_account_info",
+    "method":"read_account_info",
     "params":[
         [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
     ]
@@ -516,7 +477,7 @@ https://localhost:9001/
 [arch-node]: https://github.com/arch-network/arch-node
 [sendTransaction]: #sendtransaction
 [sendTransactions]: #sendtransactions
-[getAccountInfo]: #getaccountinfo
+[readAccountInfo]: #readaccountinfo
 [getAccountAddress]: #getaccountaddress
 [getProgramAccounts]: #getprogramaccounts
 [getBlock]: #getblock
