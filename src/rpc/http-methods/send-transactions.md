@@ -47,3 +47,5 @@ http://localhost:9001/
 }
 ```
 
+[Runtime Transaction]: ../../sdk/runtime-transaction.md
+
