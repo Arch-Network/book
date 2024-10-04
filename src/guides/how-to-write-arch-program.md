@@ -126,7 +126,7 @@ entrypoint!(process_instruction);
 
 ## Handler
 
-The handler (`process_instruction`) parameters must match what is required for a transaction [instruction].
+Each handler function's parameters must match what is required for a transaction [instruction].
 
 - `program_id` - Unique identifier of the currently executing program.
 - `accounts` - Slice reference containing accounts needed to execute an instruction.
@@ -139,6 +139,40 @@ pub fn process_instruction(
     instruction_data: &[u8],
 ) -> Result<(), ProgramError> {
     ...
+}
+```
+
+> NOTE: While there is only one entrypoint, there can be multiple handler functions to accommodate different functionality.
+> 
+> A `match` statement can be used to manage program flow within the `process_instruction` function scope.
+
+#### Example
+```rust,ignore
+pub fn process_instruction(
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    instruction_data: &[u8],
+) -> Result<(), ProgramError> {
+    let instruction = Instructions::try_from_slice(instruction_data)?;
+
+    match instruction {
+        Instructions::Foo { data } => process_bar(program_id, accounts, data),
+    }
+
+    ...
+}
+
+pub fn process_bar(
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    data: u64,
+) -> Result<(), ProgramError> {
+    ...
+}
+ 
+#[derive(BorshSerialize, BorshDeserialize)]
+pub enum Instructions {
+    Foo { data: u64 },
 }
 ```
 
@@ -167,11 +201,11 @@ In this step, we will use the [Bitcoin crate] to further deserialize a reference
 let fees_tx: Transaction = bitcoin::consensus::deserialize(&params.tx_hex).unwrap();
 ```
 
->NOTE: `tx_hex` represents a serialized Bitcoin UTXO that is used to pay the fee for updating state/executing a transaction; it is a full-signed Bitcoin UTXO but is sent directly to Arch first then the leader submits it alongside the other state/asset UTXOs as a result of the program execution.
+>NOTE: `tx_hex` represents a serialized Bitcoin UTXO that is used to pay the fee for updating state/executing a transaction; it is a fully-signed Bitcoin UTXO that gets submitted alongside the other state/asset UTXOs as a result of the program execution.
 >
 > Including `tx_hex` is a convention, not a requirement.
 > 
-> Program invocation can be paid for by another source, although in the majority of cases it is most practical to have caller be prepared to pay this.
+> Program invocation can be paid for by another source, although in the majority of cases it is most practical to have the caller be prepared to pay this.
 
 Next, we'll access the `data` field of the [account] and attempt to borrow it in order to determine the length of the value stored within it.
 
