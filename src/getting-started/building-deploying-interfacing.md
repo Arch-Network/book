@@ -1,19 +1,11 @@
 # Building, deploying and interfacing
 
-Now that all of the dependencies are installed and we have successfully started our stack of development nodes, we can finally compile our program and interact with it.
+Now that all of the dependencies are installed and we have successfully chosen a [development track], we can finally compile our program, deploy and interact with it.
 
-`arch-cli` comes with an example dapp called GraffitiWall; each message written to the wall contains a timestamp, name and note.
-
-Fortunately, the program was already compiled during the `arch-cli init` step which can be found from reviewing the previous logs.
-```bash
-...
-Building Arch Network program...
-...
-```
+The `arch-cli` comes with an example dapp called GraffitiWall; each message written to the wall contains a timestamp, name and note.
 
 ### Build
-
-If we wished to modify the program further before deploying, we would need to rebuild the program manually. If you do not wish to modify the program, skip this step and move to [Deploy].
+Fortunately, the program was already compiled during the [initialize] step. If we wish to modify the program further before deploying, we would need to rebuild the program manually. If you do not wish to modify the program, skip this step and move to [Deploy].
 
 Find the program's logic within the `src/app/program/src/lib.rs` file.
 
@@ -85,8 +77,6 @@ Obtain the Program ID from the deployment step output and use it within this com
 arch-cli account create --name graffiti --program-id 3688ef8de06d56e32a765243e900875c4fefc6aa9c83dfbc2643f661c5b4982e
 ```
 
-Copy the Private Key from the output as you will need this when using the UI in the next step.
-
 ### Start the front-end application
 ```bash
 arch-cli frontend start
@@ -128,18 +118,15 @@ Frontend application started successfully!
 Press Ctrl+C to stop the server and exit.
 ```
 
-If the window doesn't pop up, navigate to: http://localhost:5173 to interface with your deployed program.
-
-![](https://github.com/user-attachments/assets/6bad18c7-8523-454d-bbf4-d2e984c1d119)
-
-Save your account's private key in the field in order to graffiti the wall and **refresh the page**.
+If the window doesn't pop up, navigate to: http://localhost:5173 to interface with your deployed program via the web frontend.
 
 🎨
 
-Now you're ready to tag it!
+Now you're ready to tag the wall!
 
+[development track]: ./starting-stack.md#choose-a-track
+[initialize]: setting-up-a-project.md#initialize
 [eBPF]: https://ebpf.io/
 [Deploy]: #deploy
 [requirements]: ./requirements.md
 [Discord dev-chat]: https://discord.com/channels/1241112027963986001/1270921925991989268
-

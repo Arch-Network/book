@@ -7,6 +7,7 @@
     - [Requirements](getting-started/requirements.md)
     - [Starting the stack](getting-started/starting-stack.md)
         - [Nodes](concepts/nodes.md)
+    - [Setting up a project](getting-started/setting-up-a-project.md)
     - [Building, deploying and interfacing](getting-started/building-deploying-interfacing.md)
     - [Resources](getting-started/resources.md)
 

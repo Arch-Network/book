@@ -1,6 +1,56 @@
 # Starting the stack
 
-Within [arch-cli], there exist 3 configuration files needed to provision the various services:
+## Choose a track
+There are 2 tracks that developers can take when using `arch-cli`:
+1. [Program-only]
+  - A single-node execution environment for testing program logic.
+2. [Complete dApp]
+  - A complete, multi-node execution environment with consensus for testing a full-stack web dApp.
+
+_If you aren't sure where to start, stick with [Program-only]!_
+
+## Program-only
+This spins up a lightweight validator that effectively serves the purpose of testing program deployment and functionality by simulating a single-node blockchain environment locally.
+  
+This is much less resource intensive for your machine and includes only the VM component needed to test business logic.
+
+> Tip: We recommend starting here to begin development, test and refine your program logic before moving to the [Complete dApp] step.
+
+The following commands will assist you in provisioning the local validator. Simply `start` the validator to begin testing your program logic.
+
+```bash
+arch-cli validator start [options]
+```
+
+If everything pulls and builds correctly, you should see something resembling the following in your logs:
+```
+Welcome to the Arch Network CLI
+  → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
+Starting the local validator...
+Local validator started successfully!
+```
+
+To stop the validator, simply issue the corresponding `stop` command.
+```bash
+arch-cli validator stop
+```
+
+If everything stops correctly, you should something resembling the following in your logs:
+```
+Welcome to the Arch Network CLI
+  → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
+Stopping the local validator...
+Local validator stopped successfully!
+```
+
+## Complete dApp
+This spins up a local Arch network complete with 3 network [nodes], a front-end and backend server for your dApp, as well as an indexer, a block explorer and a Bitcoin node!
+  
+_This is more resource intensive for your machine but includes all of the components that the main Arch network comprises of._
+
+> Tip: We recommend moving here as a next-step after successfully deploying and testing your business logic within the [Program-only] track.
+
+Within `arch-cli`, there exist 3 configuration files needed to provision the various services:
 1. [arch-docker-compose.yml]
 2. [bitcoin-docker-compose.yml]
 3. [btc-rpc-explorer.dockerfile]
@@ -19,9 +69,9 @@ export DOCKER_DEFAULT_PLATFORM=linux/amd64
 #### Declare your `config.toml`
 
 Before using `arch-cli`, you need to set up a `config.toml` file. By default, the CLI will look for this file in the following locations:
-- Linux: ~/.config/arch-cli/config.toml
-- macOS: ~/Library/Application Support/arch-cli/config.toml
-- Windows: C:\Users\<User>\AppData\Roaming\arch-cli\config.toml
+- Linux: `~/.config/arch-cli/config.toml`
+- macOS: `~/Library/Application Support/arch-cli/config.toml`
+- Windows: `C:\Users\<User>\AppData\Roaming\arch-cli\config.toml`
 
 If the configuration file is not found, a default configuration file will be created automatically using the `config.default.toml` template which can then be renamed to `config.toml` if you don't wish to create your own.
 
@@ -69,75 +119,15 @@ key_path = "src/app/keys/program.json"
 
 By following these steps, you ensure that your CLI can be run from any location and still correctly locate and load its configuration files on Windows, macOS, and Linux.
 
-### Initialize
-
-The `init` subcommand sets up a new Arch Network project with the necessary folder structure, boilerplate code, and Docker configurations.
-
-We'll invoke this and setup a new project.
-
-```bash
-arch-cli init
-```
-
-If everything initializes smoothly, you'll be presented with output similar to the following:
-```bash
-Welcome to the Arch Network CLI
-  → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
-Initializing new Arch Network app...
-Checking required dependencies...
-  → Checking docker... ✓
-    Detected version: Docker version 27.2.0, build 3ab4256958
-  → Checking docker-compose... ✓
-    Detected version: Docker Compose version 2.29.2
-  → Checking node... ✓
-    Detected version: v22.8.0
-  → Checking solana... ✓
-    Detected version: solana-cli 1.18.22 (src:b286211c; feat:4215500110, client:SolanaLabs)
-  → Checking cargo... ✓
-    Detected version: cargo 1.80.1 (376290515 2024-07-16)
-All required dependencies are installed.
-  ✓ Created arch-data directory at "/Users/jr/Library/Application Support/arch-cli/arch-data"
-  ✓ Copied default configuration to "/Users/jr/Library/Application Support/arch-cli/config.toml"
-Building Arch Network program...
-Creating project structure...
-Creating boilerplate files...
-  ℹ Existing program directory found, preserving it
-  ℹ Existing frontend directory found, preserving it
-  ✓ New Arch Network app initialized successfully!
-```
-
-Your project should now have the following structure:
-```bash
-my-arch-project/
-├── src/
-│   └── app/
-│       ├── program/
-│       │   └── src/
-│       │       └── lib.rs
-│       ├── backend/
-│       │   ├── index.ts
-│       │   └── package.json
-│       ├── frontend/
-│       │   ├── index.html
-│       │   ├── index.js
-│       │   ├── package.json
-│       │   └── .env.example
-│       └── keys/
-├── Cargo.toml
-├── config.toml
-├── bitcoin-docker-compose.yml
-└── arch-docker-compose.yml
-```
-
 ### Start the services
 
-Now that the arch-cli is properly configured and we've initialized a new project, our next step will be to start the development cluster which will provision the Arch network nodes, an ordinals indexing service and a block explorer.
+Now that the arch-cli is properly configured, our next step will be to `start` the development cluster which will provision the Arch network stack. 
 
 ```bash
 arch-cli server start
 ```
 
-If everything pulls and builds correctly, you should see something resembling the following in your Docker client logs: 
+If everything pulls and builds correctly, you should see something resembling the following in your logs: 
 ```bash
 Welcome to the Arch Network CLI
   → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
@@ -185,16 +175,21 @@ Checking development server status...
     ✓ validator-2 is running
 ```
 
-We'll reference these later in the book. For now, familiarize yourself with starting and stopping the stack.
+We'll reference these later in the book. For now, familiarize yourself with starting, stopping and viewing the logs from the stack.
 
 ```bash
 arch-cli server stop
 arch-cli server logs [<service>]
 ```
 
-Great, you're ready for hacking!
+Additionally, issuing the `clean` subcommand will remove existing Docker volumes and networks as a convenience.
+```bash
+arch-cli server clean
+```
 
-[arch-cli]: https://github.com/Arch-Network/arch-cli
+[Program-only]: #program-only
+[Complete dApp]: #complete-dapp
+[nodes]: ../concepts/nodes.md
 [arch-docker-compose.yml]: https://github.com/Arch-Network/arch-cli/blob/main/arch-docker-compose.yml
 [bitcoin-docker-compose.yml]: https://github.com/Arch-Network/arch-cli/blob/main/bitcoin-docker-compose.yml
 [btc-rpc-explorer.dockerfile]: https://github.com/Arch-Network/arch-cli/blob/main/btc-rpc-explorer.dockerfile
