@@ -23,7 +23,7 @@ arch-cli validator start [options]
 ```
 
 If everything pulls and builds correctly, you should see something resembling the following in your logs:
-```
+```bash
 Welcome to the Arch Network CLI
   → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
 Starting the local validator...
@@ -36,7 +36,7 @@ arch-cli validator stop
 ```
 
 If everything stops correctly, you should something resembling the following in your logs:
-```
+```bash
 Welcome to the Arch Network CLI
   → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
 Stopping the local validator...
