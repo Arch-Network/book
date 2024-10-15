@@ -63,7 +63,7 @@ arch-cli
 If you'd instead like to create a new project from scratch, the `arch-cli` offers a `project create` directive whereby you can do so.
 
 Simply issue the following command and pass the name of your project in.
-```
+```bash
 arch-cli project create --name my_app
 ```
 
