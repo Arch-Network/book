@@ -81,11 +81,11 @@ You can also specify a custom configuration file location by setting the `ARCH_C
 export ARCH_CLI_CONFIG=/path/to/your/config.toml
 ```
 
-Here's an example configuration:
+Here's the default configuration:
 
 ```toml
 [network]
-type = "development"  # Options: development, testnet, mainnet
+type = "development"
 
 [bitcoin]
 docker_compose_file = "./bitcoin-docker-compose.yml"
@@ -95,26 +95,46 @@ rpc_port = "18443"
 rpc_user = "bitcoin"
 rpc_password = "password"
 rpc_wallet = "devwallet"
+services = ["bitcoin", "electrs", "btc-rpc-explorer"]
+
+[program]
+key_path = "${CONFIG_DIR}/keys/program.json"
+
+[electrs]
+rest_api_port = "3003"
+electrum_port = "60401"
+
+[btc_rpc_explorer]
+port = "3000"
+
+[demo]
+frontend_port = "5173"
+backend_port = "5174"
+
+[indexer]
+port = "5175"
+
+[ord]
+port = "3032"
 
 [arch]
 docker_compose_file = "./arch-docker-compose.yml"
-leader_rpc_endpoint = "http://localhost:8080"
-network_mode = "development"
+network_mode = "localnet"
 rust_log = "info"
 rust_backtrace = "1"
-bootnode_ip = "127.0.0.1"
-leader_p2p_port = "9000"
-leader_rpc_port = "8080"
-validator1_p2p_port = "9001"
-validator1_rpc_port = "8081"
-validator2_p2p_port = "9002"
-validator2_rpc_port = "8082"
-bitcoin_rpc_endpoint = "http://localhost:18443"
+bootnode_ip = "172.30.0.10"
+bootnode_p2p_port = "19001"
+leader_p2p_port = "19002"
+leader_rpc_port = "9002"
+leader_rpc_endpoint = "http://localhost:9002"
+validator1_p2p_port = "19003"
+validator1_rpc_port = "9003"
+validator2_p2p_port = "19004"
+validator2_rpc_port = "9004"
+bitcoin_rpc_endpoint = "bitcoin"
 bitcoin_rpc_wallet = "devwallet"
-replica_count = "3"
-
-[program]
-key_path = "src/app/keys/program.json"
+services = ["bootnode", "leader", "validator-1", "validator-2"]
+replica_count = 2
 ```
 
 By following these steps, you ensure that your CLI can be run from any location and still correctly locate and load its configuration files on Windows, macOS, and Linux.

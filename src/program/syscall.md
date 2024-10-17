@@ -31,6 +31,9 @@ define_syscall!(fn arch_validate_utxo_ownership(utxo: *const UtxoMeta, owner: *c
 // Generates a Bitcoin script public key and copies into memory buffer
 define_syscall!(fn arch_get_account_script_pubkey(script: *mut u8, pubkey: *const Pubkey) -> u64);
 
+// Retrieves the latest Bitcoin block height
+define_syscall!(fn arch_get_bitcoin_block_height() -> u64);
+
 // logs
 
 // Prints the hexidecimal representation of a string slice to stdout

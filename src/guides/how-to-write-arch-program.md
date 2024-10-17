@@ -175,9 +175,9 @@ pub fn process_instruction(
 }
 ```
 
-Now that we're inside the function scope, first, we check that there are a sufficient number of accounts passed into our program. 
+Now that we're inside the function scope, first, we check that there are a sufficient number of accounts passed into our program.
 
-We then iterate over the accounts passed in to the program and retrieve the first one.
+We perform a [syscall] to retrieve the latest Bitcoin block height (this can be omitted though is helpful for debugging) and then iterate over the accounts passed in to the program and retrieve the first one.
 ```rust,ignore
 if accounts.len() != 2 {
     return Err(ProgramError::Custom(501));
@@ -194,7 +194,7 @@ msg!("account {:?}", account);
 msg!("account2 {:?}", account2);
 ```
 
-Next, we perform a check to ensure that the UTXO passed into the account is not the default value of a 36-zero byte slice (ie, an empty UTXO). This step is done to ensure that the UTXO is properly unititialized before continuing.
+Next, we perform a check to ensure that the [UTXO] passed into the [account] is not the default value of a 36-zero byte slice. This step is done to ensure that the [UTXO] is properly unititialized before continuing.
 ```rust,ignore
 if account2.utxo.clone() != UtxoMeta::from_slice(&[0; 36]) {
     msg!("UTXO {:?}", account2.utxo.clone());
@@ -215,7 +215,7 @@ In this step, we will use the [Bitcoin crate] to further deserialize a reference
 let fees_tx: Transaction = bitcoin::consensus::deserialize(&params.tx_hex).unwrap();
 ```
 
->NOTE: `tx_hex` represents a serialized Bitcoin UTXO that is used to pay the fee for updating state/executing a transaction; it is a fully-signed Bitcoin UTXO that gets sent directly to Arch. The Arch leader node then submits this fee UTXO alongside the other state/asset UTXOs as a result of the program execution.
+> Note: `tx_hex` represents a serialized Bitcoin UTXO that is used to pay the fee for updating state/executing a transaction; it is a fully-signed Bitcoin UTXO that gets sent directly to Arch. The Arch leader node then submits this fee UTXO alongside the other state/asset UTXOs as a result of the program execution.
 >
 > Including `tx_hex` is a convention, not a requirement.
 > 
@@ -318,6 +318,7 @@ Congratulations, you've walked through constructing the our `helloworld` program
 [UTXO]: ../program/utxo.md
 [account]: ../program/account.md
 [program]: ../program/program.md
+[syscall]: ../program/syscall.md
 [instruction]: ../program/instructions-and-messages.md#instructions
 [pubkey]: ../program/pubkey.md
 [arch-cli]: https://github.com/Arch-Network/arch-cli
