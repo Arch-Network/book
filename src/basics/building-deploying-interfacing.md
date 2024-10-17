@@ -1,13 +1,13 @@
 # Building, deploying and interfacing
 
-Now that all of the dependencies are installed and we have successfully chosen a [development track], we can finally compile our program, deploy and interact with it.
+Now that all of the dependencies are installed and we have successfully chosen a [development track], we can finally discuss program development, including compiling, deploying and interacting with it.
 
-The `arch-cli` comes with an example dapp called GraffitiWall; each message written to the wall contains a timestamp, name and note.
+The `arch-cli` comes with a demo dapp called [GraffitiWall]; each message written to the wall contains a timestamp, name and note.
+
+Find the program's logic within the `src/app/program/src/lib.rs` file.
 
 ### Build
 Fortunately, the program was already compiled during the [initialize] step. If we wish to modify the program further before deploying, we would need to rebuild the program manually. If you do not wish to modify the program, skip this step and move to [Deploy].
-
-Find the program's logic within the `src/app/program/src/lib.rs` file.
 
 Access the `src/app/program/src` folder:
 ```bash
@@ -118,15 +118,16 @@ Frontend application started successfully!
 Press Ctrl+C to stop the server and exit.
 ```
 
-If the window doesn't pop up, navigate to: http://localhost:5173 to interface with your deployed program via the web frontend.
+If the window doesn't pop up, navigate to: [http://localhost:5173](http://localhost:5173) to interface with your deployed program via the web frontend.
 
 🎨
 
 Now you're ready to tag the wall!
 
-[development track]: ./starting-stack.md#choose-a-track
-[initialize]: setting-up-a-project.md#initialize
+[development track]: ../getting-started/starting-stack.md#choose-a-track
+[GraffitiWall]: https://github.com/Arch-Network/arch-cli/blob/main/src/app/program/src/lib.rs
+[initialize]: ../getting-started/setting-up-a-project.md#initialize
 [eBPF]: https://ebpf.io/
 [Deploy]: #deploy
-[requirements]: ./requirements.md
+[requirements]: ../getting-started/requirements.md
 [Discord dev-chat]: https://discord.com/channels/1241112027963986001/1270921925991989268

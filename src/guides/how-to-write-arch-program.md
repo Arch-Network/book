@@ -9,7 +9,7 @@ Table of Contents:
 
 [The Arch Book] can serve as a reference for concepts introduced here as well as our [docs] for high-level architecture diagrams and comparisons to other similar projects building on Bitcoin.
 
-For this guide, we will be walking through an example program: `helloworld`.
+For this guide, we will be walking through an example program: helloworld.
 
 ## Program
 
