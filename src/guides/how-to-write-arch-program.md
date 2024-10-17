@@ -159,7 +159,7 @@ entrypoint!(process_instruction);
 
 ## Handler
 
-The handler (`process_instruction`) parameters must match what is required for a transaction [instruction].
+Each handler function's parameters must match what is required for a transaction [instruction].
 
 - `program_id` - Unique identifier of the currently executing program.
 - `accounts` - Slice reference containing accounts needed to execute an instruction.
@@ -175,7 +175,7 @@ pub fn process_instruction(
 }
 ```
 
-Now that we're inside the function scope, first, we check that there are a sufficient number of accounts passed into our program.
+Now that we're inside the function scope, first, we check that there are a sufficient number of accounts are passed into our program. 
 
 We perform a [syscall] to retrieve the latest Bitcoin block height (this can be omitted though is helpful for debugging) and then iterate over the accounts passed in to the program and retrieve the first one.
 ```rust,ignore
@@ -219,7 +219,7 @@ let fees_tx: Transaction = bitcoin::consensus::deserialize(&params.tx_hex).unwra
 >
 > Including `tx_hex` is a convention, not a requirement.
 > 
-> Program invocation can be paid for by another source, although in the majority of cases it is most practical to have caller be prepared to pay this.
+> Program invocation can be paid for by another source, although in the majority of cases it is most practical to have the caller be prepared to pay this.
 
 We'll create our new message with the name we wish to store.
 ```rust,ignore
