@@ -280,7 +280,7 @@ let mut tx = Transaction {
 ```
 
 We then modify the previously initialized [Bitcoin transaction] by updating `input` and `output` fields with the [UTXO] data of the account, including the `fees_tx` that is needed to pay for the Bitcoin transaction.
-```
+```rust,ignore
 add_state_transition(&mut tx, account);
 tx.input.push(fees_tx.input[0].clone());
 ```
