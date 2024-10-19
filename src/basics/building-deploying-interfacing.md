@@ -7,7 +7,7 @@ The `arch-cli` comes with a demo dapp called [GraffitiWall]; each message writte
 Find the program's logic within the `src/app/program/src/lib.rs` file.
 
 ### Build
-Fortunately, the program was already compiled during the [initialize] step. If we wish to modify the program further before deploying, we would need to rebuild the program manually. If you do not wish to modify the program, skip this step and move to [Deploy].
+In order to compile the program, we'll make use of the `cargo-build-sbf` a binary, a tool that comes with the [Solana-CLI] that installs the toolchain needed to produce Executable and Linkable Format (ELF) files which consist of [eBPF] bytecode.
 
 Access the `src/app/program/src` folder:
 ```bash
@@ -18,8 +18,6 @@ Build the program
 ```bash
 cargo-build-sbf
 ```
-
-This step will compile the example program into a [eBPF] ELF file, the executable format expected by the Arch VM.
 
 You will find the generated shared object file at: `./target/deploy/arch_network_app.so`
 
@@ -77,9 +75,9 @@ Obtain the Program ID from the deployment step output and use it within this com
 arch-cli account create --name graffiti --program-id 3688ef8de06d56e32a765243e900875c4fefc6aa9c83dfbc2643f661c5b4982e
 ```
 
-### Start the front-end application
+### Start the demo application
 ```bash
-arch-cli frontend start
+arch-cli demo start
 ```
 
 Output:
@@ -126,8 +124,7 @@ Now you're ready to tag the wall!
 
 [development track]: ../getting-started/starting-stack.md#choose-a-track
 [GraffitiWall]: https://github.com/Arch-Network/arch-cli/blob/main/src/app/program/src/lib.rs
-[initialize]: ../getting-started/setting-up-a-project.md#initialize
+[Solana-CLI]: ../getting-started/requirements.md#install-solana-cli
 [eBPF]: https://ebpf.io/
-[Deploy]: #deploy
 [requirements]: ../getting-started/requirements.md
 [Discord dev-chat]: https://discord.com/channels/1241112027963986001/1270921925991989268

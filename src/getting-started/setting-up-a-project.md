@@ -14,7 +14,9 @@ arch-cli init
 If everything initializes smoothly, you'll be presented with output similar to the following:
 ```bash
 Welcome to the Arch Network CLI
+Loading config for network: development
   → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
+  ✓ Loaded network-specific configuration for development
 Initializing new Arch Network app...
 Checking required dependencies...
   → Checking docker... ✓
@@ -31,49 +33,17 @@ All required dependencies are installed.
 Where would you like to create your Arch Network project?
 Default: /Users/jr/Documents/ArchNetwork
 Project directory (press Enter for default):
-  ℹ Directory does not exist. Do you want to create it? (Y/n)
+  ⚠ Directory is not empty. Do you want to use this existing project folder? (y/N)
 y
-  ✓ Directory created successfully
-  ✓ Created demo directory at "/Users/jr/Documents/ArchNetwork/demo"
+  ✓ Using existing project folder
   ✓ Created arch-data directory at "/Users/jr/Library/Application Support/arch-cli/arch-data"
   ✓ Copied default configuration to "/Users/jr/Library/Application Support/arch-cli/config.toml"
   ✓ Updated configuration with project directory
-  ✓ Created demo directory at "/Users/jr/Documents/ArchNetwork/demo"
-Copying project files...
- Current directory: "/Users/jr/rust/arch/arch-cli"
-  ✓ Copied project files to demo directory
-Copying program folder...
-  ✓ Copied program folder to demo directory
-Building Arch Network program...
-  ✓ Arch Network program built successfully
   ✓ New Arch Network app initialized successfully!
 ```
 
-Your project should now have the following structure:
-```bash
-arch-cli
-├── src/
-│   └── app/
-│       ├── program/
-│       │   └── src/
-│       │       └── lib.rs
-│       ├── backend/
-│       │   ├── index.ts
-│       │   └── package.json
-│       ├── frontend/
-│       │   ├── index.html
-│       │   ├── index.js
-│       │   ├── package.json
-│       │   └── .env.example
-│       └── keys/
-├── Cargo.toml
-├── config.toml
-├── bitcoin-docker-compose.yml
-└── arch-docker-compose.yml
-```
-
 ## Create a new project
-If you'd instead like to create a new project from scratch, the `arch-cli` offers a `project create` directive whereby you can do so.
+To create a new project, the `arch-cli` offers a `project create` directive that will setup a new project directory in the location set in the `config.toml`.
 
 Simply issue the following command and pass the name of your project in:
 ```bash
@@ -89,6 +59,8 @@ Creating a new project...
   ✓ Created project directory at "/Users/jr/Documents/ArchNetwork/my_app"
 ```
 
-With this, you'll be able to begin modifying your program's business logic. In the next step you'll learn to build, deploy and interact with a program depending on your chosen [development track] setup.
+With this, you'll be able to manage all of the code for your app, including your program's business logic and front-end code.
+
+Now that everything is configured, it's time learn how to build, deploy and interact with a program depending on your chosen [development track] setup.
 
 [development track]: ./starting-stack.md#choose-a-track

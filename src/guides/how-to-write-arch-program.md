@@ -307,13 +307,13 @@ set_transaction_to_sign(accounts, tx_to_sign);
 
 Congratulations, you've walked through constructing the our `helloworld` program. In a future guide, we'll walk you through how to test the logic of your program.
 
-<!-- Internal -->
+<!-- INTERNAL -->
 [Program]: #program
 [Imports]: #imports
 [Entrypoint]: #entrypoint
 [Handler]: #handler
 
-<!-- External -->
+<!-- EXTERNAL -->
 [docs]: https://docs.arch.network
 [UTXO]: ../program/utxo.md
 [account]: ../program/account.md
