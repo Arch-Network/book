@@ -1,6 +1,10 @@
 # `resetNetwork`
 
-**Description:** Resets the network state.
+**Description:** Resets the network state. 
+
+> ⚠️ Note: 
+>
+> _This method is only callable by the Leader node, which for the time being will be Arch. This method is used for internal debugging purposes as we get the Testnet operational._
 
 **Parameters:**
     None.
