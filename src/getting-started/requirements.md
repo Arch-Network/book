@@ -2,12 +2,12 @@
 
 The following dependencies are needed to proceed. Install these before moving to the next step.
 
-- [Rust](#install-rust)
-- [Docker](#install-docker)
-- [A C++ Compiler (gcc/clang)](#install-c-compiler)
-- [Node.js v19+](#install-nodejs)
-- [Solana CLI](#install-solana-cli)
-- [Arch-cli](#clone-the-arch-cli-repository)
+- [Rust]
+- [Docker]
+- [C++ Compiler (gcc/clang)]
+- [Node.js v19+]
+- [Solana CLI]
+- [Arch-cli]
 
 ### Install Rust
 First, to work with Arch programs you will need Rust installed on your machine. If you don't have it, you can find installation instructions on [the Rust website].
@@ -88,6 +88,15 @@ cd arch-cli
 cargo install --path .
 ```
 
+<!-- INTERNAL -->
+[Rust]: #install-rust
+[Docker]: #install-docker
+[C++ Compiler (gcc/clang)]: #install-c-compiler
+[Node.js v19+]: #install-nodejs
+[Solana CLI]: #install-solana-cli
+[Arch-cli]: #clone-and-install-the-arch-cli
+
+<!-- EXTERNAL -->
 [GCC]: https://gcc.gnu.org/
 [gcc-multilib]: https://packages.debian.org/sid/gcc-multilib
 [npm]: https://github.com/npm/cli
