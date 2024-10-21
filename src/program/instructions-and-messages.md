@@ -31,6 +31,6 @@ pub struct Message {
 [program]: ./program.md
 [accounts]: ./account.md
 [instruction]: #instructions
-[message.rs]: https://github.com/Arch-Network/arch-local/blob/main/program/src/message.rs
-[instruction.rs]: https://github.com/Arch-Network/arch-local/blob/main/program/src/instruction.rs
+[message.rs]: https://github.com/Arch-Network/arch-cli/blob/main/program/src/message.rs
+[instruction.rs]: https://github.com/Arch-Network/arch-cli/blob/main/program/src/instruction.rs
 
