@@ -25,10 +25,7 @@ jobs:
       - name: Setup mdBook
         uses: peaceiris/actions-mdbook@v2
         with:
-          mdbook-version: 'latest'
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v5
+          mdbook-version: ${{ env.MDBOOK_VERSION }}
       - name: Build with mdBook
         run: mdbook build
       - name: Inject Static Pages
