@@ -84,21 +84,13 @@ replica_count = 2
 
 By following these steps, you ensure that your CLI can be run from any location and still correctly locate and load its configuration files on Windows, macOS, and Linux.
 
-## Choose a track
-There are 2 tracks that developers can take when using `arch-cli`:
-1. [Program-only]
-  - A single-node execution environment for testing program logic.
-2. [Complete dApp]
-  - A complete, multi-node execution environment with consensus for testing a full-stack web dApp.
+## Start the validator
 
-_If you aren't sure where to start, stick with [Program-only]!_
-
-### Program-only
 This spins up a lightweight validator that effectively serves the purpose of testing program deployment and functionality by simulating a single-node blockchain environment locally.
-  
-This is much less resource intensive for your machine and includes only the VM component needed to test business logic.
 
-> Tip: We recommend starting here to begin development, test and refine your program logic before moving to the [Complete dApp] step.
+This setup is much less resource intensive than running the [Self-contained Arch Network] and includes only the VM component needed to test business logic.
+
+> Note: If you are looking to work on core components of Arch Network or would like to understand how Arch validators communicate with one another, we recommend looking into the [Self-contained Arch Network] setup.
 
 The following commands will assist you in provisioning the local validator. Simply `start` the validator to begin testing your program logic.
 
@@ -127,94 +119,6 @@ Stopping the local validator...
 Local validator stopped successfully!
 ```
 
-### Complete dApp
-This spins up a local Arch network complete with 3 network [nodes], a front-end and backend server for your dApp, as well as an indexer, a block explorer and a Bitcoin node!
-  
-_This is more resource intensive for your machine but includes all of the components that the main Arch network comprises of._
-
-> Tip: We recommend moving here as a next-step after successfully deploying and testing your business logic within the [Program-only] track.
-
-Within `arch-cli`, there exist 3 configuration files needed to provision the various services:
-1. [arch-docker-compose.yml]
-2. [bitcoin-docker-compose.yml]
-3. [btc-rpc-explorer.dockerfile]
-
-These files comprise the pre-configured, multi-container definition of the components required for standing up a local development environment.
-
-#### Start the services
-
-Now that the arch-cli is properly configured, our next step will be to `start` the development cluster which will provision the Arch network stack. 
-
-```bash
-arch-cli server start
-```
-
-If everything pulls and builds correctly, you should see something resembling the following in your logs: 
-```bash
-Welcome to the Arch Network CLI
-  → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
-Starting the development server...
-  ✓ Bitcoin started.
-[+] Running 10/10
- ✔ leader Pulled 6.7s
- ✔ validator-2 Pulled 6.7s
- ✔ validator-1 Pulled 6.7s
- ✔ init Pulled 6.7s
- ✔ bootnode Pulled 6.6s
-[+] Running 7/7
- ✔ Network arch-cli_arch-network Created 0.0s
- ✔ Network arch-cli_default Created 0.0s
- ✔ Container arch-cli-init-1  Started 0.5s
- ✔ Container arch-cli-bootnode-1  Started 0.3s
- ✔ Container arch-cli-leader-1  Started 0.4s
- ✔ Container arch-cli-validator-1-1  Started 0.5s
- ✔ Container arch-cli-validator-2-1  Started 0.6s
-  ✓ Development server started successfully
-```
-
-#### Manage the services
-
-The following commands can be used stop, check the status of, and view logs for the development environment, including the Bitcoin regtest network and Arch Network nodes.
-
-```bash
-arch-cli server status
-```
-
-The following is an example output from querying the server status.
-
-```bash
-Welcome to the Arch Network CLI
-  → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
-Checking development server status...
-  → Checking Bitcoin regtest network status...
-    ✓ bitcoin is running
-    ✓ electrs is running
-    ✓ btc-rpc-explorer is running
-  → Checking Arch Network nodes status...
-    ✓ bootnode is running
-    ✓ leader is running
-    ✓ validator-1 is running
-    ✓ validator-2 is running
-```
-
-We'll reference these later in the book. For now, familiarize yourself with starting, stopping and viewing the logs from the stack.
-
-```bash
-arch-cli server stop
-arch-cli server logs [<service>]
-```
-
-Additionally, issuing the `clean` subcommand will remove existing Docker volumes and networks as a convenience.
-```bash
-arch-cli server clean
-```
-
-<!-- INTERNAL -->
-[Program-only]: #program-only
-[Complete dApp]: #complete-dapp
-
-<!-- EXTERNAL -->
 [nodes]: ../concepts/nodes.md
-[arch-docker-compose.yml]: https://github.com/Arch-Network/arch-cli/blob/main/arch-docker-compose.yml
-[bitcoin-docker-compose.yml]: https://github.com/Arch-Network/arch-cli/blob/main/bitcoin-docker-compose.yml
-[btc-rpc-explorer.dockerfile]: https://github.com/Arch-Network/arch-cli/blob/main/btc-rpc-explorer.dockerfile
+[Self-contained Arch Network]: https://github.com/arch-Network/arch-cli?tab=readme-ov-file#manage-a-self-contained-arch-network-locally-advanced
+

@@ -61,6 +61,4 @@ Creating a new project...
 
 With this, you'll be able to manage all of the code for your app, including your program's business logic and front-end code.
 
-Now that everything is configured, it's time learn how to build, deploy and interact with a program depending on your chosen [development track] setup.
-
-[development track]: ./starting-stack.md#choose-a-track
+Now that everything is configured, it's time learn how to build, deploy and interact with a program.
