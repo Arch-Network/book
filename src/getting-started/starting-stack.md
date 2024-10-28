@@ -87,10 +87,10 @@ By following these steps, you ensure that your CLI can be run from any location 
 ## Start the validator
 
 This spins up a lightweight validator that effectively serves the purpose of testing program deployment and functionality by simulating a single-node blockchain environment locally.
-  
-This is much less resource intensive for your machine and includes only the VM component needed to test business logic.
 
-> Tip: We recommend starting here to begin development, test and refine your program logic before moving to the [Complete dApp] step.
+This setup is much less resource intensive than running the [Self-contained Arch Network] and includes only the VM component needed to test business logic.
+
+> Note: If you are looking to work on core components of Arch Network or would like to understand how Arch validators communicate with one another, we recommend looking into the [Self-contained Arch Network] setup.
 
 The following commands will assist you in provisioning the local validator. Simply `start` the validator to begin testing your program logic.
 
@@ -120,3 +120,5 @@ Local validator stopped successfully!
 ```
 
 [nodes]: ../concepts/nodes.md
+[Self-contained Arch Network]: https://github.com/arch-Network/arch-cli?tab=readme-ov-file#manage-a-self-contained-arch-network-locally-advanced
+
