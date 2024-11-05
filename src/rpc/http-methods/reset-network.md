@@ -1,10 +1,12 @@
 # `resetNetwork`
 
-**Description:** Resets the network state. 
-
 > ⚠️ Note: 
 >
-> _This method is only callable by the Leader node, which for the time being will be Arch. This method is used for internal debugging purposes as we get the Testnet operational._
+> _This method is only callable by the Leader node, which for the time being will be Arch. This method is used for internal debugging purposes as we get the Testnet operational._ 
+> 
+> This endpoint is also not available for local validators.
+
+**Description:** Resets the network state. 
 
 **Parameters:**
     None.

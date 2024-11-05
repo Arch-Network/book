@@ -1,5 +1,7 @@
 # `startDkg`
 
+> ️️⚠️ Note: This endpoint is not available for local validators.
+
 **Description:** Initiates the Distributed Key Generation (DKG) process.
 
 **Method:** `POST`

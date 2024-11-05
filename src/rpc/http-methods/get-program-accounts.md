@@ -1,5 +1,7 @@
 # `getProgramAccounts`
 
+> ⚠️ Note: This endpoint is not available for local validators.
+
 Fetches all accounts owned by the specified program ID.
 
 **Parameters:** `program_id: <byte_array>` - Pubkey of the program to query, as an array of 32 bytes.
