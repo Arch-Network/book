@@ -1,4 +1,4 @@
-# AssignOwnership
+# `AssignOwnership`
 
 Sets a [Pubkey] to be the owner of an account.
 

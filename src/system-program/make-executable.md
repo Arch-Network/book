@@ -1,4 +1,4 @@
-# MakeExecutable
+# `MakeExecutable`
 
 Sets an account as executable, effectively marking it as a [Program].
 

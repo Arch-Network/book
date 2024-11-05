@@ -1,4 +1,4 @@
-# Unknown
+# `Unknown`
 
 Placeholder for handling an unknown instruction.
 

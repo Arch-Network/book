@@ -1,4 +1,4 @@
-# WriteBytes
+# `WriteBytes`
 
 Writes bytes to an array.
 
