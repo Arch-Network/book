@@ -1,7 +1,5 @@
 # How to write an oracle program
 
-# Oracle
-
 This guide walks through the innerworkings of an oracle program as well as details how oracle data can be utilized by other programs on Arch Network.
 
 Table of Contents:
@@ -26,7 +24,7 @@ Two important aspects of understanding how this oracle example is implemented wi
 
 ### Example Program
 An example oracle program is found below:
-```rust
+```rust,ignore
 use arch_program::{
     account::AccountInfo,
     entrypoint,
@@ -99,7 +97,7 @@ If you haven't already read [How to write an Arch program], we recommend startin
 
 We'll look closely at the logic block contained within the `update_data` [handler].
 
-```rust
+```rust,ignore
 pub fn update_data(
     program_id: &Pubkey,
     accounts: &[AccountInfo],
@@ -119,7 +117,7 @@ First, we'll iterate over the accounts that get passed into the function, which 
 
 We then assert that the oracle state account has the appropriate authority to be written to and update what it stores within its data field. Additionally, we assert that the data we wish to update the account with is at least a certain number of bytes.
 
-```rust
+```rust,ignore
 let data_len = oracle_account.data.try_borrow().unwrap().len();
 if instruction_data.len() > data_len {
     oracle_account.realloc(instruction_data.len(), true)?;
@@ -128,7 +126,7 @@ if instruction_data.len() > data_len {
 
 Next, we calculate the length of the new data that we are looking to store in the account and reallocate memory to the account if the new data is larger than the data currently existing within the account. This step is important for ensuring that there is no remaining, stale data stored in the account before adding new data to it.
 
-```rust
+```rust,ignore
 oracle_account
     .data
     .try_borrow_mut()
@@ -203,7 +201,7 @@ As an example, we'll fetch Bitcoin fees from the mempool.space API and store thi
 
 > Note: The below is a rust program and is not an Arch program. This call to update the oracle state account can be written in any programming language as it is simply an RPC call. For sake of continuity, we're using rust along with methods from the `common` crate.
 
-```rust
+```rust,ignore
 let mut old_feerate = 0;
 
 let body: Value = reqwest::blocking::get("https://mempool.space/api/v1/fees/recommended").unwrap().json().unwrap();
@@ -238,7 +236,7 @@ Below is an example of a different program (we'll call this app-program) that wo
 
 Essentially, what happens here is that when we pass an instruction into our app-program, we must also include the oracle state account alongside any other account that we need for the app-program. In this way, the oracle state account is now in-scope and its data can be read from.
 
-```rust
+```rust,ignore
 pub fn process_instruction(
     _program_id: &Pubkey,
     accounts: &[AccountInfo],
