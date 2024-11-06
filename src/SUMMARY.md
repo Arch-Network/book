@@ -16,6 +16,7 @@
     - [Program interaction](basics/interaction.md)
 - [Guides](guides/guides.md)
     - [How to write an Arch program](guides/how-to-write-arch-program.md)
+    - [How to write an oracle program](guides/how-to-write-oracle-program.md)
 
 # Reference
 - [Program](program/program.md)
