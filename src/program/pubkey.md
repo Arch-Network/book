@@ -8,5 +8,4 @@ pub struct Pubkey([u8; 32]);
 ```
 [pubkey.rs]
 
-[pubkey.rs]: https://github.com/Arch-Network/arch-cli/blob/main/program/src/pubkey.rs
-
+[pubkey.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/program/src/pubkey.rs

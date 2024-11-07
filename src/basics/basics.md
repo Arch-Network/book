@@ -5,5 +5,4 @@ Now that we've successfully compiled a program and executed it within the contex
 In this section, we'll guide you through the basics of writing functions and handling input parameters effectively within a demo program: [GraffitiWall].
 
 [program]: ../program/program.md
-[GraffitiWall]: https://github.com/Arch-Network/arch-cli/blob/main/src/app/program/src/lib.rs
-
+[GraffitiWall]: https://github.com/Arch-Network/arch-cli/blob/main/templates/demo/app/program/src/lib.rs

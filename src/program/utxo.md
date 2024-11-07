@@ -10,5 +10,4 @@ pub struct UtxoMeta([u8; 36]);
 [utxo.rs]
 
 [UTXO]: https://learnmeabitcoin.com/technical/transaction/utxo/
-[utxo.rs]: https://github.com/Arch-Network/arch-cli/blob/main/program/src/utxo.rs
-
+[utxo.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/program/src/utxo.rs
