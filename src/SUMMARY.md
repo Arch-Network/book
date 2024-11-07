@@ -7,11 +7,12 @@
     - [Requirements](getting-started/requirements.md)
     - [Starting the stack](getting-started/starting-stack.md)
         - [Nodes](concepts/nodes.md)
-    - [Compiling and executing](getting-started/compiling-executing.md)
+    - [Setting up a project](getting-started/setting-up-a-project.md)
     - [Resources](getting-started/resources.md)
 
 # Programs and beyond
 - [Basics](basics/basics.md)
+    - [Building, deploying and interfacing](basics/building-deploying-interfacing.md)
     - [Program interaction](basics/interaction.md)
 - [Guides](guides/guides.md)
     - [How to write an Arch program](guides/how-to-write-arch-program.md)
@@ -45,3 +46,9 @@
         - [resetNetwork](rpc/http-methods/reset-network.md)
     - [Deprecated Methods](rpc/deprecated-methods.md)
         - [getAccountInfo](rpc/deprecated-methods/get-account-info.md)
+- [System Program](system-program/system-program.md)
+    - [CreateAccount](system-program/create-account.md)
+    - [WriteBytes](system-program/write-bytes.md)
+    - [MakeExecutable](system-program/make-executable.md)
+    - [AssignOwnership](system-program/assign-ownership.md)
+    - [Unknown](system-program/unknown.md)

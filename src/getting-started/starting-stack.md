@@ -1,8 +1,8 @@
 # Starting the stack
 
-Within [arch-local] there is a [compose.yaml] file. This is a descriptor for the pre-configured multi-container definition of the components required for standing up a local development environment.
+## Configure
 
-### Configure
+### Docker
 
 First, ensure that your Docker client is up-to-date and that the `DOCKER_DEFAULT_PLATFORM` environment variable is properly set (within your `~/.bashrc` or shell of choice) to your machine's architecture.
 
@@ -11,38 +11,114 @@ First, ensure that your Docker client is up-to-date and that the `DOCKER_DEFAULT
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 ```
 
-**NOTE:** Additionally, if you have an Intel chip (ie, x86_64), you may encounter the following error when executing `docker compose up`; we recommend removing the `--platform=linux/arm64` flag within [Line 1: Dockerfile]:
+### `Config.toml`
+
+Before using `arch-cli`, you need to set up a `config.toml` file. By default, the CLI will look for this file in the following locations:
+- Linux: `~/.config/arch-cli/config.toml`
+- macOS: `~/Library/Application Support/arch-cli/config.toml`
+- Windows: `C:\Users\<User>\AppData\Roaming\arch-cli\config.toml`
+
+If the configuration file is not found, a default configuration file will be created automatically using the `config.default.toml` template which can then be renamed to `config.toml` if you don't wish to create your own.
+
+You can also specify a custom configuration file location by setting the `ARCH_CLI_CONFIG` environment variable:
 
 ```bash
-=> ERROR [init-bootnode 2/3] RUN set -ex && apt-get update && apt-get install -qq --no-install-recommends curl jq               0.6s
-------
- > [init-bootnode 2/3] RUN set -ex && apt-get update && apt-get install -qq --no-install-recommends curl jq:
-0.314 exec /bin/sh: exec format error
-------
-failed to solve: process "/bin/sh -c set -ex \t&& apt-get update \t&& apt-get install -qq --no-install-recommends curl jq" did not complete successfully: exit code: 1
+export ARCH_CLI_CONFIG=/path/to/your/config.toml
 ```
 
-### Start
-Once Docker is up and running, start the stack by issuing the following command:
+Here's the default configuration:
+
+```toml
+[network]
+type = "development"
+
+[bitcoin]
+docker_compose_file = "./bitcoin-docker-compose.yml"
+network = "regtest"
+rpc_endpoint = "http://localhost:18443"
+rpc_port = "18443"
+rpc_user = "bitcoin"
+rpc_password = "password"
+rpc_wallet = "devwallet"
+services = ["bitcoin", "electrs", "btc-rpc-explorer"]
+
+[program]
+key_path = "${CONFIG_DIR}/keys/program.json"
+
+[electrs]
+rest_api_port = "3003"
+electrum_port = "60401"
+
+[btc_rpc_explorer]
+port = "3000"
+
+[demo]
+frontend_port = "5173"
+backend_port = "5174"
+
+[indexer]
+port = "5175"
+
+[ord]
+port = "3032"
+
+[arch]
+docker_compose_file = "./arch-docker-compose.yml"
+network_mode = "localnet"
+rust_log = "info"
+rust_backtrace = "1"
+bootnode_ip = "172.30.0.10"
+bootnode_p2p_port = "19001"
+leader_p2p_port = "19002"
+leader_rpc_port = "9002"
+leader_rpc_endpoint = "http://localhost:9002"
+validator1_p2p_port = "19003"
+validator1_rpc_port = "9003"
+validator2_p2p_port = "19004"
+validator2_rpc_port = "9004"
+bitcoin_rpc_endpoint = "bitcoin"
+bitcoin_rpc_wallet = "devwallet"
+services = ["bootnode", "leader", "validator-1", "validator-2"]
+replica_count = 2
+```
+
+By following these steps, you ensure that your CLI can be run from any location and still correctly locate and load its configuration files on Windows, macOS, and Linux.
+
+## Start the validator
+
+This spins up a lightweight validator that effectively serves the purpose of testing program deployment and functionality by simulating a single-node blockchain environment locally.
+
+This setup is much less resource intensive than running the [Self-contained Arch Network] and includes only the VM component needed to test business logic.
+
+> Note: If you are looking to work on core components of Arch Network or would like to understand how Arch validators communicate with one another, we recommend looking into the [Self-contained Arch Network] setup.
+
+The following commands will assist you in provisioning the local validator. Simply `start` the validator to begin testing your program logic.
+
 ```bash
-docker compose up
+arch-cli validator start [options]
 ```
 
-If everything pulls and builds correctly, you should see something resembling the following in your Docker client logs: 
+If everything pulls and builds correctly, you should see something resembling the following in your logs:
 ```bash
-leader-1       | 2024-08-22T00:22:08.858084Z  INFO validator::roast::roast_leader: validator/src/roast/roast_leader.rs:54: Starting a new session with id 2
-leader-1       | 2024-08-22T00:22:08.861441Z  INFO validator::roast::roast_entry_generation: validator/src/roast/roast_entry_generation.rs:65: Generated 1 block commitments for block id #3c2360fc4938d5f08a2ab8b0bc15f5ee54b42dc1cd61a8b906952e068f2a92d9 session #2
-validator-2-1  | 2024-08-22T00:22:08.863250Z  INFO validator::roast::roast_entry_generation: validator/src/roast/roast_entry_generation.rs:65: Generated 1 block commitments for block id #3c2360fc4938d5f08a2ab8b0bc15f5ee54b42dc1cd61a8b906952e068f2a92d9 session #1
-leader-1       | 2024-08-22T00:22:08.870662Z  INFO validator::roast::roast_leader: validator/src/roast/roast_leader.rs:152: Session 1 is ready for aggregation
-validator-1-1  | 2024-08-22T00:22:08.870958Z  INFO validator::roast::roast_entry_generation: validator/src/roast/roast_entry_generation.rs:65: Generated 1 block commitments for block id #3c2360fc4938d5f08a2ab8b0bc15f5ee54b42dc1cd61a8b906952e068f2a92d9 session #2
-leader-1       | 2024-08-22T00:22:08.874029Z  INFO validator::roast::roast_leader: validator/src/roast/roast_leader.rs:233: Successfully finished signatures in session 1
-leader-1       | 2024-08-22T00:22:08.874064Z  INFO validator::roast::roast_verification: validator/src/roast/roast_verification.rs:199: Execution time for verify_and_prepare_block: 1.4333e-5 seconds
-leader-1       | 2024-08-22T00:22:08.874071Z  INFO validator::utils: validator/src/utils.rs:320: Execution time for submit_block_to_btc: 2.1834e-5 seconds
-leader-1       | 2024-08-22T00:22:08.875352Z  INFO validator::roast::roast_verification: validator/src/roast/roast_verification.rs:308: Successfully verified the block #3c2360fc4938d5f08a2ab8b0bc15f5ee54b42dc1cd61a8b906952e068f2a92d9 signature !
-leader-1       | 2024-08-22T00:22:08.875367Z  INFO validator::roast::roast_block_result: validator/src/roast/roast_block_result.rs:69: 0 Transactions were submitted to btc network : []
-leader-1       | 2024-08-22T00:22:08.876336Z  INFO validator::roast::roast_block_result: validator/src/roast/roast_block_result.rs:117: Block #3c2360fc4938d5f08a2ab8b0bc15f5ee54b42dc1cd61a8b906952e068f2a92d9 was finalized in session 1, I got 1 signatures and successfully verified the block signature !
+Welcome to the Arch Network CLI
+  → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
+Starting the local validator...
+Local validator started successfully!
 ```
 
-[arch-local]: https://github.com/Arch-Network/arch-local
-[compose.yaml]: https://github.com/Arch-Network/arch-local/blob/main/compose.yaml
+To stop the validator, simply issue the corresponding `stop` command.
+```bash
+arch-cli validator stop
+```
+
+If everything stops correctly, you should something resembling the following in your logs:
+```bash
+Welcome to the Arch Network CLI
+  → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
+Stopping the local validator...
+Local validator stopped successfully!
+```
+
+[nodes]: ../concepts/nodes.md
+[Self-contained Arch Network]: https://github.com/arch-Network/arch-cli?tab=readme-ov-file#manage-a-self-contained-arch-network-locally-advanced
 
