@@ -123,7 +123,7 @@ If the window doesn't pop up, navigate to: [http://localhost:5173](http://localh
 Now you're ready to tag the wall!
 
 [development track]: ../getting-started/starting-stack.md#choose-a-track
-[GraffitiWall]: https://github.com/Arch-Network/arch-cli/blob/main/src/app/program/src/lib.rs
+[GraffitiWall]: https://github.com/Arch-Network/arch-cli/blob/main/templates/demo/app/program/src/lib.rs
 [Solana-CLI]: ../getting-started/requirements.md#install-solana-cli
 [eBPF]: https://ebpf.io/
 [requirements]: ../getting-started/requirements.md
