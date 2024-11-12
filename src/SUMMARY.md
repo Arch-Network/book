@@ -51,4 +51,3 @@
     - [WriteBytes](system-program/write-bytes.md)
     - [MakeExecutable](system-program/make-executable.md)
     - [AssignOwnership](system-program/assign-ownership.md)
-    - [Unknown](system-program/unknown.md)
