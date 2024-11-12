@@ -2,24 +2,18 @@
 
 Create a new account.
 
-Fields:
-- `utxo`: [UtxoMeta]
+Below, we sign and submit the results of a `SystemInstruction` call to [`new_create_account_instruction`] which creates an account and associates the account with the calling program as the owner.
 
 ```rust,ignore
-InstructionType::CreateAccount(utxo) => {
-    // add check that account is_signer and is_writable
-    if *account.utxo != UtxoMeta::from_slice(&[0; 36]) {
-        // checks that the account utxo has not been initialized otherwise AccountAlreadyInitialized
-        return Err(ProgramError::AccountAlreadyInitialized);
-    }
-    msg!("accounts {:?}", accounts);
-    msg!("utxo {:?}", utxo);
-    if validate_utxo_ownership(&utxo, account.key) {
-        account.set_utxo(&utxo);
-    } else {
-        return Err(ProgramError::IncorrectAuthority);
-    }
-}
+let (txid, _) = sign_and_send_instruction(
+    SystemInstruction::new_create_account_instruction(
+        hex::decode(txid).unwrap().try_into().unwrap(),
+        vout,
+        program_pubkey,
+    ),
+    vec![program_keypair],
+)
+.expect("signing and sending a transaction should not fail");
 ```
 
-[UtxoMeta]: ../program/utxo.md
+[`new_create_account_instruction`]: https://github.com/Arch-Network/arch-cli/blob/main/templates/demo/program/src/system_instruction.rs#L40
