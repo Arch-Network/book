@@ -23,5 +23,6 @@ let instruction = Instruction {
 }
 ```
 
+<!-- Internal -->
 [Pubkey]: ../program/pubkey.md
 [Instruction]: ../program/instructions-and-messages.md#instructions
