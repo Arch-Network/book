@@ -2,9 +2,9 @@
 
 **Index:** `2`
 
-Writes bytes to an array and serializes them.
+Sets the account as executable, marking it as a program.
 
-Below, within the [Instruction] `data` field, we find local variable `instruction_data` that contains `vec![2]`, the correct index for making a call to `SystemProgram::MakeExecutable`. 
+Below, within the [Instruction] `data` field, we find a local variable `instruction_data` that contains `vec![2]`, the correct index for making a call to `SystemProgram::MakeExecutable`. 
 
 ```rust,ignore
 let instruction_data = vec![2];

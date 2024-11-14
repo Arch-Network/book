@@ -4,7 +4,7 @@
 
 Writes bytes to an array and serializes it.
 
-Below, within the [Instruction] `data` field, we find local variable `instruction_data` that contains `vec![1]`, the correct index for making a call to `SystemProgram::WriteBytes` and clones and appends all elements in offset to the `instruction_data` as well.
+Below, within the [Instruction] `data` field, we find a local variable `instruction_data` that contains `vec![1]`, the correct index for making a call to `SystemProgram::WriteBytes`.
 
 ```rust,ignore
 let offset = 4u32.to_le_bytes();

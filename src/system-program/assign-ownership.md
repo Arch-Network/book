@@ -4,7 +4,7 @@
 
 Sets a [Pubkey] to be the owner of an account.
 
-Below, within the [Instruction] `data` field, we find local variable `instruction_data` that contains `vec![3]`, the correct index for making a call to `SystemProgram::AssignOwnership`. 
+Below, within the [Instruction] `data` field, we find a local variable `instruction_data` that contains `vec![3]`, the correct index for making a call to `SystemProgram::AssignOwnership`. 
 
 The `instruction_data` also contains the serialized [Pubkey] of the owner account.
 
