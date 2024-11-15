@@ -16,6 +16,7 @@
     - [Program interaction](basics/interaction.md)
 - [Guides](guides/guides.md)
     - [How to write an Arch program](guides/how-to-write-arch-program.md)
+    - [How to create a fungible token](guides/how-to-create-a-fungible-token.md)
 
 # Reference
 - [Program](program/program.md)
