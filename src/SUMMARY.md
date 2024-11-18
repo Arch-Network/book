@@ -5,9 +5,9 @@
 # Getting started
 - [Setting up the environment](getting-started/environment-setup.md)
     - [Requirements](getting-started/requirements.md)
+    - [Setting up a project](getting-started/setting-up-a-project.md)
     - [Starting the stack](getting-started/starting-stack.md)
         - [Nodes](concepts/nodes.md)
-    - [Setting up a project](getting-started/setting-up-a-project.md)
     - [Resources](getting-started/resources.md)
 
 # Programs and beyond

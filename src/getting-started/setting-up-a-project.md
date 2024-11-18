@@ -56,9 +56,19 @@ Welcome to the Arch Network CLI
   → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
 Creating a new project...
   ✓ Updated configuration with project directory
-  ✓ Created project directory at "/Users/jr/Documents/ArchNetwork/my_app"
+  ✓ Created project directory at "/Users/jr/Documents/ArchNetwork/projects/my_app"
 ```
 
-With this, you'll be able to manage all of the code for your app, including your program's business logic and front-end code.
+You will find all of the necessary crates for development (eg, `/program`, `/sdk` and `/bip322`) available at the root of `/ArchNetwork`. 
 
-Now that everything is configured, it's time learn how to build, deploy and interact with a program.
+In this way, all projects will be able to access the necessary Arch dependencies without needing to manage them within each project.
+
+Example:
+```bash
+ArchNetwork/
+├─ bip322/
+├─ program/
+├─ projects/
+│  ├─ my_app/
+├─ sdk/
+```
