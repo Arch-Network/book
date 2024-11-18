@@ -71,10 +71,10 @@ The Program ID can be thought of as a uniform resource locator (URL) for your de
 ### Create an Account
 An account is used to store the state for your dapp.
 
-Obtain the Program ID from the deployment step output and use it within this command; you may need to replace this if the Program ID you received from the previous step differs from this one.
+Obtain the Program ID from the deployment step output and use it within this command.
 
 ```bash
-arch-cli account create --name graffiti --program-id 3688ef8de06d56e32a765243e900875c4fefc6aa9c83dfbc2643f661c5b4982e
+arch-cli account create --name graffiti --program-id <program-id>
 ```
 
 ### Start the demo application
