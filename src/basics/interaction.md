@@ -10,7 +10,7 @@ We'll have an updated version of this where we explain line-by-line how things w
 
 For example, you'll find the class `GraffitiMessage`, which will mirror the data structure that we use within our [GraffitiWall] program.
 ```ts
-// CreateArchAccount.tsx
+// templates/demo/app/frontend/src/components/GraffitiWallComponent.tsx
 class GraffitiMessage {
   constructor(
     public timestamp: number,
@@ -32,8 +32,12 @@ pub struct GraffitiMessage {
 
 More to come.
 
+<!-- Internal -->
+
 [leader]: ../concepts/nodes.md
 [program]: ../program/program.md
 [validator]: ../concepts/nodes.md
+
+<!-- External -->
 [GraffitiWall]: https://github.com/Arch-Network/arch-cli/blob/main/templates/demo/app/program/src/lib.rs 
 [GrafittiWallComponent.tsx]: https://github.com/Arch-Network/arch-cli/blob/main/templates/demo/app/frontend/src/components/GraffitiWallComponent.tsx
