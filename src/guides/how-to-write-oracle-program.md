@@ -278,6 +278,9 @@ pub fn process_instruction(
     // app-program's business logic
     let oracle_data = oracle_account.data.try_borrow().unwrap();
 
+    let msg_str = format!("Oracle data: {}", oracle_data);
+
+    msg!(msg_str);
     ...
 }
 ```
