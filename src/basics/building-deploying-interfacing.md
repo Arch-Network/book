@@ -1,6 +1,6 @@
 # Building, deploying and interfacing
 
-Now that all of the dependencies are installed and we have successfully chosen a [development track], we can finally discuss program development, including compiling, deploying and interacting with it.
+Now that all of the dependencies are installed and we have successfully chosen a [development stack], we can finally discuss program development, including compiling, deploying and interacting with it.
 
 The `arch-cli` comes with a demo dapp called [GraffitiWall]; each message written to the wall contains a timestamp, name and note.
 
@@ -122,7 +122,7 @@ If the window doesn't pop up, navigate to: [http://localhost:5173](http://localh
 
 Now you're ready to tag the wall!
 
-[development track]: ../getting-started/starting-stack.md#choose-a-track
+[development stack]: ../getting-started/starting-stack.md#choose-a-stack
 [GraffitiWall]: https://github.com/Arch-Network/arch-cli/blob/main/templates/demo/app/program/src/lib.rs
 [Solana-CLI]: ../getting-started/requirements.md#install-solana-cli
 [eBPF]: https://ebpf.io/
