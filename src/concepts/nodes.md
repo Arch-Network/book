@@ -26,7 +26,7 @@ More can be read about the Arch Network architecture in our [docs].
 
 [docs]: https://docs.arch.network
 [eBPF]: https://ebpf.io/
-[Bootnode]: https://github.com/Arch-Network/arch-cli/blob/main/bootnode.sh 
-[Leader]: https://github.com/Arch-Network/arch-cli/blob/main/leader.sh
-[Validator]: https://github.com/Arch-Network/arch-cli/blob/main/validator.sh
-[Lightweight Validator]: https://github.com/Arch-Network/arch-cli/blob/main/validator.sh
+[Bootnode]: https://github.com/Arch-Network/arch-cli/blob/main/templates/bootnode.sh
+[Leader]: https://github.com/Arch-Network/arch-cli/blob/main/templates/leader.sh
+[Validator]: https://github.com/Arch-Network/arch-cli/blob/main/templates/validator.sh
+[Lightweight Validator]: https://github.com/Arch-Network/arch-cli/blob/main/templates/validator.sh

@@ -1,6 +1,6 @@
 # Program interaction
 
-Continuing with our example program, [GraffitiWall], we find an implementation example of how to communicate with a deployed [program] by looking at the frontend code; specifically, we'll look at the [CreateArchAccount.tsx] file.
+Continuing with our example program, [GraffitiWall], we find an implementation example of how to communicate with a deployed [program] by looking at the frontend code; specifically, we'll look at the [GrafittiWallComponent.tsx] file.
 
 Inside this file we initialize a new instance of RPC client, construct, sign and send a few transactions, and then poll the network for the processed transaction results.
 
@@ -35,6 +35,5 @@ More to come.
 [leader]: ../concepts/nodes.md
 [program]: ../program/program.md
 [validator]: ../concepts/nodes.md
-[GraffitiWall]: https://github.com/Arch-Network/arch-cli/blob/main/src/app/program/src/lib.rs
-[CreateArchAccount.tsx]: https://github.com/Arch-Network/arch-cli/blob/main/src/app/frontend/src/components/CreateArchAccount.tsx
-
+[GraffitiWall]: https://github.com/Arch-Network/arch-cli/blob/main/templates/demo/app/program/src/lib.rs 
+[GrafittiWallComponent.tsx]: https://github.com/Arch-Network/arch-cli/blob/main/templates/demo/app/frontend/src/components/GraffitiWallComponent.tsx

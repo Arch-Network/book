@@ -19,5 +19,4 @@ pub struct ProcessedTransaction {
 [processed_transaction.rs]
 
 [runtime transaction]: ./runtime-transaction.md
-[processed_transaction.rs]: https://github.com/Arch-Network/arch-cli/blob/main/src/common/src/processed_transaction.rs
-
+[processed_transaction.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/common/src/processed_transaction.rs

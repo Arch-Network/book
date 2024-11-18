@@ -1,6 +1,6 @@
 # Accounts
 
-An account is a unique 256-bit address that can store arbitrary data. 
+An account is a unique 32-bytes address that can store arbitrary data. 
 
 Everything on Arch is an account, and anyone can publicly read from any account; however, only an account's owner can modify data within an account.
 
@@ -40,5 +40,4 @@ pub struct AccountMeta {
 [UTXO]: ./utxo.md
 [eBPF]: https://ebpf.io
 [program]: ./program.md
-[account.rs]: https://github.com/Arch-Network/arch-cli/blob/main/program/src/account.rs
-
+[account.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/program/src/account.rs

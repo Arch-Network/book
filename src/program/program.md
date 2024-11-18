@@ -48,5 +48,4 @@ The program will likely include a struct to define the structure of its state an
 [instruction]: ./instructions-and-messages.md#instructions
 [transaction]: ./transaction.md
 [handler function]: ./entrypoint.md#handler-function
-[lib.rs]: https://github.com/Arch-Network/arch-cli/blob/main/src/app/program/src/lib.rs
-
+[lib.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/app/program/src/lib.rs

@@ -324,6 +324,6 @@ Congratulations, you've walked through constructing the our `helloworld` program
 [arch-cli]: https://github.com/Arch-Network/arch-cli
 [SystemInstruction]: ../program/system-instruction.md
 [Bitcoin crate]: https://docs.rs/bitcoin/latest/bitcoin/index.html
-[memory reallocation]: https://github.com/Arch-Network/arch-cli/blob/main/program/src/account.rs#L131-L149
+[memory reallocation]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/program/src/account.rs#L131-L148
 [Bitcoin transaction]: https://docs.rs/bitcoin/0.32.0/bitcoin/struct.Transaction.html
 [The Arch Book]: ../introduction.md

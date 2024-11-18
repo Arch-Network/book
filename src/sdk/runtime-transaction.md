@@ -15,5 +15,4 @@ pub struct RuntimeTransaction {
 [message]: ../program/message.md
 [signatures]: ./signature.md
 [instructions]: ../program/instruction.md
-[runtime_transaction.rs]: https://github.com/Arch-Network/arch-cli/blob/main/src/common/src/runtime_transaction.rs
-
+[runtime_transaction.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/common/src/runtime_transaction.rs
