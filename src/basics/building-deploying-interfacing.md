@@ -4,14 +4,14 @@ Now that all of the dependencies are installed and we have successfully chosen a
 
 The `arch-cli` comes with a demo dapp called [GraffitiWall]; each message written to the wall contains a timestamp, name and note.
 
-Find the program's logic within the `src/app/program/src/lib.rs` file.
+Find the program's logic within the `app/program/src/lib.rs ` file.
 
 ### Build
 In order to compile the program, we'll make use of the `cargo-build-sbf` a binary, a tool that comes with the [Solana-CLI] that installs the toolchain needed to produce Executable and Linkable Format (ELF) files which consist of [eBPF] bytecode.
 
-Access the `src/app/program/src` folder:
+Access the `app/program/src` folder:
 ```bash
-cd src/app/program/src
+cd app/program/src
 ```
 
 Build the program
