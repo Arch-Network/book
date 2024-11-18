@@ -29,6 +29,9 @@ pub fn new_create_account_instruction(
 ```
 [system_instruction.rs]
 
+<!-- Internal -->
 [account]: ./account.md
 [Pubkey]: ./pubkey.md
-[system_instruction.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/program/src/system_instruction.rs
+
+<!-- External -->
+[system_instruction.rs]: https://github.com/Arch-Network/arch-examples/blob/main/program/src/system_instruction.rs

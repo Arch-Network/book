@@ -33,7 +33,6 @@ pub struct GraffitiMessage {
 More to come.
 
 <!-- Internal -->
-
 [leader]: ../concepts/nodes.md
 [program]: ../program/program.md
 [validator]: ../concepts/nodes.md

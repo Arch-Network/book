@@ -40,6 +40,7 @@ If a program receives instruction that results in a user's state being altered, 
  
 The program will likely include a struct to define the structure of its state and make it easier to work with. The deserialization of account data occurs during program invocation. After an update is made, state data gets re-serialized into a byte array and stored within the `data` field of the [account].
 
+<!-- Internal -->
 [State]: #4-state
 [eBPF]: https://ebpf.io
 [account]: ./accounts.md
@@ -48,4 +49,6 @@ The program will likely include a struct to define the structure of its state an
 [instruction]: ./instructions-and-messages.md#instructions
 [transaction]: ./transaction.md
 [handler function]: ./entrypoint.md#handler-function
+ 
+<!-- External -->
 [lib.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/app/program/src/lib.rs

@@ -1,7 +1,7 @@
 # How to write an Arch program
 
 Table of Contents:
-- [Program]
+- [Logic]
 - [Imports]
 - [Entrypoint]
 - [Handler]
@@ -9,11 +9,11 @@ Table of Contents:
 
 [The Arch Book] can serve as a reference for concepts introduced here as well as our [docs] for high-level architecture diagrams and comparisons to other similar projects building on Bitcoin.
 
-For this guide, we will be walking through an example program: helloworld.
+For this guide, we will be walking through an example program: [helloworld].
 
-## Program
+## Logic
 
-A smart contract on Arch is known as a [program].
+A smart contract on Arch is known as a [Program].
 
 ```rust,ignore
 use arch_program::{
@@ -144,7 +144,7 @@ use borsh::{BorshDeserialize, BorshSerialize};
 
 Before we continue, let's quickly introduce some helpful resources that we are importing:
 - `entrypoint`: a macro used for invoking our program.
-- `msg`: a macro use for logging messages to the console.
+- `msg`: a macro used for logging messages; these are visible within the node logs of your local validator.
 - `borsh`: a crate for serialization/deserialization of data passed to/from our program.
 - `bitcoin`: a crate for working with the Bitcoin blockchain.
 
@@ -159,7 +159,7 @@ entrypoint!(process_instruction);
 
 ## Handler
 
-Each handler function's parameters must match what is required for a transaction [instruction].
+Each handler function's parameters must match what is required for a transaction [Instruction].
 
 - `program_id` - Unique identifier of the currently executing program.
 - `accounts` - Slice reference containing accounts needed to execute an instruction.
@@ -177,7 +177,7 @@ pub fn process_instruction(
 
 Now that we're inside the function scope, first, we check that there are a sufficient number of accounts are passed into our program. 
 
-We perform a [syscall] to retrieve the latest Bitcoin block height (this can be omitted though is helpful for debugging) and then iterate over the accounts passed in to the program and retrieve the first one.
+We perform a [Syscall] to retrieve the latest Bitcoin block height (this can be omitted though is helpful for debugging) and then iterate over the accounts passed in to the program and retrieve the first one.
 ```rust,ignore
 if accounts.len() != 2 {
     return Err(ProgramError::Custom(501));
@@ -194,7 +194,7 @@ msg!("account {:?}", account);
 msg!("account2 {:?}", account2);
 ```
 
-Next, we perform a check to ensure that the [UTXO] passed into the [account] is not the default value of a 36-zero byte slice. This step is done to ensure that the [UTXO] is properly unititialized before continuing.
+Next, we perform a check to ensure that the [UTXO] passed into the [Account] is not the default value of a 36-zero byte slice. This step is done to ensure that the [UTXO] is properly unititialized before continuing.
 ```rust,ignore
 if account2.utxo.clone() != UtxoMeta::from_slice(&[0; 36]) {
     msg!("UTXO {:?}", account2.utxo.clone());
@@ -254,7 +254,7 @@ account.data.try_borrow_mut().unwrap().copy_from_slice(new_data.as_bytes());
 
 We then perform a check to ensure that the account is writable, if it is, we invoke a [SystemInstruction] to create a new account instruction. 
 
-To create a new account instruction, we provide the `txid` and `vout` (the output index for identification) of our [UTXO] for the instruction data, and include a copy of the account's [pubkey].
+To create a new account instruction, we provide the `txid` and `vout` (the output index for identification) of our [UTXO] for the instruction data, and include a copy of the account's [Pubkey].
 ```rust,ignore
 if account2.is_writable {
 
@@ -287,7 +287,7 @@ tx.input.push(fees_tx.input[0].clone());
 
 Now, we're ready to sign and submit the transaction to Bitcoin which will cement our state alteration.
 
-Here, we construct a new Arch transaction that includes our serialized [Bitcoin transaction] alongside our program's [pubkey] serving as the signer.
+Here, we construct a new Arch transaction that includes our serialized [Bitcoin transaction] alongside our program's [Pubkey] serving as the signer.
 ```rust,ignore
 let tx_to_sign = TransactionToSign {
     tx_bytes: &bitcoin::consensus::serialize(&tx),
@@ -305,25 +305,26 @@ set_transaction_to_sign(accounts, tx_to_sign);
 
 🎉🎉🎉
 
-Congratulations, you've walked through constructing the our `helloworld` program. In a future guide, we'll walk you through how to test the logic of your program.
+Congratulations, you've walked through constructing the our [helloworld] program. In a future guide, we'll walk you through how to test the logic of your program.
 
-<!-- INTERNAL -->
-[Program]: #program
+<!-- Internal -->
+[Logic]: #logic
 [Imports]: #imports
 [Entrypoint]: #entrypoint
 [Handler]: #handler
-
-<!-- EXTERNAL -->
-[docs]: https://docs.arch.network
 [UTXO]: ../program/utxo.md
-[account]: ../program/account.md
-[program]: ../program/program.md
-[syscall]: ../program/syscall.md
-[instruction]: ../program/instructions-and-messages.md#instructions
-[pubkey]: ../program/pubkey.md
-[arch-cli]: https://github.com/Arch-Network/arch-cli
+[Account]: ../program/account.md
+[Program]: ../program/program.md
+[Syscall]: ../program/syscall.md
+[Instruction]: ../program/instructions-and-messages.md#instructions
 [SystemInstruction]: ../program/system-instruction.md
-[Bitcoin crate]: https://docs.rs/bitcoin/latest/bitcoin/index.html
-[memory reallocation]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/program/src/account.rs#L131-L148
-[Bitcoin transaction]: https://docs.rs/bitcoin/0.32.0/bitcoin/struct.Transaction.html
+[Pubkey]: ../program/pubkey.md
 [The Arch Book]: ../introduction.md
+
+<!-- External -->
+[docs]: https://docs.arch.network
+[arch-cli]: https://github.com/Arch-Network/arch-cli
+[helloworld]: https://github.com/Arch-Network/arch-examples/blob/main/examples/helloworld/program/src/lib.rs
+[Bitcoin crate]: https://docs.rs/bitcoin/latest/bitcoin/index.html
+[memory reallocation]: https://github.com/Arch-Network/arch-examples/blob/main/program/src/account.rs#L131-L149
+[Bitcoin transaction]: https://docs.rs/bitcoin/0.32.0/bitcoin/struct.Transaction.html

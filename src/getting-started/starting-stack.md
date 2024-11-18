@@ -121,5 +121,8 @@ Local validator stopped successfully!
 
 Now that everything is configured and the local validator is up and running, it's time learn how to build, deploy and interact with a program.
 
+<!-- Internal -->
 [nodes]: ../concepts/nodes.md
+
+<!-- External -->
 [Self-contained Arch Network]: https://github.com/arch-Network/arch-cli?tab=readme-ov-file#manage-a-self-contained-arch-network-locally-advanced

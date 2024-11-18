@@ -251,10 +251,10 @@ assert_eq!(resulting_sender_balance.current_balance, 0);
 [Balance Check]: #balance-check
 [Instruction]: ../program/instructions-and-messages.md#instructions
 [Pubkey]: ../program/pubkey.md
+[How to write an Arch program]: ./how-to-write-arch-program.md
 
 <!-- External -->
 [arch-examples]: https://github.com/Arch-Network/arch-examples/tree/main/examples/fungible-token-standard
-[How to write an Arch program]: https://docs.arch.network/book/guides/how-to-write-arch-program.html
 [`try_deploy_program`]: https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_deployment.rs#L1
 [ebpf-counter]: https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter
 [deploy.rs]: https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/deploy.rs

@@ -12,7 +12,10 @@ pub struct RuntimeTransaction {
 ```
 [runtime_transaction.rs]
 
+<!-- Internal -->
 [message]: ../program/message.md
 [signatures]: ./signature.md
 [instructions]: ../program/instruction.md
-[runtime_transaction.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/common/src/runtime_transaction.rs
+
+<!-- External -->
+[runtime_transaction.rs]: https://github.com/Arch-Network/arch-examples/blob/main/sdk/src/runtime_transaction.rs

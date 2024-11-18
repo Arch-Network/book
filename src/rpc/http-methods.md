@@ -25,6 +25,5 @@ The response output will be a JSON object with the following fields:
 - `id: <number>` - matching the value set in the request.
 - `result: <array|boolean|number|object|string>` - requested data, success confirmation or boolean flag.
 
-
+<!-- External -->
 [@saturnbtcio/arch-sdk]: https://www.npmjs.com/package/@saturnbtcio/arch-sdk
-

@@ -296,10 +296,10 @@ pub fn process_instruction(
 [Update the state account]: #update-the-state-account
 [Read from the state account]: #read-from-the-state-account
 [Pubkey]: ../program/pubkey.md
+[How to write an Arch program]: ./how-to-write-arch-program.md
+[handler]: ./how-to-write-arch-program.md#handler
 
 <!-- External -->
-[How to write an Arch program]: https://docs.arch.network/book/guides/how-to-write-arch-program.html
 [arch-examples]: https://github.com/Arch-Network/arch-examples/tree/main/examples/oracle
-[handler]: https://docs.arch.network/book/guides/how-to-write-arch-program.html#handler
 [arch-cli]: https://github.com/arch-network/arch-cli
 [mempool.space]: https://mempool.space

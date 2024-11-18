@@ -27,9 +27,11 @@ pub struct Message {
 ```
 [message.rs]
 
-
+<!-- Internal -->
 [program]: ./program.md
 [accounts]: ./account.md
 [instruction]: #instructions
-[message.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/program/src/message.rs
-[instruction.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/program/src/instruction.rs
+
+<!-- External -->
+[message.rs]: https://github.com/Arch-Network/arch-examples/blob/main/program/src/message.rs
+[instruction.rs]: https://github.com/Arch-Network/arch-examples/blob/main/program/src/instruction.rs
