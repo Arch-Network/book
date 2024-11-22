@@ -122,11 +122,16 @@ Now that everything is setup correctly, we can now deploy our program and begin 
 arch-cli deploy --network testnet
 ```
 
+And if you are running the local validator binary directly from the command-line, set the `--rpc-endpoint` flag so it overwrites the `leader_rpc_endpoint` in the [arch-cli] config if this information was not changed:
+```bash
+arch-cli deploy --network testnet --rpc-url http://localhost:9002
+```
+
 We hope this guide has been helpful, but as always, feel free to ask question within our [Discord dev-chat] or submit issues within out [public-issues] repo.
 
 <!-- Internal -->
 [Config]: #config
-[Local validator]: #arch-node
+[Local validator]: #local-validator
 [Help commands]: #help-commands
 [Log assistance]: #log-assistance
 
