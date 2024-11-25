@@ -1,6 +1,6 @@
 # Building, deploying and interfacing
 
-Now that all of the dependencies are installed and we have successfully chosen a [development stack], we can finally discuss program development, including compiling, deploying and interacting with it.
+Now that all of the dependencies are installed and we have successfully started our [development stack], we can finally discuss program development, including compiling, deploying and interacting with it.
 
 The `arch-cli` comes with a demo dapp called [GraffitiWall]; each message written to the wall contains a timestamp, name and note.
 
