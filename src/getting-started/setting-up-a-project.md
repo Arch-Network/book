@@ -85,9 +85,6 @@ arch-cli init
 ```
 
 > Note: This step will prompt you to provide a location on your hard drive where you'd like new Arch projects to be created; this location is then stored within the `config.toml` and can be updated accordingly.
-> 
-> The default location for new Arch projects is within your `/Documents` directory.
-
 
 If everything initializes smoothly, you'll be presented with output similar to the following:
 ```bash
