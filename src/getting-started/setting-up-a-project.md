@@ -120,8 +120,6 @@ y
   ✓ New Arch Network app initialized successfully!
 ```
 
-By following these steps, you ensure that your CLI can be run from any location and still correctly locate and load its configuration files on Windows, macOS, and Linux.
-
 ## Create a new project
 To create a new project, the `arch-cli` offers a `project create` directive that will setup a new project directory in the location set in the `config.toml`.
 
