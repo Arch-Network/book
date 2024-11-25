@@ -124,9 +124,12 @@ If the window doesn't pop up, navigate to: [http://localhost:5173](http://localh
 
 Now you're ready to tag the wall!
 
-[development stack]: ../getting-started/starting-stack.md#choose-a-stack
-[GraffitiWall]: https://github.com/Arch-Network/arch-cli/blob/main/templates/demo/app/program/src/lib.rs
+<!-- Internal -->
+[development track]: ../getting-started/starting-stack.md#choose-a-track
 [Solana-CLI]: ../getting-started/requirements.md#install-solana-cli
-[eBPF]: https://ebpf.io/
 [requirements]: ../getting-started/requirements.md
+
+<!-- External -->
+[GraffitiWall]: https://github.com/Arch-Network/arch-cli/blob/main/templates/demo/app/program/src/lib.rs
+[eBPF]: https://ebpf.io/
 [Discord dev-chat]: https://discord.com/channels/1241112027963986001/1270921925991989268

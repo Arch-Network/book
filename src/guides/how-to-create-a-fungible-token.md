@@ -16,8 +16,6 @@ The source code can be found within the [arch-examples] repo.
 ### Logic
 If you haven't already read [How to write an Arch program], we recommend starting there to get a basic understanding of the program anatomy before going further.
 
-In this guide, we'll be walking through the Fungible Token Standard [tests] which provide implementation examples.
-
 ### Implementation
 
 - [Deploy]
@@ -27,7 +25,7 @@ In this guide, we'll be walking through the Fungible Token Standard [tests] whic
 
 #### Deploy
 
-Although the Fungible Token Standard program is predeployed, we can deploy it ourselves for local testing. Move to [Mint] if you'd like to skip this step.
+Although the Fungible Token Standard program is part of the APL, and is there predeployed by the validators, for local testing, we can deploy it ourselves. Move to [Mint] if you'd like to skip this step.
 
 To demonstrate a deploy, we'll reference: [deploy.rs]
 
@@ -251,10 +249,10 @@ assert_eq!(resulting_sender_balance.current_balance, 0);
 [Balance Check]: #balance-check
 [Instruction]: ../program/instructions-and-messages.md#instructions
 [Pubkey]: ../program/pubkey.md
+[How to write an Arch program]: ./how-to-write-arch-program.md
 
 <!-- External -->
 [arch-examples]: https://github.com/Arch-Network/arch-examples/tree/main/examples/fungible-token-standard
-[How to write an Arch program]: https://docs.arch.network/book/guides/how-to-write-arch-program.html
 [`try_deploy_program`]: https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_deployment.rs#L1
 [ebpf-counter]: https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter
 [deploy.rs]: https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/deploy.rs

@@ -51,12 +51,15 @@ Each routed function performs specific business logic related to the program's p
 #### Result Commitment:
 Upon successful execution, the new UTXO authorities, new UTXO Data and a Bitcoin transaction are committed back to the network.
 
+<!-- Internal -->
 [UTXO]: ../program/utxo.md
 [program]: ../program/program.md
 [`entrypoint!`]: #entrypoint
 [handler function]: #handler-function
 [instruction]: ../program/instruction.md
+
+<!-- External -->
 [`Result`]: https://doc.rust-lang.org/std/result/enum.Result.html
 [lib.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/app/program/src/lib.rs
-[entrypoint.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/program/src/entrypoint.rs
-[`ProgramError`]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/program/src/program_error.rs
+[entrypoint.rs]: https://github.com/Arch-Network/arch-examples/blob/main/program/src/entrypoint.rs
+[`ProgramError`]: https://github.com/Arch-Network/arch-examples/blob/main/program/src/program_error.rs

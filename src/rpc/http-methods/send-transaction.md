@@ -41,5 +41,5 @@ http://localhost:9001/
 }
 ```
 
+<!-- Internal -->
 [Runtime Transaction]: ../../sdk/runtime-transaction.md
-

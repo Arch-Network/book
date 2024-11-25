@@ -50,4 +50,5 @@ define_syscall!(fn sol_log_data(data: *const u8, data_len: u64));
 ```
 [syscalls/definition.rs]
 
-[syscalls/definition.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/program/src/syscalls/definitions.rs
+<!-- External -->
+[syscalls/definition.rs]: https://github.com/Arch-Network/arch-examples/blob/main/program/src/syscalls/definitions.rs

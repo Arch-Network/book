@@ -5,9 +5,9 @@
 # Getting started
 - [Setting up the environment](getting-started/environment-setup.md)
     - [Requirements](getting-started/requirements.md)
+    - [Setting up a project](getting-started/setting-up-a-project.md)
     - [Starting the stack](getting-started/starting-stack.md)
         - [Nodes](concepts/nodes.md)
-    - [Setting up a project](getting-started/setting-up-a-project.md)
     - [Resources](getting-started/resources.md)
 
 # Programs and beyond
@@ -16,7 +16,9 @@
     - [Program interaction](basics/interaction.md)
 - [Guides](guides/guides.md)
     - [How to write an Arch program](guides/how-to-write-arch-program.md)
+    - [How to write an oracle program](guides/how-to-write-oracle-program.md)
     - [How to create a fungible token](guides/how-to-create-a-fungible-token.md)
+    - [How to configure the local validator with Bitcoin Testnet4](guides/how-to-configure-local-validator-bitcoin-testnet4.md)
 
 # Reference
 - [Program](program/program.md)

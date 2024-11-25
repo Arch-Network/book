@@ -88,7 +88,7 @@ cd arch-cli
 cargo install --path .
 ```
 
-<!-- INTERNAL -->
+<!-- Internal -->
 [Rust]: #install-rust
 [Docker]: #install-docker
 [C++ Compiler (gcc/clang)]: #install-c-compiler
@@ -96,7 +96,7 @@ cargo install --path .
 [Solana CLI]: #install-solana-cli
 [Arch-cli]: #clone-and-install-the-arch-cli
 
-<!-- EXTERNAL -->
+<!-- External -->
 [GCC]: https://gcc.gnu.org/
 [gcc-multilib]: https://packages.debian.org/sid/gcc-multilib
 [npm]: https://github.com/npm/cli

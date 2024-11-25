@@ -36,8 +36,10 @@ pub struct AccountMeta {
 ```
 [account.rs]
 
-
+<!-- Internal -->
 [UTXO]: ./utxo.md
-[eBPF]: https://ebpf.io
 [program]: ./program.md
-[account.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/program/src/account.rs
+
+<!-- External -->
+[eBPF]: https://ebpf.io
+[account.rs]: https://github.com/Arch-Network/arch-examples/blob/main/program/src/account.rs

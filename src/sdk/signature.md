@@ -8,4 +8,5 @@ pub struct Signature(pub Vec<u8>);
 ```
 [signature.rs]
 
-[signature.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/common/src/signature.rs 
+<!-- External -->
+[signature.rs]: https://github.com/Arch-Network/arch-examples/blob/main/sdk/src/signature.rs

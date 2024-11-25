@@ -24,6 +24,7 @@ This validator is a lightweight server that only serves as an RPC for developers
  
 More can be read about the Arch Network architecture in our [docs].
 
+<!-- External -->
 [docs]: https://docs.arch.network
 [eBPF]: https://ebpf.io/
 [Bootnode]: https://github.com/Arch-Network/arch-cli/blob/main/templates/bootnode.sh
