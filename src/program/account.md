@@ -31,7 +31,7 @@ pub struct AccountInfo<'a> {
 
 ### AccountMeta
 
-```rust,ingore
+```rust,ignore
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
 #[repr(C)]
 pub struct AccountMeta {
