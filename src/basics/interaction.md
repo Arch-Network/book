@@ -330,9 +330,8 @@ We then craft our [Transaction] object within the RPC call to `sendTransaction`,
 This concludes the logic walkthrough of the [Program] interaction component of our [GraffitiWall].
 
 <!-- Internal -->
-[leader]: ../concepts/nodes.md
-[program]: ../program/program.md
-[validator]: ../concepts/nodes.md
+[Description]: #description
+[Logic]: #logic
 [Program]: ../program/program.md
 [Pubkey]: ../program/pubkey.md
 [Account]: ../program/account.md
