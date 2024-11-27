@@ -5,7 +5,7 @@ Table of Contents:
 - [Logic]
 
 ## Description
-Continuing with our example program, [GraffitiWall], we find an implementation example of how to communicate with a deployed [program] by looking at the frontend code; specifically, we'll look at the [GrafittiWallComponent.tsx] file.
+Continuing with our example program, [GraffitiWall], we find an implementation example of how to communicate with a deployed [Program] by looking at the frontend code; specifically, we'll look at the [GrafittiWallComponent.tsx] file.
 
 ## Logic
 ```typescript
@@ -14,9 +14,9 @@ const PROGRAM_PUBKEY = (import.meta as any).env.VITE_PROGRAM_PUBKEY;
 const WALL_ACCOUNT_PUBKEY = (import.meta as any).env.VITE_WALL_ACCOUNT_PUBKEY;
 ```
 
-Here we initialize a new RPC connection and pass in the RPC URL that we wish to connect to; in this case, the URL is pulled from the Vite environment variable or defaults to our locally running validator.
+Here we initialize a new RPC connection and pass in the RPC URL that we wish to connect to; in this case, the URL is pulled from the environment variables or defaults to our locally running validator.
 
-We then import the [Pubkey]s of the Graffiti Wall [Program] as well as the Wall Account. The Wall Account stores the state of the Graffiti Wall and the Program's pubkey serves as the owner of the Graffiti Wall.
+We then import the [Pubkey]s of the Graffiti Wall [Program] as well as the Wall state Account. The Wall state Account stores the state of the Graffiti Wall and the Program's [Pubkey] serves as the owner of the Graffiti Wall.
 
 ```typescript
 class GraffitiMessage {
@@ -59,7 +59,7 @@ class GraffitiWall {
 }
 ```
 
-We then define the schemas for handling the Wall's message data- these schemas mirror the data structure that are found within the [Graffiti Wall] program which ensures data uniformity between the application frontend and program backend during serialization/deserialization.
+We then define the schemas for handling the Wall's message data- these schemas mirror the data structure that are found within the [GraffitiWall] program which ensures data uniformity between the application frontend and program backend during serialization/deserialization.
 
 ```rust,ignore
 #[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
@@ -90,8 +90,6 @@ Above is the data structure as defined in `src/app/program/src/lib.rs`, our [Pro
   };
 ```
 
-_We'll skip over the React state management code._
-
 Moving along, we set the `accountPubkey` variable with our previously imported Wall account [Pubkey] converted from hexidecimal and then set a new schema for to handle the Graffiti Wall message data.
 
 ```typescript
@@ -112,7 +110,7 @@ const checkProgramDeployed = useCallback(async () => {
 
 We then submit our first request to the Arch RPC service: `readAccountInfo`.
 
-We pass the `pubkeyBytes`- which represents the `program_id`, indicating the unique resource location of the [Program] within the Arch Network- as the argument to `readAccountInfo` in order to obtain the [Account] information.
+We pass the `pubkeyBytes`- which represents the `program_id`, indicating the unique resource location of the [Program] within the Arch Network- as the argument to `readAccountInfo` in order to obtain the [AccountInfo].
 
 If we are able to read the `accountInfo` successfully, then we can be sure the program was deployed.
 
@@ -206,7 +204,7 @@ We perform a check against the length of this bytedata to ensure that it is not 
     ...
 ```
 
-We now need to deserialize the bytedata into a structure that is more manageable, in this case, we'll make use of the GraffitiMessage schema we set earlier.
+We now need to deserialize the bytedata into a structure that is more manageable, in this case, we'll make use of the `GraffitiMessage` schema we set earlier.
 
 ```typescript
   const handleAddToWall = async () => {
@@ -254,7 +252,7 @@ We'll again skip over some React state management.
 
 In this anonymous function we pass in our dapp data, `name` and `message` in order to prepare it for submission to the [Program].
 
-We create two new `Uint8` byte arrays and initialize their appropriate lengths (16 and 64, respectively) with placeholder zeros, eventually copying the encoded `name` and `message` data into into fixed-size arrays and storing them within the `params` object. 
+We create two new `Uint8` byte arrays and initialize their appropriate lengths with placeholder zeros, eventually copying the encoded `name` and `message` data into into fixed-size arrays and storing them within the `params` object. 
 
 We define the schema for the data and serialize the scheme alongside the `params` object which we will use within the following `try` block.
 
@@ -281,9 +279,9 @@ We define the schema for the data and serialize the scheme alongside the `params
 ...
 ```
 
-Stepping into our `try` block, we serialize our Graffiti data, in this case including the name of the author as well as the message they wish to post.
+Stepping into our `try` block, we serialize our post data, in this case including the name of the author as well as the message they wish to post.
 
-We construct an [Instruction] object, containing our `program_id`, serialized data, as well as the accounts involved, in this case, the signing [Pubkey] of our user's wallet as well as the `accountPubkey`, the [Pubkey] of our Wall's account for holding the [Program] state.
+We construct an [Instruction] object, containing our `program_id`, serialized data, as well as the accounts involved, in this case, the signing [Pubkey] of our user's wallet as well as the `accountPubkey`, the [Pubkey] of the Wall state account.
 
 ```typescript
    const messageObj : Message = {
