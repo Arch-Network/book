@@ -26,7 +26,7 @@ _If you are experiencing issues with this step, we recommend returning to review
 ### Deploy
 In this step, we will be submitting a transaction to store our program's logic on the Arch Network.
 
-> ps: make sure you have arch validator running before deploying the program, if you don't run `arch-cli validator start`
+> Note: make sure you have arch validator running before deploying the program, if you don't run `arch-cli validator start`
 
 ```bash
 arch-cli deploy
