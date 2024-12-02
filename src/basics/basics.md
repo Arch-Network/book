@@ -1,6 +1,6 @@
 # Basics
 
-To illustrate the basic process involved in developing an Arch [program], we're going to build, deploy and interact with our demo app: [GraffitiWall].
+To illustrate the basic process involved in developing an Arch [Program], we're going to build, deploy and interact with our demo app: [GraffitiWall].
 
 <!-- Internal -->
 [Program]: ../program/program.md
