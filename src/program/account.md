@@ -13,6 +13,8 @@ If an account `is_executable: true`, then the account is considered to be a [pro
 - Space Allocation: Sets the byte capacity for the data field of an account
 - Data Modification: Modifies the data field of an account
 
+### AccountInfo
+
 ```rust,ignore
 #[derive(Clone)]
 #[repr(C)]
@@ -25,7 +27,11 @@ pub struct AccountInfo<'a> {
     pub is_writable: bool,
     pub is_executable: bool, // true: program; false: data account
 }
+```
 
+### AccountMeta
+
+```rust,ignore
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
 #[repr(C)]
 pub struct AccountMeta {
