@@ -281,7 +281,11 @@ const writeData = async () => {
     }
 };
 
-const readData = async () => {};
+const readData = async () => {
+    ...
+    // TODO
+    ...
+};
 
 // write to state
 writeData();
