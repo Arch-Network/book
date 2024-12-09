@@ -87,16 +87,25 @@ Your app has been deployed successfully!
 ```
 
 ## Client-side interaction
-Now that our setup is complete, meaning that the project is created, the validator is running, and the program has been successfully deployed, we can move on to the interaction phase.
+Now that our setup is complete- meaning that the project is created, the validator is running, and the program has been successfully deployed- we can move on to the _interaction_ logic.
 
 Within our new project's directory, we find the aptly named `/frontend` directory which holds our client-side code.
 
 ### Install dependencies
 
-We can now install the [arch-typescipt-sdk] as well as our additional dependencies.
+We can now install the [arch-typescript-sdk] as well as our additional dependencies.
 
 ```bash
 npm i @saturnbtcio/arch-sdk borsh bitcoinjs-lib @noble/hashes/util tiny-secp256k1 ecpair dotenv buffer
+```
+
+### Set .env file
+
+```bash
+ARCH_RPC_URL=http://localhost:9002
+PRIVATE_KEY=
+PROGRAM_PUBKEY=
+STATE_ACCOUNT_PUBKEY=
 ```
 
 ### Logic
@@ -127,7 +136,7 @@ const ECPair = ECPairFactory(ecc);
 dotenv.config();
 
 // init rpc connection
-const client = new RpcConnection('localhost:9002');
+const client = new RpcConnection(process.env.ARCH_RPC_URL);
 
 // private key of our signing account
 const PRIVATE_KEY = process.env.ARCH_PRIVATE_KEY;
@@ -155,26 +164,6 @@ const writeData = async () => {
             vout: 0,
             value: 1, // in satoshis
         };
-
-        // create psbt bytedata
-        const signedPSBT = "";
-
-        // craft partial-signed bitcoin transaction based on signed transaction
-        const psbt = Bitcoin.Psbt.fromHex(signedPSBT);
-
-        // lock inputs
-        psbt.finalizeAllInputs();
-
-        // obtain transaction data
-        const psbtTransaction = psbt.extractTransaction();
-
-        // convert transaction to raw tx hex
-        const rawTxHex = psbtTransaction.toHex();
-
-        console.log('rawTxHex: ', rawTxHex);
-
-        // convert tx hex data to bytes
-        const hexData = hexToBytes(rawTxHex);
 
         // prepare data to be sent within instruction
         const helloWorldPayload = {
@@ -282,16 +271,26 @@ const writeData = async () => {
 };
 
 const readData = async () => {
-    ...
-    // TODO
-    ...
+    try {
+        let stateAccountPubkey = PubkeyUtil.fromHex(STATE_ACCOUNT_PUBKEY);
+
+        const stateAccount = await client.readAccountInfo(stateAccountPubkey);
+        if (!userAccount) {
+            setError('Account not found.');
+            return;
+        }
+        const stateAccountData = stateAccount.data;
+        
+        console.log(`State account data: ${stateAccountData}`);
+    } catch (e) {
+        console.error('error: ', {
+            message: error.message,
+            cause: error.cause?.message,
+            stack: error.stack,
+        });
+        throw error; 
+    }
 };
-
-// write to state
-writeData();
-
-// read from state
-readData();
 ```
 
 <!-- Internal -->
