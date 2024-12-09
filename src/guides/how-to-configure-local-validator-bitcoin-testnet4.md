@@ -50,7 +50,7 @@ The validator logs can be viewed easily within the [Docker] desktop dashboard.
 > Note: You can also run the standalone local validator binary where the logs will be streamed to `stdout` unless otherwise redirected.
 
 **Steps for running standalone validator binary:**
-1. Download the appropriate binary as well as the `system_program.so` file from [arch-node/releases] page.
+1. Download the appropriate binary as well as the `system_program.so` file from [arch-node] releases page.
 2. Store the `system_program.so` file within a new directory called `/ebpf`.
 
     Your directory structure should resemble the following:
