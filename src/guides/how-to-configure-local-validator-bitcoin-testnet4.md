@@ -47,18 +47,32 @@ arch-cli validator start
 
 The validator logs can be viewed easily within the [Docker] desktop dashboard.
 
-You can also run the standalone binary yourself where the logs will be streamed to `stdout` unless otherwise redirected.
-```bash
-RUST_LOG=info \
-./local_validator \
---network-mode testnet \
---rpc-bind-ip 127.0.0.1 \
---rpc-bind-port 9002 \
---bitcoin-rpc-endpoint bitcoin-node.test.aws.archnetwork.xyz \
---bitcoin-rpc-port 49332 \
---bitcoin-rpc-username bitcoin \
---bitcoin-rpc-password redacted
-```
+> Note: You can also run the standalone local validator binary where the logs will be streamed to `stdout` unless otherwise redirected.
+
+**Steps for running standalone validator binary:**
+1. Download the appropriate binary as well as the `system_program.so` file from [arch-node/releases] page.
+2. Store the `system_program.so` file within a new directory called `/ebpf`.
+
+    Your directory structure should resemble the following:
+    ```bash
+    tmp/
+    ├─ validator-binary
+    ├─ /ebpf/
+    |  ├─ system_program.so
+
+    ```
+3. Run the binary and pass the relevant flags dependening on your target network.
+    ```bash
+    RUST_LOG=info \
+    ./local_validator \
+    --network-mode testnet \
+    --rpc-bind-ip 127.0.0.1 \
+    --rpc-bind-port 9002 \
+    --bitcoin-rpc-endpoint bitcoin-node.test.aws.archnetwork.xyz \
+    --bitcoin-rpc-port 49332 \
+    --bitcoin-rpc-username bitcoin \
+    --bitcoin-rpc-password redacted
+    ```
 
 ### Help commands
 This section includes some helpful material when needing to restart the node state or better ensure our infrastructure is operational before proceeding.
