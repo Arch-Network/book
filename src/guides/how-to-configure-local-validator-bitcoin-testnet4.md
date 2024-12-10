@@ -56,15 +56,15 @@ The validator logs can be viewed easily within the [Docker] desktop dashboard.
     Your directory structure should resemble the following:
     ```bash
     tmp/
-    ├─ validator-binary
-    ├─ /ebpf/
-    |  ├─ system_program.so
-
+    ├─ ebpf/
+    │  ├─ system_program.so
+    ├─ validator_binary
     ```
+
 3. Run the binary and pass the relevant flags dependening on your target network.
     ```bash
     RUST_LOG=info \
-    ./local_validator \
+    ./validator_binary \
     --network-mode testnet \
     --rpc-bind-ip 127.0.0.1 \
     --rpc-bind-port 9002 \
