@@ -29,7 +29,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
     [1,2,3,4,...]
   ]
 }' \
-http://localhost:9001/
+http://localhost:9002/
 ```
 
 **Response:**
@@ -42,4 +42,5 @@ http://localhost:9001/
 ```
 
 <!-- Internal -->
+[sendTransactions]: ./send-transactions.md
 [Runtime Transaction]: ../../sdk/runtime-transaction.md

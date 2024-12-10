@@ -22,7 +22,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
   "method":"reset_network",
   "params":[]
 }' \
-http://localhost:9001/
+http://localhost:9002/
 ```
 
 **Response:**

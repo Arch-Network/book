@@ -22,7 +22,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
         "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
     ]
 }' \
-http://localhost:9001/
+http://localhost:9002/
 ```
 
 **Response:**

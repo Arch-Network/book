@@ -7,8 +7,8 @@ Interact with Arch nodes directly with the JSON RPC API via this list of availab
 > For client-side needs, use the [@saturnbtcio/arch-sdk] library as an interface for the RPC methods to interact with an Arch node.
 
 ### Endpoint
-Default port: `9001`
-- http://localhost:9001
+Default port: `9002`
+- http://localhost:9002
 
 ### Request Format:
 To make a JSON-RPC request, send an HTTP `POST` request with a `Content-Type: application/json` header. 

@@ -20,7 +20,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
     "method":"start_dkg",
     "params":[]
 }' \
-http://localhost:9001/
+http://localhost:9002/
 ```
 
 **Response:**

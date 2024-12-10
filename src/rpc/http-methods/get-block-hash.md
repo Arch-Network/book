@@ -18,7 +18,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
     "method":"get_block_hash",
     "params":["680000"]
 }' \
-http://localhost:9001/
+http://localhost:9002/
 ```
 
 **Response:**
