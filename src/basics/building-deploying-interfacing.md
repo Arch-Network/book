@@ -1,17 +1,17 @@
 # Building, deploying and interfacing
 
-Now that all of the dependencies are installed and we have successfully chosen a [development track], we can finally discuss program development, including compiling, deploying and interacting with it.
+Now that all of the dependencies are installed and we have successfully started our [development stack], we can finally discuss program development, including compiling, deploying and interacting with it.
 
 The `arch-cli` comes with a demo dapp called [GraffitiWall]; each message written to the wall contains a timestamp, name and note.
 
-Find the program's logic within the `src/app/program/src/lib.rs` file.
+Find the program's logic within the `app/program/src/lib.rs ` file.
 
 ### Build
 In order to compile the program, we'll make use of the `cargo-build-sbf` a binary, a tool that comes with the [Solana-CLI] that installs the toolchain needed to produce Executable and Linkable Format (ELF) files which consist of [eBPF] bytecode.
 
-Access the `src/app/program/src` folder:
+Access the `app/program/src` folder:
 ```bash
-cd src/app/program/src
+cd app/program/src
 ```
 
 Build the program
@@ -25,6 +25,8 @@ _If you are experiencing issues with this step, we recommend returning to review
 
 ### Deploy
 In this step, we will be submitting a transaction to store our program's logic on the Arch Network.
+
+> Note: make sure you have arch validator running before deploying the program, if you don't run `arch-cli validator start`
 
 ```bash
 arch-cli deploy
@@ -69,10 +71,10 @@ The Program ID can be thought of as a uniform resource locator (URL) for your de
 ### Create an Account
 An account is used to store the state for your dapp.
 
-Obtain the Program ID from the deployment step output and use it within this command; you may need to replace this if the Program ID you received from the previous step differs from this one.
+Obtain the Program ID from the deployment step output and use it within this command.
 
 ```bash
-arch-cli account create --name graffiti --program-id 3688ef8de06d56e32a765243e900875c4fefc6aa9c83dfbc2643f661c5b4982e
+arch-cli account create --name graffiti --program-id <program-id>
 ```
 
 ### Start the demo application
