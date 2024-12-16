@@ -1,5 +1,7 @@
 # `getCurrentState`
 
+> ️️⚠️ Note: This endpoint is not available for local validators.
+
 **Description:** Retrieves the current state: the validator's state (`Init`, `ConnectedToNetwork`, `ReadyToSync`, etc.) and the latest state transition, as type [Instant].
 
 **Method:** `POST`

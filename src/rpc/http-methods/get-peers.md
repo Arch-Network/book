@@ -1,5 +1,7 @@
 # `getPeers`
 
+> ️️⚠️ Note: This endpoint is not available for local validators.
+
 **Description:** Retrieves details of a validator's peers: `peer_id`, `time_drift_ms` and the `last_heartbeat` as type, [Instant].
 
 **Method:** `POST`
