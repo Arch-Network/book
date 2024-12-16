@@ -125,7 +125,7 @@ If the window doesn't pop up, navigate to: [http://localhost:5173](http://localh
 Now you're ready to tag the wall!
 
 <!-- Internal -->
-[development track]: ../getting-started/starting-stack.md#choose-a-track
+[development stack]: ../getting-started/starting-stack.md#choose-a-track
 [Solana-CLI]: ../getting-started/requirements.md#install-solana-cli
 [requirements]: ../getting-started/requirements.md
 
