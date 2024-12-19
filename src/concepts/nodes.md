@@ -20,7 +20,7 @@ The validator node also runs the [eBPF] virtual machine and executes the transac
 
 This validator is a lightweight server that only serves as an RPC for developers to get up and running quickly with the least amount of overhead. It simulates a single-node blockchain environment that is meant for efficient, rapid development.
 
-> Note: this uses the same image as the [Validator] node though operates singularly for maximum efficiency.
+> Note: the [Lightweight Validator] node uses the same image as the [Validator] node though operates singularly for maximum efficiency.
  
 More can be read about the Arch Network architecture in our [docs].
 

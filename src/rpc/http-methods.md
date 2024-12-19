@@ -1,10 +1,8 @@
 # HTTP Methods
 
 Interact with Arch nodes directly with the JSON RPC API via this list of available HTTP methods.
-
-> INFO:
->
-> For client-side needs, use the [@saturnbtcio/arch-sdk] library as an interface for the RPC methods to interact with an Arch node.
+ 
+> Note: For client-side needs, use the [@saturnbtcio/arch-sdk] library as an interface for the RPC methods to interact with an Arch node.
 
 ### Endpoint
 Default port: `9002`
