@@ -2,7 +2,7 @@
 
 > ️️⚠️ Note: This endpoint is not available for local validators.
 
-**Description:** Retrieves details of a validator's peers: `peer_id`, `time_drift_ms` and the `last_heartbeat` as type, [Instant].
+**Description:** Retrieves a list of peers currently connected to the node.
 
 **Method:** `POST`
 
@@ -27,8 +27,14 @@ http://localhost:9002/
 ```json
 {
   "jsonrpc": "2.0",
-  "result": "",
-  "id": "1"
+  "result": [
+    {
+      "peer_id": "12D3KooW...",
+      "address": "/ip4/192.168.1.1/tcp/30303",
+      "status": "connected"
+    }
+  ],
+  "id": 1
 }
 ```
 

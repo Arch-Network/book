@@ -2,7 +2,7 @@
 
 > ️️⚠️ Note: This endpoint is not available for local validators.
 
-**Description:** Retrieves the current state: the validator's state (`Init`, `ConnectedToNetwork`, `ReadyToSync`, etc.) and the latest state transition, as type [Instant].
+**Description:** Retrieves the current state of the node, including information about the blockchain and network status.
 
 **Method:** `POST`
 
@@ -27,8 +27,11 @@ http://localhost:9002/
 ```json
 {
   "jsonrpc": "2.0",
-  "result": "",
-  "id": "1"
+  "result": {
+    "state": "Running",
+    "last_state_transition": "2023-10-01T12:00:00Z"
+  },
+  "id": 1
 }
 ```
 
