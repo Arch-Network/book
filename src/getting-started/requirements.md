@@ -29,11 +29,11 @@ sudo apt-get install gcc-multilib
 
 ### Install Node.js
 
-Please make sure you have [Node.js] version 19 or higher installed as [npm] is required to run the various front-ends within the repository. 
+Please make sure you have [Node.js] version 19 or higher installed as [npm] is required to work with the [arch-typescript-sdk].
 
 ### Install Solana CLI
 
-To compile the examples, the [Solana] CLI toolchain must be installed. Execute the following commands to install the toolchain to your local system.
+To compile the examples, the [Solana] CLI toolchain must be installed. Execute the following command to install the toolchain on your local system.
 
 #### MacOS & Linux
 
@@ -41,9 +41,9 @@ To compile the examples, the [Solana] CLI toolchain must be installed. Execute t
 sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 ```
 
+> **Solana v2.x is not supported.**
+> 
 > You can replace v1.18.18 with the release tag matching the software version of your desired release, or use one of the three symbolic channel names: stable, beta, or edge. 
->
-> Ref: [Solana Docs].
 
 > ⚠️ **NOTE:** Installing [rust] through [Homebrew] likely leads to issues working with `cargo-build-sbf`. Below are some steps to get around this.
 
@@ -78,7 +78,7 @@ sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 
 Finally, we'll be using a repository specifically made to demonstrate Arch's capabilities and get you started building quickly: `arch-cli`. 
 
-The `arch-cli` [repo] provides a local Arch Network development environment, a command-line tool to setup new projects, deploy programs and more, as well as provides an example dapp to showcase Arch functionality that we will touch on later in this book. The `arch-cli` also ships with a mini block explorer for additional visibility into transactions and block production.
+The [arch-cli repo] provides a local Arch Network development environment, a command-line tool to setup new projects, deploy programs and more, as well as provides an example dapp to showcase Arch functionality that we will touch on later in this book. The `arch-cli` also ships with a mini block explorer for additional visibility into transactions and block production.
 
 ```bash
 git clone https://github.com/arch-Network/arch-cli && \
@@ -101,10 +101,11 @@ cargo install --path .
 [gcc-multilib]: https://packages.debian.org/sid/gcc-multilib
 [npm]: https://github.com/npm/cli
 [eBPF]: https://ebpf.io/
-[repo]: https://github.com/arch-Network/arch-cli
+[arch-cli repo]: https://github.com/arch-Network/arch-cli
 [rust]: https://www.rust-lang.org
 [Solana]: https://github.com/solana-labs/solana
 [Node.js]: https://nodejs.org/en/download/package-manager
+[arch-typescript-sdk]: https://github.com/saturnBTC/arch-typescript-sdk
 [Homebrew]: https://brew.sh/
 [Solana Docs]: https://docs.solanalabs.com/cli/install#macos--linux
 [the Rust website]: https://www.rust-lang.org/tools/install
