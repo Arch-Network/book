@@ -47,6 +47,8 @@
         - [getBlock](rpc/http-methods/get-block.md)
         - [getBlockCount](rpc/http-methods/get-block-count.md)
         - [getBlockHash](rpc/http-methods/get-block-hash.md)
+        - [getCurrentState](rpc/http-methods/get-current-state.md)
+        - [getPeers](rpc/http-methods/get-peers.md)
         - [getProcessedTransaction](rpc/http-methods/get-processed-transaction.md)
         - [readAccountInfo](rpc/http-methods/read-account-info.md)
         - [startDkg](rpc/http-methods/start-dkg.md)
