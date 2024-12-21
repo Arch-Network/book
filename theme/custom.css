@@ -24,9 +24,10 @@
 /* Menu positioning */
 #menu-bar {
     position: fixed !important;
+    top: 0;
     left: 0;
     right: 0;
-    z-index: 100;
+    z-index: 2;
     height: var(--menu-bar-height);
     background: var(--bg);
     border-bottom: 1px solid var(--border-color);
