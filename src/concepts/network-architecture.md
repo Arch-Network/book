@@ -17,10 +17,10 @@ Arch Network operates as a distributed system with different types of nodes work
                     │  └─────────────┘    └──────────────┘      │
                     └─────────-───┬─────────-─┬──────────--┬────┘
                       │           │           │            │
-                 ┌────▼───┐  ┌────▼───-┐ ┌────▼──-─┐ ┌────▼──-─┐
+                 ┌────▼──-─┐ ┌────▼───-┐ ┌────▼──-─┐ ┌────▼──-─┐
                  │Validator│ │Validator│ │Validator│ │Validator│
-                 │Node 1  │  │Node 2   │ │Node 3   │ │Node N   │
-                 └────────┘  └────────-┘ └────────-┘ └────────-┘
+                 │Node 1   │ │Node 2   │ │Node 3   │ │Node N   │
+                 └────────-┘ └────────-┘ └────────-┘ └────────-┘
                       ▲          ▲          ▲          ▲
                       └──────────┴──────────┴──────────┘
                                     │
@@ -68,21 +68,21 @@ The leader node coordinates transaction processing and Bitcoin integration:
                 Bitcoin Network
                       ▲
                       │
-        ┌─────────────┴─────────────┐
-        │        Leader Node        │
-        │                          │
-    ┌─��─┴──────────┐   ┌──────────┴───┐
+         ┌────────────┴────────────┐
+         │        Leader Node      │
+         │                         │
+    ┌─--─┴─────────┐   ┌───────-───┴──┐
     │ Transaction  │   │  Multi-sig   │
     │ Coordination │   │ Aggregation  │
-    └─────────────┬┘   └┬────────────┘
+    └─────────────┬┘   └┬-────────────┘
                   │     │
          ┌────────▼─────▼────────┐
          │   Validator Network   │
          └─────────────────────┬─┘
-                              │
-                     ┌────────▼───────┐
+                               │
+                     ┌────────-▼──────-┐
                      │Program Execution│
-                     └────────────────┘
+                     └────────────────-┘
 ```
 
 Key responsibilities:
@@ -97,16 +97,16 @@ Validator nodes form the core of the network's computation and validation:
 ```ascii
 ┌────────────────────────────────────┐
 │           Validator Node           │
-│                                   │
-│  ┌──────────┐     ┌───────────┐  │
-│  │  Arch VM  │     │  State    │  │
-│  │ Execution │     │ Validation│  │
-│  └─────┬─────┘     └─────┬─────┘  │
+│                                    │
+│  ┌───────-───┐     ┌───────────┐   │
+│  │  Arch VM  │     │  State    │   │
+│  │ Execution │     │ Validation│   │
+│  └─────┬─────┘     └─────┬─────┘   │
 │        │                 │         │
-│  ┌─────▼─────────────────▼─────┐  │
-│  │      Network Protocol       │  │
-│  └─────────────┬───────────────┘  │
-└────────────────┼──────────────────┘
+│  ┌─────▼─────────────────▼─────┐   │
+│  │      Network Protocol       │   │
+│  └─────────────┬───────────────┘   │
+└────────────────┼──────────────────-┘
                  │
          ┌───────▼───────┐
          │ P2P Network   │
