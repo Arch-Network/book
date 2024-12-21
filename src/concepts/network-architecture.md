@@ -15,7 +15,7 @@ Arch Network operates as a distributed system with different types of nodes work
                     │  │Transaction  │    │ Multi-sig    │  │
                     │  │Coordination │    │ Aggregation  │  │
                     │  └─────────────┘    └──────────────┘  │
-                    └─┬─��────────┬──────────┬──────────┬────┘
+                    └─┬─��────────┬──────────┬──────────┬─��──┘
                       │          │          │          │
                  ┌────▼───┐ ┌────▼───┐ ┌────▼───┐ ┌────▼───┐
                  │Validator│ │Validator│ │Validator│ │Validator│
@@ -40,7 +40,7 @@ The bootnode serves as the network's entry point, similar to DNS seeds in Bitcoi
 - Manages network topology
 
 ```ascii
-                     ┌─────────────────┐
+                     ┌────────────────���┐
                      │    Bootnode     │
                      │                 │
 ┌──────────┐        │ ┌─────────────┐ │         ┌──────────┐
@@ -128,7 +128,7 @@ Types:
 
 ### P2P Protocol
 The network uses libp2p for peer-to-peer communication:
-```rust
+```rust,ignore
 pub const ENABLED_PROTOCOLS: [&str; 2] = [
     ArchNetworkProtocol::STREAM_PROTOCOL,
     ArchNetworkProtocol::VALIDATOR_PROTOCOL,
@@ -141,7 +141,7 @@ pub const VALIDATOR_VERSION: &str = "/arch/validator/1.0.0";
 
 ### Message Types
 1. **Network Messages**
-   ```rust
+   ```rust,ignore
    pub enum NetworkMessage {
        Discovery(DiscoveryMessage),
        State(StateMessage),
@@ -150,7 +150,7 @@ pub const VALIDATOR_VERSION: &str = "/arch/validator/1.0.0";
    ```
 
 2. **ROAST Protocol Messages**
-   ```rust
+   ```rust,ignore
    pub enum RoastMessage {
        KeyGeneration(KeyGenMessage),
        Signing(SigningMessage),
@@ -181,7 +181,7 @@ pub const VALIDATOR_VERSION: &str = "/arch/validator/1.0.0";
 ## Security Model
 
 ### 1. Validator Selection
-```rust
+```rust,ignore
 pub struct ValidatorInfo {
     pub peer_id: PeerId,
     pub pubkey: Pubkey,
@@ -201,7 +201,7 @@ pub struct ValidatorSet {
 - Double-spend prevention
 
 ### 3. State Protection
-```rust
+```rust,ignore
 pub struct StateUpdate {
     pub block_height: u64,
     pub state_root: Hash,
@@ -213,7 +213,7 @@ pub struct StateUpdate {
 ## Monitoring and Telemetry
 
 ### 1. Node Metrics
-```rust
+```rust,ignore
 pub struct NodeMetrics {
     pub peer_id: PeerId,
     pub network_mode: ArchNetworkMode,
@@ -226,7 +226,7 @@ pub struct NodeMetrics {
 ```
 
 ### 2. Network Health
-```rust
+```rust,ignore
 pub struct NetworkHealth {
     pub validator_count: u32,
     pub active_validators: u32,

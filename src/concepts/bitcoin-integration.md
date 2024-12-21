@@ -52,7 +52,7 @@ Arch Network manages Bitcoin UTXOs through a specialized system:
 └─────────────────┘      └──────────────┘
 ```
 
-```rust
+```rust,ignore
 // UTXO Metadata Structure
 pub struct UtxoMeta {
     pub txid: [u8; 32],  // Transaction ID
@@ -73,7 +73,7 @@ pub struct UtxoAccount {
 ```
 
 Key operations:
-```rust
+```rust,ignore
 // UTXO Operations
 pub trait UtxoOperations {
     fn create_utxo(meta: UtxoMeta, owner: &Pubkey) -> Result<()>;
@@ -102,7 +102,7 @@ pub trait UtxoOperations {
 ```
 
 Programs can interact with Bitcoin through RPC calls:
-```rust
+```rust,ignore
 // Bitcoin RPC Configuration
 pub struct BitcoinRpcConfig {
     pub endpoint: String,
@@ -154,7 +154,7 @@ pub trait BitcoinRpc {
 ```
 
 ### 1. Transaction Creation
-```rust
+```rust,ignore
 // Create new UTXO transaction
 pub struct UtxoCreation {
     pub amount: u64,
@@ -179,7 +179,7 @@ impl UtxoCreation {
 ```
 
 ### 2. Transaction Validation
-```rust
+```rust,ignore
 // Validation rules
 pub trait TransactionValidation {
     fn validate_inputs(&self, tx: &Transaction) -> Result<()>;
@@ -190,7 +190,7 @@ pub trait TransactionValidation {
 ```
 
 ### 3. State Management
-```rust
+```rust,ignore
 // State transition
 pub struct StateTransition {
     pub previous_state: Hash,
@@ -210,7 +210,7 @@ pub struct StateTransition {
 - Threshold signature requirements
 
 ### 2. Transaction Security
-```rust
+```rust,ignore
 // Transaction security parameters
 pub struct SecurityParams {
     pub min_confirmations: u32,
@@ -229,7 +229,7 @@ pub struct SecurityParams {
 ## Error Handling
 
 ### 1. Bitcoin Errors
-```rust
+```rust,ignore
 pub enum BitcoinError {
     ConnectionFailed(String),
     InvalidTransaction(String),
@@ -240,7 +240,7 @@ pub enum BitcoinError {
 ```
 
 ### 2. UTXO Errors
-```rust
+```rust,ignore
 pub enum UtxoError {
     NotFound(UtxoMeta),
     AlreadySpent(UtxoMeta),

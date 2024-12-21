@@ -4,7 +4,7 @@ Accounts are a fundamental data structure in Arch that store state and are owned
 
 ### Account Structure
 
-```rust
+```rust,ignore
 pub struct Account {
     /// The program that owns this account
     pub owner: Pubkey,
@@ -113,7 +113,7 @@ pub struct Account {
 ### Common Operations:
 
 1. **Creation**
-```rust
+```rust,ignore
 SystemInstruction::CreateAccount {
     lamports: u64,  // Initial balance
     space: u64,     // Data size
@@ -122,21 +122,21 @@ SystemInstruction::CreateAccount {
 ```
 
 2. **Transfer**
-```rust
+```rust,ignore
 SystemInstruction::Transfer {
     lamports: u64,  // Amount to transfer
 }
 ```
 
 3. **Allocation**
-```rust
+```rust,ignore
 SystemInstruction::Allocate {
     space: u64,  // New data size
 }
 ```
 
 4. **Assignment**
-```rust
+```rust,ignore
 SystemInstruction::Assign {
     owner: Pubkey,  // New owner
 }
