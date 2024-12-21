@@ -1,13 +1,55 @@
 [book]
-authors = ["jon roethke"]
+title = "The Arch Book"
+authors = ["Arch Network Team"]
+description = "Documentation for the Arch Network - A Bitcoin-native computation environment"
 language = "en"
 multilingual = false
 src = "src"
-title = "The Arch Book"
 
 [output.html]
+theme = "theme"
+default-theme = "light"
+preferred-dark-theme = "navy"
 git-repository-url = "https://github.com/arch-network/book"
+git-repository-icon = "fa-github"
 edit-url-template = "https://github.com/arch-network/book/edit/main/{path}"
+additional-css = ["theme/custom.css"]
+additional-js = ["theme/custom.js"]
+no-section-label = true
+mathjax-support = true
+copy-fonts = true
+curly-quotes = true
+
+[output.html.playground]
+editable = true
+copyable = true
+copy-js = true
+line-numbers = true
+
+[output.html.search]
+enable = true
+limit-results = 30
+teaser-word-count = 30
+use-boolean-and = true
+boost-title = 2
+boost-hierarchy = 1
+boost-paragraph = 1
+expand = true
+heading-split-level = 3
+
+[output.html.fold]
+enable = true
+level = 1
+
+[preprocessor.index]
+index = true
+
+[preprocessor.links]
+follow-web-links = true
+
+[preprocessor.toc]
+command = "mdbook-toc"
+renderer = ["html"]
 
 [rust]
 edition = "2021"
