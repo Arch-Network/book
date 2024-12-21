@@ -15,7 +15,7 @@ Arch Network operates as a distributed system with different types of nodes work
                     │  │Transaction  │    │ Multi-sig    │  │
                     │  │Coordination │    │ Aggregation  │  │
                     │  └─────────────┘    └──────────────┘  │
-                    └─┬──────────┬──────────┬──────────┬────┘
+                    └─┬─��────────┬──────────┬──────────┬────┘
                       │          │          │          │
                  ┌────▼───┐ ┌────▼───┐ ┌────▼───┐ ┌────▼───┐
                  │Validator│ │Validator│ │Validator│ │Validator│
@@ -98,7 +98,7 @@ Validator nodes form the core of the network's computation and validation:
 ┌────────────────────────────────────┐
 │           Validator Node           │
 │                                   │
-│  ┌───────────┐     ┌───────────┐  │
+│  ┌��──────────┐     ┌───────────┐  │
 │  │  Arch VM  │     │  State    │  │
 │  │ Execution │     │ Validation│  │
 │  └─────┬─────┘     └─────┬─────┘  │
@@ -133,81 +133,114 @@ pub const ENABLED_PROTOCOLS: [&str; 2] = [
     ArchNetworkProtocol::STREAM_PROTOCOL,
     ArchNetworkProtocol::VALIDATOR_PROTOCOL,
 ];
+
+// Protocol versions
+pub const PROTOCOL_VERSION: &str = "/arch/1.0.0";
+pub const VALIDATOR_VERSION: &str = "/arch/validator/1.0.0";
 ```
 
 ### Message Types
 1. **Network Messages**
-   - Peer discovery
-   - State synchronization
-   - Transaction propagation
+   ```rust
+   pub enum NetworkMessage {
+       Discovery(DiscoveryMessage),
+       State(StateMessage),
+       Transaction(TransactionMessage),
+   }
+   ```
 
 2. **ROAST Protocol Messages**
-   - Multi-signature coordination
-   - Threshold signing
-   - Key generation
+   ```rust
+   pub enum RoastMessage {
+       KeyGeneration(KeyGenMessage),
+       Signing(SigningMessage),
+       Aggregation(AggregationMessage),
+   }
+   ```
 
 ## Network Modes
 
 ### 1. Devnet
-- Local development
-- Single validator
-- Simulated Bitcoin
+- Local development environment
+- Single validator setup
+- Simulated Bitcoin interactions
+- Fast block confirmation
 
 ### 2. Testnet
-- Test environment
-- Multiple validators
+- Test environment with multiple validators
 - Bitcoin testnet integration
+- Real network conditions
+- Test transaction processing
 
 ### 3. Mainnet
 - Production network
 - Full security model
 - Bitcoin mainnet integration
+- Live transaction processing
 
 ## Security Model
 
 ### 1. Validator Selection
-- Whitelist-based validation
-- PeerID verification
-- Network role enforcement
+```rust
+pub struct ValidatorInfo {
+    pub peer_id: PeerId,
+    pub pubkey: Pubkey,
+    pub stake: u64,
+}
+
+pub struct ValidatorSet {
+    pub validators: Vec<ValidatorInfo>,
+    pub threshold: u32,
+}
+```
 
 ### 2. Transaction Security
-- Multi-signature validation
-- Threshold signing
+- Multi-signature validation using ROAST protocol
+- Threshold signing (t-of-n)
 - Bitcoin-based finality
+- Double-spend prevention
 
 ### 3. State Protection
-- Distributed state verification
-- UTXO-based state anchoring
-- Cross-validator consistency
+```rust
+pub struct StateUpdate {
+    pub block_height: u64,
+    pub state_root: Hash,
+    pub bitcoin_height: u64,
+    pub signatures: Vec<Signature>,
+}
+```
 
 ## Monitoring and Telemetry
 
 ### 1. Node Metrics
 ```rust
-pub struct NodeInfo {
+pub struct NodeMetrics {
     pub peer_id: PeerId,
     pub network_mode: ArchNetworkMode,
     pub bitcoin_block_height: u64,
     pub arch_block_height: u64,
+    pub peers_connected: u32,
+    pub transactions_processed: u64,
+    pub program_count: u32,
 }
 ```
 
 ### 2. Network Health
-- Peer connectivity
-- Block propagation
-- Transaction processing
-- Bitcoin synchronization
-
-### 3. Debug Interfaces
-```bash
-curl -X POST -H 'Content-Type: application/json' -d '
-{
-    "jsonrpc":"2.0",
-    "id":1,
-    "method":"is_node_ready",
-    "params":[]
-}' http://localhost:9002/
+```rust
+pub struct NetworkHealth {
+    pub validator_count: u32,
+    pub active_validators: u32,
+    pub network_tps: f64,
+    pub average_block_time: Duration,
+    pub fork_count: u32,
+}
 ```
+
+### 3. Monitoring Endpoints
+- `/metrics` - Prometheus metrics
+- `/health` - Node health check
+- `/peers` - Connected peers
+- `/status` - Network status
 
 ## Best Practices
 

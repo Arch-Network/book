@@ -57,14 +57,31 @@ Arch Network manages Bitcoin UTXOs through a specialized system:
 pub struct UtxoMeta {
     pub txid: [u8; 32],  // Transaction ID
     pub vout: u32,       // Output index
+    pub amount: u64,     // Amount in satoshis
+    pub script_pubkey: Vec<u8>, // Output script
+    pub confirmation_height: Option<u32>, // Block height of confirmation
+}
+
+// UTXO Account State
+pub struct UtxoAccount {
+    pub meta: UtxoMeta,
+    pub owner: Pubkey,
+    pub delegate: Option<Pubkey>,
+    pub state: Vec<u8>,
+    pub is_frozen: bool,
 }
 ```
 
 Key operations:
-- UTXO creation and tracking
-- Ownership validation
-- State anchoring
-- Transaction management
+```rust
+// UTXO Operations
+pub trait UtxoOperations {
+    fn create_utxo(meta: UtxoMeta, owner: &Pubkey) -> Result<()>;
+    fn spend_utxo(utxo: &UtxoMeta, signature: &Signature) -> Result<()>;
+    fn freeze_utxo(utxo: &UtxoMeta, authority: &Pubkey) -> Result<()>;
+    fn delegate_utxo(utxo: &UtxoMeta, delegate: &Pubkey) -> Result<()>;
+}
+```
 
 ### 2. Bitcoin RPC Integration
 
@@ -93,6 +110,17 @@ pub struct BitcoinRpcConfig {
     pub username: String,
     pub password: String,
     pub wallet: Option<String>,
+    pub network: BitcoinNetwork,
+    pub timeout: Duration,
+}
+
+// RPC Interface
+pub trait BitcoinRpc {
+    fn get_block_count(&self) -> Result<u64>;
+    fn get_block_hash(&self, height: u64) -> Result<BlockHash>;
+    fn get_transaction(&self, txid: &Txid) -> Result<Transaction>;
+    fn send_raw_transaction(&self, tx: &[u8]) -> Result<Txid>;
+    fn verify_utxo(&self, utxo: &UtxoMeta) -> Result<bool>;
 }
 ```
 
@@ -125,98 +153,122 @@ pub struct BitcoinRpcConfig {
 └──────────┘   └──────────┘   └──────────┘   └──────────┘
 ```
 
-### 1. UTXO Creation
+### 1. Transaction Creation
 ```rust
-// Create new UTXO
-let txid = rpc.send_to_address(
-    &account_address,
-    Amount::from_sat(3000),
-    None, None, None, None, None, None,
-)?;
+// Create new UTXO transaction
+pub struct UtxoCreation {
+    pub amount: u64,
+    pub owner: Pubkey,
+    pub metadata: Option<Vec<u8>>,
+}
 
-// Get transaction details
-let sent_tx = rpc.get_raw_transaction(&txid, None)?;
-let vout = find_output_index(&sent_tx, &account_address);
+impl UtxoCreation {
+    pub fn new(amount: u64, owner: Pubkey) -> Self {
+        Self {
+            amount,
+            owner,
+            metadata: None,
+        }
+    }
+
+    pub fn with_metadata(mut self, metadata: Vec<u8>) -> Self {
+        self.metadata = Some(metadata);
+        self
+    }
+}
 ```
 
-### 2. Account Creation
+### 2. Transaction Validation
 ```rust
-// Create account with UTXO reference
-let instruction = SystemInstruction::new_create_account_instruction(
-    txid.try_into().unwrap(),
-    vout,
-    account_pubkey
-);
+// Validation rules
+pub trait TransactionValidation {
+    fn validate_inputs(&self, tx: &Transaction) -> Result<()>;
+    fn validate_outputs(&self, tx: &Transaction) -> Result<()>;
+    fn validate_signatures(&self, tx: &Transaction) -> Result<()>;
+    fn validate_script(&self, tx: &Transaction) -> Result<()>;
+}
 ```
 
 ### 3. State Management
-- UTXO tracking
-- State transitions
-- Transaction validation
-- Finality confirmation
+```rust
+// State transition
+pub struct StateTransition {
+    pub previous_state: Hash,
+    pub next_state: Hash,
+    pub utxos_created: Vec<UtxoMeta>,
+    pub utxos_spent: Vec<UtxoMeta>,
+    pub bitcoin_height: u64,
+}
+```
 
 ## Security Model
 
-### 1. Multi-Signature Operations
-- Threshold signing
-- Signature aggregation
-- Key management
-- Transaction validation
+### 1. UTXO Security
+- Ownership verification through public key cryptography
+- Double-spend prevention through UTXO consumption
+- State anchoring to Bitcoin transactions
+- Threshold signature requirements
 
-### 2. State Protection
-- UTXO ownership validation
-- Script verification
-- State consistency
-- Reorg handling
+### 2. Transaction Security
+```rust
+// Transaction security parameters
+pub struct SecurityParams {
+    pub min_confirmations: u32,
+    pub signature_threshold: u32,
+    pub timelock_blocks: u32,
+    pub max_witness_size: usize,
+}
+```
 
 ### 3. Network Security
-- Bitcoin finality
-- Transaction confirmation
-- Network synchronization
-- State verification
+- Multi-signature validation
+- Threshold signing (t-of-n)
+- Bitcoin-based finality
+- Cross-validator consistency
+
+## Error Handling
+
+### 1. Bitcoin Errors
+```rust
+pub enum BitcoinError {
+    ConnectionFailed(String),
+    InvalidTransaction(String),
+    InsufficientFunds(u64),
+    InvalidUtxo(UtxoMeta),
+    RpcError(String),
+}
+```
+
+### 2. UTXO Errors
+```rust
+pub enum UtxoError {
+    NotFound(UtxoMeta),
+    AlreadySpent(UtxoMeta),
+    InvalidOwner(Pubkey),
+    InvalidSignature(Signature),
+    InvalidState(Hash),
+}
+```
 
 ## Best Practices
 
 ### 1. UTXO Management
-- Track UTXO states
-- Handle confirmations
-- Manage change outputs
-- Validate ownership
+- Always verify UTXO ownership
+- Wait for sufficient confirmations
+- Handle reorganizations gracefully
+- Implement proper error handling
 
-### 2. Transaction Handling
-- Proper fee calculation
-- Confirmation monitoring
-- Error handling
-- State verification
+### 2. Transaction Processing
+- Validate all inputs and outputs
+- Check signature thresholds
+- Maintain proper state transitions
+- Monitor Bitcoin network status
 
 ### 3. Security Considerations
-- Key management
-- Transaction validation
-- State consistency
-- Network monitoring
-
-## Development Guidelines
-
-### 1. Local Development
-```bash
-# Configure Bitcoin RPC for local development
-BITCOIN_RPC_ENDPOINT=127.0.0.1
-BITCOIN_RPC_PORT=18443
-BITCOIN_RPC_USERNAME=bitcoin
-BITCOIN_RPC_PASSWORD=bitcoin
-```
-
-### 2. Testing
-- Use testnet for development
-- Monitor UTXO states
-- Handle edge cases
-- Validate transactions
-
-### 3. Production
-- Secure key management
-- Monitor Bitcoin network
-- Handle reorgs
-- Maintain state consistency
+- Protect private keys
+- Validate all signatures
+- Monitor for double-spend attempts
+- Handle network partitions
 
 <!-- Internal -->
 [UTXO]: ../program/utxo.md
