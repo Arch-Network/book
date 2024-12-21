@@ -211,20 +211,7 @@ As an example, below we have a sample rust program that we'll use to fetch the B
 > The call to update the oracle state account can be written in any programming language as it is simply an RPC call. For sake of continuity, we're using rust along with methods from both the `program` and `sdk` crates.
 
 ```rust,ignore
-// update_account.rs
-
 use bitcoincore_rpc::{Auth, Client};
-use common::constants::*;
-use arch_program::{pubkey::Pubkey, utxo::UtxoMeta, system_instruction::SystemInstruction, instruction::Instruction, account::AccountMeta};
-
-use common::helper::*;
-use serial_test::serial;
-use common::models::*;
-use std::thread;
-use std::str::FromStr;
-use borsh::{BorshSerialize, BorshDeserialize};
-use std::fs;
-use serde_json::Value;
 
 let mut old_feerate = 0;
 

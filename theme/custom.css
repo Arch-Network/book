@@ -1,0 +1,1066 @@
+/* Custom theme for Arch Network Documentation */
+
+:root {
+    --sidebar-width: 300px;
+    --content-max-width: 850px;
+    --menu-bar-height: 40px;
+    --arch-primary: #FF6B2B;
+    --arch-secondary: #1E2022;
+    --arch-accent: #3498db;
+    --arch-success: #2ecc71;
+    --arch-warning: #f1c40f;
+    --arch-error: #e74c3c;
+    --arch-info: #3498db;
+}
+
+/* Layout */
+.content {
+    position: relative;
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding: 0 4rem;
+}
+
+/* Menu positioning */
+#menu-bar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    height: var(--menu-bar-height);
+    background: var(--bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    margin-top: 0 !important;
+}
+
+.left-buttons {
+    display: flex;
+    align-items: center;
+    z-index: 102;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    font-size: 1em;
+    font-weight: 400;
+    margin: 0;
+    white-space: nowrap;
+    position: relative;
+    z-index: 101;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+    font-size: 0.875em;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    background: var(--bg);
+    z-index: 3;
+    padding-top: var(--menu-bar-height);
+}
+
+/* ASCII diagrams */
+.content pre {
+    position: relative;
+    margin: 1.5rem 0;
+    background-color: #f6f8fa;
+    border-radius: 6px;
+    padding: 16px;
+    border: 1px solid #eaecef;
+    overflow-x: auto;
+}
+
+.content pre code {
+    font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 14px;
+    line-height: 1.45;
+    display: block;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    overflow-x: auto;
+    white-space: pre;
+}
+
+/* Specific ASCII diagram styling */
+.content pre code.language-ascii {
+    font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace !important;
+    line-height: 1.2 !important;
+    white-space: pre !important;
+    font-size: 14px !important;
+    tab-size: 4;
+}
+
+/* Dark mode support for diagrams */
+@media (prefers-color-scheme: dark) {
+    .content pre {
+        background-color: #2d333b !important;
+        border-color: #444c56;
+    }
+    
+    .content pre code {
+        color: #c9d1d9;
+    }
+}
+
+/* Navigation arrows */
+.nav-wide-wrapper { 
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.nav-wide-wrapper a {
+    pointer-events: auto;
+    position: absolute;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--fg);
+    text-decoration: none;
+    box-shadow: none;
+}
+
+.nav-wide-wrapper .previous {
+    left: -70px;
+}
+
+.nav-wide-wrapper .next {
+    right: -70px;
+}
+
+/* Page content */
+main {
+    position: relative;
+    padding: 0 15px;
+    margin: 0 auto;
+}
+
+/* Right sidebar (On this page) */
+.right-sidebar {
+    position: fixed;
+    right: 0;
+    top: 40px;
+    width: var(--sidebar-width);
+    height: calc(100vh - 40px);
+    background: var(--bg);
+    border-left: 1px solid var(--border-color);
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 99;
+}
+
+.right-sidebar h2 {
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #666;
+    margin: 0 0 1em 0;
+    padding: 0;
+    border: none;
+}
+
+.right-sidebar a {
+    color: var(--sidebar-fg);
+    text-decoration: none;
+}
+
+.right-sidebar a:hover {
+    text-decoration: underline;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    pre code.language-ascii {
+        background: #2d333b !important;
+        border-color: #444c56;
+    }
+}
+
+/* Mobile adjustments */
+@media only screen and (max-width: 1100px) {
+    #menu-bar {
+        left: 0;
+    }
+
+    .sidebar {
+        left: -var(--sidebar-width);
+        transition: left 0.3s ease;
+    }
+
+    .sidebar.visible {
+        left: 0;
+    }
+
+    .page-wrapper {
+        margin-left: 0;
+    }
+
+    .page {
+        margin-right: 0;
+    }
+
+    .right-sidebar {
+        display: none;
+    }
+
+    .nav-chapters {
+        display: none;
+    }
+
+    .content {
+        margin: 0;
+        padding: 15px;
+    }
+    
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        display: none;
+    }
+    
+    main {
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-wide-wrapper {
+        display: none;
+    }
+    
+    .content {
+        padding: 0 1rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .right-sidebar,
+    .nav-wide-wrapper {
+        display: none;
+    }
+    
+    main {
+        margin: 0;
+        padding: 0;
+    }
+}
+
+/* Chapter content */
+.chapter {
+    padding: 0 15px;
+}
+
+/* Page content */
+.page {
+    padding: 0;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+/* Typography */
+.content {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+    font-size: 16px;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    color: var(--arch-secondary);
+    margin-top: 2em;
+    margin-bottom: 1em;
+}
+
+h1 { 
+    font-size: 2.5em;
+    border-bottom: 2px solid var(--arch-primary);
+    padding-bottom: 0.3em;
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 1.8em;
+    border-bottom: 1px solid #eaecef;
+}
+
+/* Feature Grid */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem auto;
+    max-width: 100%;
+}
+
+.feature {
+    background: #fff;
+    border: 1px solid #eaecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.feature h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--arch-primary);
+    font-size: 1.1em;
+}
+
+.feature p {
+    margin: 0;
+    color: var(--arch-secondary);
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.feature a {
+    color: var(--arch-accent);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.feature a:hover {
+    color: var(--arch-primary);
+    text-decoration: underline;
+}
+
+/* Path Box */
+.path-box {
+    position: relative;
+    background: #f8f9fa;
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    margin: 1.5rem 0;
+    border-radius: 8px;
+}
+
+.path-box::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--arch-primary);
+    border-radius: 4px 0 0 4px;
+}
+
+/* Quick Start and Learning Path sections */
+.quick-start,
+.learning-path {
+    position: relative;
+    background: #f8f9fa;
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    margin: 1.5rem 0;
+    border-radius: 8px;
+}
+
+.quick-start::before,
+.learning-path::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--arch-primary);
+    border-radius: 4px 0 0 4px;
+}
+
+/* Path content */
+.path-box p,
+.quick-start p,
+.learning-path p {
+    margin: 0.5rem 0;
+}
+
+.path-box ul,
+.quick-start ul,
+.learning-path ul {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.path-box li,
+.quick-start li,
+.learning-path li {
+    margin: 0.5rem 0;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .path-box,
+    .quick-start,
+    .learning-path {
+        background: #2d333b;
+    }
+}
+
+/* Component Box */
+.component-box {
+    background: #fff;
+    border: 1px solid #eaecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.component-box ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+/* Architecture Overview */
+.architecture-overview {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 100%;
+    border: 1px solid var(--border-color);
+}
+
+/* Prerequisites Box */
+.prerequisites-box {
+    background: #fff;
+    border: 1px solid #eaecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.prerequisites-box ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+/* Next Steps Grid */
+.next-steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+    position: relative;
+    z-index: 1;
+}
+
+.next-steps-grid ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.next-steps-grid li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.next-steps-grid a {
+    position: relative;
+    display: block;
+    padding: 1.5rem;
+    background: var(--bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--arch-accent);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    margin-right: 0;
+}
+
+.next-steps-grid a::before {
+    content: "→";
+    position: absolute;
+    right: 1.5rem;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.3s ease;
+}
+
+.next-steps-grid a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: var(--arch-primary);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.3s ease;
+}
+
+.next-steps-grid a:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding-right: 3rem;
+    border-color: var(--arch-primary);
+}
+
+.next-steps-grid a:hover::before {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.next-steps-grid a:hover::after {
+    transform: scaleY(1);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .next-steps-grid a {
+        background: var(--arch-secondary);
+    }
+    
+    .next-steps-grid a:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+}
+
+/* Help Box */
+.help-box {
+    background: var(--bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.help-box ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.help-box li {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.help-box li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--arch-accent);
+}
+
+.help-box a {
+    color: var(--arch-accent);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.help-box a:hover {
+    color: var(--arch-primary);
+    text-decoration: underline;
+}
+
+/* Info Box */
+.info {
+    background: #ebf5fb;
+    border-left: 4px solid var(--arch-info);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+}
+
+/* Tip Box */
+.tip {
+    background: #eafaf1;
+    border-left: 4px solid var(--arch-success);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+}
+
+/* Warning Box */
+.warning {
+    background: #fef9e7;
+    border-left: 4px solid var(--arch-warning);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+}
+
+/* Error Box */
+.error {
+    background: #fdedec;
+    border-left: 4px solid var(--arch-error);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+}
+
+/* Code blocks */
+pre {
+    background-color: #f6f8fa !important;
+    border-radius: 6px !important;
+    padding: 16px !important;
+    border: 1px solid #eaecef;
+    position: relative;
+    margin: 1.5rem 0;
+}
+
+code {
+    font-family: "SF Mono", "Consolas", "Monaco", monospace;
+    font-size: 0.9em;
+    padding: 0.2em 0.4em;
+    background-color: #f6f8fa;
+    border-radius: 3px;
+}
+
+/* Code Copy Button */
+.copy-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #fff;
+    border: 1px solid #eaecef;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+    z-index: 1;
+}
+
+.copy-button:hover {
+    background: var(--arch-primary);
+    color: #fff;
+    border-color: var(--arch-primary);
+}
+
+/* Floating TOC */
+.floating-toc {
+    display: none;
+}
+
+@media (min-width: 1200px) {
+    .floating-toc:not(:empty) ul:not(:empty) {
+        display: block;
+        position: fixed;
+        right: 0;
+        top: calc(var(--menu-bar-height) + 2rem);
+        width: 200px;
+        background: var(--bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+        max-height: calc(100vh - var(--menu-bar-height) - 4rem);
+        overflow-y: auto;
+        margin-right: 1rem;
+    }
+    
+    .floating-toc:empty,
+    .floating-toc ul:empty {
+        display: none;
+    }
+}
+
+.floating-toc h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.5rem;
+}
+
+.floating-toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.floating-toc li {
+    margin: 0.5rem 0;
+}
+
+.floating-toc a {
+    text-decoration: none;
+    color: var(--arch-secondary);
+    font-size: 0.9em;
+}
+
+.floating-toc a:hover {
+    color: var(--arch-primary);
+}
+
+.floating-toc a.h3 {
+    padding-left: 1rem;
+    font-size: 0.85em;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --arch-secondary: #f8f9fa;
+        --bg: #1E2022;
+        --fg: #c9d1d9;
+    }
+
+    body {
+        background-color: var(--bg);
+        color: var(--fg);
+    }
+
+    .feature-grid li,
+    .component-box,
+    .prerequisites-box,
+    .next-steps-grid a,
+    .help-box,
+    .floating-toc {
+        background: var(--bg);
+        border-color: var(--border-color);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .path-box,
+    .architecture-overview {
+        background: #2d333b;
+    }
+
+    .info {
+        background: #1a5f7a;
+    }
+
+    .tip {
+        background: #1b4d3e;
+    }
+
+    .warning {
+        background: #7a571a;
+    }
+
+    .error {
+        background: #7a1a1a;
+    }
+
+    pre, code {
+        background-color: #2d333b !important;
+        border-color: #444c56;
+    }
+
+    .copy-button {
+        background: #2d333b;
+        border-color: #444c56;
+        color: #c9d1d9;
+    }
+
+    .copy-button:hover {
+        background: var(--arch-primary);
+        color: #fff;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .floating-toc,
+    .copy-button {
+        display: none;
+    }
+}
+
+/* Navigation elements */
+.nav-wide-wrapper { 
+    display: none;
+}
+
+.mobile-nav-chapters {
+    display: none;
+}
+
+@media only screen and (min-width: 1101px) {
+    .nav-wide-wrapper { 
+        display: block;
+        position: fixed;
+        top: 50%;
+        z-index: 1;
+        pointer-events: none;
+        width: calc(var(--content-max-width) + 140px);
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 0 4rem;
+        transition: left 0.3s ease;
+    }
+
+    /* When sidebar is visible, adjust the nav wrapper position */
+    .sidebar-visible .nav-wide-wrapper {
+        left: calc(50% + var(--sidebar-width)/2);
+    }
+
+    .nav-wide-wrapper a {
+        pointer-events: auto;
+        position: absolute;
+        background: none;
+        border: none;
+        padding: 0;
+        color: var(--fg);
+    }
+
+    .nav-wide-wrapper .next {
+        right: 0;
+    }
+
+    .nav-wide-wrapper .previous {
+        left: 0;
+    }
+}
+
+@media only screen and (max-width: 1100px) {
+    .mobile-nav-chapters {
+        display: flex;
+        justify-content: space-between;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        padding: 1rem;
+        background: var(--bg);
+        border-top: 1px solid var(--border-color);
+    }
+}
+
+/* Menu button */
+#menu-bar-toggle {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: var(--menu-bar-height);
+    border: none;
+    background: none;
+    color: var(--fg);
+    cursor: pointer;
+    z-index: 3;
+    padding: 0 15px;
+    transform: none;
+}
+
+/* Theme button */
+#theme-toggle {
+    padding: 5px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--fg);
+    cursor: pointer;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+} 
+
+/* Headers and arrows */
+h1, h2, h3, h4 {
+    position: relative;
+    padding-right: 1.5em;
+}
+
+.header-link {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 0.8em;
+    color: var(--arch-accent);
+    text-decoration: none;
+}
+
+h1:hover .header-link,
+h2:hover .header-link,
+h3:hover .header-link,
+h4:hover .header-link {
+    opacity: 1;
+}
+
+.chapter-item {
+    margin: 5px 0;
+}
+
+.chapter li {
+    margin: 5px 0;
+}
+
+/* Hide collapse arrows by default */
+.collapse-toggle {
+    display: none;
+}
+
+/* Headers and section toggles */
+.section-toggle {
+    font-size: 0.7em;
+    color: #999;
+    margin-right: 0.3em;
+    cursor: pointer;
+    user-select: none;
+    opacity: 0.6;
+}
+
+h1 .section-toggle,
+h2 .section-toggle,
+h3 .section-toggle {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+h1:hover .section-toggle,
+h2:hover .section-toggle,
+h3:hover .section-toggle {
+    opacity: 0.6;
+}
+
+/* Remove default arrow styles */
+details > summary {
+    list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+    display: none;
+}
+
+/* Custom arrow style */
+details > summary::before {
+    content: "›";
+    display: inline-block;
+    font-size: 0.9em;
+    color: #999;
+    margin-right: 0.4em;
+    transition: transform 0.2s;
+    opacity: 0.6;
+}
+
+details[open] > summary::before {
+    transform: rotate(90deg);
+}
+
+/* Headers */
+h1, h2, h3, h4 {
+    position: relative;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+h1 { 
+    font-size: 2em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--border-color);
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 1.5em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--border-color);
+}
+
+h3 {
+    font-size: 1.2em;
+}
+
+/* Header links */
+.header-link {
+    opacity: 0;
+    font-size: 0.8em;
+    margin-left: 0.3em;
+    color: #999;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.header-link::before {
+    content: "#";
+    font-size: 0.9em;
+}
+
+h1:hover .header-link,
+h2:hover .header-link,
+h3:hover .header-link {
+    opacity: 0.6;
+}
+
+.header-link:hover {
+    opacity: 1 !important;
+}
+
+/* Inline links */
+.content a {
+    color: var(--arch-accent);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.content a:hover {
+    text-decoration: underline;
+}
+
+/* Markdown links */
+.content a[href^="#"] {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Code links */
+.content code a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.content code a:hover {
+    text-decoration: none;
+}
+
+/* List items */
+.content li {
+    margin: 0.5em 0;
+}
+
+.content li p {
+    margin: 0;
+}
+
+/* Remove if it exists */
+.menu-bar-hover-placeholder {
+    display: none;
+}
+
+/* Add styles for when sidebar is open */
+.sidebar-visible #menu-bar {
+    left: var(--sidebar-width);
+}
+
+/* Add this to handle the page wrapper spacing */
+.page-wrapper {
+    padding-top: var(--menu-bar-height);
+}

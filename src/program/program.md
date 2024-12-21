@@ -14,12 +14,15 @@ Every Arch program includes a single entrypoint used to invoke the program. A [h
 _These parameters are required for every [instruction] to be processed.__
 
 ```rust,ignore
+use arch_program::entrypoint;
+entrypoint!(process_instruction);
+
 pub fn process_instruction(
     program_id: &Pubkey,
     accounts: &[AccountInfo],
     instruction_data: &[u8],
 ) -> Result<(), ProgramError> {
-...
+    // Program logic here
 }
 ```
 [lib.rs]
