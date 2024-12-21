@@ -93,7 +93,6 @@ pub struct Message {
    - Always verify account ownership
    - Check account permissions
    - Validate account relationships
-   - Ensure rent requirements are met
 
 2. **Data Serialization**
    - Use consistent serialization format (preferably Borsh)
@@ -164,7 +163,6 @@ Instructions can invoke other [programs] through CPI, enabling composability:
    - Maintain invariants
 
 3. **Account Management**
-   - Handle rent
    - Close accounts when done
    - Manage PDAs properly
 

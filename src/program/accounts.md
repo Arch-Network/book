@@ -14,8 +14,6 @@ pub struct Account {
     pub data: Vec<u8>,
     /// Whether this account can process instructions
     pub executable: bool,
-    /// The epoch at which this account will next owe rent
-    pub rent_epoch: Epoch,
 }
 ```
 
@@ -29,14 +27,12 @@ pub struct Account {
 
 #### 2. Lamports
 - The native token balance stored in the account
-- Used for transaction fees and rent
+- Used for transaction fees
 - Can be transferred between accounts via [instructions]
-- Minimum balance required for rent exemption
 
 #### 3. Data
 - Program-specific data stored as a byte array
 - Structure and interpretation determined by the owner [program]
-- Size affects the account's rent cost
 - Can store [UTXO]s, program state, or other data
 
 #### 4. Executable
@@ -44,12 +40,6 @@ pub struct Account {
 - Executable accounts cannot be modified after deployment
 - Only the loader program can set this flag
 - Required for [program] accounts
-
-#### 5. Rent Epoch
-- The epoch when the account will need to pay rent
-- Accounts must maintain minimum balance for rent exemption
-- Rent is based on data size and execution status
-- Helps prevent state bloat
 
 ### Account Types:
 
@@ -78,7 +68,6 @@ pub struct Account {
    - Allocates space for data
    - Assigns owner [program]
    - Transfers initial lamports
-   - Sets rent parameters
 
 2. **Program-Derived Accounts (PDAs)**
    - Deterministic addresses derived from seeds
@@ -100,18 +89,11 @@ pub struct Account {
    - Execution requires executable flag
    - Enforced by runtime
 
-3. **Rent**
-   - Prevents state bloat
-   - Ensures resource efficiency
-   - Exemption through minimum balance
-   - Automatically collected
-
 ### Best Practices:
 
 1. **Account Management**
    - Validate account ownership before [instructions]
    - Check account permissions
-   - Handle rent properly
    - Use appropriate account types
    - Close unused accounts
 
@@ -125,7 +107,6 @@ pub struct Account {
 3. **Program Design**
    - Use PDAs when appropriate
    - Minimize account creation
-   - Optimize for rent costs
    - Follow security principles
    - Plan for upgrades
 
@@ -166,7 +147,6 @@ SystemInstruction::Assign {
 1. **Creation**
    - System program creates account
    - Initial state set
-   - Rent reserve allocated
 
 2. **Usage**
    - Program operations
