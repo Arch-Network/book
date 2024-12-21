@@ -803,25 +803,35 @@ code {
         display: block;
         position: fixed;
         top: 50%;
-        transform: translateY(-50%);
         z-index: 1;
         pointer-events: none;
-        width: var(--content-max-width);
+        width: calc(var(--content-max-width) + 140px);
         left: 50%;
         transform: translate(-50%, -50%);
+        padding: 0 4rem;
+        transition: left 0.3s ease;
+    }
+
+    /* When sidebar is visible, adjust the nav wrapper position */
+    .sidebar-visible .nav-wide-wrapper {
+        left: calc(50% + var(--sidebar-width)/2);
     }
 
     .nav-wide-wrapper a {
         pointer-events: auto;
         position: absolute;
+        background: none;
+        border: none;
+        padding: 0;
+        color: var(--fg);
     }
 
     .nav-wide-wrapper .next {
-        right: -70px;  /* Position outside the content area */
+        right: 0;
     }
 
     .nav-wide-wrapper .previous {
-        left: -70px;  /* Position outside the content area */
+        left: 0;
     }
 }
 
