@@ -10,6 +10,12 @@
         - [Nodes](concepts/nodes.md)
     - [Resources](getting-started/resources.md)
 
+# Core Concepts
+- [Architecture Overview](concepts/architecture.md)
+- [Nodes](concepts/nodes.md)
+- [Programs](program/program.md)
+- [UTXOs](program/utxo.md)
+
 # Programs and beyond
 - [Basics](basics/basics.md)
     - [Building, deploying and interfacing](basics/building-deploying-interfacing.md)

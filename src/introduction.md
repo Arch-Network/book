@@ -1,29 +1,65 @@
-# Introduction
+# Welcome to Arch Network
 
-Welcome to the Arch Network developer documentation.
+## What is Arch Network?
+Arch Network is a computation environment that enhances Bitcoin's capabilities by enabling complex operations on Bitcoin UTXOs through its specialized virtual machine. Unlike Layer 2 solutions, Arch Network provides a native computation layer that works directly with Bitcoin's security model.
 
-This book will guide you through installation of Arch's developer stack as well as provide you with the essential knowledge to create, deploy and interact with Arch programs.
+### Key Features
+- **Bitcoin-Native**: Direct integration with Bitcoin's UTXO model
+- **Computation Environment**: Execute complex programs within the Arch VM
+- **Program Development**: Write programs in Rust to interact with Bitcoin UTXOs
+- **Security**: Leverages Bitcoin's proven security guarantees
+- **Developer Tools**: Complete development environment with CLI tools and explorer
 
-Arch Network leverages the security and ubiquity of [Bitcoin] to enhance decentralized applications by providing a computation environment. Arch facilitates complex operations on Bitcoin [UTXOs] through programs executed within the Arch VM environment.
+## Choose Your Path 
 
-### Prerequirements
+### 🚀 Quick Start (15 minutes)
+Build your first Arch program:
+1. Set up your development environment
+2. Create and deploy a basic program
+3. Interact with Bitcoin UTXOs
+[Start Quick Tutorial →](getting-started/environment-setup.md)
 
-#### Rust
-This book explores Arch Network's programs. It is not a [Rust] tutorial, and it assumes basic Rust knowledge. It is strongly recommended to understand the language first before proceeding. 
+### 🎓 Learning Path
+Master Arch development:
+1. Understanding Bitcoin UTXOs
+2. Arch VM architecture
+3. Program development patterns
+[Begin Learning →](basics/basics.md)
 
-#### Bitcoin
-Additionally, it is helpful to understand how Bitcoin works, especially the UTXO model. A good resource is [Saylor Academy's Bitcoin for Developers course] as well as [Mastering Bitcoin] by [Andreas Antonopoulos].
+### 🛠 Reference
+Technical documentation:
+- [API Reference](program/program.md)
+- [Program Examples](guides/how-to-write-arch-program.md)
+- [UTXO Operations](program/utxo.md)
+[View Reference →](program/program.md)
 
-### Contributing
-Please create an issue or pull request if you find any mistakes, bugs, or ambiguities. See [CONTRIBUTING.md] for additional details.
+## Core Architecture
 
-<!-- Internal -->
-[CONTRIBUTING.md]: ../CONTRIBUTING.md
+### How Arch Works
+Arch Network consists of three main components:
 
-<!-- External -->
-[rust]: https://www.rust-lang.org
-[Bitcoin]: https://bitcoin.org
-[UTXOs]: https://learnmeabitcoin.com/technical/transaction/utxo
-[Saylor Academy's Bitcoin for Developers Course]: https://learn.saylor.org/course/view.php?id=500
-[Mastering Bitcoin]: https://github.com/bitcoinbook/bitcoinbook
-[Andreas Antonopoulos]: https://aantonop.com/
+1. **Arch VM**: Executes programs and manages computation
+2. **Bitcoin Integration**: Direct UTXO interaction and management
+3. **Validator Network**: Ensures program execution integrity
+
+[Learn More About Architecture →](concepts/architecture.md)
+
+## Prerequisites
+Before you begin, ensure you have:
+
+- Node.js v19+
+- Rust (latest stable)
+- Docker
+- Basic understanding of Bitcoin UTXOs
+
+## Next Steps
+- [Quick Start Guide →](getting-started/environment-setup.md)
+- [Set Up Development Environment →](getting-started/requirements.md)
+- [Create Your First Program →](guides/how-to-write-arch-program.md)
+- [Explore Example Projects →](https://github.com/Arch-Network/arch-examples)
+
+## Community & Support
+- [Join Discord Community →](https://discord.gg/archnetwork)
+- [Stack Overflow →](https://stackoverflow.com/questions/tagged/arch-network)
+- [GitHub Discussions →](https://github.com/Arch-Network/arch-cli/discussions)
+- [Report Issues →](https://github.com/Arch-Network/arch-cli/issues)
