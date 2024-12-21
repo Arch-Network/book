@@ -12,6 +12,8 @@
 
 # Core Concepts
 - [Architecture Overview](concepts/architecture.md)
+- [Network Architecture](concepts/network-architecture.md)
+- [Bitcoin Integration](concepts/bitcoin-integration.md)
 - [Nodes](concepts/nodes.md)
 - [Programs](program/program.md)
 - [UTXOs](program/utxo.md)

@@ -21,10 +21,11 @@ Build your first Arch program:
 
 ### 🎓 Learning Path
 Master Arch development:
-1. Understanding Bitcoin UTXOs
-2. Arch VM architecture
-3. Program development patterns
-[Begin Learning →](basics/basics.md)
+1. [Network Architecture](concepts/network-architecture.md) - Understand how Arch nodes work together
+2. [Bitcoin Integration](concepts/bitcoin-integration.md) - Learn how Arch interacts with Bitcoin
+3. [UTXO Operations](program/utxo.md) - Master UTXO management
+4. [Program Development](program/program.md) - Write your first program
+[Begin Learning →](concepts/network-architecture.md)
 
 ### 🛠 Reference
 Technical documentation:
@@ -38,9 +39,20 @@ Technical documentation:
 ### How Arch Works
 Arch Network consists of three main components:
 
-1. **Arch VM**: Executes programs and manages computation
-2. **Bitcoin Integration**: Direct UTXO interaction and management
-3. **Validator Network**: Ensures program execution integrity
+1. **Network Layer**
+   - [Network Architecture](concepts/network-architecture.md): Distributed validator network
+   - Node types: Bootnode, Leader, and Validators
+   - Consensus and coordination
+
+2. **Bitcoin Integration**
+   - [Direct UTXO Management](concepts/bitcoin-integration.md)
+   - Multi-signature operations
+   - State anchoring to Bitcoin
+
+3. **Computation Layer**
+   - [Arch VM](concepts/architecture.md): eBPF-based execution environment
+   - [Programs](program/program.md): Smart contract development
+   - [Instructions](program/instructions-and-messages.md): Transaction processing
 
 [Learn More About Architecture →](concepts/architecture.md)
 
@@ -58,8 +70,8 @@ Before you begin, ensure you have:
 - [Create Your First Program →](guides/how-to-write-arch-program.md)
 - [Explore Example Projects →](https://github.com/Arch-Network/arch-examples)
 
-## Community & Support
-- [Join Discord Community →](https://discord.gg/archnetwork)
-- [Stack Overflow →](https://stackoverflow.com/questions/tagged/arch-network)
-- [GitHub Discussions →](https://github.com/Arch-Network/arch-cli/discussions)
-- [Report Issues →](https://github.com/Arch-Network/arch-cli/issues)
+## Need Help?
+- [Join our Discord](https://discord.gg/archnetwork)
+- [Read the Architecture Overview](concepts/architecture.md)
+- [View Example Programs](guides/how-to-write-arch-program.md)
+- [Check Network Status](concepts/network-architecture.md#monitoring-and-telemetry)
