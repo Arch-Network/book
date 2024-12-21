@@ -71,7 +71,7 @@
 }
 
 /* ASCII diagrams */
-.content pre {
+.content pre.ascii-diagram {
     position: relative;
     margin: 1.5rem 0;
     background-color: #f6f8fa;
@@ -81,16 +81,18 @@
     overflow-x: auto;
 }
 
-.content pre code {
-    font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+.content pre.ascii-diagram code {
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
     font-size: 14px;
-    line-height: 1.45;
+    line-height: 1.2;
+    white-space: pre;
     display: block;
     padding: 0;
     background: none;
     border-radius: 0;
+    tab-size: 8;
+    -moz-tab-size: 8;
     overflow-x: auto;
-    white-space: pre;
 }
 
 /* Specific ASCII diagram styling */
