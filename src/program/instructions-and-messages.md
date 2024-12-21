@@ -7,7 +7,7 @@ Instructions and messages are fundamental components of Arch's transaction proce
 An instruction is the basic unit of program execution in Arch. It contains all the information needed for a [program] to execute a specific operation. Instructions are processed atomically, meaning they either complete entirely or have no effect.
 
 #### Structure
-```rust
+```rust,ignore
 pub struct Instruction {
     /// Program ID that executes this instruction
     pub program_id: Pubkey,
@@ -25,7 +25,7 @@ pub struct Instruction {
 3. **Instruction Data**: Custom data specific to the instruction, typically serialized using Borsh or another format
 
 #### Account Metadata
-```rust
+```rust,ignore
 pub struct AccountMeta {
     pub pubkey: Pubkey,
     pub is_signer: bool,
@@ -42,7 +42,7 @@ pub struct AccountMeta {
 A message is a collection of instructions that form a [transaction]. Messages ensure atomic execution of multiple instructions, meaning either all instructions succeed or none take effect.
 
 #### Structure
-```rust
+```rust,ignore
 pub struct Message {
     /// List of account keys referenced by the instructions
     pub account_keys: Vec<Pubkey>,
