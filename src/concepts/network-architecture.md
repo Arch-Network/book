@@ -40,11 +40,11 @@ The bootnode serves as the network's entry point, similar to DNS seeds in Bitcoi
 - Manages network topology
 
 ```ascii
-                     ┌────────────────┐
-                     │    Bootnode     │
-                     │                 │
+                    ┌─-───────────────┐
+                    │    Bootnode     │
+                    │                 │
 ┌──────────┐        │ ┌─────────────┐ │         ┌──────────┐
-│New Node  │◄──────►│ │Peer Registry│ │◄────────►│Validator │
+│New Node  │◄──────►│ │Peer Registry│ │◄───────►│Validator │
 │          │        │ └─────────────┘ │         │Network   │
 └──────────┘        │ ┌─────────────┐ │         └──────────┘
                     │ │  Whitelist  │ │
