@@ -625,13 +625,39 @@ h2 {
     color: #2980b9;
 }
 
-/* Tip Box */
+/* Tip Box - Light Mode */
 .tip {
-    background: #1a2e25;
-    border-left-color: var(--arch-success);
+    background: #f0fdf4;  /* Light green background for light mode */
+    border-left: 4px solid var(--arch-success);
     border-radius: 0 8px 8px 0;
     padding: 1rem 1.5rem;
     margin: 1.5rem 0;
+    color: #166534;  /* Dark green text for better contrast */
+}
+
+.tip a {
+    color: var(--arch-success);
+}
+
+.tip a:hover {
+    color: #16a34a;
+}
+
+/* Dark mode override for tip box */
+@media (prefers-color-scheme: dark) {
+    .tip {
+        background: #1a2e25;  /* Dark green background */
+        color: #dcfce7;  /* Light green text */
+        border-left-color: var(--arch-success);
+    }
+
+    .tip a {
+        color: #4ade80;  /* Lighter green for links */
+    }
+
+    .tip a:hover {
+        color: #86efac;
+    }
 }
 
 /* Warning Box */
