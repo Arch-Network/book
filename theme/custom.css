@@ -69,6 +69,7 @@
     background: var(--bg);
     z-index: 3;
     padding-top: var(--menu-bar-height);
+    display: block;
 }
 
 /* ASCII diagrams */
@@ -199,57 +200,99 @@ main {
 @media only screen and (max-width: 1100px) {
     #menu-bar {
         left: 0;
+        width: 100%;
     }
 
     .sidebar {
-        left: -var(--sidebar-width);
+        position: fixed;
+        left: -100%;
+        width: 80%;
+        max-width: 300px;
+        height: 100vh;
+        top: 0;
         transition: left 0.3s ease;
+        z-index: 9999;
+        background: var(--bg);
+        padding-top: var(--menu-bar-height);
+        overflow-y: auto;
     }
 
-    .sidebar.visible {
+    /* Force sidebar content to be visible */
+    .sidebar * {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* Ensure chapter items are visible */
+    .sidebar .chapter,
+    .sidebar .chapter-item,
+    .sidebar a,
+    .sidebar-scrollbox {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* Show sidebar when visible class is present */
+    .sidebar.visible,
+    .js .sidebar.visible,
+    body.sidebar-visible .sidebar {
         left: 0;
+        box-shadow: 2px 0 12px rgba(0,0,0,0.2);
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .sidebar .chapter {
+        padding: 0 15px;
+        margin-top: 15px;
+    }
+
+    .sidebar .chapter-item {
+        margin: 5px 0;
+        padding: 5px 0;
+    }
+
+    /* Ensure sidebar scrollbox is visible and scrollable */
+    .sidebar-scrollbox {
+        height: 100%;
+        overflow-y: auto;
+        position: relative;
+        padding: 10px;
+    }
+
+    body.sidebar-visible {
+        overflow: hidden;
+    }
+
+    /* Add overlay when sidebar is visible */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 9998;
+    }
+
+    .sidebar-visible .sidebar-overlay {
+        display: block;
     }
 
     .page-wrapper {
         margin-left: 0;
-    }
-
-    .page {
-        margin-right: 0;
-    }
-
-    .right-sidebar {
-        display: none;
-    }
-
-    .nav-chapters {
-        display: none;
+        width: 100%;
     }
 
     .content {
         margin: 0;
         padding: 15px;
-    }
-    
-    .feature-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .sidebar {
-        display: none;
-    }
-    
-    main {
-        margin: 0;
-        padding: 0;
-    }
-
-    .nav-wide-wrapper {
-        display: none;
-    }
-    
-    .content {
-        padding: 0 1rem;
+        width: 100%;
+        overflow-x: hidden;
     }
 }
 
@@ -910,7 +953,7 @@ code {
 
 /* Menu button */
 #menu-bar-toggle {
-    display: none;
+    display: block;
     position: fixed;
     top: 0;
     left: 0;
@@ -920,9 +963,8 @@ code {
     background: none;
     color: var(--fg);
     cursor: pointer;
-    z-index: 3;
+    z-index: 10000;
     padding: 0 15px;
-    transform: none;
 }
 
 /* Theme button */
@@ -1113,9 +1155,10 @@ h3:hover .header-link {
     display: none;
 }
 
-/* Add styles for when sidebar is open */
-.sidebar-visible #menu-bar {
-    left: var(--sidebar-width);
+@media only screen and (min-width: 1101px) {
+    .sidebar-visible #menu-bar {
+        left: var(--sidebar-width);
+    }
 }
 
 /* Add this to handle the page wrapper spacing */

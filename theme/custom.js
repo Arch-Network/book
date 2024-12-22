@@ -1,3 +1,42 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const menuButton = document.getElementById('menu-bar-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    
+    if (menuButton && sidebar) {
+        menuButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.body.classList.toggle('sidebar-visible');
+            sidebar.classList.toggle('visible');
+        });
+    }
+
+    // Add touch event handling for sidebar
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    
+    document.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, false);
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        if (touchEndX - touchStartX > swipeThreshold) {
+            // Swipe right - open sidebar
+            document.body.classList.add('sidebar-visible');
+            if (sidebar) sidebar.classList.add('visible');
+        } else if (touchStartX - touchEndX > swipeThreshold) {
+            // Swipe left - close sidebar
+            document.body.classList.remove('sidebar-visible');
+            if (sidebar) sidebar.classList.remove('visible');
+        }
+    }
+});
+
 // Add feature boxes to key features
 document.addEventListener('DOMContentLoaded', function() {
     const features = document.querySelectorAll('.content ul li strong');
