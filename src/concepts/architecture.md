@@ -101,7 +101,7 @@ pub struct SecurityParams {
 
 ### 3. Network Security
 - 🌐 **Validator Selection**
-  ```rust
+  ```rust,ignore
   pub struct ValidatorSet {
       pub validators: Vec<ValidatorInfo>,
       pub threshold: u32
