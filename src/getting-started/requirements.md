@@ -126,7 +126,7 @@ cd arch-cli
 cargo install --path .
 
 # Verify installation
-arch --version
+arch-cli --version
 ```
 
 ## Features
