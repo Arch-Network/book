@@ -9,7 +9,7 @@ Accounts are the fundamental building blocks for state management and program in
 > **Note**: For detailed documentation on core system functions used to interact with accounts (like `invoke`, `new_create_account_instruction`, `add_state_transition`, and `set_transaction_to_sign`), see [System Functions](./system-functions.md).
 
 ```mermaid
-graph TD
+flowchart TD
     A[Account] --> B[Program Account]
     A --> C[Data Account]
     A --> D[Native Account]
@@ -17,6 +17,11 @@ graph TD
     C --> F[Program State]
     C --> G[UTXOs]
     D --> H[System Operations]
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#f5f5f5,stroke:#666
+    style C fill:#f5f5f5,stroke:#666
+    style D fill:#f5f5f5,stroke:#666
 ```
 
 ## Core Concepts
@@ -68,18 +73,22 @@ pub struct Account {
    - Controls instruction processing capability
 
 ```mermaid
-graph LR
+flowchart LR
     A[Account Creation] --> B[Initial State]
     B --> C[Runtime Operations]
     C --> D[State Updates]
     D --> E[Account Closure]
     
-    subgraph "Account Lifecycle"
-    A --> |Initialize|B
-    B --> |Process Instructions|C
-    C --> |Modify State|D
-    D --> |Cleanup|E
+    subgraph Lifecycle
+        A -. Initialize .-> B
+        B -. Process Instructions .-> C
+        C -. Modify State .-> D
+        D -. Cleanup .-> E
     end
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style E fill:#9ff,stroke:#333,stroke-width:2px
+    style Lifecycle fill:#f5f5f5,stroke:#666,stroke-width:1px
 ```
 
 ## Account Types & Use Cases

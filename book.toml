@@ -14,11 +14,15 @@ git-repository-url = "https://github.com/arch-network/book"
 git-repository-icon = "fa-github"
 edit-url-template = "https://github.com/arch-network/book/edit/main/{path}"
 additional-css = ["theme/custom.css"]
-additional-js = ["theme/custom.js"]
+additional-js = [
+  "theme/mermaid.min.js",
+  "theme/mermaid-init.js",
+  "theme/custom.js",
+]
 no-section-label = true
 mathjax-support = true
 copy-fonts = true
-curly-quotes = true
+smart-punctuation = true
 
 [output.html.playground]
 editable = true
@@ -50,6 +54,9 @@ follow-web-links = true
 [preprocessor.toc]
 command = "mdbook-toc"
 renderer = ["html"]
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"
 
 [rust]
 edition = "2021"

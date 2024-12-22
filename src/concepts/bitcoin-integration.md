@@ -4,32 +4,23 @@ Arch Network provides direct integration with Bitcoin, enabling programs to inte
 
 ## Architecture Overview
 
-```ascii
-┌──────────────────────────────────────────────────────────┐
-│                     Bitcoin Network                      │
-│                           ▲                              │
-│                           │                              │
-│               ┌───────────┴──────────┐                  │
-│               │    Bitcoin Node      │                  │
-│               └───────────┬──────────┘                  │
-└───────────────────────────┼──────────────────────────────┘
-                            │
-┌───────────────────────────┼──────────────────────────────┐
-│              Arch Network │                              │
-│                          │                              │
-│         ┌────────────────┴───────────────┐              │
-│         │        Leader Node             │              │
-│         │   (Bitcoin Integration)        │              │
-│         └────────────────┬───────────────┘              │
-│                          │                              │
-│         ┌────────────────┴───────────────┐              │
-│         │      Validator Network         │              │
-│         │                               │              │
-│         │  ┌─────────┐     ┌─────────┐  │              │
-│         │  │Program 1│ ... │Program N│  │              │
-│         │  └─────────┘     └─────────┘  │              │
-│         └───────────────────────────────┘              │
-└──────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph BN[Bitcoin Network]
+        BNode[Bitcoin Node]
+    end
+
+    subgraph AN[Arch Network]
+        LN[Leader Node\nBitcoin Integration]
+        subgraph VN[Validator Network]
+            P1[Program 1]
+            PN[Program N]
+        end
+    end
+
+    BNode <--> LN
+    LN <--> VN
+    P1 --- PN
 ```
 
 ## Core Components
@@ -37,19 +28,20 @@ Arch Network provides direct integration with Bitcoin, enabling programs to inte
 ### 1. UTXO Management
 Arch Network manages Bitcoin UTXOs through a specialized system:
 
-```ascii
-┌─────────────────┐      ┌──────────────┐
-│  Bitcoin UTXO   │      │ Arch Account │
-│                 │      │              │
-│  ┌───────────┐  │      │ ┌────────┐   │
-│  │Transaction│  │      │ │ UTXO   │   │
-│  │   ID      │──┼──────┼─►Meta    │   │
-│  └───────────┘  │      │ └────────┘   │
-│  ┌───────────┐  │      │ ┌────────┐   │
-│  │Output     │  │      │ │Program │   │
-│  │Index      │──┼──────┼─►State   │   │
-│  └───────────┘  │      │ └────────┘   │
-└─────────────────┘      └──────────────┘
+```mermaid
+flowchart LR
+    subgraph UTXO[Bitcoin UTXO]
+        TxID[Transaction\nID]
+        OutIdx[Output\nIndex]
+    end
+
+    subgraph Account[Arch Account]
+        Meta[UTXO\nMeta]
+        State[Program\nState]
+    end
+
+    TxID --> Meta
+    OutIdx --> State
 ```
 
 ```rust,ignore
@@ -85,20 +77,25 @@ pub trait UtxoOperations {
 
 ### 2. Bitcoin RPC Integration
 
-```ascii
-┌──────────────┐    ┌───────────────┐    ┌─────────────┐
-│  Arch        │    │  Bitcoin RPC  │    │  Bitcoin    │
-│  Program     │───►│  Interface    │───►│  Node       │
-└──────────────┘    └───────────────┘    └─────────────┘
-       │                    ▲                   │
-       │                    │                   │
-       │            ┌───────┴──────┐           │
-       └───────────►│ Configuration│           │
-                   └──────────────┘            ▼
-                                         ┌─────────────┐
-                                         │  Bitcoin    │
-                                         │  Network    │
-                                         └─────────────┘
+```mermaid
+flowchart LR
+    AP[Arch\nProgram]
+    RPC[Bitcoin RPC\nInterface]
+    BN[Bitcoin\nNode]
+    Config[Configuration]
+    Network[Bitcoin\nNetwork]
+
+    AP --> RPC
+    RPC --> BN
+    AP --> Config
+    Config --> RPC
+    BN --> Network
+
+    style AP fill:#f9f9f9,stroke:#333,stroke-width:2px
+    style RPC fill:#f9f9f9,stroke:#333,stroke-width:2px
+    style BN fill:#f9f9f9,stroke:#333,stroke-width:2px
+    style Config fill:#f9f9f9,stroke:#333,stroke-width:2px
+    style Network fill:#f9f9f9,stroke:#333,stroke-width:2px
 ```
 
 Programs can interact with Bitcoin through RPC calls:
@@ -126,31 +123,18 @@ pub trait BitcoinRpc {
 
 ## Transaction Flow
 
-```ascii
-┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐
-│ Program  │   │ Leader   │   │Validator │   │ Bitcoin  │
-│          │   │ Node     │   │ Network  │   │ Network  │
-└────┬─────┘   └────┬─────┘   └────┬─────┘   └────┬─────┘
-     │              │              │              │
-     │ Create UTXO  │              │              │
-     │─────────────►│              │              │
-     │              │              │              │
-     │              │ Validate     │              │
-     │              │──────────────►│              │
-     │              │              │              │
-     │              │ Sign         │              │
-     │              │◄─────────────│              │
-     │              │              │              │
-     │              │ Submit TX    │              │
-     │              │─────────────────────────────►│
-     │              │              │              │
-     │              │ Confirmation │              │
-     │◄────────────────────────────────────────────│
-     │              │              │              │
-┌────┴─────┐   ┌────┴─────┐   ┌────┴─────┐   ┌────┴─────┐
-│ Program  │   │ Leader   │   │Validator │   │ Bitcoin  │
-│          │   │ Node     │   │ Network  │   │ Network  │
-└──────────┘   └──────────┘   └──────────┘   └──────────┘
+```mermaid
+sequenceDiagram
+    participant Program
+    participant Leader
+    participant Validator
+    participant Bitcoin
+
+    Program->>Leader: Create UTXO
+    Leader->>Validator: Validate
+    Validator->>Leader: Sign
+    Leader->>Bitcoin: Submit TX
+    Bitcoin-->>Program: Confirmation
 ```
 
 ### 1. Transaction Creation

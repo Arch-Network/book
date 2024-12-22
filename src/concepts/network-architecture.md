@@ -4,30 +4,47 @@ Arch Network operates as a distributed system with different types of nodes work
 
 ## Network Overview
 
-```ascii
-                                   Bitcoin Network
-                                         ▲
-                                         │
-                    ┌────────────────────┴───────────────────---┐
-                    │         Leader Node (Coordinator)         │
-                    │                                           │
-                    │  ┌─────────────┐    ┌──────────────┐      │
-                    │  │Transaction  │    │ Multi-sig    │      │
-                    │  │Coordination │    │ Aggregation  │      │
-                    │  └─────────────┘    └──────────────┘      │
-                    └─────────-───┬─────────-─┬──────────--┬────┘
-                      │           │           │            │
-                 ┌────▼──-─┐ ┌────▼───-┐ ┌────▼──-─┐ ┌────▼──-─┐
-                 │Validator│ │Validator│ │Validator│ │Validator│
-                 │Node 1   │ │Node 2   │ │Node 3   │ │Node N   │
-                 └────────-┘ └────────-┘ └────────-┘ └────────-┘
-                      ▲          ▲          ▲          ▲
-                      └──────────┴──────────┴──────────┘
-                                    │
-                            ┌───────▼───────┐
-                            │   Bootnode    │
-                            │(Discovery)    │
-                            └───────────────┘
+```mermaid
+flowchart TB
+    subgraph Core["Core Components"]
+        direction TB
+        BN[Bitcoin Network]
+        Boot[Bootnode]
+    end
+
+    subgraph Leader["Leader Node Services"]
+        direction LR
+        TC[Transaction\nCoordination]
+        MS[MultiSig\nAggregation]
+    end
+    
+    subgraph Validators["Validator Network"]
+        direction TB
+        V1[Validator 1]
+        V2[Validator 2]
+        V3[Validator 3]
+        VN[Validator N]
+    end
+
+    BN --> LN[Leader Node]
+    Boot --> LN
+    
+    LN --> TC
+    LN --> MS
+    
+    LN --> V1
+    LN --> V2
+    LN --> V3
+    LN --> VN
+
+    %% Styling
+    classDef core fill:#e1f5fe,stroke:#01579b
+    classDef leader fill:#fff3e0,stroke:#e65100
+    classDef validators fill:#f3e5f5,stroke:#4a148c
+    
+    class BN,Boot core
+    class TC,MS leader
+    class V1,V2,V3,VN validators
 ```
 
 ## Node Types
@@ -39,17 +56,29 @@ The bootnode serves as the network's entry point, similar to DNS seeds in Bitcoi
 - Coordinates peer connections
 - Manages network topology
 
-```ascii
-                    ┌─-───────────────┐
-                    │    Bootnode     │
-                    │                 │
-┌──────────┐        │ ┌─────────────┐ │         ┌──────────┐
-│New Node  │◄──────►│ │Peer Registry│ │◄───────►│Validator │
-│          │        │ └─────────────┘ │         │Network   │
-└──────────┘        │ ┌─────────────┐ │         └──────────┘
-                    │ │  Whitelist  │ │
-                    │ └─────────────┘ │
-                    └─────────────────┘
+```mermaid
+flowchart LR
+    subgraph Bootnode["Bootnode Services"]
+        direction TB
+        PR[Peer Registry]
+        WL[Validator Whitelist]
+    end
+
+    NN[New Node]
+    VN[Validator Network]
+
+    %% Connections
+    NN <--> PR
+    PR <--> VN
+    WL -.-> PR
+
+    %% Styling
+    classDef bootnode fill:#e1f5fe,stroke:#01579b
+    classDef external fill:#f5f5f5,stroke:#333
+    classDef connection stroke-width:2px
+    
+    class PR,WL bootnode
+    class NN,VN external
 ```
 
 Configuration:
@@ -64,25 +93,38 @@ cargo run -p bootnode -- \
 ### 2. Leader Node
 The leader node coordinates transaction processing and Bitcoin integration:
 
-```ascii
-                Bitcoin Network
-                      ▲
-                      │
-         ┌────────────┴────────────┐
-         │        Leader Node      │
-         │                         │
-    ┌─--─┴─────────┐   ┌───────-───┴──┐
-    │ Transaction  │   │  Multi-sig   │
-    │ Coordination │   │ Aggregation  │
-    └─────────────┬┘   └┬-────────────┘
-                  │     │
-         ┌────────▼─────▼────────┐
-         │   Validator Network   │
-         └─────────────────────┬─┘
-                               │
-                     ┌────────-▼──────-┐
-                     │Program Execution│
-                     └────────────────-┘
+```mermaid
+flowchart TB
+    %% Main Components
+    BN[Bitcoin Network]
+    LN[Leader Node]
+    VN[Validator Network]
+    PE[Program Execution]
+    
+    %% Leader Node Services
+    subgraph Leader["Leader Node Services"]
+        direction LR
+        TC[Transaction\nCoordination]
+        MS[Multi-sig\nAggregation]
+    end
+    
+    %% Connections
+    BN <--> LN
+    LN --> Leader
+    TC --> VN
+    MS --> VN
+    VN --> PE
+    
+    %% Styling
+    classDef bitcoin fill:#f7931a,stroke:#c16c07,color:white
+    classDef leader fill:#fff3e0,stroke:#e65100
+    classDef validator fill:#f3e5f5,stroke:#4a148c
+    classDef execution fill:#e8f5e9,stroke:#1b5e20
+    
+    class BN bitcoin
+    class LN,TC,MS leader
+    class VN validator
+    class PE execution
 ```
 
 Key responsibilities:
@@ -94,23 +136,34 @@ Key responsibilities:
 ### 3. Validator Nodes
 Validator nodes form the core of the network's computation and validation:
 
-```ascii
-┌────────────────────────────────────┐
-│           Validator Node           │
-│                                    │
-│  ┌───────-───┐     ┌───────────┐   │
-│  │  Arch VM  │     │  State    │   │
-│  │ Execution │     │ Validation│   │
-│  └─────┬─────┘     └─────┬─────┘   │
-│        │                 │         │
-│  ┌─────▼─────────────────▼─────┐   │
-│  │      Network Protocol       │   │
-│  └─────────────┬───────────────┘   │
-└────────────────┼──────────────────-┘
-                 │
-         ┌───────▼───────┐
-         │ P2P Network   │
-         └───────────────┘
+```mermaid
+flowchart TB
+    subgraph ValidatorNode["Validator Node"]
+        direction TB
+        
+        subgraph Execution["Execution Layer"]
+            direction LR
+            VM["Arch VM\nExecution"]
+            SV["State\nValidation"]
+        end
+        
+        NP["Network Protocol"]
+        P2P["P2P Network"]
+        
+        %% Connections within validator
+        VM --> NP
+        SV --> NP
+        NP --> P2P
+    end
+    
+    %% Styling
+    classDef validator fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef execution fill:#e8f5e9,stroke:#1b5e20,stroke-width:2px
+    classDef network fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px
+    
+    class ValidatorNode validator
+    class VM,SV execution
+    class NP,P2P network
 ```
 
 Types:

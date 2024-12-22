@@ -638,13 +638,13 @@ h2 {
     margin: 1.5rem 0;
 }
 
-/* Code blocks */
+/* Code blocks - Light theme */
 pre {
-    background-color: #1e2227 !important;
-    border-color: #2d3033;
-    color: #e2e4e7;
-    border-radius: 6px !important;
-    padding: 16px !important;
+    background-color: #f6f8fa;
+    border-color: #e1e4e8;
+    color: #24292e;
+    border-radius: 6px;
+    padding: 16px;
     position: relative;
     margin: 1.5rem 0;
 }
@@ -653,9 +653,33 @@ code {
     font-family: "SF Mono", "Consolas", "Monaco", monospace;
     font-size: 0.9em;
     padding: 0.2em 0.4em;
-    background-color: #1e2227;
+    background-color: #f6f8fa;
     border-radius: 3px;
-    color: #e2e4e7;
+    color: #24292e;
+}
+
+/* Code blocks - Dark theme */
+@media (prefers-color-scheme: dark) {
+    pre {
+        background-color: #2d333b;
+        border-color: #444c56;
+        color: #c9d1d9;
+    }
+
+    code {
+        background-color: #2d333b;
+        color: #c9d1d9;
+    }
+
+    /* Remove forced dark background */
+    .content pre {
+        background-color: #2d333b;
+    }
+    
+    .content pre code {
+        background: none;
+        color: #c9d1d9;
+    }
 }
 
 /* Code Copy Button */
@@ -1267,4 +1291,18 @@ h3:hover .header-link {
     .menu-title:hover {
         color: var(--arch-accent);
     }
+}
+
+/* Mermaid diagrams */
+.mermaid {
+    text-align: center;
+    margin: 1.5rem 0;
+    background: var(--bg);
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.mermaid svg {
+    max-width: 100%;
+    height: auto;
 }

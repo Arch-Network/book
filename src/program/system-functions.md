@@ -125,22 +125,20 @@ let transaction_to_sign = TransactionToSign {
 set_transaction_to_sign(accounts, transaction_to_sign)?;
 ```
 
-## Function Flow
-
 ```mermaid
-graph TD
-    A[Program Request] --> B[new_create_account_instruction]
-    B --> C[invoke]
-    C --> D[add_state_transition]
-    D --> E[set_transaction_to_sign]
-    E --> F[Bitcoin Transaction]
-    
-    subgraph "Execution Flow"
-    B --> |Initialize| G[Account Creation]
-    C --> |Execute| H[Instruction Processing]
-    D --> |Update| I[State Management]
-    E --> |Prepare| J[Transaction Signing]
-    end
+graph LR
+    A[Program Request] ==> B[new_create_account_instruction]
+    B ==> C[invoke]
+    C ==> D[add_state_transition]
+    D ==> E[set_transaction_to_sign]
+    E ==> F[Bitcoin Transaction]
+
+    style A fill:#4a9eff,stroke:#3182ce,stroke-width:2px,color:#fff
+    style B fill:#ffffff,stroke:#ccd7e0,stroke-width:2px
+    style C fill:#ffffff,stroke:#ccd7e0,stroke-width:2px
+    style D fill:#ffffff,stroke:#ccd7e0,stroke-width:2px
+    style E fill:#ffffff,stroke:#ccd7e0,stroke-width:2px
+    style F fill:#f687b3,stroke:#d53f8c,stroke-width:2px,color:#fff
 ```
 
 ## Best Practices
