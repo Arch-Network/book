@@ -1,4 +1,8 @@
-# Accounts
+# Account Structure
+
+> **Navigation**: [Reference](../SUMMARY.md#reference) → [Program](./program.md) → Account Structure
+>
+> For a comprehensive guide on working with accounts, see the [Account Guide](./accounts.md).
 
 Accounts are a fundamental data structure in Arch that store state and are owned by [programs]. Each account has a unique address ([pubkey]) and contains data that can be modified by its owner program.
 
