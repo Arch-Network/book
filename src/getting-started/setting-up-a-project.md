@@ -92,7 +92,8 @@ This will:
 #### Project Structure
 
 Your project will be organized as follows:
-```
+
+```ignore
 sample/
 ├─ app/                    # Frontend application
 │  ├─ frontend/
