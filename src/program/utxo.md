@@ -1,8 +1,24 @@
 # UTXO (Unspent Transaction Output)
 
-UTXOs are fundamental to Bitcoin's transaction model and are used in Arch Network to anchor program state.
+UTXOs (Unspent Transaction Outputs) are fundamental to Bitcoin's transaction model and serve as the foundation for state management in Arch Network. Unlike account-based systems that track balances, UTXOs represent discrete "coins" that must be consumed entirely in transactions.
+
+## Core Concepts
+
+### What is a UTXO?
+- A UTXO represents an unspent output from a previous transaction
+- Each UTXO is uniquely identified by a transaction ID (txid) and output index (vout)
+- UTXOs are immutable - they can only be created or spent, never modified
+- Once spent, a UTXO cannot be reused (prevents double-spending)
+
+### Role in Arch Network
+- UTXOs anchor program state to Bitcoin's security model
+- They provide deterministic state transitions
+- Enable atomic operations across the network
+- Allow for provable ownership and state validation
 
 ## UTXO Structure
+
+The `UtxoMeta` struct encapsulates the core UTXO identification data:
 
 ```rust,ignore
 use arch_program::utxo::UtxoMeta;
@@ -10,15 +26,18 @@ use bitcoin::Txid;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct UtxoMeta {
-    pub txid: [u8; 32],  // Transaction ID
-    pub vout: u32,       // Output index
+    pub txid: [u8; 32],  // Bitcoin transaction ID (32 bytes)
+    pub vout: u32,       // Output index in the transaction
 }
 
 impl UtxoMeta {
+    /// Creates a new UTXO metadata instance
     pub fn new(txid: [u8; 32], vout: u32) -> Self {
         Self { txid, vout }
     }
 
+    /// Deserializes UTXO metadata from a byte slice
+    /// Format: [txid(32 bytes)][vout(4 bytes)]
     pub fn from_slice(data: &[u8]) -> Self {
         let mut txid = [0u8; 32];
         txid.copy_from_slice(&data[0..32]);
@@ -30,71 +49,174 @@ impl UtxoMeta {
 }
 ```
 
-## UTXO Creation Process
+## UTXO Lifecycle
 
-### Creating a UTXO with Bitcoin RPC
+### 1. Creation Process
+
+#### Creating a UTXO with Bitcoin RPC
 ```rust,ignore
-use bitcoincore_rpc::{Auth, Client as RpcClient};
-use bitcoin::Amount;
+use bitcoincore_rpc::{Auth, Client as RpcClient, RpcApi};
+use bitcoin::{Amount, Address};
 use arch_program::pubkey::Pubkey;
 
-// Initialize RPC client
+// Initialize Bitcoin RPC client
 let rpc = RpcClient::new(
-    "http://localhost:18443",
-    Auth::UserPass("user".to_string(), "pass".to_string())
-).unwrap();
+    "http://localhost:18443",  // Bitcoin node RPC endpoint
+    Auth::UserPass(
+        "user".to_string(),
+        "pass".to_string()
+    )
+).expect("Failed to create RPC client");
 
-// Create new account address
+// Generate a new account address
 let account_address = Pubkey::new_unique();
+let btc_address = Address::from_pubkey(&account_address);
 
-// Send Bitcoin to create UTXO
+// Create UTXO by sending Bitcoin
+// Parameters explained:
+// - address: Destination Bitcoin address
+// - amount: Amount in satoshis (3000 sats = 0.00003 BTC)
+// - comment: Optional transaction comment
+// - replaceable: Whether the tx can be replaced (RBF)
 let txid = rpc.send_to_address(
-    &account_address,
+    &btc_address,
     Amount::from_sat(3000),
-    None,
-    None,
-    None,
-    None,
-    None,
-    None
+    Some("Create Arch UTXO"),  // Comment
+    None,                      // Comment_to
+    Some(true),               // Replaceable
+    None,                     // Fee rate
+    None,                     // Fee estimate mode
+    None                      // Avoid reuse
 )?;
+
+// Wait for confirmation (recommended)
+rpc.wait_for_confirmation(&txid, 1)?;
 ```
 
-### Creating Account with UTXO
+#### Creating an Arch Account with UTXO
 ```rust,ignore
 use arch_program::{
     system_instruction::SystemInstruction,
     pubkey::Pubkey,
+    transaction::Transaction,
 };
 
-// Create new account with UTXO
+// Create new program account backed by UTXO
 let account_pubkey = Pubkey::new_unique();
 let instruction = SystemInstruction::new_create_account_instruction(
     txid.try_into().unwrap(),
-    0, // vout
-    account_pubkey
+    0,  // vout index
+    account_pubkey,
+    // Additional parameters like:
+    // - space: Amount of space to allocate
+    // - owner: Program that owns the account
+);
+
+// Build and sign transaction
+let transaction = Transaction::new_signed_with_payer(
+    &[instruction],
+    Some(&payer.pubkey()),
+    &[&payer],
+    recent_blockhash
 );
 ```
 
-## UTXO Operations
+### 2. Validation & Usage
 
-Programs can:
-- Create new UTXO accounts
-- Read UTXO metadata
-- Validate UTXO state
-- Transfer UTXOs between accounts
+Programs must implement proper UTXO validation:
+
+```rust,ignore
+fn validate_utxo(utxo: &UtxoMeta) -> Result<(), ProgramError> {
+    // 1. Verify UTXO exists on Bitcoin
+    let btc_tx = rpc.get_transaction(&utxo.txid)?;
+    
+    // 2. Check confirmation count
+    if btc_tx.confirmations < MIN_CONFIRMATIONS {
+        return Err(ProgramError::InsufficientConfirmations);
+    }
+    
+    // 3. Verify output index exists
+    if utxo.vout as usize >= btc_tx.vout.len() {
+        return Err(ProgramError::InvalidVout);
+    }
+    
+    // 4. Verify UTXO is unspent
+    if is_spent(utxo) {
+        return Err(ProgramError::UtxoAlreadySpent);
+    }
+    
+    Ok(())
+}
+```
+
+### 3. State Management
+
+```rust,ignore
+// Example UTXO state tracking
+#[derive(Debug)]
+pub struct UtxoState {
+    pub meta: UtxoMeta,
+    pub status: UtxoStatus,
+    pub owner: Pubkey,
+    pub created_at: i64,
+    pub spent_at: Option<i64>,
+}
+
+#[derive(Debug)]
+pub enum UtxoStatus {
+    Pending,    // Waiting for confirmations
+    Active,     // Confirmed and spendable
+    Spent,      // UTXO has been consumed
+    Invalid,    // UTXO was invalidated (e.g., by reorg)
+}
+```
 
 ## Best Practices
 
 1. **Validation**
-   - Always check UTXO initialization
-   - Verify UTXO ownership
-   - Handle Bitcoin confirmations
+   - Always verify UTXO existence on Bitcoin
+   - Check for sufficient confirmations (recommended: 6+)
+   - Validate ownership and spending conditions
+   - Handle Bitcoin reorgs that might invalidate UTXOs
 
 2. **State Management**
-   - Track UTXO states
-   - Handle reorgs
-   - Maintain UTXO sets
+   - Implement robust UTXO tracking
+   - Handle edge cases (reorgs, conflicting txs)
+   - Consider implementing UTXO caching for performance
+   - Maintain accurate UTXO sets for your program
+
+3. **Security**
+   - Never trust client-provided UTXO data without verification
+   - Implement proper access controls
+   - Consider timelock constraints for sensitive operations
+   - Monitor for suspicious UTXO patterns
+
+4. **Performance**
+   - Batch UTXO operations when possible
+   - Implement efficient UTXO lookup mechanisms
+   - Consider UTXO consolidation strategies
+   - Cache frequently accessed UTXO data
+
+## Error Handling
+
+Common UTXO-related errors to handle:
+
+```rust,ignore
+pub enum UtxoError {
+    NotFound,                    // UTXO doesn't exist
+    AlreadySpent,               // UTXO was already consumed
+    InsufficientConfirmations,  // Not enough confirmations
+    InvalidOwner,               // Unauthorized attempt to spend
+    Reorged,                    // UTXO invalidated by reorg
+    InvalidVout,                // Output index doesn't exist
+    SerializationError,         // Data serialization failed
+}
+```
+
+## Related Topics
+- [Account Model](account.md) - How UTXOs relate to Arch accounts
+- [Program State](program.md) - Using UTXOs for program state
+- [System Program](../system-program/system-program.md) - Core UTXO operations
 
 <!-- Internal -->
 [Account]: account.md
