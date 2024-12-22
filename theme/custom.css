@@ -287,7 +287,7 @@ main {
 h1, h2, h3, h4, h5 {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-weight: 600;
-    color: var(--arch-secondary);
+    color: #1a1b1d;
     margin-top: 2em;
     margin-bottom: 1em;
 }
@@ -327,8 +327,9 @@ h2 {
 }
 
 .feature h4 {
+    color: #1a1b1d;  /* Dark color for light mode */
+    font-weight: 600;
     margin: 0 0 0.5rem 0;
-    color: var(--arch-primary);
     font-size: 1.1em;
 }
 
@@ -337,6 +338,10 @@ h2 {
     color: var(--arch-secondary);
     font-size: 0.95em;
     line-height: 1.5;
+}
+
+.feature .text-muted {
+    color: #4a5568;
 }
 
 .feature a {
@@ -594,12 +599,21 @@ h2 {
     border-radius: 0 8px 8px 0;
     padding: 1rem 1.5rem;
     margin: 1.5rem 0;
+    color: #2c3e50;
+}
+
+.info a {
+    color: var(--arch-info);
+}
+
+.info a:hover {
+    color: #2980b9;
 }
 
 /* Tip Box */
 .tip {
-    background: #eafaf1;
-    border-left: 4px solid var(--arch-success);
+    background: #1a2e25;
+    border-left-color: var(--arch-success);
     border-radius: 0 8px 8px 0;
     padding: 1rem 1.5rem;
     margin: 1.5rem 0;
@@ -607,8 +621,8 @@ h2 {
 
 /* Warning Box */
 .warning {
-    background: #fef9e7;
-    border-left: 4px solid var(--arch-warning);
+    background: #2e2616;
+    border-left-color: var(--arch-warning);
     border-radius: 0 8px 8px 0;
     padding: 1rem 1.5rem;
     margin: 1.5rem 0;
@@ -616,8 +630,8 @@ h2 {
 
 /* Error Box */
 .error {
-    background: #fdedec;
-    border-left: 4px solid var(--arch-error);
+    background: #2e1616;
+    border-left-color: var(--arch-error);
     border-radius: 0 8px 8px 0;
     padding: 1rem 1.5rem;
     margin: 1.5rem 0;
@@ -625,10 +639,11 @@ h2 {
 
 /* Code blocks */
 pre {
-    background-color: #f6f8fa !important;
+    background-color: #1e2227 !important;
+    border-color: #2d3033;
+    color: #e2e4e7;
     border-radius: 6px !important;
     padding: 16px !important;
-    border: 1px solid #eaecef;
     position: relative;
     margin: 1.5rem 0;
 }
@@ -637,8 +652,9 @@ code {
     font-family: "SF Mono", "Consolas", "Monaco", monospace;
     font-size: 0.9em;
     padding: 0.2em 0.4em;
-    background-color: #f6f8fa;
+    background-color: #1e2227;
     border-radius: 3px;
+    color: #e2e4e7;
 }
 
 /* Code Copy Button */
@@ -724,9 +740,10 @@ code {
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
     :root {
-        --arch-secondary: #f8f9fa;
-        --bg: #1E2022;
-        --fg: #c9d1d9;
+        --arch-secondary: #e2e4e7;
+        --bg: #1a1b1d;
+        --fg: #e2e4e7;
+        --border-color: #2d3033;
     }
 
     body {
@@ -740,9 +757,9 @@ code {
     .next-steps-grid a,
     .help-box,
     .floating-toc {
-        background: var(--bg);
-        border-color: var(--border-color);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background: #1e2227;
+        border-color: #2d3033;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
     .path-box,
@@ -751,24 +768,38 @@ code {
     }
 
     .info {
-        background: #1a5f7a;
+        background: #1a2936;
+        border-left-color: var(--arch-info);
+        color: #e2e4e7;
+    }
+
+    .info a {
+        color: #58a6ff;
+    }
+
+    .info a:hover {
+        color: #79b8ff;
     }
 
     .tip {
-        background: #1b4d3e;
+        background: #1a2e25;
+        border-left-color: var(--arch-success);
     }
 
     .warning {
-        background: #7a571a;
+        background: #2e2616;
+        border-left-color: var(--arch-warning);
     }
 
     .error {
-        background: #7a1a1a;
+        background: #2e1616;
+        border-left-color: var(--arch-error);
     }
 
     pre, code {
-        background-color: #2d333b !important;
-        border-color: #444c56;
+        background-color: #1e2227 !important;
+        border-color: #2d3033;
+        color: #e2e4e7;
     }
 
     .copy-button {
@@ -1018,13 +1049,13 @@ h3:hover .header-link {
 
 /* Inline links */
 .content a {
-    color: var(--arch-accent);
+    color: #5ba9ee;
     text-decoration: none;
     transition: color 0.2s;
 }
 
 .content a:hover {
-    text-decoration: underline;
+    color: #7cbaef;
 }
 
 /* Markdown links */
@@ -1065,4 +1096,163 @@ h3:hover .header-link {
 /* Add this to handle the page wrapper spacing */
 .page-wrapper {
     padding-top: var(--menu-bar-height);
+}
+
+/* Sidebar improvements for dark mode */
+@media (prefers-color-scheme: dark) {
+    /* Sidebar background and border */
+    .sidebar {
+        background: #1e2227;
+        border-right: 1px solid #2d3033;
+    }
+
+    /* Main navigation items */
+    .sidebar .chapter {
+        color: #e2e4e7;
+    }
+
+    .sidebar .chapter-item {
+        color: #c9d1d9;
+    }
+
+    /* Links in sidebar */
+    .sidebar a {
+        color: #c9d1d9 !important;
+    }
+
+    .sidebar a:hover {
+        color: #ffffff !important;
+        background: #2d3033;
+    }
+
+    /* Active/selected state */
+    .sidebar .active {
+        background: #2d3033;
+    }
+
+    .sidebar .active a {
+        color: var(--arch-accent) !important;
+    }
+
+    /* Section headers */
+    .sidebar h2,
+    .sidebar h3 {
+        color: #e2e4e7;
+        border-bottom: 1px solid #2d3033;
+    }
+
+    /* Nested items indentation */
+    .sidebar .chapter .chapter-item {
+        padding-left: 20px;
+        border-left: 1px solid #2d3033;
+    }
+
+    /* Toggle indicators */
+    .section-toggle {
+        color: #8b95a1;
+    }
+}
+
+/* Feature cards in dark mode */
+@media (prefers-color-scheme: dark) {
+    .feature-grid li,
+    .component-box,
+    .prerequisites-box,
+    .next-steps-grid a {
+        background: #2d333b;
+        border: 1px solid #444c56;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    /* Feature titles */
+    .feature h4,
+    .component-box h4,
+    .prerequisites-box h4 {
+        color: #ffffff;
+        opacity: 1;
+    }
+
+    /* Feature text */
+    .feature p,
+    .component-box p,
+    .prerequisites-box p {
+        color: #e2e4e7;
+        opacity: 0.9;
+    }
+
+    /* Feature links */
+    .feature a,
+    .component-box a,
+    .prerequisites-box a {
+        color: #58a6ff;
+    }
+
+    .feature a:hover,
+    .component-box a:hover,
+    .prerequisites-box a:hover {
+        color: #79b8ff;
+    }
+
+    /* Grayed out text */
+    .feature .text-muted,
+    .component-box .text-muted,
+    .prerequisites-box .text-muted {
+        color: #8b949e;
+    }
+}
+
+/* Feature text contrast improvements */
+.feature p,
+.component-box p,
+.prerequisites-box p {
+    color: #1a1b1d;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.feature .text-muted,
+.component-box .text-muted,
+.prerequisites-box .text-muted {
+    color: #2d3033;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .feature p,
+    .component-box p,
+    .prerequisites-box p {
+        color: #6B7280; /* A darker grey color for the text */
+    }
+
+    .feature .text-muted,
+    .component-box .text-muted,
+    .prerequisites-box .text-muted {
+        color: #8B9467; /* A darker grey color for the muted text */
+    }
+}
+
+/* Feature headings with higher specificity */
+.feature-grid .feature h4,
+.feature-grid .feature .header {
+    color: #1a1b1d;  /* Dark color for light mode */
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1em;
+}
+
+/* Override the general header styles */
+.content .header:link,
+.content .header:visited {
+    color: #1a1b1d;  /* Dark color for light mode */
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+    .feature-grid .feature h4,
+    .feature-grid .feature .header,
+    .content .header:link,
+    .content .header:visited {
+        color: #999999;
+        opacity: 1;
+    }
 }
