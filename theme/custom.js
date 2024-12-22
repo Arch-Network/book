@@ -115,4 +115,36 @@ document.addEventListener('DOMContentLoaded', function() {
     
     toc.appendChild(tocList);
     content.insertBefore(toc, content.firstChild);
-}); 
+});
+
+// Add feature boxes to key features
+document.addEventListener('DOMContentLoaded', function() {
+    const features = document.querySelectorAll('.content ul li strong');
+    features.forEach(feature => {
+        const li = feature.parentElement;
+        if (li && li.parentElement && li.parentElement.previousElementSibling && 
+            li.parentElement.previousElementSibling.textContent.includes('Key Features')) {
+            li.classList.add('feature-box');
+        }
+    });
+});
+
+// Add path boxes to learning paths
+document.addEventListener('DOMContentLoaded', function() {
+    const paths = document.querySelectorAll('.content ol li a');
+    paths.forEach(path => {
+        const li = path.parentElement;
+        if (li && li.parentElement && li.parentElement.previousElementSibling && 
+            li.parentElement.previousElementSibling.textContent.includes('Learning Path')) {
+            li.classList.add('path-box');
+        }
+    });
+});
+
+// Add styling to ASCII diagrams
+document.addEventListener('DOMContentLoaded', function() {
+    const asciiBlocks = document.querySelectorAll('pre code.language-ascii');
+    asciiBlocks.forEach(block => {
+        block.parentElement.classList.add('ascii-diagram');
+    });
+});

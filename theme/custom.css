@@ -1268,3 +1268,17 @@ h3:hover .header-link {
         color: var(--arch-accent);
     }
 }
+
+/* Mermaid diagrams */
+.mermaid {
+    text-align: center;
+    margin: 1.5rem 0;
+    background: var(--bg);
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.mermaid svg {
+    max-width: 100%;
+    height: auto;
+}
