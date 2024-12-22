@@ -1,6 +1,12 @@
-# Accounts in Arch Network
+# Account Guide
+
+> **Navigation**: [Reference](../SUMMARY.md#reference) → [Program](./program.md) → Account Guide
+>
+> For the core account structure and data types, see [Account Structure](./account.md).
 
 Accounts are the fundamental building blocks for state management and program interaction in Arch Network. They serve as containers for both program code and state data, bridging the gap between Bitcoin's UTXO model and modern programmable state machines.
+
+> **Note**: For detailed documentation on core system functions used to interact with accounts (like `invoke`, `new_create_account_instruction`, `add_state_transition`, and `set_transaction_to_sign`), see [System Functions](./system-functions.md).
 
 ```mermaid
 graph TD
@@ -155,6 +161,8 @@ let utxo_account = SystemInstruction::CreateAccount {
 ```
 
 ## Account Interactions
+
+Account interactions in Arch Network are facilitated through a set of core system functions. These functions handle everything from account creation to state transitions and are documented in detail in [System Functions](./system-functions.md). Below are common patterns for account interactions:
 
 ### 1. Creation Patterns
 

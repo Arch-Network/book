@@ -30,13 +30,15 @@
 
 # Reference
 - [Program](program/program.md)
-    - [Account](program/account.md)
+    - [Account Structure](program/account.md)
+    - [Account Guide](program/accounts.md)
+    - [System Functions](program/system-functions.md)
     - [Entrypoint](program/entrypoint.md)
     - [Instructions and Messages](program/instructions-and-messages.md)
     - [Pubkey](program/pubkey.md)
     - [Syscall](program/syscall.md)
     - [System Instruction](program/system-instruction.md)
-    - [UTXO](program/utxo.md) 
+    - [UTXO](program/utxo.md)
 - [SDK](sdk/sdk.md)
     - [Processed Transaction](sdk/processed-transaction.md)
     - [Runtime Transaction](sdk/runtime-transaction.md)
