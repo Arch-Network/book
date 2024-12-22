@@ -1,98 +1,153 @@
-# Requirements
+# System Requirements
 
-The following dependencies are needed to proceed. Install these before moving to the next step.
+Welcome to the Arch Network development guide. This page will walk you through setting up your development environment with all necessary dependencies. Please follow each section carefully to ensure a smooth setup process.
 
-- [Rust]
-- [Docker]
-- [C++ Compiler (gcc/clang)]
-- [Node.js v19+]
-- [Solana CLI]
-- [Arch-cli]
+## Overview
 
-### Install Rust
-First, to work with Arch programs you will need Rust installed on your machine. If you don't have it, you can find installation instructions on [the Rust website].
+Before you begin development with Arch Network, you'll need to install and configure the following tools:
 
-It is assumed that you are working with a stable Rust channel throughout this book.
+| Requirement | Minimum Version | Description |
+|------------|----------------|-------------|
+| [Rust] | Latest stable | Core development language |
+| [Docker] | Latest | Container runtime for local node infrastructure |
+| [C++ Compiler] | gcc/clang | Required for native builds |
+| [Node.js] | v19+ | JavaScript runtime for SDK |
+| [Solana CLI] | v1.18.18 | Solana development tools |
+| [Arch CLI] | Latest | Arch Network development toolkit |
 
-### Install Docker
-Next, Docker is required to run Arch's containerized node infrastructure locally. The desktop client can be installed from [the Docker website].
+## Detailed Installation Guide
 
-### Install C++ Compiler
+### 1. Install Rust
+Rust is the primary development language for Arch Network programs.
 
-For MacOS users, this *should* already be installed alongside [gcc] so you can skip this section.
-
-For Linux (Debian/Ubuntu) users, this must be installed if it isn't already. We will manually install the [gcc-multilib].
 ```bash
-sudo apt-get update
-sudo apt-get install gcc-multilib
+# Install Rust using rustup
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Verify installation
+rustc --version
+cargo --version
 ```
 
-### Install Node.js
+> 💡 **Note:** Make sure you're using the stable channel throughout this book.
 
-Please make sure you have [Node.js] version 19 or higher installed as [npm] is required to work with the [arch-typescript-sdk].
+### 2. Install Docker
+Docker is essential for running Arch's local node infrastructure.
 
-### Install Solana CLI
+1. Download Docker Desktop from [the Docker website]
+2. Follow the installation wizard for your operating system
+3. Start Docker Desktop
+4. Verify installation:
+```bash
+docker --version
+```
 
-To compile the examples, the [Solana] CLI toolchain must be installed. Execute the following command to install the toolchain on your local system.
+### 3. C++ Compiler Setup
 
-#### MacOS & Linux
+#### MacOS Users
+The C++ compiler comes pre-installed with Xcode Command Line Tools. Verify with:
+```bash
+gcc --version
+```
+
+If not installed, run:
+```bash
+xcode-select --install
+```
+
+#### Linux Users (Debian/Ubuntu)
+Install the required compiler tools:
+```bash
+sudo apt-get update
+sudo apt-get install gcc-multilib build-essential
+```
+
+### 4. Install Node.js
+Node.js is required for working with the [arch-typescript-sdk].
+
+```bash
+# Using nvm (recommended)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+nvm install 19
+nvm use 19
+
+# Verify installation
+node --version  # Should show v19.x.x or higher
+npm --version
+```
+
+### 5. Install Solana CLI
+
+The Solana CLI is required for program compilation and deployment.
 
 ```bash
 sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 ```
 
-> **Solana v2.x is not supported.**
-> 
-> You can replace v1.18.18 with the release tag matching the software version of your desired release, or use one of the three symbolic channel names: stable, beta, or edge. 
+> ⚠️ **Important Notes:**
+> - Solana v2.x is **not** supported
+> - You can use stable, beta, or edge channels instead of v1.18.18
+> - Add Solana to your PATH as instructed after installation
 
-> ⚠️ **NOTE:** Installing [rust] through [Homebrew] likely leads to issues working with `cargo-build-sbf`. Below are some steps to get around this.
+#### Troubleshooting Solana Installation
 
-#### Steps:
+If you installed Rust through Homebrew and encounter `cargo-build-sbf` issues:
 
-1. Uninstall rust.
+1. Remove existing Rust installation:
 ```bash
-rustup uninstall self
+rustup self uninstall
 ```
 
-2. Ensure rust is completely removed.
+2. Verify removal:
 ```bash
-rustup --version
-
-# should result:
-zsh: command not found: rustup
+rustup --version  # Should show "command not found"
 ```
 
-3. Reinstall rust.
+3. Perform clean Rust installation:
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-4. Reinstall solana.
+4. Reinstall Solana:
 ```bash
 sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 ```
 
-> If you are still experiencing errors, join our [Discord dev-chat] channel for more support.
+### 6. Install Arch CLI
 
-### Clone and install the arch-cli
-
-Finally, we'll be using a repository specifically made to demonstrate Arch's capabilities and get you started building quickly: `arch-cli`. 
-
-The [arch-cli repo] provides a local Arch Network development environment, a command-line tool to setup new projects, deploy programs and more, as well as provides an example dapp to showcase Arch functionality that we will touch on later in this book. The `arch-cli` also ships with a mini block explorer for additional visibility into transactions and block production.
+The Arch CLI provides essential development tools and a local development environment.
 
 ```bash
-git clone https://github.com/arch-Network/arch-cli && \
+# Clone the repository
+git clone https://github.com/arch-Network/arch-cli
 cd arch-cli
 
-# install
+# Install the CLI
 cargo install --path .
+
+# Verify installation
+arch --version
 ```
+
+## Features
+The Arch CLI provides:
+- Local Arch Network development environment
+- Project setup and deployment tools
+- Example dapp with Arch functionality
+- Mini block explorer for transaction monitoring
+
+## Need Help?
+
+- Check our [Troubleshooting Guide](#troubleshooting-solana-installation)
+- Join our [Discord dev-chat] for community support
+- Review the [arch-cli repo] documentation
+- Ensure all version requirements are met
 
 <!-- Internal -->
 [Rust]: #install-rust
 [Docker]: #install-docker
-[C++ Compiler (gcc/clang)]: #install-c-compiler
-[Node.js v19+]: #install-nodejs
+[C++ Compiler]: #install-c-compiler
+[Node.js]: #install-nodejs
 [Solana CLI]: #install-solana-cli
 [Arch-cli]: #clone-and-install-the-arch-cli
 
