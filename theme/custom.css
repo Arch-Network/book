@@ -52,6 +52,7 @@
     white-space: nowrap;
     position: relative;
     z-index: 101;
+    color: var(--arch-secondary);
 }
 
 /* Sidebar */
@@ -1254,5 +1255,16 @@ h3:hover .header-link {
     .content .header:visited {
         color: #999999;
         opacity: 1;
+    }
+}
+
+/* Dark mode override for menu title */
+@media (prefers-color-scheme: dark) {
+    .menu-title {
+        color: #ffffff;
+    }
+    
+    .menu-title:hover {
+        color: var(--arch-accent);
     }
 }
