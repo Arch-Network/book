@@ -208,51 +208,21 @@ main {
         left: -100%;
         width: 80%;
         max-width: 300px;
-        height: 100vh;
+        height: 100%;
         top: 0;
-        transition: left 0.3s ease;
+        transition: transform 0.3s ease;
         z-index: 9999;
         background: var(--bg);
         padding-top: var(--menu-bar-height);
         overflow-y: auto;
+        -webkit-transform: translateX(-100%);
+        transform: translateX(-100%);
     }
 
-    /* Force sidebar content to be visible */
-    .sidebar * {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
-    /* Ensure chapter items are visible */
-    .sidebar .chapter,
-    .sidebar .chapter-item,
-    .sidebar a,
-    .sidebar-scrollbox {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
-    /* Show sidebar when visible class is present */
-    .sidebar.visible,
-    .js .sidebar.visible,
-    body.sidebar-visible .sidebar {
+    .sidebar.visible {
         left: 0;
-        box-shadow: 2px 0 12px rgba(0,0,0,0.2);
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
-    .sidebar .chapter {
-        padding: 0 15px;
-        margin-top: 15px;
-    }
-
-    .sidebar .chapter-item {
-        margin: 5px 0;
-        padding: 5px 0;
+        -webkit-transform: translateX(0);
+        transform: translateX(0);
     }
 
     /* Ensure sidebar scrollbox is visible and scrollable */
@@ -261,6 +231,7 @@ main {
         overflow-y: auto;
         position: relative;
         padding: 10px;
+        -webkit-overflow-scrolling: touch;
     }
 
     body.sidebar-visible {
