@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       MDBOOK_VERSION: 0.4.36
+      MDBOOK_MERMAID_VERSION: 0.12.6
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,6 +27,9 @@ jobs:
         uses: peaceiris/actions-mdbook@v2
         with:
           mdbook-version: ${{ env.MDBOOK_VERSION }}
+      - name: Install mdbook-mermaid
+        run: |
+          cargo install mdbook-mermaid --version ${MDBOOK_MERMAID_VERSION}
       - name: Build with mdBook
         run: mdbook build
       - name: Inject Static Pages
