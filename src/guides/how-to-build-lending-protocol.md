@@ -155,44 +155,42 @@ pub struct PoolMetrics {
 ## Custom Scoring and Risk Management
 
 ### LTV (Loan-to-Value) Scoring System
+
 ```mermaid
-graph TD
-    subgraph Scoring Parameters
-        P1[Historical Transaction Data]
-        P2[Asset Type & Quality]
+flowchart TD
+    subgraph Core_Factors[Core Factors]
+        P1[Transaction History]
+        P2[Asset Quality]
         P3[Market Volatility]
         P4[Position Size]
-        P5[Account Age]
-        P6[Previous Liquidations]
-        P7[Repayment History]
-        P8[Cross-margin Status]
-        P9[Portfolio Diversity]
-        P10[Market Conditions]
-        P11[Collateral Quality]
-        P12[Platform Activity]
-        P13[Time-weighted Position]
-        P14[Price Impact]
-        P15[Network Status]
     end
-
-    subgraph Score Calculation
-        SC[Scoring Engine]
-        WF[Weight Factors]
-        NM[Normalization]
+    
+    subgraph User_Metrics[User Metrics]
+        P5[Account History]
+        P6[Repayment Record]
+        P7[Portfolio Health]
     end
-
-    subgraph LTV Assignment
-        LR[LTV Ratio]
-        LC[Lending Capacity]
-        RL[Risk Level]
+    
+    subgraph Market_Context[Market Context]
+        P8[Market Conditions]
+        P9[Price Impact]
+        P10[Network Status]
     end
-
-    P1 & P2 & P3 & P4 & P5 & P6 & P7 & P8 & P9 & P10 & P11 & P12 & P13 & P14 & P15 --> SC
-    SC --> |Apply Weights| WF
-    WF --> |Normalize| NM
-    NM --> |Determine| LR
-    LR --> |Calculate| LC
-    LR --> |Assign| RL
+    
+    Core_Factors --> SC[Scoring Engine]
+    User_Metrics --> SC
+    Market_Context --> SC
+    SC --> WF[Weight Calculation]
+    WF --> NM[Risk Normalization]
+    NM --> LTV[Final LTV Ratio]
+    
+    style Core_Factors fill:#e1f3d8
+    style User_Metrics fill:#fff7e6
+    style Market_Context fill:#e6f3ff
+    style SC fill:#f9f9f9
+    style WF fill:#f9f9f9
+    style NM fill:#f9f9f9
+    style LTV fill:#d4edda
 ```
 
 ### Health Score Monitoring
