@@ -84,7 +84,7 @@ Arch Network implements a robust multi-layered security model that directly leve
   - Cross-validator state consistency checks
 
 ### 2. Transaction Security
-```rust
+```rust,ignore
 pub struct SecurityParams {
     pub min_confirmations: u32,    // Required Bitcoin confirmations
     pub signature_threshold: u32,   // Multi-sig threshold

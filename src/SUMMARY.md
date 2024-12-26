@@ -26,7 +26,9 @@
     - [How to write an Arch program](guides/how-to-write-arch-program.md)
     - [How to write an oracle program](guides/how-to-write-oracle-program.md)
     - [How to create a fungible token](guides/how-to-create-a-fungible-token.md)
+    - [How to build a Bitcoin Runes swap application](guides/how-to-build-runes-swap.md)
     - [How to configure the local validator with Bitcoin Testnet4](guides/how-to-configure-local-validator-bitcoin-testnet4.md)
+    - [How to Build a Bitcoin Lending Protocol](guides/how-to-build-lending-protocol.md) <!-- Added the lending protocol document -->
 
 # Reference
 - [Program](program/program.md)
