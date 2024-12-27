@@ -85,6 +85,13 @@ Each pool account maintains:
 - Collateral factors and liquidation thresholds
 - Asset-specific parameters
 
+The pool account manages both state and UTXOs:
+- **State Management**: Tracks deposits, withdrawals, and user positions
+- **UTXO Management**: 
+  - Maintains a collection of UTXOs for the pool's Bitcoin holdings
+  - Manages UTXO creation for withdrawals
+  - Handles UTXO consolidation for efficient liquidity management
+
 ### 2. Price Oracle
 Track asset prices for liquidation calculations
 
@@ -693,12 +700,32 @@ mod tests {
 The pool initialization process involves several steps:
 
 ```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': { 'fontSize': '16px'},
+  'flowchart': {
+    'curve': 'basis',
+    'nodeSpacing': 50,
+    'rankSpacing': 50,
+    'animation': {
+      'sequence': true,
+      'duration': 1000,
+      'ease': 'linear',
+      'diagramUpdate': 200
+    }
+  }
+}}%%
 graph LR
     A[Admin] -->|Create Pool| B[Initialize Pool Account]
     B -->|Set Parameters| C[Configure Pool]
     C -->|Initialize Metrics| D[Create Pool Metrics]
     D -->|Enable Oracle| E[Connect Price Feed]
     E -->|Activate| F[Pool Active]
+
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef active fill:#4a9eff,color:white,stroke:#3182ce,opacity:0;
+    classDef complete fill:#98FB98,stroke:#333;
+
 ```
 
 1. Admin creates a new pool account
@@ -746,3 +773,95 @@ The system:
 2. Updates position valuations
 3. Calculates health factors
 4. Triggers liquidations when necessary
+
+### Withdrawal Process
+
+The withdrawal process in our lending protocol involves two key components:
+1. State management through program accounts
+2. Actual BTC transfer through UTXOs
+
+```
+rust,ignore
+#[derive(BorshSerialize, BorshDeserialize)]
+pub struct WithdrawRequest {
+    pub user_pubkey: Pubkey,
+    pub pool_pubkey: Pubkey,
+    pub amount: u64,
+    pub recipient_btc_address: String,
+}
+
+pub fn process_withdrawal(
+    ctx: Context<ProcessWithdraw>,
+    request: WithdrawRequest,
+) -> Result<()> {
+    // 1. Validate user position
+    let user_position = &mut ctx.accounts.user_position;
+    require!(
+        user_position.deposited_amount >= request.amount,
+        ErrorCode::InsufficientBalance
+    );
+
+    // 2. Check pool liquidity
+    let pool = &mut ctx.accounts.lending_pool;
+    require!(
+        pool.available_liquidity() >= request.amount,
+        ErrorCode::InsufficientLiquidity
+    );
+
+    // 3. Create UTXO for withdrawal
+    let withdrawal_utxo = SystemInstruction::new_create_account_instruction(
+        request.amount,
+        request.recipient_btc_address,
+        ctx.accounts.user.key()
+    );
+
+    // 4. Update pool state
+    pool.total_deposits = pool.total_deposits.checked_sub(request.amount)
+        .ok_or(ErrorCode::MathOverflow)?;
+
+    // 5. Update user position
+    user_position.deposited_amount = user_position.deposited_amount
+        .checked_sub(request.amount)
+        .ok_or(ErrorCode::MathOverflow)?;
+
+    // 6. Create Bitcoin transaction
+    let mut btc_tx = Transaction::new();
+    add_state_transition(&mut btc_tx, ctx.accounts.pool);
+
+    // 7. Sign and broadcast
+    set_transaction_to_sign(
+        ctx.accounts,
+        TransactionToSign {
+            tx_bytes: &bitcoin::consensus::serialize(&btc_tx),
+            inputs_to_sign: &[InputToSign {
+                index: 0,
+                signer: ctx.accounts.pool.key()
+            }]
+        }
+    );
+
+    Ok(())
+}
+```
+
+### How Withdrawals Work
+
+1. **State Management**:
+   - User initiates withdrawal request
+   - Program validates user's position and available liquidity
+   - Updates pool and user position states
+   - Manages accounting of deposits/withdrawals
+
+2. **UTXO Handling**:
+   - Creates new UTXO for withdrawal amount
+   - Generates Bitcoin transaction
+   - Signs with pool's authority
+   - Broadcasts to Bitcoin network
+
+3. **Safety Checks**:
+   - Validates user has sufficient balance
+   - Ensures pool has enough liquidity
+   - Verifies withdrawal limits
+   - Checks for any active loans/collateral
+
+   
