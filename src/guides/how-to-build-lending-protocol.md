@@ -549,13 +549,35 @@ Create a deposit function to allow users to provide liquidity:
 pub fn deposit(
     ctx: Context<Deposit>,
     amount: u64,
+    btc_txid: [u8; 32],
+    vout: u32,
 ) -> Result<()> {
     let pool = &mut ctx.accounts.lending_pool;
     let user_position = &mut ctx.accounts.user_position;
     
-    // Transfer assets to pool
+    // Verify the UTXO belongs to the user
+    require!(
+        verify_utxo_ownership(
+            &ctx.accounts.user.key(),
+            &btc_txid,
+            vout
+        )?,
+        ErrorCode::InvalidUTXO
+    );
+
+    // Create deposit account to hold the UTXO
+    invoke(
+        &SystemInstruction::new_create_account_instruction(
+            btc_txid,
+            vout,
+            pool.pool_pubkey,
+        ),
+        &[ctx.accounts.user.clone(), ctx.accounts.pool.clone()]
+    )?;
+
     // Update pool state
-    pool.total_deposits = pool.total_deposits.checked_add(amount)
+    pool.total_deposits = pool.total_deposits
+        .checked_add(amount)
         .ok_or(ErrorCode::MathOverflow)?;
     
     // Update user position
@@ -563,7 +585,7 @@ pub fn deposit(
         .checked_add(amount)
         .ok_or(ErrorCode::MathOverflow)?;
     
-    // Update utilization rate
+    // Update utilization metrics
     update_utilization_rate(pool)?;
     
     Ok(())
