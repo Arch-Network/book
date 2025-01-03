@@ -120,7 +120,10 @@ pub struct LendingPool {
     pub interest_rate: u64,
     pub utilization_rate: u64,
     pub liquidation_threshold: u64,
-    pub collateral_factor: u64
+    pub collateral_factor: u64,
+    pub utxos: Vec<UtxoMeta>,
+    pub validator_signatures: Vec<Signature>,
+    pub min_signatures_required: u32,
 }
 
 #[derive(BorshSerialize, BorshDeserialize)]
@@ -600,29 +603,65 @@ Implement borrowing functionality:
 pub fn borrow(
     ctx: Context<Borrow>,
     amount: u64,
+    collateral_utxo: UtxoMeta,
 ) -> Result<()> {
     let pool = &mut ctx.accounts.lending_pool;
-    let user_position = &mut ctx.accounts.user_position;
-    
+    let borrower_position = &mut ctx.accounts.user_position;
+
+    // Verify collateral UTXO ownership
+    require!(
+        verify_utxo_ownership(
+            &ctx.accounts.borrower.key(),
+            &collateral_utxo.txid,
+            collateral_utxo.vout,
+        )?,
+        ErrorCode::InvalidCollateral
+    );
+
     // Check collateral requirements
     require!(
-        is_collateral_sufficient(user_position, pool, amount)?,
+        is_collateral_sufficient(borrower_position, pool, amount)?,
         ErrorCode::InsufficientCollateral
     );
-    
-    // Update pool state
-    pool.total_borrows = pool.total_borrows.checked_add(amount)
-        .ok_or(ErrorCode::MathOverflow)?;
-    
-    // Update user position
-    user_position.borrowed_amount = user_position.borrowed_amount
+
+    // Create collateral account
+    invoke(
+        &SystemInstruction::new_create_account_instruction(
+            collateral_utxo.txid,
+            collateral_utxo.vout,
+            pool.pool_pubkey,
+        ),
+        &[ctx.accounts.borrower.clone(), ctx.accounts.pool.clone()]
+    )?;
+
+    // Create borrow UTXO for user
+    let mut btc_tx = Transaction::new();
+    add_state_transition(&mut btc_tx, ctx.accounts.pool);
+
+    // Set transaction for validator signing
+    set_transaction_to_sign(
+        ctx.accounts,
+        TransactionToSign {
+            tx_bytes: &bitcoin::consensus::serialize(&btc_tx),
+            inputs_to_sign: &[InputToSign {
+                index: 0,
+                signer: pool.pool_pubkey
+            }]
+        }
+    );
+
+    // Update states
+    pool.total_borrows = pool.total_borrows
         .checked_add(amount)
         .ok_or(ErrorCode::MathOverflow)?;
     
-    // Update rates
+    borrower_position.borrowed_amount = borrower_position.borrowed_amount
+        .checked_add(amount)
+        .ok_or(ErrorCode::MathOverflow)?;
+
     update_utilization_rate(pool)?;
     update_interest_rate(pool)?;
-    
+
     Ok(())
 }
 ```
@@ -816,74 +855,116 @@ pub fn process_withdrawal(
     ctx: Context<ProcessWithdraw>,
     request: WithdrawRequest,
 ) -> Result<()> {
-    // 1. Validate user position
+    let pool = &mut ctx.accounts.lending_pool;
     let user_position = &mut ctx.accounts.user_position;
+
+    // 1. Validate user position
     require!(
         user_position.deposited_amount >= request.amount,
         ErrorCode::InsufficientBalance
     );
 
     // 2. Check pool liquidity
-    let pool = &mut ctx.accounts.lending_pool;
     require!(
         pool.available_liquidity() >= request.amount,
         ErrorCode::InsufficientLiquidity
     );
 
-    // 3. Create UTXO for withdrawal
-    let withdrawal_utxo = SystemInstruction::new_create_account_instruction(
-        request.amount,
-        request.recipient_btc_address,
-        ctx.accounts.user.key()
-    );
+    // 3. Find available UTXOs from pool
+    let selected_utxos = select_utxos_for_withdrawal(
+        &pool.utxos,
+        request.amount
+    )?;
 
-    // 4. Update pool state
-    pool.total_deposits = pool.total_deposits.checked_sub(request.amount)
-        .ok_or(ErrorCode::MathOverflow)?;
-
-    // 5. Update user position
-    user_position.deposited_amount = user_position.deposited_amount
-        .checked_sub(request.amount)
-        .ok_or(ErrorCode::MathOverflow)?;
-
-    // 6. Create Bitcoin transaction
+    // 4. Create Bitcoin withdrawal transaction
     let mut btc_tx = Transaction::new();
-    add_state_transition(&mut btc_tx, ctx.accounts.pool);
+    
+    // Add inputs from selected UTXOs
+    for utxo in selected_utxos {
+        btc_tx.input.push(TxIn {
+            previous_output: OutPoint::new(utxo.txid, utxo.vout),
+            script_sig: Script::new(),
+            sequence: Sequence::MAX,
+            witness: Witness::new(),
+        });
+    }
 
-    // 7. Sign and broadcast
+    // Add withdrawal output to user's address
+    let recipient_script = Address::from_str(&request.recipient_btc_address)?
+        .script_pubkey();
+    btc_tx.output.push(TxOut {
+        value: request.amount,
+        script_pubkey: recipient_script,
+    });
+
+    // Add change output back to pool if needed
+    let total_input = selected_utxos.iter()
+        .map(|utxo| utxo.amount)
+        .sum::<u64>();
+    if total_input > request.amount {
+        btc_tx.output.push(TxOut {
+            value: total_input - request.amount,
+            script_pubkey: get_account_script_pubkey(&pool.pool_pubkey),
+        });
+    }
+
+    // 5. Set transaction for validator signing
     set_transaction_to_sign(
         ctx.accounts,
         TransactionToSign {
             tx_bytes: &bitcoin::consensus::serialize(&btc_tx),
-            inputs_to_sign: &[InputToSign {
-                index: 0,
-                signer: ctx.accounts.pool.key()
-            }]
+            inputs_to_sign: &selected_utxos.iter()
+                .enumerate()
+                .map(|(i, _)| InputToSign {
+                    index: i as u32,
+                    signer: pool.pool_pubkey,
+                })
+                .collect::<Vec<_>>()
         }
     );
 
+    // 6. Update pool state
+    pool.total_deposits = pool.total_deposits
+        .checked_sub(request.amount)
+        .ok_or(ErrorCode::MathOverflow)?;
+
+    // 7. Update user position
+    user_position.deposited_amount = user_position.deposited_amount
+        .checked_sub(request.amount)
+        .ok_or(ErrorCode::MathOverflow)?;
+
+    // 8. Remove spent UTXOs from pool
+    pool.utxos.retain(|utxo| !selected_utxos.contains(utxo));
+
     Ok(())
 }
+
+fn select_utxos_for_withdrawal(
+    pool_utxos: &[UtxoMeta],
+    amount: u64,
+) -> Result<Vec<UtxoMeta>> {
+    let mut selected = Vec::new();
+    let mut total_selected = 0;
+
+    for utxo in pool_utxos {
+        if total_selected >= amount {
+            break;
+        }
+        
+        // Verify UTXO is still valid and unspent
+        validate_utxo(utxo)?;
+        
+        selected.push(utxo.clone());
+        total_selected += utxo.amount;
+    }
+
+    require!(
+        total_selected >= amount,
+        ErrorCode::InsufficientUtxos
+    );
+
+    Ok(selected)
+}
 ```
-
-### How Withdrawals Work
-
-1. **State Management**:
-   - User initiates withdrawal request
-   - Program validates user's position and available liquidity
-   - Updates pool and user position states
-   - Manages accounting of deposits/withdrawals
-
-2. **UTXO Handling**:
-   - Creates new UTXO for withdrawal amount
-   - Generates Bitcoin transaction
-   - Signs with pool's authority
-   - Broadcasts to Bitcoin network
-
-3. **Safety Checks**:
-   - Validates user has sufficient balance
-   - Ensures pool has enough liquidity
-   - Verifies withdrawal limits
-   - Checks for any active loans/collateral
 
    
