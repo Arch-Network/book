@@ -25,6 +25,7 @@ trap cleanup EXIT
 
 # Download URL based on OS and architecture
 BINARY_NAME="arch-cli"
+DOWNLOAD_BINARY_NAME="cli" 
 
 # Map uname architecture to our release architecture names
 case "$ARCH" in
@@ -39,9 +40,7 @@ case "$ARCH" in
         exit 1
         ;;
 esac
-
-DOWNLOAD_URL="https://github.com/Arch-Network/arch-node/releases/download/${VERSION}/${BINARY_NAME}-${RELEASE_ARCH}"
-
+DOWNLOAD_URL="https://github.com/Arch-Network/arch-node/releases/download/${VERSION}/${DOWNLOAD_BINARY_NAME}-${RELEASE_ARCH}"
 echo "Downloading ${BINARY_NAME} version ${VERSION}..."
 if ! curl -sSfL "$DOWNLOAD_URL" -o "$TMP_DIR/${BINARY_NAME}"; then
     echo "Error: Failed to download binary"
