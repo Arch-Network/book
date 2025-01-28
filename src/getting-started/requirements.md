@@ -104,7 +104,7 @@ The Arch CLI provides essential development tools and a local development enviro
 
 ```bash
 # Install the CLI
-sh -c "$(curl -sSfL https://raw.githubusercontent.com/arch-network/arch-network/main/cli/install.sh)"
+sh -c "$(curl -sSfL https://raw.githubusercontent.com/arch-network/book/update-cli-docs/install.sh)"
 
 # Verify installation
 arch-cli --version

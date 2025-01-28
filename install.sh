@@ -24,7 +24,7 @@ cleanup() {
 trap cleanup EXIT
 
 # Download URL based on OS and architecture
-BINARY_NAME="cli"
+BINARY_NAME="arch-cli"
 
 # Map uname architecture to our release architecture names
 case "$ARCH" in
