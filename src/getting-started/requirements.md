@@ -9,9 +9,7 @@ Before you begin development with Arch Network, you'll need to install and confi
 | Requirement | Minimum Version | Description |
 |------------|----------------|-------------|
 | [Rust] | Latest stable | Core development language |
-| [Docker] | Latest | Container runtime for local node infrastructure |
 | [C++ Compiler] | gcc/clang | Required for native builds |
-| [Node.js] | v19+ | JavaScript runtime for SDK |
 | [Solana CLI] | v1.18.18 | Solana development tools |
 | [Arch CLI] | Latest | Arch Network development toolkit |
 
@@ -31,18 +29,7 @@ cargo --version
 
 > 💡 **Note:** Make sure you're using the stable channel throughout this book.
 
-### 2. Install Docker
-Docker is essential for running Arch's local node infrastructure.
-
-1. Download Docker Desktop from [the Docker website]
-2. Follow the installation wizard for your operating system
-3. Start Docker Desktop
-4. Verify installation:
-```bash
-docker --version
-```
-
-### 3. C++ Compiler Setup
+### 2. C++ Compiler Setup
 
 #### MacOS Users
 The C++ compiler comes pre-installed with Xcode Command Line Tools. Verify with:
@@ -62,8 +49,6 @@ sudo apt-get update
 sudo apt-get install gcc-multilib build-essential
 ```
 
-### 4. Install Node.js
-Node.js is required for working with the [arch-typescript-sdk].
 
 ```bash
 # Using nvm (recommended)
@@ -76,7 +61,7 @@ node --version  # Should show v19.x.x or higher
 npm --version
 ```
 
-### 5. Install Solana CLI
+### 3. Install Solana CLI
 
 The Solana CLI is required for program compilation and deployment.
 
@@ -113,17 +98,13 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 ```
 
-### 6. Install Arch CLI
+### 4. Install Arch CLI
 
 The Arch CLI provides essential development tools and a local development environment.
 
 ```bash
-# Clone the repository
-git clone https://github.com/arch-Network/arch-cli
-cd arch-cli
-
 # Install the CLI
-cargo install --path .
+sh -c "$(curl -sSfL https://raw.githubusercontent.com/arch-network/arch-network/main/cli/install.sh)"
 
 # Verify installation
 arch-cli --version
@@ -145,9 +126,7 @@ The Arch CLI provides:
 
 <!-- Internal -->
 [Rust]: #install-rust
-[Docker]: #install-docker
 [C++ Compiler]: #install-c-compiler
-[Node.js]: #install-nodejs
 [Solana CLI]: #install-solana-cli
 [Arch-cli]: #clone-and-install-the-arch-cli
 
@@ -159,10 +138,8 @@ The Arch CLI provides:
 [arch-cli repo]: https://github.com/arch-Network/arch-cli
 [rust]: https://www.rust-lang.org
 [Solana]: https://github.com/solana-labs/solana
-[Node.js]: https://nodejs.org/en/download/package-manager
 [arch-typescript-sdk]: https://github.com/saturnBTC/arch-typescript-sdk
 [Homebrew]: https://brew.sh/
 [Solana Docs]: https://docs.solanalabs.com/cli/install#macos--linux
 [the Rust website]: https://www.rust-lang.org/tools/install
-[the Docker website]: https://www.docker.com/products/docker-desktop/
 [Discord dev-chat]: https://discord.com/channels/1241112027963986001/1270921925991989268
