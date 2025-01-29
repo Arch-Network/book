@@ -112,10 +112,10 @@ arch-cli --version
 
 ## Features
 The Arch CLI provides:
-- Local Arch Network development environment
-- Project setup and deployment tools
-- Example dapp with Arch functionality
-- Mini block explorer for transaction monitoring
+- Local development and validator tools
+- Account and transaction management
+- Block data and program logging
+- Group key and network controls
 
 ## Need Help?
 
