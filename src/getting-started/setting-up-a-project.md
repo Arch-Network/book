@@ -9,7 +9,7 @@ This guide walks you through creating your first Arch Network project using the 
 ## Prerequisites
 
 Before starting, ensure you have the following dependencies installed:
-- Arch-Cli(v1.0)
+- Arch-Cli(Latest)
 - Cargo(v1.81.0 or later)
 - Bitcoin Core and Electrs: Required for local validation
 
@@ -43,13 +43,13 @@ helloworld/
     └── lib.rs             # Client interface
 ```
 
-### 2. Build the program 
+### 2. Build the program
 
 Build the program using the Solana BPF compiler:
 
 ```bash
 # Navigate to the program directory
-cd program 
+cd program
 
 # Build the program using Solana's BPF compiler
 cargo build-sbf
@@ -57,7 +57,7 @@ cargo build-sbf
 
 This command compiles your Rust code into a format that can be deployed to the Arch Network.
 
-### 3. Start the local validator 
+### 3. Start the local validator
 Start a local validator for testing:
 
 ```bash
@@ -67,7 +67,7 @@ arch-cli validator-start
 
 > Important: Ensure Bitcoin Core and Electrs are properly configured and running before starting the validator. See the setup guide for details.
 
-### 4. Deploy the program 
+### 4. Deploy the program
 
 Deploy your compiled program to the local Arch Network:
 
