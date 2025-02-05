@@ -841,8 +841,7 @@ The withdrawal process in our lending protocol involves two key components:
 1. State management through program accounts
 2. Actual BTC transfer through UTXOs
 
-```
-rust,ignore
+```rust,ignore
 #[derive(BorshSerialize, BorshDeserialize)]
 pub struct WithdrawRequest {
     pub user_pubkey: Pubkey,
