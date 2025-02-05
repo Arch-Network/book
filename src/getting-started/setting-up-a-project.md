@@ -31,7 +31,9 @@ cd arch-examples/examples/helloworld
 After cloning, you'll see the following project structure:
 
 The helloworld folder should look like this:
-```
+
+```ignore
+
 helloworld/
 ├── Cargo.toml              # Workspace configuration
 ├── program/                # Program directory containing on-chain code

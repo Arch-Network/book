@@ -33,7 +33,7 @@ cd bitcoin
 
 Compile from source:
 
-```
+```bash,ignore
 # Switch to Bitcoin Core v28.0 release branch
 git checkout v28.0
 
@@ -152,7 +152,9 @@ arch-cli validator-start
 ```
 
 Output:
-```
+
+```bash,ignore
+
 Welcome to the Arch Network CLI
 2025-01-29T20:44:39.579899Z  INFO local_validator: local_validator/src/lib.rs:247: Detected disconnection. Reinitializing state...
 2025-01-29T20:44:39.587229Z  INFO local_validator: local_validator/src/lib.rs:260: Waiting for all subscriptions to reconnect...
