@@ -88,7 +88,7 @@ maxtxfee=0.002            # Maximum total fees for a single transaction
 # RPC Settings
 rpcallowip=0.0.0.0/0      # Allow RPC connections from any IP
 rpcuser=bitcoin            # RPC username
-rpcpassword=bitcoinpass    # RPC password (change this in production!)
+rpcpassword=bitcoinpass    
 
 # Testnet Configuration
 [testnet4]
