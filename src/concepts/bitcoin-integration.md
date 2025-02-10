@@ -10,6 +10,10 @@ flowchart TB
         BNode[Bitcoin Node]
     end
 
+    subgraph EC[Electrs Client]
+        ECNode[Electrs Client]
+    end
+
     subgraph AN[Arch Network]
         LN[Leader Node\nBitcoin Integration]
         subgraph VN[Validator Network]
@@ -18,7 +22,8 @@ flowchart TB
         end
     end
 
-    BNode <--> LN
+    BNode <--> ECNode
+    ECNode <--> LN
     LN <--> VN
     P1 --- PN
 ```
