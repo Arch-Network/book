@@ -88,7 +88,7 @@ maxtxfee=0.002            # Maximum total fees for a single transaction
 # RPC Settings
 rpcallowip=0.0.0.0/0      # Allow RPC connections from any IP
 rpcuser=bitcoin            # RPC username
-rpcpassword=bitcoinpass    # RPC password (change this in production!)
+rpcpassword=bitcoinpass    
 
 # Testnet Configuration
 [testnet4]
@@ -139,7 +139,8 @@ git checkout mempool
 cargo run --release --bin electrs -- -vvvv \
     --daemon-dir ~/.bitcoin \
     --network regtest \
-    --cookie bitcoin:bitcoinpass
+    --cookie bitcoin:bitcoinpass \
+    --main-loop-delay 0
 ```
 
 ## 3. Running the Local Validator
