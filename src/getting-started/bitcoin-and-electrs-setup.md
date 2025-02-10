@@ -139,7 +139,8 @@ git checkout mempool
 cargo run --release --bin electrs -- -vvvv \
     --daemon-dir ~/.bitcoin \
     --network regtest \
-    --cookie bitcoin:bitcoinpass
+    --cookie bitcoin:bitcoinpass \
+    --main-loop-delay 0
 ```
 
 ## 3. Running the Local Validator
