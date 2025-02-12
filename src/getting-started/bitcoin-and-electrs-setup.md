@@ -149,7 +149,7 @@ Once both Bitcoin Core and Electrs are properly configured and running:
 
 ```bash
 # Start the arch local validator
-arch-cli validator-start
+arch-cli validator start
 ```
 
 Output:
