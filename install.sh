@@ -55,15 +55,19 @@ trap cleanup EXIT
 
 # Download URL based on OS and architecture
 BINARY_NAME="arch-cli"
-DOWNLOAD_BINARY_NAME="cli" 
+DOWNLOAD_BINARY_NAME="cli"
 
 # Map uname architecture to our release architecture names
 case "$ARCH" in
     x86_64)
         RELEASE_ARCH="x86_64-unknown-linux-gnu"
         ;;
-    aarch64)
-        RELEASE_ARCH="aarch64-apple-darwin"
+    aarch64|arm64)
+        if [ "$OS" = "darwin" ]; then
+            RELEASE_ARCH="aarch64-apple-darwin"
+        else
+            RELEASE_ARCH="aarch64-unknown-linux-gnu"
+        fi
         ;;
     *)
         echo "Error: Unsupported architecture: $ARCH"
@@ -71,8 +75,10 @@ case "$ARCH" in
         ;;
 esac
 
+
 # Construct and validate download URL
 DOWNLOAD_URL="https://github.com/Arch-Network/arch-node/releases/download/${VERSION}/${DOWNLOAD_BINARY_NAME}-${RELEASE_ARCH}"
+
 echo "Downloading ${BINARY_NAME} version ${VERSION}..."
 
 # Attempt download with better error handling

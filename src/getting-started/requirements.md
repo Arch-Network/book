@@ -54,12 +54,10 @@ sudo apt-get install gcc-multilib build-essential jq
 The Solana CLI is required for program compilation and deployment.
 
 ```bash
-sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
+sh -c "$(curl -sSfL https://release.anza.xyz/v2.1.13/install)"
 ```
 
 > ⚠️ **Important Notes:** 
-> - Solana v2.x is **not** supported
-> - You can use stable, beta, or edge channels instead of v1.18.18
 > - Add Solana to your PATH as instructed after installation
 
 #### Troubleshooting Solana Installation
