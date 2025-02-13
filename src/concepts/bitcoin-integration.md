@@ -36,17 +36,18 @@ Arch Network manages Bitcoin UTXOs through a specialized system:
 ```mermaid
 flowchart LR
     subgraph UTXO[Bitcoin UTXO]
-        TxID[Transaction\nID]
-        OutIdx[Output\nIndex]
+        TxID[TransactionID]
+        OutIdx[OutputIndex]
     end
 
     subgraph Account[Arch Account]
-        Meta[UTXO\nMeta]
-        State[Program\nState]
+        Meta[UTXOMeta]
+        State[ProgramState]
     end
 
     TxID --> Meta
-    OutIdx --> State
+    OutIdx --> Meta
+    Meta --- State
 ```
 
 ```rust,ignore
