@@ -46,19 +46,7 @@ xcode-select --install
 Install the required compiler tools:
 ```bash
 sudo apt-get update
-sudo apt-get install gcc-multilib build-essential
-```
-
-
-```bash
-# Using nvm (recommended)
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-nvm install 19
-nvm use 19
-
-# Verify installation
-node --version  # Should show v19.x.x or higher
-npm --version
+sudo apt-get install gcc-multilib build-essential jq
 ```
 
 ### 3. Install Solana CLI
