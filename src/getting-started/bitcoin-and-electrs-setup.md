@@ -128,9 +128,6 @@ Electrs is a high-performance Rust implementation of Electrum Server that connec
 # Clone the Mempool fork of Electrs
 git clone https://github.com/Arch-Network/electrs && cd electrs
 
-# Switch to the mempool branch which contains required customizations
-git checkout mempool
-
 # Build and run Electrs in release mode
 # - Uses verbose logging (-vvvv) for debugging
 # - Connects to Bitcoin Core in the default directory
