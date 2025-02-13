@@ -1,11 +1,34 @@
 #!/bin/bash
 set -e
 
+# Check for required dependencies
+check_dependency() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        echo "Error: Required dependency '$1' is not installed"
+        case "$1" in
+            jq)
+                echo "Please install jq using one of the following commands:"
+                echo "  - For Debian/Ubuntu: sudo apt-get install jq"
+                echo "  - For RedHat/CentOS: sudo yum install jq"
+                echo "  - For macOS: brew install jq"
+                ;;
+            *)
+                echo "Please install $1 before continuing"
+                ;;
+        esac
+        exit 1
+    fi
+}
+
 # Check for sudo privileges upfront
 if ! [ -w "/usr/local/bin" ]; then
     echo "Error: Installation requires sudo privileges"
     exit 1
 fi
+
+# Check for required dependencies
+check_dependency "jq"
+check_dependency "curl"
 
 # Determine operating system and architecture
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
@@ -13,7 +36,14 @@ ARCH=$(uname -m)
 
 # Get the latest version tag if VERSION is not set
 if [ -z "$VERSION" ]; then
-    VERSION=$(curl -sSfL https://api.github.com/repos/Arch-Network/arch-node/releases/latest | jq -r .tag_name)
+    if ! VERSION=$(curl -sSfL https://api.github.com/repos/Arch-Network/arch-node/releases/latest | jq -r .tag_name); then
+        echo "Error: Failed to fetch latest version information"
+        exit 1
+    fi
+    if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+        echo "Error: Invalid version information received from GitHub API"
+        exit 1
+    fi
 fi
 
 # Create temporary directory with cleanup
@@ -40,34 +70,44 @@ case "$ARCH" in
         fi
         ;;
     *)
-        echo "Unsupported architecture: $ARCH"
+        echo "Error: Unsupported architecture: $ARCH"
         exit 1
         ;;
 esac
 
+
+# Construct and validate download URL
 DOWNLOAD_URL="https://github.com/Arch-Network/arch-node/releases/download/${VERSION}/${DOWNLOAD_BINARY_NAME}-${RELEASE_ARCH}"
 
 echo "Downloading ${BINARY_NAME} version ${VERSION}..."
+
+# Attempt download with better error handling
 if ! curl -sSfL "$DOWNLOAD_URL" -o "$TMP_DIR/${BINARY_NAME}"; then
-    echo "Error: Failed to download binary"
+    echo "Error: Failed to download binary from ${DOWNLOAD_URL}"
+    echo "Please check your internet connection and verify the version exists"
     exit 1
 fi
 
 # Verify download
 if [ ! -s "$TMP_DIR/${BINARY_NAME}" ]; then
     echo "Error: Downloaded file is empty"
+    echo "Please verify the version and architecture are correct:"
+    echo "Version: ${VERSION}"
+    echo "Architecture: ${RELEASE_ARCH}"
     exit 1
 fi
 
-# Install into /usr/local/bin
+# Install into /usr/local/bin with improved error messages
 INSTALL_DIR="/usr/local/bin"
 if ! sudo mv "$TMP_DIR/${BINARY_NAME}" "$INSTALL_DIR/"; then
     echo "Error: Failed to move binary to ${INSTALL_DIR}"
+    echo "Please check your permissions and disk space"
     exit 1
 fi
 
 if ! sudo chmod +x "$INSTALL_DIR/${BINARY_NAME}"; then
     echo "Error: Failed to make binary executable"
+    echo "Please check your permissions"
     exit 1
 fi
 
