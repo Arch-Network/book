@@ -59,8 +59,13 @@ make install
 First, create and navigate to the Bitcoin configuration directory:
 
 ```bash
-# Navigate to Bitcoin directory
+# Navigate to Bitcoin directory from root
+
+# ON LINUX
 cd ~/.bitcoin
+
+# ON MAC. Replace <USER-NAME> with your mac's username
+mkdir /Users/<USER-NAME>/Library/'Application Support'/Bitcoin && cd /Users/<USER-NAME>/Library/'Application Support'/Bitcoin
 
 # Create configuration file
 touch bitcoin.conf
@@ -128,6 +133,7 @@ Electrs is a high-performance Rust implementation of Electrum Server that connec
 # Clone the Mempool fork of Electrs
 git clone https://github.com/Arch-Network/electrs && cd electrs
 
+# FOR LINUX
 # Build and run Electrs in release mode
 # - Uses verbose logging (-vvvv) for debugging
 # - Connects to Bitcoin Core in the default directory
@@ -135,6 +141,14 @@ git clone https://github.com/Arch-Network/electrs && cd electrs
 # - Uses specified authentication credentials
 cargo run --release --bin electrs -- -vvvv \
     --daemon-dir ~/.bitcoin \
+    --network regtest \
+    --cookie bitcoin:bitcoinpass \
+    --main-loop-delay 0
+
+# FOR MAC
+# set --deamon-dir to MAC dir
+cargo run --release --bin electrs -- -vvvv \
+    --daemon-dir  /Users/<USER-NAME>/Library/'Application Support'/Bitcoin \
     --network regtest \
     --cookie bitcoin:bitcoinpass \
     --main-loop-delay 0
