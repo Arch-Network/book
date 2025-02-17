@@ -129,38 +129,83 @@ tail -f ~/.bitcoin/regtest/debug.log
 ## 2. Electrs Setup
 Electrs is a high-performance Rust implementation of Electrum Server that connects to your Bitcoin Core node.
 
+### 2.1 Building Electrs
 ```bash
 # Clone the Mempool fork of Electrs
 git clone https://github.com/Arch-Network/electrs && cd electrs
 
-# FOR LINUX
-# Build and run Electrs in release mode
-# - Uses verbose logging (-vvvv) for debugging
-# - Connects to Bitcoin Core in the default directory
-# - Runs in regtest mode for testing
-# - Uses specified authentication credentials
-cargo run --release --bin electrs -- -vvvv \
+# Switch to the mempool branch which contains required customizations
+git checkout mempool
+```
+
+### 2.2 Running Electrs
+
+#### Local Development (Regtest)
+```bash
+# Build and run Electrs in release mode for local development
+electrs -vvvv \
     --daemon-dir ~/.bitcoin \
     --network regtest \
     --cookie bitcoin:bitcoinpass \
-    --main-loop-delay 0
-
-# FOR MAC
-# set --deamon-dir to MAC dir
-cargo run --release --bin electrs -- -vvvv \
-    --daemon-dir  /Users/<USER-NAME>/Library/'Application Support'/Bitcoin \
-    --network regtest \
-    --cookie bitcoin:bitcoinpass \
-    --main-loop-delay 0
+    --main-loop-delay 0 \
+    --electrum-rpc-addr="127.0.0.1:50001" \
+    --http-addr="127.0.0.1:3002"
 ```
+
+#### Testnet4 Configuration
+For connecting to testnet4, use the following configuration:
+
+```bash
+# Run Electrs with testnet4 configuration
+electrs -vvvv \
+    --network testnet4 \
+    --daemon-rpc-addr <BITCOIN_NODE_ENDPOINT>:<PORT> \
+    --cookie "<BITCOIN_RPC_USER>:<BITCOIN_RPC_PASSWORD>" \
+    --db-dir ./db \
+    --main-loop-delay 0 \
+    --lightmode \
+    --jsonrpc-import \
+    --electrum-rpc-addr="127.0.0.1:40001" \
+    --http-addr="127.0.0.1:3004"
+```
+
+Expected output:
+```
+INFO - Electrum RPC server running on 127.0.0.1:40001
+TRACE - [THREAD] GETHASHMAP INSERT | notification-8 ThreadId(31)
+TRACE - [THREAD] START WORK        | notification-8 ThreadId(31)
+TRACE - [THREAD] GETHASHMAP INSERT | shutdown-acceptor-9 ThreadId(35)
+TRACE - [THREAD] START WORK        | shutdown-acceptor-9 ThreadId(35)
+INFO - REST server running on 127.0.0.1:3004
+```
+
+> Note: The default ports are:
+> - Regtest mode:
+>   - Electrum RPC: 50001
+>   - REST API: 3002
+> - Testnet4 mode:
+>   - Electrum RPC: 40001
+>   - REST API: 3004
 
 ## 3. Running the Local Validator
 
-Once both Bitcoin Core and Electrs are properly configured and running:
+### 3.1 Local Development (Regtest)
+```bash
+# Start the arch local validator for regtest
+arch-cli validator-start
+```
+
+### 3.2 Testnet4 Configuration
+For running the local validator with testnet4:
 
 ```bash
-# Start the arch local validator
-arch-cli validator-start
+# Start the local validator with testnet4 configuration
+arch-cli validator-start \
+    --rpc-bind-ip 127.0.0.1 \
+    --rpc-bind-port 9002 \
+    --electrs-endpoint http://localhost:3004 \
+    --network-mode testnet \
+    --electrum-endpoint tcp://127.0.0.1:40001
 ```
 
 Output:
