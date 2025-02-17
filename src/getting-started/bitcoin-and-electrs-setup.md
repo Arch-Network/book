@@ -175,7 +175,7 @@ electrs -vvvv \
 ```
 
 Expected output:
-```
+```bash
 INFO - Electrum RPC server running on 127.0.0.1:40001
 TRACE - [THREAD] GETHASHMAP INSERT | notification-8 ThreadId(31)
 TRACE - [THREAD] START WORK        | notification-8 ThreadId(31)
