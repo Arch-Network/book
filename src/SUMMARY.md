@@ -2,13 +2,15 @@
 
 [Introduction](introduction.md)
 
-# Getting started
-- [Setting up the environment](getting-started/environment-setup.md)
-    - [Requirements](getting-started/requirements.md)
+# Getting Started
+- [Quick Start Guide](getting-started/quick-start.md)
+- [Environment Setup](getting-started/environment-setup.md)
+    - [System Requirements](getting-started/requirements.md)
+    - [Development Environment Setup](getting-started/dev-environment-setup.md)
     - [Bitcoin and Electrs Setup](getting-started/bitcoin-and-electrs-setup.md)
-    - [Setting up a project](getting-started/setting-up-a-project.md)
+    - [Setting up a Project](getting-started/setting-up-a-project.md)
         - [Nodes](concepts/nodes.md)
-    - [Resources](getting-started/resources.md)
+- [Resources](getting-started/resources.md)
 
 # Core Concepts
 - [Architecture Overview](concepts/architecture.md)
