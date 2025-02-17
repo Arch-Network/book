@@ -136,7 +136,12 @@ git clone https://github.com/Arch-Network/electrs && cd electrs
 
 # Switch to the mempool branch which contains required customizations
 git checkout mempool
+
+# Build and install the electrs binary
+cargo install --path .
 ```
+
+> Note: This will install the `electrs` binary in your cargo bin directory (usually `~/.cargo/bin/`). Make sure this directory is in your PATH.
 
 ### 2.2 Running Electrs
 
