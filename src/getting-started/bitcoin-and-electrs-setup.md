@@ -167,9 +167,6 @@ bitcoin-cli -regtest getbalance
 git clone https://github.com/Arch-Network/electrs
 cd electrs
 
-# Switch to our customized branch
-git checkout mempool
-
 # Build and install
 cargo install --path .
 ```
@@ -183,9 +180,7 @@ electrs -vvvv \
     --daemon-dir ~/.bitcoin \
     --network regtest \
     --cookie bitcoin:bitcoinpass \
-    --main-loop-delay 0 \
-    --electrum-rpc-addr="127.0.0.1:50001" \
-    --http-addr="127.0.0.1:3002"
+    --main-loop-delay 0 
 ```
 
 You should see output like:
