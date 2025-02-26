@@ -1694,10 +1694,105 @@ h3:hover .header-link {
     height: auto;
 }
 
-.content {
-    position: relative;
-    padding-top: 20px;
-    z-index: 1;
+/* Mobile optimizations for Mermaid diagrams */
+@media only screen and (max-width: 768px) {
+    /* Make text smaller in Mermaid diagrams on mobile */
+    .mermaid svg text {
+        font-size: 12px !important;
+    }
+    
+    /* Specifically target node labels to ensure they're fully visible */
+    .mermaid .node text,
+    .mermaid .nodeLabel {
+        font-size: 11px !important;
+        line-height: 1.2 !important; 
+    }
+    
+    /* Slightly increase node boxes to accommodate text better */
+    .mermaid .node rect,
+    .mermaid .node polygon,
+    .mermaid .node circle {
+        transform: scale(1.05, 1); /* Scale wider but not taller */
+    }
+    
+    /* Scale down diagram slightly to fit better on mobile */
+    .mermaid svg {
+        transform: scale(0.95);
+        transform-origin: center top;
+        margin: 0 auto !important;
+    }
+    
+    /* Ensure container doesn't overflow */
+    .mermaid {
+        overflow-x: auto;
+        max-width: 100%;
+        padding: 0.75rem;
+    }
+}
+
+/* Extra small screens need even smaller text */
+@media only screen and (max-width: 480px) {
+    /* General diagram text size reduction */
+    .mermaid svg text {
+        font-size: 8px !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Make node text visible by reducing size */
+    .mermaid .node text,
+    .mermaid .nodeLabel {
+        font-size: 8px !important;
+        font-weight: 600 !important;
+        text-align: center !important;
+    }
+    
+    /* Target the connector/edge labels specifically */
+    .mermaid .edgeLabel text,
+    .mermaid .edgeLabel,
+    .mermaid .edgePath text {
+        font-size: 7px !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Fix node text wrapping - prevent letter-by-letter wrapping */
+    .mermaid .node div,
+    .mermaid .node span,
+    .mermaid .node foreignObject div {
+        width: 100% !important;
+        text-align: center !important;
+        word-break: normal !important;
+        white-space: normal !important;
+        /* Set min-width to prevent too narrow boxes */
+        min-width: 60px !important;
+    }
+    
+    /* Make node rect wider to prevent single-character wrapping */
+    .mermaid .node rect,
+    .mermaid .node polygon,
+    .mermaid .node circle {
+        transform: scale(1.5, 1) !important; /* Make 50% wider but not taller */
+        rx: 5 !important; /* Rounded corners */
+    }
+    
+    /* Further scale down diagram for very small screens */
+    .mermaid svg {
+        transform: scale(0.8); /* Smaller scale for better fit */
+        transform-origin: center top;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    /* Slightly adjust vertical spacing for readability */
+    .mermaid .edgePath {
+        transform: scale(1, 0.95); /* Slightly compress vertical spacing */
+    }
+    
+    /* Reduce diagram padding */
+    .mermaid {
+        padding: 0.5rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    }
 }
 
 #menu-bar.menu-hidden {
@@ -1933,8 +2028,13 @@ script {
 
 /* Fix the default chevrons (hide them) */
 .sidebar .chapter-item > a::before,
-.sidebar li.chapter-item > a::before {
-    display: none !important;
+.sidebar .chapter-item > a::after,
+.sidebar .chapter-item > .section::before,
+.sidebar .chapter-item > .section::after,
+.sidebar a::before,
+.sidebar a::after,
+.sidebar a em {
+  display: none !important;
 }
 
 /* Replace with better chevrons */
