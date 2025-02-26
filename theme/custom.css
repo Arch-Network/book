@@ -49,66 +49,91 @@ body {
     height: var(--menu-bar-height);
     background: white !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    padding: 0 15px 0 5px;
+    padding: 0;
     display: flex;
     align-items: center;
     margin: 0 !important;
-    transform: translateZ(0);
-    will-change: transform;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
 }
 
-/* Improve the header layout */
-.left-buttons {
+/* Left section */
+#menu-bar .left-buttons {
     display: flex;
     align-items: center;
-    z-index: 102;
-    height: 100%;
-    margin-right: 15px;
+    padding-left: 10px;
+    margin-right: 10px;
 }
 
-/* Properly position the hamburger menu and search icons */
-.menu-bar-toggle, .icon-button.search-toggle {
-    padding: 0 7px;
-}
-
-/* Fix the title display */
-.title {
+/* Title section */
+#menu-bar .menu-title {
     display: flex;
     align-items: center;
-    font-size: 1em;
-    font-weight: 500;
-    margin: 0;
-    white-space: nowrap;
-    position: relative;
-    z-index: 101;
-    color: var(--arch-secondary);
-    max-width: none;
-    overflow: visible;
-    text-overflow: initial;
-}
-
-/* Menu title styling */
-.menu-title {
-    display: inline-block;
+    justify-content: center;
+    flex: 1;
     font-size: 1.1em;
     font-weight: 500;
     color: var(--arch-secondary);
-    margin-right: auto;
     white-space: nowrap;
-    overflow: visible;
-    text-overflow: initial;
-    width: auto;
-    max-width: none;
+    text-align: center;
 }
 
-/* Fix the right buttons positioning */
-.right-buttons {
+/* Right section - ensure it sits at the far right */
+#menu-bar .right-buttons {
     display: flex;
     align-items: center;
-    height: 100%;
+    padding-right: 10px;
     margin-left: auto;
+}
+
+/* Button styling */
+#menu-bar .icon-button {
+    padding: 0 8px;
+    height: var(--menu-bar-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Right buttons styling */
+#menu-bar .right-buttons a {
+    padding: 0 8px;
+    height: var(--menu-bar-height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--arch-secondary);
+    text-decoration: none;
+}
+
+#menu-bar .right-buttons a:hover {
+    color: var(--arch-primary);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    #menu-bar {
+        background: var(--arch-secondary) !important;
+    }
+    
+    #menu-bar .menu-title {
+        color: white;
+    }
+    
+    #menu-bar .right-buttons a {
+        color: #e2e4e7;
+    }
+}
+
+/* Mobile adjustments */
+@media only screen and (max-width: 1100px) {
+    /* Ensure proper spacing on mobile */
+    #menu-bar .menu-title {
+        justify-content: center;
+        padding: 0;
+    }
+    
+    #menu-bar .right-buttons {
+        padding-right: 10px;
+    }
 }
 
 /* Sidebar */
