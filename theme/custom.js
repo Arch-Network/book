@@ -1,140 +1,121 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Hide theme toggle elements
-    const themeToggle = document.getElementById('theme-toggle');
-    const themePopup = document.querySelector('.theme-popup');
-    
-    if (themeToggle) themeToggle.style.display = 'none';
-    if (themePopup) themePopup.style.display = 'none';
-    
-    // Mobile sidebar improvements
-    if (window.innerWidth <= 1100) {
-        const body = document.body;
-        
-        // IMPORTANT: Only get existing elements, don't create duplicates
-        const menuToggle = document.querySelector('#menu-bar-toggle'); // Use querySelector instead of getElementById
-        const sidebar = document.querySelector('.sidebar');
-        
-        console.log('Sidebar element found:', sidebar); // Debug logging
-        
-        // Remove any existing event listeners to prevent duplicates
-        if (menuToggle) {
-            const newMenuToggle = menuToggle.cloneNode(true);
-            menuToggle.parentNode.replaceChild(newMenuToggle, menuToggle);
+    setTimeout(() => {
+        // Utility function to check if we're on mobile
+        function isMobile() {
+            return window.innerWidth <= 1100;
         }
         
-        // Clean up any existing overlays to prevent duplicates
-        const existingOverlays = document.querySelectorAll('.sidebar-overlay');
-        existingOverlays.forEach(overlay => {
-            overlay.parentNode.removeChild(overlay);
-        });
+        // Elements
+        const sidebar = document.querySelector('.sidebar');
+        const menuToggle = document.querySelector('.menu-bar-toggle, .icon-button.menu-toggle');
         
-        // Create single overlay
-        const overlay = document.createElement('div');
-        overlay.className = 'sidebar-overlay';
-        document.body.appendChild(overlay);
-        
-        // Exit early if no sidebar exists
-        if (!sidebar) {
-            console.error('Sidebar element not found');
+        if (!sidebar || !menuToggle) {
+            console.error('Critical elements not found');
             return;
         }
         
-        // Force sidebar to be visible in DOM but hidden via transform
-        sidebar.style.display = 'block'; 
-        
-        // Clean toggle function that properly shows sidebar
-        function toggleSidebar(event) {
-            if (event) event.preventDefault();
-            
-            console.log('Toggle sidebar called'); // Debug logging
-            
-            if (sidebar.classList.contains('visible')) {
-                sidebar.classList.remove('visible');
-                body.classList.remove('sidebar-visible');
-                console.log('Sidebar hidden'); // Debug logging
-            } else {
-                sidebar.classList.add('visible');
-                body.classList.add('sidebar-visible');
-                console.log('Sidebar shown'); // Debug logging
-            }
+        // Setup initial state
+        if (isMobile()) {
+            document.body.classList.remove('sidebar-visible');
+            sidebar.style.transform = 'translateX(-100%)';
         }
         
-        // Attach click handler to menu toggle
-        if (menuToggle) {
-            menuToggle.addEventListener('click', toggleSidebar);
-        } else {
-            // Create menu toggle only if it doesn't exist
-            const newMenuToggle = document.createElement('button');
-            newMenuToggle.id = 'menu-bar-toggle';
-            newMenuToggle.innerHTML = '☰';
-            newMenuToggle.setAttribute('aria-label', 'Toggle navigation menu');
-            document.body.appendChild(newMenuToggle);
+        // Add close button to sidebar
+        let closeBtn = sidebar.querySelector('.sidebar-close-button');
+        if (!closeBtn) {
+            closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '✕';
+            closeBtn.className = 'sidebar-close-button';
+            closeBtn.setAttribute('aria-label', 'Close sidebar');
+            sidebar.insertBefore(closeBtn, sidebar.firstChild);
+        }
+        
+        // Create overlay if it doesn't exist
+        let overlay = document.querySelector('.sidebar-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'sidebar-overlay';
+            document.body.appendChild(overlay);
+        }
+        
+        // Lock state variable
+        let isAnimating = false;
+        
+        // Function to show sidebar
+        function showSidebar() {
+            if (isAnimating) return;
+            isAnimating = true;
             
-            newMenuToggle.addEventListener('click', toggleSidebar);
-        }
-        
-        // Make sure overlay closes sidebar when clicked
-        overlay.addEventListener('click', function() {
-            sidebar.classList.remove('visible');
-            body.classList.remove('sidebar-visible');
-        });
-        
-        // Add swipe gestures
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        // Check for passive support
-        let supportsPassive = false;
-        try {
-            window.addEventListener("test", null, Object.defineProperty({}, 'passive', {
-                get: function () { supportsPassive = true; }
-            }));
-        } catch(e) {}
-        
-        // Swipe right to open sidebar (more sensitive)
-        document.addEventListener('touchstart', function(e) {
-            touchStartX = e.changedTouches[0].screenX;
-        }, supportsPassive ? { passive: true } : false);
-        
-        document.addEventListener('touchend', function(e) {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, supportsPassive ? { passive: true } : false);
-        
-        function handleSwipe() {
-            const swipeDistance = touchEndX - touchStartX;
-            // More sensitive - smaller required distance and larger edge area
-            if (touchStartX < 50 && swipeDistance > 40) {
-                sidebar.classList.add('visible');
-                body.classList.add('sidebar-visible');
-            }
-            // Swipe left to close (when sidebar is open)
-            else if (sidebar.classList.contains('visible') && swipeDistance < -40) {
-                sidebar.classList.remove('visible');
-                body.classList.remove('sidebar-visible');
-            }
-        }
-        
-        // Close sidebar when clicking links
-        const sidebarLinks = sidebar.querySelectorAll('a');
-        sidebarLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                if (window.innerWidth <= 1100) {
-                    setTimeout(() => {
-                        sidebar.classList.remove('visible');
-                        body.classList.remove('sidebar-visible');
-                    }, 150);
+            document.body.classList.add('sidebar-visible');
+            sidebar.style.transform = 'translateX(0)';
+            
+            if (isMobile()) {
+                const content = document.querySelector('.content');
+                if (content) {
+                    content.style.transform = 'translateX(80%)';
                 }
-            });
+                overlay.style.display = 'block';
+                setTimeout(() => { overlay.style.opacity = '1'; }, 10);
+            }
+            
+            setTimeout(() => { isAnimating = false; }, 300);
+        }
+        
+        // Function to hide sidebar
+        function hideSidebar() {
+            if (isAnimating) return;
+            isAnimating = true;
+            
+            document.body.classList.remove('sidebar-visible');
+            sidebar.style.transform = 'translateX(-100%)';
+            
+            if (isMobile()) {
+                const content = document.querySelector('.content');
+                if (content) {
+                    content.style.transform = 'none';
+                }
+                overlay.style.opacity = '0';
+                setTimeout(() => { overlay.style.display = 'none'; }, 300);
+            }
+            
+            setTimeout(() => { isAnimating = false; }, 300);
+        }
+        
+        // Toggle sidebar function
+        function toggleSidebar(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (document.body.classList.contains('sidebar-visible')) {
+                hideSidebar();
+            } else {
+                showSidebar();
+            }
+        }
+        
+        // Event listeners
+        menuToggle.addEventListener('click', toggleSidebar);
+        closeBtn.addEventListener('click', hideSidebar);
+        overlay.addEventListener('click', hideSidebar);
+        
+        // Resize handler
+        window.addEventListener('resize', () => {
+            // Reset any transform on the content on resize
+            const content = document.querySelector('.content');
+            if (content && !isMobile()) {
+                content.style.transform = 'none';
+            }
+            
+            // Hide sidebar in mobile view, show it in desktop view
+            if (isMobile()) {
+                if (document.body.classList.contains('sidebar-visible')) {
+                    content.style.transform = 'translateX(80%)';
+                } else {
+                    content.style.transform = 'none';
+                }
+            }
         });
         
-        // Make sure the sidebar is initially hidden
-        sidebar.classList.remove('visible');
-        body.classList.remove('sidebar-visible');
-        
-        // Double-check z-index to ensure proper layering
-        if (sidebar) sidebar.style.zIndex = '99999';
-        if (overlay) overlay.style.zIndex = '99998';
-        if (menuToggle) menuToggle.style.zIndex = '100000';
-    }
+        console.log('Enhanced navigation system initialized');
+    }, 300);
 });

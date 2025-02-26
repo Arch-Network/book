@@ -11,6 +11,9 @@
     --arch-warning: #f1c40f;
     --arch-error: #e74c3c;
     --arch-info: #3498db;
+    --z-index-sidebar: 1000;
+    --z-index-menu-toggle: 1001;
+    --z-index-overlay: 999;
 }
 
 /* Layout */
@@ -20,6 +23,7 @@
     margin: 0 auto;
     padding: 0 4rem;
     z-index: 2;
+    transition: margin-left 0.3s ease, transform 0.3s ease;
 }
 
 /* Menu positioning */
@@ -83,9 +87,147 @@
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
     background: var(--bg);
-    z-index: 3;
+    z-index: 2000 !important;
     padding-top: var(--menu-bar-height);
     display: block;
+    transition: transform 0.3s ease !important;
+}
+
+/* Ensure sidebar content is visible */
+.sidebar-scrollbox {
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
+    padding: 10px 15px;
+}
+
+/* Make sure links are visible */
+.sidebar .chapter {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    color: var(--fg);
+}
+
+.sidebar .chapter-item {
+    margin: 5px 0;
+    padding: 5px 0;
+}
+
+.sidebar a {
+    display: block;
+    color: var(--fg) !important;
+    text-decoration: none;
+    padding: 5px 0;
+}
+
+.sidebar a:hover {
+    color: var(--arch-accent) !important;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .sidebar {
+        background: #1e2227;
+    }
+    
+    .sidebar a {
+        color: #c9d1d9 !important;
+    }
+    
+    .sidebar a:hover {
+        color: var(--arch-accent) !important;
+    }
+}
+
+/* Mobile adjustments */
+@media only screen and (max-width: 1100px) {
+    /* Ensure sidebar is visible */
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 80%;
+        max-width: 300px;
+        background: var(--bg);
+        z-index: 2000;
+        overflow-y: auto;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    /* When sidebar is visible */
+    .sidebar-visible .sidebar {
+        transform: translateX(0) !important;
+    }
+    
+    /* Ensure sidebar content is shown */
+    .sidebar-scrollbox {
+        display: block !important;
+        visibility: visible !important;
+        height: calc(100% - 50px);
+        overflow-y: auto;
+        padding: 10px 15px;
+    }
+    
+    /* Ensure all links are visible */
+    .sidebar a, 
+    .sidebar .chapter-item,
+    .sidebar li.chapter-item {
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    /* Close button */
+    .sidebar-close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        border: none;
+        background: rgba(0,0,0,0.1);
+        color: var(--fg);
+        border-radius: 50%;
+        font-size: 16px;
+        cursor: pointer;
+        z-index: 2001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Overlay */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1999;
+        backdrop-filter: blur(2px);
+    }
+    
+    /* Fix menu toggle */
+    .menu-bar-toggle, .icon-button.menu-toggle {
+        z-index: 2002;
+    }
+    
+    /* Prevent page shifting */
+    body.sidebar-visible {
+        overflow: hidden;
+    }
+}
+
+/* Sidebar headers */
+.sidebar h2, 
+.sidebar h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.2em;
 }
 
 /* ASCII diagrams */
@@ -214,11 +356,14 @@ main {
 
 /* Mobile adjustments */
 @media only screen and (max-width: 1100px) {
-    #menu-bar {
-        left: 0;
-        width: 100%;
+    /* Content wrapper */
+    .page-wrapper {
+        position: relative;
+        min-height: 100vh;
+        padding-top: var(--menu-bar-height);
     }
 
+    /* Sidebar positioning and transitions */
     .sidebar {
         position: fixed;
         left: 0;
@@ -226,15 +371,16 @@ main {
         width: 80%;
         max-width: 300px;
         height: 100vh;
-        z-index: 100000;
+        z-index: var(--z-index-sidebar);
         background: var(--bg);
         transform: translateX(-100%);
-        transition: transform 0.3s cubic-bezier(0.17, 0.67, 0.24, 0.99);
-        box-shadow: 0 0 10px rgba(0,0,0,0);
+        transition: transform 0.3s ease;
         overflow-y: auto;
         padding-top: var(--menu-bar-height);
         -webkit-overflow-scrolling: touch;
-        display: block !important;
+        will-change: transform;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
     }
     
     .sidebar.visible {
@@ -242,6 +388,7 @@ main {
         box-shadow: 2px 0 20px rgba(0,0,0,0.3);
     }
     
+    /* Overlay styling */
     .sidebar-overlay {
         display: none;
         position: fixed;
@@ -250,9 +397,11 @@ main {
         right: 0;
         bottom: 0;
         background: rgba(0,0,0,0.5);
-        z-index: 99999;
+        z-index: calc(var(--z-index-sidebar) - 1);
         opacity: 0;
         transition: opacity 0.3s ease;
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
     }
     
     body.sidebar-visible .sidebar-overlay {
@@ -260,73 +409,75 @@ main {
         opacity: 1;
     }
     
-    .sidebar-scrollbox {
-        height: 100%;
-        overflow-y: auto;
-        padding: 10px 15px;
-        background: var(--bg);
-    }
-    
-    @media (prefers-color-scheme: dark) {
-        .sidebar {
-            background: #1e2227;
-        }
-        
-        .sidebar-scrollbox {
-            background: #1e2227;
-        }
-    }
-
-    .content {
-        padding-top: 60px;
-    }
-
+    /* Menu toggle button */
     #menu-bar-toggle {
-        display: flex !important;
+        display: none;
         align-items: center;
         justify-content: center;
         width: 44px;
         height: 44px;
         border: none;
-        background: rgba(255, 107, 43, 0.15);
-        color: var(--fg);
-        border-radius: 4px;
+        background: var(--arch-primary);
+        color: #fff;
+        border-radius: 8px;
         cursor: pointer;
-        z-index: 100001;
+        z-index: var(--z-index-menu-toggle);
         padding: 0;
         position: fixed;
         top: 8px;
         left: 8px;
         font-size: 1.5em;
-        transition: background-color 0.2s ease;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
-    #menu-bar-toggle:hover, 
+    .mobile-view #menu-bar-toggle {
+        display: flex !important;
+    }
+    
+    #menu-bar-toggle:hover,
     #menu-bar-toggle:focus {
-        background: rgba(255, 107, 43, 0.3);
+        background: var(--arch-accent);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     
-    .menu-hint {
-        position: fixed;
-        top: 50%;
-        left: 0;
-        transform: translateY(-50%);
-        background: rgba(255, 107, 43, 0.15);
-        color: var(--fg);
-        padding: 10px 5px;
-        border-radius: 0 4px 4px 0;
-        font-size: 12px;
-        writing-mode: vertical-rl;
-        text-orientation: mixed;
-        opacity: 0.8;
-        z-index: 999;
+    /* Ensure content is accessible */
+    .content {
+        padding: 20px 15px;
+        margin-left: 0;
+        transition: filter 0.3s ease;
+    }
+    
+    body.sidebar-visible .content {
         pointer-events: none;
-        transition: opacity 0.3s ease;
+        user-select: none;
+        filter: blur(2px);
+    }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .sidebar {
+        background: #1e2227;
     }
     
-    body.sidebar-visible .menu-hint {
-        opacity: 0;
+    .sidebar-scrollbox {
+        background: #1e2227;
+    }
+    
+    #menu-bar-toggle {
+        background: var(--arch-primary);
+        color: #ffffff;
+    }
+    
+    #menu-bar-toggle:hover,
+    #menu-bar-toggle:focus {
+        background: var(--arch-accent);
+    }
+    
+    .sidebar-overlay {
+        background: rgba(0,0,0,0.7);
     }
 }
 
@@ -1509,4 +1660,192 @@ h3:hover .header-link {
 body {
     padding-top: var(--menu-bar-height);
     margin: 0;
+}
+
+/* Force sidebar hidden state */
+body:not(.sidebar-visible) .sidebar {
+    transform: translateX(-100%) !important;
+    display: block !important;
+}
+
+/* Force visible state */
+body.sidebar-visible .sidebar {
+    transform: translateX(0) !important;
+    display: block !important;
+}
+
+/* Close button styling enhancement */
+.sidebar-close-button {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    width: 32px !important;
+    height: 32px !important;
+    background: rgba(0,0,0,0.2) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    color: white !important;
+    font-size: 16px !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    z-index: 2001 !important;
+}
+
+.sidebar-close-button:hover {
+    background: rgba(0,0,0,0.25) !important;
+}
+
+/* Make sure overlay is on top */
+.sidebar-overlay {
+    z-index: 1999 !important;
+}
+
+/* Only show close button on mobile */
+@media only screen and (min-width: 1101px) {
+    .sidebar-close-button {
+        display: none !important;
+    }
+    
+    /* Desktop: Slide content when sidebar is visible */
+    body.sidebar-visible .content {
+        margin-left: var(--sidebar-width);
+    }
+}
+
+/* Mobile content positioning */
+@media only screen and (max-width: 1100px) {
+    /* Make sure content repositions when sidebar closes */
+    .content {
+        margin-left: 0;
+        width: 100%;
+        transform: none;
+        transition: transform 0.3s ease;
+    }
+    
+    /* When sidebar is visible, move content to make room */
+    body.sidebar-visible .content {
+        transform: translateX(80%);
+    }
+    
+    /* Fix backdrop when sidebar is open */
+    body.sidebar-visible {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    /* Make sidebar animation smoother */
+    .sidebar {
+        will-change: transform;
+    }
+    
+    /* Ensure overlay covers entire screen */
+    .sidebar-overlay {
+        z-index: 1999 !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+}
+
+/* Fix mdBook's themes and ensure content transforms correctly */
+.light .content,
+.rust .content,
+.coal .content,
+.navy .content,
+.ayu .content {
+    transition: transform 0.3s ease, margin-left 0.3s ease;
+}
+
+/* Enhance the backdrop and content positioning */
+.content {
+    transition: transform 0.3s ease !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* Force sidebar states */
+body:not(.sidebar-visible) .sidebar {
+    transform: translateX(-100%) !important;
+}
+
+body.sidebar-visible .sidebar {
+    transform: translateX(0) !important;
+}
+
+/* Close button improvements */
+.sidebar-close-button {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+    width: 32px !important;
+    height: 32px !important;
+    background: rgba(0,0,0,0.2) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    color: white !important;
+    font-size: 16px !important;
+    line-height: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    z-index: 2001 !important;
+}
+
+/* Sidebar overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+/* Mobile specific styles */
+@media only screen and (max-width: 1100px) {
+    /* Make content slide */
+    body.sidebar-visible .content {
+        transform: translateX(80%) !important;
+    }
+    
+    /* Fix the sidebar width and position */
+    .sidebar {
+        width: 80% !important;
+        max-width: 280px !important;
+        transition: transform 0.3s ease !important;
+        z-index: 1000 !important;
+    }
+    
+    /* Prevent body scroll when sidebar is open */
+    body.sidebar-visible {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+    }
+}
+
+/* Desktop specific styles */
+@media only screen and (min-width: 1101px) {
+    /* Hide the close button on desktop */
+    .sidebar-close-button {
+        display: none !important;
+    }
+    
+    /* Don't transform content on desktop */
+    body.sidebar-visible .content {
+        transform: none !important;
+    }
 }
