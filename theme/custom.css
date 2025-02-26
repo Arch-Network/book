@@ -55,53 +55,74 @@ body {
     margin: 0 !important;
 }
 
-/* Left section */
+/* Left section with consistent height and alignment */
 #menu-bar .left-buttons {
     display: flex;
     align-items: center;
-    padding-left: 10px;
-    margin-right: 10px;
+    justify-content: center;
+    height: 100%;
+    padding-left: 15px;
 }
 
-/* Title section */
+/* Title section with perfect vertical centering */
 #menu-bar .menu-title {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100%;
     flex: 1;
     font-size: 1.1em;
     font-weight: 500;
     color: var(--arch-secondary);
     white-space: nowrap;
     text-align: center;
+    margin: 0;
+    padding: 0;
 }
 
-/* Right section - ensure it sits at the far right */
+/* Right section with perfect alignment and spacing */
 #menu-bar .right-buttons {
     display: flex;
     align-items: center;
-    padding-right: 10px;
+    justify-content: flex-end;
+    height: 100%;
+    padding-right: 15px;
     margin-left: auto;
+    gap: 8px;
 }
 
-/* Button styling */
+/* Button styling with consistent dimensions */
 #menu-bar .icon-button {
     padding: 0 8px;
-    height: var(--menu-bar-height);
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    color: var(--arch-secondary);
 }
 
-/* Right buttons styling */
+/* Left button specific styling */
+#menu-bar .left-buttons .icon-button {
+    height: 100%;
+}
+
+/* Right buttons with proper spacing and alignment */
 #menu-bar .right-buttons a {
-    padding: 0 8px;
-    height: var(--menu-bar-height);
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--arch-secondary);
     text-decoration: none;
+    width: 32px;
+}
+
+/* Icon size and alignment consistency */
+#menu-bar i.fa {
+    font-size: 1.1em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #menu-bar .right-buttons a:hover {
@@ -123,16 +144,84 @@ body {
     }
 }
 
-/* Mobile adjustments */
+/* Mobile adjustments with better layout */
 @media only screen and (max-width: 1100px) {
-    /* Ensure proper spacing on mobile */
-    #menu-bar .menu-title {
-        justify-content: center;
-        padding: 0;
+    /* Enhanced menu bar */
+    #menu-bar {
+        padding: 0 !important;
+        height: var(--menu-bar-height) !important;
     }
     
+    /* Left buttons spacing */
+    #menu-bar .left-buttons {
+        padding-left: 10px;
+        height: 100%;
+    }
+    
+    /* Center the title better */
+    #menu-bar .menu-title {
+        justify-content: center;
+        text-align: center;
+        font-size: 1em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 50%;
+    }
+    
+    /* Fix right buttons */
     #menu-bar .right-buttons {
         padding-right: 10px;
+        gap: 6px;
+    }
+    
+    /* Right buttons with smaller width */
+    #menu-bar .right-buttons a {
+        width: 28px;
+    }
+    
+    /* Smaller icons */
+    #menu-bar i.fa {
+        font-size: 1em;
+    }
+    
+    /* Improved mobile navigation */
+    .nav-chapters {
+        bottom: 20px;
+        width: 44px;
+        height: 44px;
+        opacity: 0.9;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    
+    .nav-chapters.previous {
+        left: 15px;
+    }
+    
+    .nav-chapters.next {
+        right: 15px;
+    }
+}
+
+/* Extra small screens */
+@media only screen and (max-width: 480px) {
+    /* Further optimize small screens */
+    .content {
+        padding: 1rem !important;
+    }
+    
+    /* Fix menu bar on very small screens */
+    #menu-bar .menu-title {
+        font-size: 0.9em;
+        max-width: 40%;
+    }
+    
+    /* Tighten up spacing */
+    .path-box, 
+    .quick-start, 
+    .learning-path {
+        padding: 1rem 1rem 1rem 1.5rem;
+        margin: 1rem 0;
     }
 }
 
@@ -281,302 +370,59 @@ body {
 
 /* Mobile adjustments */
 @media only screen and (max-width: 1100px) {
-    /* Content wrapper */
-    .page-wrapper {
-        position: relative;
-        min-height: 100vh;
-    }
-
-    /* Sidebar positioning and transitions */
-    .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 80%;
-        max-width: 300px;
-        height: 100vh;
-        z-index: var(--z-index-sidebar);
-        background: var(--bg);
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        overflow-y: auto;
-        padding-top: var(--menu-bar-height);
-        -webkit-overflow-scrolling: touch;
-        will-change: transform;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-    }
-    
-    .sidebar.visible {
-        transform: translateX(0) !important;
-        box-shadow: 2px 0 20px rgba(0,0,0,0.3);
-    }
-    
-    /* Use an overlay instead of shifting content */
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: calc(var(--z-index-sidebar) - 1);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        backdrop-filter: blur(2px);
-        -webkit-backdrop-filter: blur(2px);
-    }
-    
-    body.sidebar-visible .sidebar-overlay {
-        display: block;
-        opacity: 1;
-    }
-    
-    /* Ensure content is properly centered and doesn't shift */
-    .content {
-        margin-left: auto !important;
-        margin-right: auto !important;
-        width: 100% !important;
-        max-width: var(--content-max-width) !important;
-        transform: none !important;
-    }
-    
-    /* Disable content shifting when sidebar is visible */
+    /* Disable transforms that cause layout problems */
     body.sidebar-visible .content {
         transform: none !important;
     }
     
-    /* Fix navigation arrows */
-    .nav-chapters {
-        position: fixed;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        bottom: 10px;
-        z-index: 50;
-        width: 40px;
-        height: 40px;
-        font-size: 1.5em;
-        border-radius: 50%;
-        background: var(--bg);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        color: var(--fg);
-        opacity: 0.7;
-        transition: opacity 0.3s;
-    }
-    
-    .nav-chapters:hover {
-        opacity: 1;
-    }
-    
-    .nav-chapters.previous {
-        left: 10px;
-    }
-    
-    .nav-chapters.next {
-        right: 10px;
-    }
-}
-
-/* Sidebar headers */
-.sidebar h2, 
-.sidebar h3 {
-    margin-top: 20px;
-    margin-bottom: 10px;
-    font-size: 1.2em;
-}
-
-/* ASCII diagrams */
-.content pre.ascii-diagram {
-    position: relative;
-    margin: 1.5rem 0;
-    background-color: #f6f8fa;
-    border-radius: 6px;
-    padding: 16px;
-    border: 1px solid #eaecef;
-    overflow-x: auto;
-}
-
-.content pre.ascii-diagram code {
-    font-family: "Consolas", "Monaco", "Courier New", monospace;
-    font-size: 14px;
-    line-height: 1.2;
-    white-space: pre;
-    display: block;
-    padding: 0;
-    background: none;
-    border-radius: 0;
-    tab-size: 8;
-    -moz-tab-size: 8;
-    overflow-x: auto;
-}
-
-/* Specific ASCII diagram styling */
-.content pre code.language-ascii {
-    font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace !important;
-    line-height: 1.2 !important;
-    white-space: pre !important;
-    font-size: 14px !important;
-    tab-size: 4;
-}
-
-/* Dark mode support for diagrams */
-@media (prefers-color-scheme: dark) {
-    .content pre {
-        background-color: #2d333b !important;
-        border-color: #444c56;
-    }
-    
-    .content pre code {
-        color: #c9d1d9;
-    }
-}
-
-/* Navigation arrows */
-.nav-wide-wrapper { 
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    transform: translateY(-50%);
-    z-index: 2;
-    pointer-events: none;
-}
-
-.nav-wide-wrapper a {
-    pointer-events: auto;
-    position: absolute;
-    background: none;
-    border: none;
-    padding: 0;
-    color: var(--fg);
-    text-decoration: none;
-    box-shadow: none;
-}
-
-.nav-wide-wrapper .previous {
-    left: -70px;
-}
-
-.nav-wide-wrapper .next {
-    right: -70px;
-}
-
-/* Page content */
-main {
-    position: relative;
-    padding: 0 15px;
-    margin: 0 auto;
-}
-
-/* Right sidebar (On this page) */
-.right-sidebar {
-    position: fixed;
-    right: 0;
-    top: 40px;
-    width: var(--sidebar-width);
-    height: calc(100vh - 40px);
-    background: var(--bg);
-    border-left: 1px solid var(--border-color);
-    padding: 20px;
-    overflow-y: auto;
-    z-index: 99;
-}
-
-.right-sidebar h2 {
-    font-size: 0.9em;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #666;
-    margin: 0 0 1em 0;
-    padding: 0;
-    border: none;
-}
-
-.right-sidebar a {
-    color: var(--sidebar-fg);
-    text-decoration: none;
-}
-
-.right-sidebar a:hover {
-    text-decoration: underline;
-}
-
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-    pre code.language-ascii {
-        background: #2d333b !important;
-        border-color: #444c56;
-    }
-}
-
-/* Mobile adjustments */
-@media only screen and (max-width: 1100px) {
-    /* Content wrapper */
-    .page-wrapper {
-        position: relative;
-        min-height: 100vh;
-    }
-
-    /* Sidebar positioning and transitions */
+    /* Ensure the sidebar overlays without pushing content */
     .sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 80%;
-        max-width: 300px;
-        height: 100vh;
-        z-index: var(--z-index-sidebar);
-        background: var(--bg);
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        overflow-y: auto;
-        padding-top: var(--menu-bar-height);
-        -webkit-overflow-scrolling: touch;
-        will-change: transform;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        width: 80% !important;
+        max-width: 300px !important;
+        height: 100vh !important;
+        z-index: 2000 !important;
+        background: var(--bg) !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s ease !important;
+        overflow-y: auto !important;
+        padding-top: var(--menu-bar-height) !important;
+        -webkit-overflow-scrolling: touch !important;
+        will-change: transform !important;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.3) !important;
     }
     
-    .sidebar.visible {
+    /* Ensure visible state */
+    body.sidebar-visible .sidebar {
         transform: translateX(0) !important;
-        box-shadow: 2px 0 20px rgba(0,0,0,0.3);
     }
     
-    /* Use an overlay instead of shifting content */
+    /* Overlay to block clicks and dim background */
     .sidebar-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: calc(var(--z-index-sidebar) - 1);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        backdrop-filter: blur(2px);
-        -webkit-backdrop-filter: blur(2px);
+        display: none !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background: rgba(0,0,0,0.6) !important;
+        z-index: 1999 !important;
+        opacity: 0 !important;
+        transition: opacity 0.3s ease !important;
+        backdrop-filter: blur(2px) !important;
+        -webkit-backdrop-filter: blur(2px) !important;
     }
     
+    /* Show overlay when sidebar is visible */
     body.sidebar-visible .sidebar-overlay {
-        display: block;
-        opacity: 1;
+        display: block !important;
+        opacity: 1 !important;
     }
     
-    /* Ensure content is properly centered and doesn't shift */
-    .content {
-        margin-left: auto !important;
-        margin-right: auto !important;
-        width: 100% !important;
-        max-width: var(--content-max-width) !important;
-        transform: none !important;
-    }
-    
-    /* Disable content shifting when sidebar is visible */
+    /* No content shifting on mobile - use overlay approach */
     body.sidebar-visible .content {
         transform: none !important;
     }
@@ -2208,7 +2054,6 @@ script {
   body.sidebar-visible .content {
     margin-left: var(--sidebar-width) !important;
     margin-right: 0 !important;
-    max-width: calc(var(--content-max-width) - var(--sidebar-width)/2) !important;
   }
   
   /* Center content when sidebar is closed */
@@ -2362,5 +2207,228 @@ h1[id], h2[id], h3[id], h4[id], h5[id], h6[id] {
     
     .menu-title {
         margin-right: auto;
+    }
+}
+
+/* Add mobile-optimized content layout */
+@media only screen and (max-width: 1100px) {
+    /* Optimize content for mobile */
+    .content {
+        padding: 1.25rem !important;
+        margin: 0.5rem auto !important;
+        width: auto !important;
+        max-width: 100% !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    h1 {
+        margin-top: 0 !important;
+    }
+    
+    h2 {
+        font-size: 1.4em !important;
+        padding-bottom: 0.2em !important;
+    }
+    
+    h3 {
+        font-size: 1.1em !important;
+    }
+    
+    /* Improved image responsiveness */
+    .content img,
+    .content svg {
+        max-width: 100% !important;
+        height: auto !important;
+        display: block !important;
+        margin: 1rem auto !important;
+    }
+    
+    /* Better spacing for mobile components */
+    .feature-grid,
+    .next-steps-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+        margin: 1.5rem 0 !important;
+    }
+    
+    /* Fix box styles for mobile */
+    .path-box, 
+    .quick-start, 
+    .learning-path,
+    .prerequisites-box,
+    .help-box {
+        padding: 1rem 1rem 1rem 1.5rem !important;
+        margin: 1.25rem 0 !important;
+    }
+    
+    /* Mobile-friendly code blocks */
+    pre {
+        padding: 0.75rem !important;
+        margin: 1rem 0 !important;
+        font-size: 13px !important;
+        line-height: 1.4 !important;
+        white-space: pre-wrap !important;
+    }
+    
+    /* Better scrolling for code */
+    .content pre code {
+        white-space: pre;
+        overflow-x: auto;
+        display: block;
+        padding-bottom: 0.5rem;
+    }
+}
+
+/* Enhance tiny screens */
+@media only screen and (max-width: 480px) {
+    /* Even more compact layout */
+    .content {
+        padding: 1rem 0.75rem !important;
+    }
+    
+    /* Simpler lists */
+    .content ul, 
+    .content ol {
+        padding-left: 1.25rem !important;
+    }
+    
+    /* Smaller diagrams */
+    .content .mermaid svg {
+        max-width: 100% !important;
+        transform: scale(0.9) !important;
+        transform-origin: left top !important;
+    }
+}
+
+/* Sidebar headers */
+.sidebar h2, 
+.sidebar h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+/* ASCII diagrams */
+.content pre.ascii-diagram {
+    position: relative;
+    margin: 1.5rem 0;
+    background-color: #f6f8fa;
+    border-radius: 6px;
+    padding: 16px;
+    border: 1px solid #eaecef;
+    overflow-x: auto;
+}
+
+.content pre.ascii-diagram code {
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
+    font-size: 14px;
+    line-height: 1.2;
+    white-space: pre;
+    display: block;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    tab-size: 8;
+    -moz-tab-size: 8;
+    overflow-x: auto;
+}
+
+/* Specific ASCII diagram styling */
+.content pre code.language-ascii {
+    font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace !important;
+    line-height: 1.2 !important;
+    white-space: pre !important;
+    font-size: 14px !important;
+    tab-size: 4;
+}
+
+/* Dark mode support for diagrams */
+@media (prefers-color-scheme: dark) {
+    .content pre {
+        background-color: #2d333b !important;
+        border-color: #444c56;
+    }
+    
+    .content pre code {
+        color: #c9d1d9;
+    }
+}
+
+/* Navigation arrows */
+.nav-wide-wrapper { 
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.nav-wide-wrapper a {
+    pointer-events: auto;
+    position: absolute;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--fg);
+    text-decoration: none;
+    box-shadow: none;
+}
+
+.nav-wide-wrapper .previous {
+    left: -70px;
+}
+
+.nav-wide-wrapper .next {
+    right: -70px;
+}
+
+/* Page content */
+main {
+    position: relative;
+    padding: 0 15px;
+    margin: 0 auto;
+}
+
+/* Right sidebar (On this page) */
+.right-sidebar {
+    position: fixed;
+    right: 0;
+    top: 40px;
+    width: var(--sidebar-width);
+    height: calc(100vh - 40px);
+    background: var(--bg);
+    border-left: 1px solid var(--border-color);
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 99;
+}
+
+.right-sidebar h2 {
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #666;
+    margin: 0 0 1em 0;
+    padding: 0;
+    border: none;
+}
+
+.right-sidebar a {
+    color: var(--sidebar-fg);
+    text-decoration: none;
+}
+
+.right-sidebar a:hover {
+    text-decoration: underline;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    pre code.language-ascii {
+        background: #2d333b !important;
+        border-color: #444c56;
     }
 }
