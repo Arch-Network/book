@@ -813,7 +813,7 @@ h3 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
-    margin: 2rem 0;
+    margin: 2.5rem 0 3.5rem 0; /* Increased margins for better spacing */
     position: relative;
     z-index: 1;
 }
@@ -832,7 +832,8 @@ h3 {
 
 .next-steps-grid a {
     position: relative;
-    display: block;
+    display: flex;
+    align-items: center;
     padding: 1.5rem;
     background: var(--bg);
     border: 1px solid var(--border-color);
@@ -842,14 +843,18 @@ h3 {
     transition: all 0.3s ease;
     overflow: hidden;
     margin-right: 0;
+    font-weight: 500;
+    min-height: 80px; /* Set minimum height for consistent look */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .next-steps-grid a::before {
     content: "→";
     position: absolute;
     right: 1.5rem;
-    opacity: 0;
-    transform: translateX(-20px);
+    opacity: 1; /* Always visible */
+    font-size: 1.2rem;
+    transform: translateX(0);
     transition: all 0.3s ease;
 }
 
@@ -861,21 +866,22 @@ h3 {
     height: 100%;
     width: 4px;
     background: var(--arch-primary);
-    transform: scaleY(0);
+    transform: scaleY(0.7); /* Always partially visible */
     transform-origin: bottom;
     transition: transform 0.3s ease;
 }
 
 .next-steps-grid a:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
     padding-right: 3rem;
     border-color: var(--arch-primary);
+    background-color: rgba(255, 107, 43, 0.03); /* Very light orange tint */
 }
 
 .next-steps-grid a:hover::before {
-    opacity: 1;
-    transform: translateX(0);
+    transform: translateX(5px);
+    color: var(--arch-primary);
 }
 
 .next-steps-grid a:hover::after {
@@ -886,10 +892,12 @@ h3 {
 @media (prefers-color-scheme: dark) {
     .next-steps-grid a {
         background: var(--arch-secondary);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
     
     .next-steps-grid a:hover {
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+        background-color: rgba(255, 107, 43, 0.1); /* Darker orange tint for dark mode */
     }
 }
 
@@ -898,19 +906,42 @@ h3 {
     background: var(--bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    padding: 1.5rem 2rem;
+    margin: 3rem 0 3rem 0; /* Increased margins for better spacing */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    position: relative;
+}
+
+/* Add a visual indicator to make the help box more interesting */
+.help-box::before {
+    content: "?";
+    position: absolute;
+    top: -15px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    background: var(--arch-accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .help-box ul {
     list-style: none;
-    margin: 0;
+    margin: 1rem 0 0 0;
     padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.75rem 1.5rem;
 }
 
 .help-box li {
-    margin: 0.75rem 0;
+    margin: 0.5rem 0;
     padding-left: 1.5rem;
     position: relative;
     display: flex;
@@ -922,17 +953,30 @@ h3 {
     position: absolute;
     left: 0;
     color: var(--arch-accent);
+    font-size: 1.2rem;
 }
 
 .help-box a {
     color: var(--arch-accent);
     text-decoration: none;
-    transition: color 0.2s;
+    transition: all 0.2s;
+    font-weight: 500;
+    padding: 0.2rem 0;
 }
 
 .help-box a:hover {
     color: var(--arch-primary);
     text-decoration: underline;
+}
+
+/* Tip box adjustment to fix spacing */
+.tip {
+    background: #f0fdf4;  /* Light green background for light mode */
+    border-left: 4px solid var(--arch-success);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.5rem;
+    margin: 3rem 0 1.5rem 0; /* Increased top margin for spacing */
+    color: #166534;  /* Dark green text for better contrast */
 }
 
 /* Info Box */

@@ -134,21 +134,22 @@ Before you begin, ensure you have:
 ## Next Steps
 
 <div class="next-steps-grid">
-
-- [Set Up Development Environment →](getting-started/environment-setup.md)
-- [Create Your First Program →](guides/how-to-write-arch-program.md)
-- [Configure Local Validator →](guides/how-to-configure-local-validator-bitcoin-testnet4.md)
-- [Explore Example Projects →](https://github.com/Arch-Network/arch-examples)
+<a href="getting-started/environment-setup.md">Set Up Development Environment →</a>
+<a href="guides/how-to-write-arch-program.md">Create Your First Program →</a>
+<a href="guides/how-to-configure-local-validator-bitcoin-testnet4.md">Configure Local Validator →</a>
+<a href="https://github.com/Arch-Network/arch-examples">Explore Example Projects →</a>
 </div>
 
 ## Need Help?
 
 <div class="help-box">
-- [Join our Discord](https://discord.gg/archnetwork)
-- [Read the Architecture Overview](concepts/architecture.md)
-- [View Example Programs](guides/how-to-write-arch-program.md)
-- [Check Network Status](concepts/network-architecture.md#monitoring-and-telemetry)
-- [API Reference](rpc/rpc.md)
+<ul>
+<li><a href="https://discord.gg/archnetwork">Join our Discord</a></li>
+<li><a href="concepts/architecture.md">Read the Architecture Overview</a></li>
+<li><a href="guides/how-to-write-arch-program.md">View Example Programs</a></li>
+<li><a href="concepts/network-architecture.md#monitoring-and-telemetry">Check Network Status</a></li>
+<li><a href="rpc/rpc.md">API Reference</a></li>
+</ul>
 </div>
 
 <div class="tip">
