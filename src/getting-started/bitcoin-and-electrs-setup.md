@@ -118,7 +118,8 @@ prune=0
 
 # 🔒 Security
 rpcuser=bitcoin
-rpcpassword=bitcoinpass  # Change this in production!
+# Change this in production!
+rpcpassword=bitcoinpass  
 
 # 🔧 Performance
 dbcache=150
@@ -146,6 +147,9 @@ bitcoind -regtest -daemon
 #### 🎮 Fun Experiment: Create Some Test Bitcoin!
 
 ```bash
+# create wallet
+bitcoin-cli -regtest createwallet "testwallet"
+
 # Generate a new address
 ADDR=$(bitcoin-cli -regtest getnewaddress)
 
