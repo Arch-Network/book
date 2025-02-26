@@ -2,7 +2,7 @@
 
 :root {
     --sidebar-width: 300px;
-    --content-max-width: 850px;
+    --content-max-width: 950px;
     --menu-bar-height: 40px;
     --arch-primary: #FF6B2B;
     --arch-secondary: #1E2022;
@@ -14,6 +14,15 @@
     --z-index-sidebar: 1000;
     --z-index-menu-toggle: 1001;
     --z-index-overlay: 999;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", sans-serif;
+    --font-mono: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+body {
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    color: #333;
+    background: #f5f7f9;
 }
 
 /* Layout */
@@ -21,9 +30,13 @@
     position: relative;
     max-width: var(--content-max-width);
     margin: 0 auto;
-    padding: 0 4rem;
-    z-index: 2;
-    transition: margin-left 0.3s ease, transform 0.3s ease;
+    padding: 2.5rem 3rem;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
 }
 
 /* Menu positioning */
@@ -34,9 +47,9 @@
     right: 0;
     z-index: 1000;
     height: var(--menu-bar-height);
-    background: var(--bg);
-    border-bottom: 1px solid var(--border-color);
-    padding: 10px 15px;
+    background: white !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 0 20px;
     display: flex;
     align-items: center;
     margin: 0 !important;
@@ -86,11 +99,12 @@
     box-sizing: border-box;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
-    background: var(--bg);
+    background: #f8f9fa;
     z-index: 2000 !important;
-    padding-top: var(--menu-bar-height);
+    padding-top: calc(var(--menu-bar-height) + 10px);
     display: block;
     transition: transform 0.3s ease !important;
+    border-right: 1px solid #eaecef;
 }
 
 /* Ensure sidebar content is visible */
@@ -98,37 +112,106 @@
     height: 100%;
     overflow-y: auto;
     position: relative;
-    padding: 10px 15px;
+    padding: 1rem;
 }
 
-/* Make sure links are visible */
+/* Clean up the chapter list */
 .sidebar .chapter {
     padding: 0;
     margin: 0;
     list-style: none;
-    color: var(--fg);
 }
 
+/* Reduce vertical spacing between items */
 .sidebar .chapter-item {
-    margin: 5px 0;
-    padding: 5px 0;
+    margin: 2px 0 !important;
+    padding: 0 !important;
+    line-height: 1.4;
 }
 
+/* Improve link styling and layout */
 .sidebar a {
-    display: block;
-    color: var(--fg) !important;
+    color: #444 !important;
     text-decoration: none;
     padding: 5px 0;
+    display: inline-flex !important;
+    align-items: center;
+    width: 100%;
+    font-size: 0.9em;
+    transition: color 0.2s;
 }
 
-.sidebar a:hover {
+/* Better chevron styling */
+.sidebar .chapter-item > .section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* Replace default chevrons with cleaner ones */
+.sidebar .chapter-item > .section::after {
+    content: "";
+    width: 10px;
+    height: 10px;
+    margin-left: 5px;
+    border-width: 0 2px 2px 0;
+    border-style: solid;
+    border-color: #999;
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+    display: inline-block;
+    margin-top: -2px;
+}
+
+/* Change chevron for expanded sections */
+.sidebar .chapter-item.expanded > .section::after {
+    transform: rotate(-135deg);
+    margin-top: 3px;
+}
+
+/* Hide empty/malformed chevrons */
+.sidebar .chapter-item > .section em {
+    display: none;
+}
+
+/* Only show chevrons on items with children */
+.sidebar .chapter-item:not(.has-sub) > .section::after {
+    display: none;
+}
+
+/* Properly indent nested items */
+.sidebar .chapter-item .chapter {
+    padding-left: 15px;
+    border-left: 1px solid var(--border-color);
+    margin-left: 5px;
+    margin-top: 2px;
+}
+
+/* Active item styling */
+.sidebar .chapter-item.active > a,
+.sidebar .chapter-item.active > .section {
     color: var(--arch-accent) !important;
+    font-weight: 500;
+}
+
+/* Selected item styling */
+.sidebar .chapter-item a.active {
+    color: var(--arch-accent) !important;
+    font-weight: 500;
+}
+
+/* Section headers */
+.sidebar .chapter > .chapter-item.affix {
+    margin-top: 20px !important;
+    font-weight: 600;
+    font-size: 1em;
 }
 
 /* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
     .sidebar {
-        background: #1e2227;
+        background: #22252a;
     }
     
     .sidebar a {
@@ -136,7 +219,15 @@
     }
     
     .sidebar a:hover {
-        color: var(--arch-accent) !important;
+        color: var(--arch-primary) !important;
+    }
+
+    .sidebar .chapter-item > .section::after {
+        border-color: #777;
+    }
+    
+    .sidebar .chapter-item .chapter {
+        border-color: #444;
     }
 }
 
@@ -459,11 +550,11 @@ main {
 /* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
     .sidebar {
-        background: #1e2227;
+        background: #22252a;
     }
     
     .sidebar-scrollbox {
-        background: #1e2227;
+        background: #22252a;
     }
     
     #menu-bar-toggle {
@@ -535,20 +626,25 @@ h1, h2, h3, h4, h5 {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-weight: 600;
     color: #1a1b1d;
-    margin-top: 2em;
-    margin-bottom: 1em;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
 }
 
 h1 { 
-    font-size: 2.5em;
+    font-size: 2.2em;
     border-bottom: 2px solid var(--arch-primary);
-    padding-bottom: 0.3em;
+    padding-bottom: 0.5rem;
     margin-top: 0;
 }
 
 h2 {
-    font-size: 1.8em;
-    border-bottom: 1px solid #eaecef;
+    font-size: 1.7em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.3rem;
+}
+
+h3 {
+    font-size: 1.3em;
 }
 
 /* Feature Grid */
@@ -912,22 +1008,20 @@ h2 {
 
 /* Code blocks - Light theme */
 pre {
-    background-color: #f6f8fa;
-    border-color: #e1e4e8;
-    color: #24292e;
+    background-color: #f8f9fa;
+    border: 1px solid #eaecef;
     border-radius: 6px;
     padding: 16px;
-    position: relative;
     margin: 1.5rem 0;
+    overflow: auto;
 }
 
 code {
-    font-family: "SF Mono", "Consolas", "Monaco", monospace;
+    font-family: var(--font-mono);
     font-size: 0.9em;
     padding: 0.2em 0.4em;
     background-color: #f6f8fa;
     border-radius: 3px;
-    color: #24292e;
 }
 
 /* Code blocks - Dark theme */
@@ -935,7 +1029,6 @@ code {
     pre {
         background-color: #2d333b;
         border-color: #444c56;
-        color: #c9d1d9;
     }
 
     code {
@@ -1461,8 +1554,8 @@ h3:hover .header-link {
 @media (prefers-color-scheme: dark) {
     /* Sidebar background and border */
     .sidebar {
-        background: #1e2227;
-        border-right: 1px solid #2d3033;
+        background: #22252a;
+        border-right: 1px solid #333;
     }
 
     /* Main navigation items */
@@ -1480,8 +1573,7 @@ h3:hover .header-link {
     }
 
     .sidebar a:hover {
-        color: #ffffff !important;
-        background: #2d3033;
+        color: var(--arch-primary) !important;
     }
 
     /* Active/selected state */
@@ -1497,13 +1589,13 @@ h3:hover .header-link {
     .sidebar h2,
     .sidebar h3 {
         color: #e2e4e7;
-        border-bottom: 1px solid #2d3033;
+        border-bottom: 1px solid #333;
     }
 
     /* Nested items indentation */
     .sidebar .chapter .chapter-item {
         padding-left: 20px;
-        border-left: 1px solid #2d3033;
+        border-left: 1px solid #333;
     }
 
     /* Toggle indicators */
@@ -1848,4 +1940,138 @@ body.sidebar-visible .sidebar {
     body.sidebar-visible .content {
         transform: none !important;
     }
+}
+
+/* JavaScript fix for dropdowns */
+script {
+    display: none;
+}
+
+/* Fix sidebar navigation appearance */
+
+/* Set consistent styling for sidebar links */
+.sidebar li.chapter-item {
+    margin: 2px 0 !important;
+    padding: 0 !important;
+    line-height: 1.2 !important;
+}
+
+/* Fix the basic link appearance */
+.sidebar a {
+    padding: 5px 0 !important;
+    display: inline-block !important;
+    color: var(--fg) !important;
+    font-size: 0.9em !important;
+    text-decoration: none !important;
+}
+
+/* Fix the default chevrons (hide them) */
+.sidebar .chapter-item > a::before,
+.sidebar li.chapter-item > a::before {
+    display: none !important;
+}
+
+/* Replace with better chevrons */
+.sidebar li.has-sub > a::after {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-left: 8px;
+    border-style: solid;
+    border-width: 0 2px 2px 0;
+    border-color: #999;
+    transform: rotate(45deg);
+    position: relative;
+    top: -2px;
+}
+
+/* Hide any existing icons */
+.sidebar .chapter li.chapter-item > a em {
+    display: none !important;
+}
+
+/* Rotate chevron when expanded */
+.sidebar li.chapter-item.expanded > a::after {
+    transform: rotate(-135deg) !important;
+    top: 1px !important;
+}
+
+/* Fix indentation and nested items */
+.sidebar .chapter .section {
+    padding-left: 15px !important;
+    margin-left: 5px !important;
+    border-left: 1px solid var(--border-color) !important;
+}
+
+/* Active item styling */
+.sidebar a.active {
+    color: var(--arch-accent) !important;
+    font-weight: 500 !important;
+}
+
+/* Section spacing */
+.sidebar > .chapter > li.chapter-item {
+    margin-top: 8px !important;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .sidebar li.has-sub > a::after {
+        border-color: #777 !important;
+    }
+    
+    .sidebar .chapter-item .section::before {
+        background: #444 !important;
+    }
+}
+
+/* ===== CLEAN TOGGLE IMPLEMENTATION ===== */
+/* First, remove ALL competing toggle styles */
+.sidebar .chapter-item > a::before,
+.sidebar .chapter-item > a::after,
+.sidebar .chapter-item > .section::before,
+.sidebar .chapter-item > .section::after,
+.sidebar a::before,
+.sidebar a::after,
+.sidebar a em {
+  display: none !important;
+}
+
+/* Style the links properly */
+.sidebar .chapter-item > a {
+  display: flex !important;
+  align-items: center !important;
+  padding: 5px 0 !important;
+  width: 100% !important;
+}
+
+/* Custom toggle styling */
+.custom-toggle {
+  display: inline-block !important;
+  margin-right: 8px !important;
+  font-size: 0.7em !important;
+  color: #999 !important;
+  transition: transform 0.2s ease !important;
+  flex-shrink: 0 !important;
+}
+
+/* Rotate when expanded */
+.custom-toggle.expanded {
+  transform: rotate(90deg) !important;
+}
+
+/* Fix section indentation */
+.sidebar .chapter-item .section {
+  padding-left: 15px !important;
+  margin-left: 5px !important;
+  border-left: 1px solid rgba(128, 128, 128, 0.2) !important;
+  margin-top: 2px !important;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .custom-toggle {
+    color: #777 !important;
+  }
 }

@@ -118,4 +118,118 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log('Enhanced navigation system initialized');
     }, 300);
+
+    setTimeout(() => {
+        // Completely rebuild sidebar navigation
+        const rebuildSidebarNavigation = () => {
+            console.log('Rebuilding sidebar navigation...');
+            
+            // Get all chapter items
+            const chapterItems = document.querySelectorAll('.sidebar .chapter-item');
+            
+            // Process each item
+            chapterItems.forEach(item => {
+                // Make item a flex container to keep elements on the same line
+                item.style.display = 'flex';
+                item.style.flexWrap = 'nowrap';
+                item.style.alignItems = 'center';
+                item.style.width = '100%';
+                
+                // Check if it has children
+                const hasChildren = item.querySelector('.section') !== null;
+                
+                // Remove any existing classes that might interfere
+                item.classList.remove('has-sub');
+                
+                if (hasChildren) {
+                    // Add our custom class
+                    item.classList.add('has-sub');
+                    
+                    // Check if it should be expanded
+                    const shouldBeExpanded = 
+                        item.classList.contains('expanded') || 
+                        item.querySelector('a.active') !== null ||
+                        item.querySelector('.section a.active') !== null;
+                    
+                    if (shouldBeExpanded) {
+                        item.classList.add('expanded');
+                    } else {
+                        item.classList.remove('expanded');
+                    }
+                    
+                    // Get the section element
+                    const section = item.querySelector('.section');
+                    
+                    // Fix the section structure - ensure horizontal alignment
+                    if (section) {
+                        // Remove existing event listeners by cloning
+                        const newSection = section.cloneNode(true);
+                        section.parentNode.replaceChild(newSection, section);
+                        
+                        // Make the section a flex container
+                        newSection.style.display = 'flex';
+                        newSection.style.alignItems = 'center';
+                        newSection.style.width = '100%';
+                        newSection.style.justifyContent = 'space-between';
+                        
+                        // Make sure there's no overflow causing horizontal scrollbars
+                        newSection.style.overflow = 'hidden';
+                        
+                        // Add event listener to toggle expansion
+                        newSection.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            // Toggle expanded state
+                            if (item.classList.contains('expanded')) {
+                                item.classList.remove('expanded');
+                            } else {
+                                item.classList.add('expanded');
+                            }
+                        });
+                    }
+                }
+                
+                // Fix any potential horizontal overflow issues
+                item.style.overflow = 'hidden';
+                
+                // Ensure consistent font styling
+                const links = item.querySelectorAll('a');
+                links.forEach(link => {
+                    link.style.fontFamily = 'var(--font-sans)';
+                    link.style.fontSize = '0.9em';
+                    
+                    // Ensure links are inline elements
+                    link.style.display = 'inline-flex';
+                    link.style.alignItems = 'center';
+                });
+                
+                // Fix specifically for toggle links
+                const toggleLink = item.querySelector('a.toggle');
+                if (toggleLink) {
+                    toggleLink.style.marginLeft = 'auto'; // Push to the right side
+                }
+            });
+            
+            // Fix any remaining horizontal scrollbars in the sidebar
+            const sidebarScrollbox = document.querySelector('.sidebar-scrollbox');
+            if (sidebarScrollbox) {
+                sidebarScrollbox.style.overflowX = 'hidden';
+            }
+            
+            console.log('Sidebar navigation rebuilt');
+        };
+        
+        // Run immediately
+        rebuildSidebarNavigation();
+        
+        // Also run after a short delay to catch any dynamic changes
+        setTimeout(rebuildSidebarNavigation, 500);
+        
+        // Run when the window is resized
+        window.addEventListener('resize', () => {
+            setTimeout(rebuildSidebarNavigation, 200);
+        });
+        
+    }, 500);
 });
