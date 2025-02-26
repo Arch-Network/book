@@ -451,7 +451,7 @@ main {
     .page-wrapper {
         position: relative;
         min-height: 100vh;
-        padding-top: var(--menu-bar-height);
+        /* padding-top: var(--menu-bar-height); */
     }
 
     /* Sidebar positioning and transitions */
@@ -1271,6 +1271,11 @@ code {
         background: var(--bg);
         border-top: 1px solid var(--border-color);
     }
+
+    /* Remove if it exists */
+    #menu-bar-hover-placeholder {
+        display: none;
+    }
 }
 
 /* Menu button */
@@ -1531,7 +1536,7 @@ h3:hover .header-link {
     margin: 0;
 }
 
-/* Remove if it exists */
+/* Remove if it exists for both desktop and mobile screens */
 .menu-bar-hover-placeholder {
     display: none;
 }
@@ -1544,7 +1549,7 @@ h3:hover .header-link {
 
 /* Add this to handle the page wrapper spacing */
 .page-wrapper {
-    padding-top: var(--menu-bar-height);
+    /* padding-top: var(--menu-bar-height); */
     margin-top: 0;
     position: relative;
     z-index: 1;
@@ -1803,7 +1808,9 @@ body.sidebar-visible .sidebar {
     
     /* Desktop: Slide content when sidebar is visible */
     body.sidebar-visible .content {
-        margin-left: var(--sidebar-width);
+        margin-left: var(--sidebar-width) !important;
+        margin-right: 0 !important;
+        max-width: calc(var(--content-max-width) - var(--sidebar-width)/2) !important;
     }
 }
 
@@ -1811,15 +1818,18 @@ body.sidebar-visible .sidebar {
 @media only screen and (max-width: 1100px) {
     /* Make sure content repositions when sidebar closes */
     .content {
-        margin-left: 0;
-        width: 100%;
-        transform: none;
-        transition: transform 0.3s ease;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: 100% !important;
+        max-width: var(--content-max-width) !important;
+        transform: none !important;
     }
     
     /* When sidebar is visible, move content to make room */
     body.sidebar-visible .content {
-        transform: translateX(80%);
+        transform: translateX(80%) !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
     }
     
     /* Fix backdrop when sidebar is open */
@@ -2074,4 +2084,162 @@ script {
   .custom-toggle {
     color: #777 !important;
   }
+}
+
+/* Content Positioning Fix */
+.content {
+  margin: 0 auto !important;
+  padding: 0 var(--page-padding) !important;
+  max-width: var(--content-max-width) !important;
+}
+
+/* Only apply left margin when sidebar is visible on desktop */
+@media only screen and (min-width: 1101px) {
+  body.sidebar-visible .content {
+    margin-left: var(--sidebar-width) !important;
+    margin-right: 0 !important;
+    max-width: calc(var(--content-max-width) - var(--sidebar-width)/2) !important;
+  }
+  
+  /* Center content when sidebar is closed */
+  body:not(.sidebar-visible) .content {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+/* Ensure content is centered on mobile regardless of sidebar state */
+@media only screen and (max-width: 1100px) {
+  .content {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 100% !important;
+    max-width: var(--content-max-width) !important;
+    transform: none !important;
+  }
+  
+  /* When sidebar is visible on mobile, use transform instead of margin */
+  body.sidebar-visible .content {
+    transform: translateX(80%) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+/* Additional mobile optimizations */
+@media only screen and (max-width: 1100px) {
+    /* Better padding for readability */
+    .page {
+        padding: 0 10px;
+    }
+    
+    /* Improve tap targets */
+    .sidebar a, 
+    .sidebar .chapter-item {
+        padding: 8px 0;
+    }
+    
+    /* Make content more readable */
+    .content {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+    
+    /* Ensure code blocks are readable but don't overflow */
+    pre {
+        padding: 12px;
+        font-size: 14px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+    }
+}
+
+/* Hide theme toggle button - comprehensive approach */
+#theme-toggle,
+.theme-toggle,
+.theme-button,
+.icon-button.theme,
+button[aria-label*="theme"],
+button[title*="theme"],
+button[aria-label*="Theme"],
+button[title*="Theme"],
+.right-buttons button:nth-last-child(1),
+.right-buttons .icon-button:nth-last-child(1),
+a[href="javascript:window.theme.cycle()"],
+#theme-toggle-button,
+.theme-picker,
+button[id*="theme"],
+button[class*="theme"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    position: absolute !important;
+    pointer-events: none !important;
+}
+
+/* Also make sure to hide the theme popup menu if it exists */
+.theme-popup,
+.theme-dropdown,
+div[class*="theme-popup"],
+div[id*="theme-popup"] {
+    display: none !important;
+}
+
+/* Prevent page jumping when title is clicked */
+h1[id], h2[id], h3[id], h4[id], h5[id], h6[id] {
+    scroll-margin-top: var(--menu-bar-height);
+}
+
+/* Prevent default scroll behavior on title click */
+.content h1 a,
+.content h2 a,
+.content h3 a,
+.content h4 a,
+.content h5 a,
+.content h6 a {
+    scroll-behavior: auto !important;
+}
+
+/* Ensure header links don't cause unexpected jumps */
+.header-link {
+    scroll-behavior: auto !important;
+}
+
+/* For mobile specifically, add extra padding to prevent content shift */
+@media only screen and (max-width: 1100px) {
+    h1 {
+        margin-top: 0.5rem !important; 
+        padding-top: 0.5rem !important;
+    }
+    
+    /* Improve content spacing on mobile */
+    .content {
+        padding-top: 10px !important;
+        margin-top: 10px !important;
+    }
+    
+    /* Ensure headings have proper spacing to prevent jumps */
+    h1[id], h2[id], h3[id], h4[id], h5[id], h6[id] {
+        scroll-margin-top: calc(var(--menu-bar-height) + 15px);
+    }
+    
+    /* Prevent title shift */
+    .content h1:first-child {
+        scroll-behavior: auto !important;
+        position: relative !important;
+    }
+}
+
+/* Specifically target the menu bar title to prevent jumps */
+.menu-title,
+#menu-bar .title {
+    pointer-events: none;
+}
+
+/* But enable links within the title */
+.menu-title a,
+#menu-bar .title a {
+    pointer-events: auto;
 }

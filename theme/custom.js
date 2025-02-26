@@ -232,4 +232,79 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
     }, 500);
+
+    // Add this function to your existing JavaScript file
+    function enhanceMobileToggles() {
+        // Only apply on mobile devices
+        if (window.innerWidth <= 1100) {
+            console.log("Enhancing mobile toggles...");
+            
+            // Get all chapter items
+            const chapterItems = document.querySelectorAll('.sidebar .chapter-item');
+            
+            chapterItems.forEach(item => {
+                // Check if it has children and needs a toggle
+                const hasChildren = item.querySelector('.section') !== null;
+                
+                if (hasChildren) {
+                    // Get or create the toggle element
+                    let toggleElement = item.querySelector('.custom-toggle');
+                    
+                    if (!toggleElement) {
+                        toggleElement = document.createElement('span');
+                        toggleElement.className = 'custom-toggle';
+                        toggleElement.innerHTML = '▶';
+                        
+                        // Get the first link element
+                        const linkElement = item.querySelector('a');
+                        if (linkElement) {
+                            linkElement.insertBefore(toggleElement, linkElement.firstChild);
+                        }
+                    }
+                    
+                    // Update toggle state
+                    if (item.classList.contains('expanded')) {
+                        toggleElement.classList.add('expanded');
+                    } else {
+                        toggleElement.classList.remove('expanded');
+                    }
+                    
+                    // Add tap/click handler specific for mobile
+                    toggleElement.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Toggle expanded state
+                        if (item.classList.contains('expanded')) {
+                            item.classList.remove('expanded');
+                            toggleElement.classList.remove('expanded');
+                        } else {
+                            item.classList.add('expanded');
+                            toggleElement.classList.add('expanded');
+                        }
+                    }, { passive: false });
+                }
+            });
+        }
+    }
+
+    // Call this function when needed
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initial call with delay
+        setTimeout(enhanceMobileToggles, 500);
+        
+        // Call on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth <= 1100) {
+                setTimeout(enhanceMobileToggles, 200);
+            }
+        });
+        
+        // Call after any sidebar state change
+        document.body.addEventListener('click', function(e) {
+            if (e.target.closest('.sidebar-toggler, #sidebar-toggle-button')) {
+                setTimeout(enhanceMobileToggles, 300);
+            }
+        });
+    });
 });
