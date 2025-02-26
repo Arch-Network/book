@@ -49,7 +49,7 @@ body {
     height: var(--menu-bar-height);
     background: white !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    padding: 0 20px;
+    padding: 0 15px 0 5px;
     display: flex;
     align-items: center;
     margin: 0 !important;
@@ -59,33 +59,56 @@ body {
     -webkit-backface-visibility: hidden;
 }
 
-#menu-bar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--bg);
-    z-index: -1;
-}
-
+/* Improve the header layout */
 .left-buttons {
     display: flex;
     align-items: center;
     z-index: 102;
+    height: 100%;
+    margin-right: 15px;
 }
 
+/* Properly position the hamburger menu and search icons */
+.menu-bar-toggle, .icon-button.search-toggle {
+    padding: 0 7px;
+}
+
+/* Fix the title display */
 .title {
     display: flex;
     align-items: center;
     font-size: 1em;
-    font-weight: 400;
+    font-weight: 500;
     margin: 0;
     white-space: nowrap;
     position: relative;
     z-index: 101;
     color: var(--arch-secondary);
+    max-width: none;
+    overflow: visible;
+    text-overflow: initial;
+}
+
+/* Menu title styling */
+.menu-title {
+    display: inline-block;
+    font-size: 1.1em;
+    font-weight: 500;
+    color: var(--arch-secondary);
+    margin-right: auto;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: initial;
+    width: auto;
+    max-width: none;
+}
+
+/* Fix the right buttons positioning */
+.right-buttons {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-left: auto;
 }
 
 /* Sidebar */
@@ -233,7 +256,13 @@ body {
 
 /* Mobile adjustments */
 @media only screen and (max-width: 1100px) {
-    /* Ensure sidebar is visible */
+    /* Content wrapper */
+    .page-wrapper {
+        position: relative;
+        min-height: 100vh;
+    }
+
+    /* Sidebar positioning and transitions */
     .sidebar {
         position: fixed;
         left: 0;
@@ -241,55 +270,25 @@ body {
         bottom: 0;
         width: 80%;
         max-width: 300px;
+        height: 100vh;
+        z-index: var(--z-index-sidebar);
         background: var(--bg);
-        z-index: 2000;
-        overflow-y: auto;
         transform: translateX(-100%);
         transition: transform 0.3s ease;
-    }
-    
-    /* When sidebar is visible */
-    .sidebar-visible .sidebar {
-        transform: translateX(0) !important;
-    }
-    
-    /* Ensure sidebar content is shown */
-    .sidebar-scrollbox {
-        display: block !important;
-        visibility: visible !important;
-        height: calc(100% - 50px);
         overflow-y: auto;
-        padding: 10px 15px;
+        padding-top: var(--menu-bar-height);
+        -webkit-overflow-scrolling: touch;
+        will-change: transform;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
     }
     
-    /* Ensure all links are visible */
-    .sidebar a, 
-    .sidebar .chapter-item,
-    .sidebar li.chapter-item {
-        display: block !important;
-        visibility: visible !important;
+    .sidebar.visible {
+        transform: translateX(0) !important;
+        box-shadow: 2px 0 20px rgba(0,0,0,0.3);
     }
     
-    /* Close button */
-    .sidebar-close-button {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 30px;
-        height: 30px;
-        border: none;
-        background: rgba(0,0,0,0.1);
-        color: var(--fg);
-        border-radius: 50%;
-        font-size: 16px;
-        cursor: pointer;
-        z-index: 2001;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    /* Overlay */
+    /* Use an overlay instead of shifting content */
     .sidebar-overlay {
         display: none;
         position: fixed;
@@ -298,18 +297,61 @@ body {
         right: 0;
         bottom: 0;
         background: rgba(0,0,0,0.5);
-        z-index: 1999;
+        z-index: calc(var(--z-index-sidebar) - 1);
+        opacity: 0;
+        transition: opacity 0.3s ease;
         backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
     }
     
-    /* Fix menu toggle */
-    .menu-bar-toggle, .icon-button.menu-toggle {
-        z-index: 2002;
+    body.sidebar-visible .sidebar-overlay {
+        display: block;
+        opacity: 1;
     }
     
-    /* Prevent page shifting */
-    body.sidebar-visible {
-        overflow: hidden;
+    /* Ensure content is properly centered and doesn't shift */
+    .content {
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: 100% !important;
+        max-width: var(--content-max-width) !important;
+        transform: none !important;
+    }
+    
+    /* Disable content shifting when sidebar is visible */
+    body.sidebar-visible .content {
+        transform: none !important;
+    }
+    
+    /* Fix navigation arrows */
+    .nav-chapters {
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        bottom: 10px;
+        z-index: 50;
+        width: 40px;
+        height: 40px;
+        font-size: 1.5em;
+        border-radius: 50%;
+        background: var(--bg);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        color: var(--fg);
+        opacity: 0.7;
+        transition: opacity 0.3s;
+    }
+    
+    .nav-chapters:hover {
+        opacity: 1;
+    }
+    
+    .nav-chapters.previous {
+        left: 10px;
+    }
+    
+    .nav-chapters.next {
+        right: 10px;
     }
 }
 
@@ -451,7 +493,6 @@ main {
     .page-wrapper {
         position: relative;
         min-height: 100vh;
-        /* padding-top: var(--menu-bar-height); */
     }
 
     /* Sidebar positioning and transitions */
@@ -459,6 +500,7 @@ main {
         position: fixed;
         left: 0;
         top: 0;
+        bottom: 0;
         width: 80%;
         max-width: 300px;
         height: 100vh;
@@ -479,7 +521,7 @@ main {
         box-shadow: 2px 0 20px rgba(0,0,0,0.3);
     }
     
-    /* Overlay styling */
+    /* Use an overlay instead of shifting content */
     .sidebar-overlay {
         display: none;
         position: fixed;
@@ -500,50 +542,49 @@ main {
         opacity: 1;
     }
     
-    /* Menu toggle button */
-    #menu-bar-toggle {
-        display: none;
-        align-items: center;
-        justify-content: center;
-        width: 44px;
-        height: 44px;
-        border: none;
-        background: var(--arch-primary);
-        color: #fff;
-        border-radius: 8px;
-        cursor: pointer;
-        z-index: var(--z-index-menu-toggle);
-        padding: 0;
-        position: fixed;
-        top: 8px;
-        left: 8px;
-        font-size: 1.5em;
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .mobile-view #menu-bar-toggle {
-        display: flex !important;
-    }
-    
-    #menu-bar-toggle:hover,
-    #menu-bar-toggle:focus {
-        background: var(--arch-accent);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    
-    /* Ensure content is accessible */
+    /* Ensure content is properly centered and doesn't shift */
     .content {
-        padding: 20px 15px;
-        margin-left: 0;
-        transition: filter 0.3s ease;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: 100% !important;
+        max-width: var(--content-max-width) !important;
+        transform: none !important;
     }
     
+    /* Disable content shifting when sidebar is visible */
     body.sidebar-visible .content {
-        pointer-events: none;
-        user-select: none;
-        filter: blur(2px);
+        transform: none !important;
+    }
+    
+    /* Fix navigation arrows */
+    .nav-chapters {
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        bottom: 10px;
+        z-index: 50;
+        width: 40px;
+        height: 40px;
+        font-size: 1.5em;
+        border-radius: 50%;
+        background: var(--bg);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        color: var(--fg);
+        opacity: 0.7;
+        transition: opacity 0.3s;
+    }
+    
+    .nav-chapters:hover {
+        opacity: 1;
+    }
+    
+    .nav-chapters.previous {
+        left: 10px;
+    }
+    
+    .nav-chapters.next {
+        right: 10px;
     }
 }
 
@@ -2286,4 +2327,15 @@ h1[id], h2[id], h3[id], h4[id], h5[id], h6[id] {
 .menu-title a,
 #menu-bar .title a {
     pointer-events: auto;
+}
+
+/* Ensure proper positioning of menu bar on all devices */
+@media only screen and (min-width: 1101px) {
+    #menu-bar {
+        justify-content: flex-start;
+    }
+    
+    .menu-title {
+        margin-right: auto;
+    }
 }
