@@ -560,10 +560,13 @@ pub fn deposit(
     
     // Verify the UTXO belongs to the user
     require!(
-        verify_utxo_ownership(
-            &ctx.accounts.user.key(),
-            &btc_txid,
-            vout
+        validate_utxo_ownership(
+            &UtxoMeta {
+                txid: btc_txid,
+                vout,
+                amount,
+            },
+            &ctx.accounts.user.key()
         )?,
         ErrorCode::InvalidUTXO
     );
@@ -610,10 +613,9 @@ pub fn borrow(
 
     // Verify collateral UTXO ownership
     require!(
-        verify_utxo_ownership(
-            &ctx.accounts.borrower.key(),
-            &collateral_utxo.txid,
-            collateral_utxo.vout,
+        validate_utxo_ownership(
+            &collateral_utxo,
+            &ctx.accounts.borrower.key()
         )?,
         ErrorCode::InvalidCollateral
     );
