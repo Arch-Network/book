@@ -64,6 +64,7 @@
         - [getCurrentState](rpc/http-methods/get-current-state.md)
         - [getPeers](rpc/http-methods/get-peers.md)
         - [getProcessedTransaction](rpc/http-methods/get-processed-transaction.md)
+        - [getTransactions](rpc/http-methods/get-transactions.md)
         - [readAccountInfo](rpc/http-methods/read-account-info.md)
         - [startDkg](rpc/http-methods/start-dkg.md)
         - [isNodeReady](rpc/http-methods/is-node-ready.md)

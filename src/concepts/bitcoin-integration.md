@@ -52,12 +52,25 @@ flowchart LR
 
 ```rust,ignore
 // UTXO Metadata Structure
-pub struct UtxoMeta {
-    pub txid: [u8; 32],  // Transaction ID
-    pub vout: u32,       // Output index
-    pub amount: u64,     // Amount in satoshis
-    pub script_pubkey: Vec<u8>, // Output script
-    pub confirmation_height: Option<u32>, // Block height of confirmation
+#[derive(Clone, Debug, PartialEq, Eq)]
+#[repr(C)]
+pub struct UtxoMeta([u8; 36]);
+
+impl UtxoMeta {
+    pub fn from(txid: [u8; 32], vout: u32) -> Self {
+        let mut data: [u8; 36] = [0; 36];
+        data[..32].copy_from_slice(&txid);
+        data[32..].copy_from_slice(&vout.to_le_bytes());
+        Self(data)
+    }
+
+    pub fn txid(&self) -> &[u8] {
+        &self.0[..32]
+    }
+
+    pub fn vout(&self) -> u32 {
+        u32::from_le_bytes(self.0[32..].try_into().expect("utxo meta unreachable"))
+    }
 }
 
 // UTXO Account State
