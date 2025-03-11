@@ -21,30 +21,51 @@ UTXOs (Unspent Transaction Outputs) are fundamental to Bitcoin's transaction mod
 The `UtxoMeta` struct encapsulates the core UTXO identification data:
 
 ```rust,ignore
-use arch_program::utxo::UtxoMeta;
-use bitcoin::Txid;
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct UtxoMeta {
-    pub txid: [u8; 32],  // Bitcoin transaction ID (32 bytes)
-    pub vout: u32,       // Output index in the transaction
-}
+#[derive(Clone, Debug, PartialEq, Eq)]
+#[repr(C)]
+pub struct UtxoMeta([u8; 36]);
 
 impl UtxoMeta {
-    /// Creates a new UTXO metadata instance
-    pub fn new(txid: [u8; 32], vout: u32) -> Self {
-        Self { txid, vout }
+    pub fn from(txid: [u8; 32], vout: u32) -> Self {
+        let mut data: [u8; 36] = [0; 36];
+        data[..32].copy_from_slice(&txid);
+        data[32..].copy_from_slice(&vout.to_le_bytes());
+        Self(data)
     }
 
-    /// Deserializes UTXO metadata from a byte slice
-    /// Format: [txid(32 bytes)][vout(4 bytes)]
+    pub fn from_outpoint(txid: Txid, vout: u32) -> Self {
+        let mut data: [u8; 36] = [0; 36];
+        data[..32].copy_from_slice(
+            &bitcoin::consensus::serialize(&txid)
+                .into_iter()
+                .rev()
+                .collect::<Vec<u8>>(),
+        );
+        data[32..].copy_from_slice(&vout.to_le_bytes());
+        Self(data)
+    }
+
+    pub fn to_outpoint(&self) -> OutPoint {
+        OutPoint {
+            txid: Txid::from_str(&hex::encode(self.txid())).unwrap(),
+            vout: self.vout(),
+        }
+    }
+
     pub fn from_slice(data: &[u8]) -> Self {
-        let mut txid = [0u8; 32];
-        txid.copy_from_slice(&data[0..32]);
-        let vout = u32::from_le_bytes([
-            data[32], data[33], data[34], data[35]
-        ]);
-        Self { txid, vout }
+        Self(data[..36].try_into().expect("utxo meta is 36 bytes long"))
+    }
+
+    pub fn txid(&self) -> &[u8] {
+        &self.0[..32]
+    }
+
+    pub fn vout(&self) -> u32 {
+        u32::from_le_bytes(self.0[32..].try_into().expect("utxo meta unreachable"))
+    }
+
+    pub fn serialize(&self) -> [u8; 36] {
+        self.0
     }
 }
 ```
@@ -136,7 +157,7 @@ fn validate_utxo(utxo: &UtxoMeta) -> Result<(), ProgramError> {
     }
     
     // 3. Verify output index exists
-    if utxo.vout as usize >= btc_tx.vout.len() {
+    if utxo.vout() as usize >= btc_tx.vout.len() {
         return Err(ProgramError::InvalidVout);
     }
     
