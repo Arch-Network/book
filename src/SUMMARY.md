@@ -7,7 +7,7 @@
 - [Environment Setup](getting-started/environment-setup.md)
     - [System Requirements](getting-started/requirements.md)
     <!-- - [Development Environment Setup](getting-started/dev-environment-setup.md)-->
-    - [Bitcoin and Electrs Setup](getting-started/bitcoin-and-electrs-setup.md)
+    - [Bitcoin and Titan Setup](getting-started/bitcoin-and-titan-setup.md)
     - [Setting up a Project](getting-started/setting-up-a-project.md)
         - [Nodes](concepts/nodes.md)
 - [Resources](getting-started/resources.md)

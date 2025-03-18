@@ -10,8 +10,8 @@ flowchart TB
         BNode[Bitcoin Node]
     end
 
-    subgraph EC[Electrs Client]
-        ECNode[Electrs Client]
+    subgraph EC[Titan]
+        ECNode[Titan]
     end
 
     subgraph AN[Arch Network]

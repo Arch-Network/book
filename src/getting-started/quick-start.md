@@ -6,7 +6,7 @@ Welcome to Arch Network! Let's get you up and running with a local development e
 
 ```mermaid
 graph TD
-    A[Bitcoin Core] -->|Blockchain Data| B[Electrs]
+    A[Bitcoin Core] -->|Blockchain Data| B[Titan]
     B -->|Efficient Queries| C[Local Validator]
     C -->|Development Environment| D[Your dApp]
     style A fill:#f9d71c
@@ -18,7 +18,7 @@ graph TD
 In this guide, you'll set up a complete local development environment for building applications on Arch Network. You'll:
 
 - 🏗️ Set up Bitcoin Core for local blockchain development
-- ⚡ Configure Electrs for efficient blockchain queries
+- ⚡ Configure Titan for efficient blockchain queries
 - 🔧 Launch the Arch Network local validator
 - 🎮 Test your setup with some fun experiments!
 
@@ -38,7 +38,7 @@ In this guide, you'll set up a complete local development environment for buildi
 
 1. [ ] Environment Setup (5 mins)
 2. [ ] Bitcoin Core Installation (20 mins)
-3. [ ] Electrs Setup (15 mins)
+3. [ ] Titan Setup (15 mins)
 4. [ ] Local Validator Launch (10 mins)
 5. [ ] First Experiments (5 mins)
 
@@ -56,7 +56,7 @@ Choose your path:
 
 1. [🔧 Full Environment Setup](environment-setup.md) - Recommended for most developers
 2. [🚄 Quick Setup Script](dev-environment-setup.md) - For experienced developers
-3. [📚 Detailed Component Guide](bitcoin-and-electrs-setup.md) - For those who want to understand every detail
+3. [📚 Detailed Component Guide](bitcoin-and-titan-setup.md) - For those who want to understand every detail
 
 > 💡 **Tip**: If this is your first time building on Arch Network, we recommend following the Full Environment Setup path. It includes detailed explanations that will help you understand the architecture better.
 
