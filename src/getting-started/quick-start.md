@@ -18,9 +18,18 @@ graph TD
 In this guide, you'll set up a complete local development environment for building applications on Arch Network. You'll:
 
 - 🏗️ Set up Bitcoin Core for local blockchain development
-- ⚡ Configure Titan for efficient blockchain queries
+- ⚡ Configure Titan for efficient blockchain queries and access to inscriptions & runes protocols
 - 🔧 Launch the Arch Network local validator
 - 🎮 Test your setup with some fun experiments!
+
+## 💡 Why Titan?
+
+Titan is a crucial component of the Arch Network development environment:
+
+- **Bitcoin Data Indexer**: Titan indexes and provides efficient access to Bitcoin blockchain data.
+- **Advanced Protocol Support**: Specially designed to handle Bitcoin's emerging token protocols like Ordinals (inscriptions) and Runes.
+- **Real-Time Updates**: Features subscription mechanisms that allow applications to receive immediate notifications of new blocks and transactions.
+- **Performance-Oriented**: Utilizes RocksDB for efficient storage and retrieval of blockchain data, critical for dApp performance.
 
 ## ⏱️ Time Estimate
 - Total time: 45-60 minutes

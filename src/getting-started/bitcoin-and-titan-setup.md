@@ -25,9 +25,19 @@ graph TD
 - Perfect for development - create test Bitcoin at will!
 
 #### Titan ⚡
-- Lightning-fast Bitcoin data indexer
-- Makes blockchain queries super efficient
-- Essential for real-time dApp responses
+Titan is a powerful Bitcoin blockchain indexer that offers several advantages over traditional indexers like Electrs:
+
+- **Advanced Inscription & Runes Support**: Titan is specifically optimized for indexing Bitcoin's latest protocols like Ordinals (inscriptions) and Runes, making it essential for developers working with these new Bitcoin capabilities.
+
+- **Performance Optimized**: Titan offers lightning-fast access to blockchain data through efficient indexing algorithms with a RocksDB backend, providing superior query performance compared to traditional indexers.
+
+- **Comprehensive API**: Exposes a rich set of endpoints for querying blockchain data, including specialized endpoints for inscription content retrieval and rune transactions tracking.
+
+- **Real-time Subscriptions**: Features TCP subscription support with webhook capabilities, allowing your applications to receive real-time updates when new Bitcoin blocks or transactions are processed.
+
+- **Modular Architecture**: Built with a well-structured modular design that separates concerns and allows for targeted optimization of different blockchain data types.
+
+Arch Network has switched from Electrs to Titan to leverage these advanced capabilities, particularly for working with inscriptions and runes. As Bitcoin evolves with new protocols and standards like BRC-20 tokens and Runes, Titan provides the necessary tooling to efficiently index and query these new data structures, allowing developers to build more sophisticated applications on Bitcoin.
 
 ## 📋 Progress Tracker
 - [ ] Install Bitcoin Core dependencies

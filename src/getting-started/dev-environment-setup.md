@@ -9,6 +9,18 @@ This guide provides a streamlined setup process for experienced developers who w
 - 10GB free disk space
 - macOS or Linux
 
+## 🔑 Key Components
+
+Your development environment consists of three essential components:
+
+1. **Bitcoin Core**: The reference implementation of the Bitcoin protocol for blockchain simulation
+2. **Titan**: An advanced Bitcoin blockchain indexer with specialized support for:
+   - Ordinals inscriptions and Runes protocols
+   - RocksDB-powered high-performance queries
+   - Real-time notifications for block and transaction events
+   - Comprehensive transaction metadata indexing
+3. **Arch Local Validator**: For executing and testing your programs
+
 ## 🚀 One-Command Setup
 
 ```bash
