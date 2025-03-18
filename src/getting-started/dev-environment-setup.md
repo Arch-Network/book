@@ -9,6 +9,18 @@ This guide provides a streamlined setup process for experienced developers who w
 - 10GB free disk space
 - macOS or Linux
 
+## 🔑 Key Components
+
+Your development environment consists of three essential components:
+
+1. **Bitcoin Core**: The reference implementation of the Bitcoin protocol for blockchain simulation
+2. **Titan**: An advanced Bitcoin blockchain indexer with specialized support for:
+   - Ordinals inscriptions and Runes protocols
+   - RocksDB-powered high-performance queries
+   - Real-time notifications for block and transaction events
+   - Comprehensive transaction metadata indexing
+3. **Arch Local Validator**: For executing and testing your programs
+
 ## 🚀 One-Command Setup
 
 ```bash
@@ -21,7 +33,7 @@ curl -L https://raw.githubusercontent.com/arch-network/arch-cli/main/scripts/set
 The script will:
 1. Install required dependencies
 2. Set up Bitcoin Core
-3. Configure Electrs
+3. Configure Titan
 4. Install the Arch CLI
 5. Launch the local validator
 
@@ -31,8 +43,8 @@ The script will:
 # Check Bitcoin Core
 bitcoin-cli -regtest getblockchaininfo
 
-# Check Electrs
-curl http://localhost:3002/blocks/tip/height
+# Check Titan
+curl http://localhost:3030/blocks/tip/height
 
 # Check Arch CLI
 arch-cli --version
@@ -51,7 +63,7 @@ arch-cli validator-start
 
 ## 🔧 Manual Configuration
 
-If you need to customize your setup, check the [detailed setup guide](bitcoin-and-electrs-setup.md).
+If you need to customize your setup, check the [detailed setup guide](bitcoin-and-titan-setup.md).
 
 ## 🆘 Troubleshooting
 
@@ -62,8 +74,8 @@ If you encounter issues:
    # Check Bitcoin Core
    bitcoin-cli -regtest getblockchaininfo
    
-   # Check Electrs
-   curl http://localhost:3002/blocks/tip/height
+   # Check Titan
+   curl http://localhost:3030/blocks/tip/height
    ```
 3. Visit our [Discord](https://discord.gg/archnetwork) for help
 

@@ -10,8 +10,8 @@ flowchart TB
         BNode[Bitcoin Node]
     end
 
-    subgraph EC[Electrs Client]
-        ECNode[Electrs Client]
+    subgraph EC[Titan]
+        ECNode[Titan]
     end
 
     subgraph AN[Arch Network]
@@ -27,6 +27,20 @@ flowchart TB
     LN <--> VN
     P1 --- PN
 ```
+
+### Titan Indexer
+
+Arch Network utilizes Titan, an advanced Bitcoin blockchain indexer, as a critical component in its architecture. Titan serves as an intermediary layer between the Bitcoin blockchain and the Arch Network, offering several key advantages:
+
+- **Efficient Data Access**: Titan indexes Bitcoin blockchain data in a RocksDB backend, providing high-performance access to transactions, blocks, and UTXO states needed by Arch Network applications.
+
+- **Inscription & Runes Support**: Uniquely designed to handle Bitcoin's emerging token protocols like Ordinals (inscriptions) and Runes, Titan enables Arch programs to interact with these advanced Bitcoin features.
+
+- **Real-time Monitoring**: Through ZMQ listeners and TCP subscription mechanisms, Titan provides immediate notification of new blocks and transactions, allowing Arch Network to maintain real-time synchronization with the Bitcoin blockchain.
+
+- **Transaction & State Tracking**: Maintains comprehensive tracking of transaction states, UTXO spends, and rune balances, essential for Arch Network's Bitcoin-based smart contract functionality.
+
+- **Webhook Support**: Offers webhook capabilities that allow applications to subscribe to specific blockchain events, enhancing the event-driven architecture of Arch Network applications.
 
 ## Core Components
 

@@ -1,13 +1,13 @@
-# 🔗 Setting up Bitcoin Core and Electrs
+# 🔗 Setting up Bitcoin Core and Titan
 
-Welcome to the detailed component setup guide! Here we'll walk through setting up Bitcoin Core and Electrs, the foundational components for your Arch Network development environment.
+Welcome to the detailed component setup guide! Here we'll walk through setting up Bitcoin Core and Titan, the foundational components for your Arch Network development environment.
 
 ## 🎯 What We're Building
 
 ```mermaid
 graph TD
     A[Your dApp] -->|Interacts with| B[Local Validator]
-    B -->|Queries| C[Electrs]
+    B -->|Queries| C[Titan]
     C -->|Reads| D[Bitcoin Core]
     D -->|Manages| E[Local Blockchain]
     style A fill:#e74c3c
@@ -24,18 +24,28 @@ graph TD
 - Manages a local blockchain in regtest mode
 - Perfect for development - create test Bitcoin at will!
 
-#### Electrs ⚡
-- Lightning-fast Bitcoin data indexer
-- Makes blockchain queries super efficient
-- Essential for real-time dApp responses
+#### Titan ⚡
+Titan is a powerful Bitcoin blockchain indexer that offers several advantages over traditional indexers like Electrs:
+
+- **Advanced Inscription & Runes Support**: Titan is specifically optimized for indexing Bitcoin's latest protocols like Ordinals (inscriptions) and Runes, making it essential for developers working with these new Bitcoin capabilities.
+
+- **Performance Optimized**: Titan offers lightning-fast access to blockchain data through efficient indexing algorithms with a RocksDB backend, providing superior query performance compared to traditional indexers.
+
+- **Comprehensive API**: Exposes a rich set of endpoints for querying blockchain data, including specialized endpoints for inscription content retrieval and rune transactions tracking.
+
+- **Real-time Subscriptions**: Features TCP subscription support with webhook capabilities, allowing your applications to receive real-time updates when new Bitcoin blocks or transactions are processed.
+
+- **Modular Architecture**: Built with a well-structured modular design that separates concerns and allows for targeted optimization of different blockchain data types.
+
+Arch Network has switched from Electrs to Titan to leverage these advanced capabilities, particularly for working with inscriptions and runes. As Bitcoin evolves with new protocols and standards like BRC-20 tokens and Runes, Titan provides the necessary tooling to efficiently index and query these new data structures, allowing developers to build more sophisticated applications on Bitcoin.
 
 ## 📋 Progress Tracker
 - [ ] Install Bitcoin Core dependencies
 - [ ] Build Bitcoin Core
 - [ ] Configure Bitcoin Core
 - [ ] Test Bitcoin Core
-- [ ] Build Electrs
-- [ ] Configure Electrs
+- [ ] Build Titan
+- [ ] Configure Titan
 - [ ] Test the full stack
 
 ## 1. 🏗️ Bitcoin Core Setup
@@ -162,36 +172,36 @@ bitcoin-cli -regtest getbalance
 
 > 🎉 You should see 50 BTC! In regtest mode, each block rewards you with 50 BTC.
 
-## 2. ⚡ Electrs Setup
+## 2. ⚡ Titan Setup
 
-### 2.1 🔧 Building Electrs
+### 2.1 🔧 Building Titan
 
 ```bash
-# Clone our fork of Electrs
-git clone https://github.com/Arch-Network/electrs
-cd electrs
+# Clone Titan
+git clone https://github.com/SaturnBTC/Titan.git
+cd Titan
 
 # Build and install
-cargo install --path .
+cargo build --release
 ```
 
-### 2.2 🚀 Running Electrs
+### 2.2 🚀 Running Titan
 
 For local development:
 
 ```bash
-electrs -vvvv \
-    --daemon-dir ~/.bitcoin \
-    --network regtest \
-    --cookie bitcoin:bitcoinpass \
-    --main-loop-delay 0 
+./target/release/titan \
+    --bitcoin-rpc-url http://127.0.0.1:18443 \
+    --bitcoin-rpc-cookie "bitcoin:bitcoinpass" \
+    --chain regtest \
+    --index-addresses \
+    --index-bitcoin-transactions \
+    --enable-tcp-subscriptions \
+    --data-dir ./data \
+    --main-loop-interval 0
 ```
 
-You should see output like:
-```
-INFO - Electrum RPC server running on 127.0.0.1:50001
-INFO - REST server running on 127.0.0.1:3002
-```
+You should see output indicating that Titan is running and connected to your Bitcoin node.
 
 ## 🎯 Verification
 
@@ -201,8 +211,8 @@ Let's make sure everything is working:
 # 1. Check Bitcoin Core
 bitcoin-cli -regtest getblockchaininfo
 
-# 2. Check Electrs
-curl http://localhost:3002/blocks/tip/height
+# 2. Check Titan
+curl http://localhost:3030/blocks/tip/height
 ```
 
 ## 3. 🌐 Testnet4 Configuration
@@ -223,28 +233,21 @@ rpcport=18332             # RPC port for testnet
 wallet=testwallet         # Default wallet name for testnet
 ```
 
-### 3.2 Electrs for Testnet4
+### 3.2 Titan for Testnet4
 
 For connecting to testnet4, use this configuration:
 
 ```bash
-# Run Electrs with testnet4 configuration
-electrs -vvvv \
-    --network testnet4 \
-    --daemon-rpc-addr <BITCOIN_NODE_ENDPOINT>:<PORT> \
-    --cookie "<BITCOIN_RPC_USER>:<BITCOIN_RPC_PASSWORD>" \
-    --db-dir ./db \
-    --main-loop-delay 0 \
-    --lightmode \
-    --jsonrpc-import \
-    --electrum-rpc-addr="127.0.0.1:40001" \
-    --http-addr="127.0.0.1:3004"
-```
-
-You should see output like:
-```bash
-INFO - Electrum RPC server running on 127.0.0.1:40001
-INFO - REST server running on 127.0.0.1:3004
+# Run Titan with testnet4 configuration
+./target/release/titan \
+    --bitcoin-rpc-url http://<BITCOIN_NODE_ENDPOINT>:<PORT> \
+    --bitcoin-rpc-cookie "<BITCOIN_RPC_USER>:<BITCOIN_RPC_PASSWORD>" \
+    --chain testnet \
+    --index-addresses \
+    --index-bitcoin-transactions \
+    --enable-tcp-subscriptions \
+    --data-dir ./data \
+    --main-loop-interval 0
 ```
 
 ### 3.3 Local Validator with Testnet4
@@ -253,21 +256,16 @@ Configure the local validator for testnet4:
 
 ```bash
 # Start the local validator with testnet4 configuration
-arch-cli validator-start \
-    --rpc-bind-ip 127.0.0.1 \
-    --rpc-bind-port 9002 \
-    --electrs-endpoint http://localhost:3004 \
-    --network-mode testnet \
-    --electrum-endpoint tcp://127.0.0.1:40001
+cargo run -p local_validator -- \
+    --network-mode devnet \
+    --titan-endpoint http://127.0.0.1:3030 \
+    --titan-socket-endpoint 127.0.0.1:8080
 ```
 
 > 🔍 **Port Reference**:
-> - Regtest mode:
->   - Electrum RPC: 50001
->   - REST API: 3002
-> - Testnet4 mode:
->   - Electrum RPC: 40001
->   - REST API: 3004
+> - Regtest/Testnet mode:
+>   - Titan HTTP API: 3030
+>   - Titan TCP Socket: 8080
 
 ### 3.4 Verify Testnet4 Setup
 
@@ -275,8 +273,8 @@ arch-cli validator-start \
 # Check Bitcoin Core testnet sync
 bitcoin-cli -testnet getblockchaininfo
 
-# Check Electrs testnet connection
-curl http://localhost:3004/blocks/tip/height
+# Check Titan testnet connection
+curl http://localhost:3030/blocks/tip/height
 ```
 
 ## 🚨 Troubleshooting
@@ -293,7 +291,7 @@ bitcoin-cli stop
 # Wait a few seconds and try again
 ```
 
-#### 🔴 Electrs connection failed
+#### 🔴 Titan connection failed
 ```bash
 Error: Connection refused
 ```
@@ -318,4 +316,4 @@ Congratulations! You now have a working Bitcoin development environment. Ready t
 
 - Join our [Discord](https://discord.gg/archnetwork)
 - Check the [Bitcoin Core docs](https://github.com/bitcoin/bitcoin/tree/master/doc)
-- Browse the [Electrs documentation](https://github.com/romanz/electrs/blob/master/doc/usage.md)
+- Browse the [Titan documentation](https://github.com/SaturnBTC/Titan)
