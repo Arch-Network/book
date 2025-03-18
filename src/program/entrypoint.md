@@ -60,6 +60,6 @@ Upon successful execution, the new UTXO authorities, new UTXO Data and a Bitcoin
 
 <!-- External -->
 [`Result`]: https://doc.rust-lang.org/std/result/enum.Result.html
-[lib.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/app/program/src/lib.rs
+[lib.rs]: https://github.com/Arch-Network/arch-examples/blob/main/examples/helloworld/program/src/lib.rs
 [entrypoint.rs]: https://github.com/Arch-Network/arch-examples/blob/main/program/src/entrypoint.rs
 [`ProgramError`]: https://github.com/Arch-Network/arch-examples/blob/main/program/src/program_error.rs

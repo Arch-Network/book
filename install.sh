@@ -54,7 +54,7 @@ cleanup() {
 trap cleanup EXIT
 
 # Download URL based on OS and architecture
-BINARY_NAME="arch-cli"
+BINARY_NAME="cli"
 DOWNLOAD_BINARY_NAME="cli"
 
 # Map uname architecture to our release architecture names
@@ -79,7 +79,7 @@ esac
 # Construct and validate download URL
 DOWNLOAD_URL="https://github.com/Arch-Network/arch-node/releases/download/${VERSION}/${DOWNLOAD_BINARY_NAME}-${RELEASE_ARCH}"
 
-echo "Downloading ${BINARY_NAME} version ${VERSION}..."
+echo "Downloading Arch Network CLI version ${VERSION}..."
 
 # Attempt download with better error handling
 if ! curl -sSfL "$DOWNLOAD_URL" -o "$TMP_DIR/${BINARY_NAME}"; then
@@ -111,4 +111,4 @@ if ! sudo chmod +x "$INSTALL_DIR/${BINARY_NAME}"; then
     exit 1
 fi
 
-echo "${BINARY_NAME} ${VERSION} installed successfully to ${INSTALL_DIR}"
+echo "Arch Network CLI ${VERSION} installed successfully to ${INSTALL_DIR}"

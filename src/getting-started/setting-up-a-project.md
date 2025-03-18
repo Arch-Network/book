@@ -1,16 +1,14 @@
 # Setting up an Arch Network Project
 
-This guide walks you through creating your first Arch Network project using the arch-cli tool. You'll learn how to set up, build, and deploy a "Hello World" program to the Arch Network.
-
-<div class="terminal-animation">
-  <img src="../assets/setup-project-demo.gif" alt="Project Setup Animation" />
-</div>
+This guide walks you through creating your first Arch Network project. You'll learn how to set up, build, and deploy a "Hello World" program to the Arch Network using the Arch Network CLI tool.
 
 ## Prerequisites
 
 Before starting, ensure you have the following dependencies installed:
-- Arch-Cli(Latest)
-- Cargo(v1.81.0 or later)
+- Arch Network CLI (Latest)
+- Solana CLI (Latest stable version)
+- Cargo (v1.81.0 or later)
+- Rust (Latest stable version)
 - Bitcoin Core and Electrs: Required for local validation
 
 ## Project Setup
@@ -64,7 +62,7 @@ Start a local validator for testing:
 
 ```bash
 # Start the Arch Network validator
-arch-cli validator-start
+cli validator start
 ```
 
 > Important: Ensure Bitcoin Core and Electrs are properly configured and running before starting the validator. See the setup guide for details.
@@ -75,7 +73,7 @@ Deploy your compiled program to the local Arch Network:
 
 ```bash
 # Deploy the program
-arch-cli deploy
+cli deploy ./target/deploy/
 ```
 
 
@@ -90,3 +88,23 @@ Common issues and solutions:
 - If validator fails to start:
   - Verify Bitcoin Core and Electrs are running
   - Check the logs for specific error messages
+
+## Additional CLI Commands
+
+For more advanced operations, the Arch Network CLI provides additional commands:
+
+```bash
+# Show program information
+cli show <PROGRAM_ADDRESS>
+
+# Confirm transaction status
+cli confirm <TX_ID>
+
+# Get block information
+cli get-block <BLOCK_HASH>
+
+# Get block height
+cli get-block-height
+```
+
+For a complete list of available commands, refer to the [Arch Network CLI documentation](https://github.com/Arch-Network/arch-node/releases/latest).

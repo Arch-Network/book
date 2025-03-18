@@ -249,73 +249,60 @@ INFO - REST server running on 127.0.0.1:3004
 
 ### 3.3 Local Validator with Testnet4
 
-Configure the local validator for testnet4:
+Start your local validator with testnet4 configuration:
 
 ```bash
-# Start the local validator with testnet4 configuration
-arch-cli validator-start \
-    --rpc-bind-ip 127.0.0.1 \
-    --rpc-bind-port 9002 \
-    --electrs-endpoint http://localhost:3004 \
-    --network-mode testnet \
-    --electrum-endpoint tcp://127.0.0.1:40001
+cli validator start \
+    --network-mode testnet4 \
+    --bitcoin-rpc-endpoint <BITCOIN_NODE_ENDPOINT> \
+    --bitcoin-rpc-port <PORT> \
+    --bitcoin-rpc-username <BITCOIN_RPC_USER> \
+    --bitcoin-rpc-password <BITCOIN_RPC_PASSWORD>
 ```
 
-> 🔍 **Port Reference**:
-> - Regtest mode:
->   - Electrum RPC: 50001
->   - REST API: 3002
-> - Testnet4 mode:
->   - Electrum RPC: 40001
->   - REST API: 3004
+## 4. 🐳 Docker Configuration (Alternative)
 
-### 3.4 Verify Testnet4 Setup
+If you prefer using Docker for a more isolated setup:
 
 ```bash
-# Check Bitcoin Core testnet sync
-bitcoin-cli -testnet getblockchaininfo
+# Pull the Bitcoin Core image
+docker pull ruimarinho/bitcoin-core:latest
 
-# Check Electrs testnet connection
-curl http://localhost:3004/blocks/tip/height
+# Run Bitcoin Core in a container
+docker run -d --name bitcoin-core \
+    -p 18443:18443 \
+    -e BITCOIN_RPC_USER=bitcoin \
+    -e BITCOIN_RPC_PASSWORD=bitcoinpass \
+    ruimarinho/bitcoin-core:latest \
+    -regtest=1 \
+    -txindex=1 \
+    -rpcbind=0.0.0.0 \
+    -rpcallowip=0.0.0.0/0 \
+    -rpcuser=bitcoin \
+    -rpcpassword=bitcoinpass
 ```
 
-## 🚨 Troubleshooting
+## 5. 🚀 Next Steps
+
+Now that you have Bitcoin Core and Electrs running, you can:
+
+1. [Set up your first Arch Network project](./setting-up-a-project.md)
+2. [Explore the Arch Network architecture](../concepts/architecture.md)
+3. [Learn how to write your first Arch program](../guides/how-to-write-arch-program.md)
+
+## 🆘 Troubleshooting
 
 ### Common Issues
 
-#### 🔴 Bitcoin Core won't start
+#### "Connection refused" errors
+Make sure your Bitcoin Core is running. Check with:
 ```bash
-Error: Cannot obtain a lock on data directory
-```
-👉 Bitcoin Core is probably already running. Try:
-```bash
-bitcoin-cli stop
-# Wait a few seconds and try again
+bitcoin-cli -regtest getblockchaininfo
 ```
 
-#### 🔴 Electrs connection failed
+#### Electrs can't connect to Bitcoin Core
+Double-check the cookie and network settings:
 ```bash
-Error: Connection refused
+# Verify RPC connection
+curl --user bitcoin:bitcoinpass -d '{"jsonrpc":"1.0","method":"getblockchaininfo","params":[]}' -H 'content-type:text/plain;' http://127.0.0.1:18443/
 ```
-👉 Make sure Bitcoin Core is running and check your bitcoin.conf settings.
-
-#### 🔴 Testnet sync taking too long
-```bash
-"blocks": 1234567,
-"headers": 2345678
-```
-👉 Initial testnet sync can take several hours. You can use regtest mode for development while waiting.
-
-## 🎉 Next Steps
-
-Congratulations! You now have a working Bitcoin development environment. Ready to:
-
-1. [Launch the Local Validator](setting-up-a-project.md)
-2. [Build Your First dApp](../guides/how-to-write-arch-program.md)
-3. [Explore Example Projects](../guides/guides.md)
-
-## 🆘 Need Help?
-
-- Join our [Discord](https://discord.gg/archnetwork)
-- Check the [Bitcoin Core docs](https://github.com/bitcoin/bitcoin/tree/master/doc)
-- Browse the [Electrs documentation](https://github.com/romanz/electrs/blob/master/doc/usage.md)

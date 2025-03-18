@@ -80,121 +80,71 @@ Let's look at an example implementation of this oracle program. This includes:
 - [Read from the state account]
 
 #### Create oracle project
-First, we'll need to create a new project using the [arch-cli] to hold our oracle logic.
+First, we'll need to create a new project to hold our oracle logic.
 
 ```bash
-arch-cli project create --name oracle
+# Create a new directory for your oracle project
+mkdir oracle
+cd oracle
+
+# Initialize a Rust project
+cargo init --lib
 ```
 
-Example output:
-```bash
-Welcome to the Arch Network CLI
-Loading config for network: development
-  → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
-  ✓ Loaded network-specific configuration for development
-Creating a new project...
-  ✓ Updated configuration with project directory
-  ✓ Created project directory at "/Users/jr/Documents/ArchNetwork/oracle"
-Creating Vite application...
-  ✓ Created Vite application
-  ✓ Installed base dependencies
-  ✓ Installed additional packages
-New project created successfully! 🎉
-  ℹ Project location: "/Users/jr/Documents/ArchNetwork/oracle"
+> Note: The new CLI does not currently have a project creation command. We'll manually set up our project structure.
 
-Next steps:
-  1. Navigate to /Users/jr/Documents/ArchNetwork/oracle/app/program to find the Rust program template
-  2. Edit the source code to implement your program logic
-  3. When ready, run arch-cli deploy to compile and deploy your program to the network
+You'll need to create and edit the following files:
+- `Cargo.toml` - Add dependencies for your oracle program
+- `src/lib.rs` - Implement the oracle program logic
 
-Need help? Check out our documentation at https://arch-network.github.io/docs/
-```
-
-We can then proceed to replace the logic in `oracle/app/program/lib.rs` with our example oracle code as well as update the dependencies (`oracle/app/program/Cargo.toml`), both found within the [arch-examples] repo.
+Example program files can be found in the [arch-examples] repo.
 
 #### Deploy program
 
-After the project is created, the program is written and the `Cargo.toml` is set with the proper dependencies, we can use the [arch-cli] to deploy the program.
+After the project is created, the program is written and the `Cargo.toml` is set with the proper dependencies, we can deploy the program.
 
 ```bash
-arch-cli deploy 
+# Build the program
+cargo build-sbf
+
+# Deploy the program
+cli deploy target/deploy/oracle.so
 ```
 
-Example output:
-```bash
-Welcome to the Arch Network CLI
-Loading config for network: development
-  → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
-  ✓ Loaded network-specific configuration for development
-Deploying your Arch Network app...
-Available folders to deploy:
-  1. demo
-  2. helloworld
-  3. oracle
-  4. my_app
-Enter the number of the folder you want to deploy (or 'q' to quit): 3
-Deploying from folder: "/Users/jr/Documents/ArchNetwork/oracle"
-  ℹ Building program...
-  ℹ Cargo.toml found at: /Users/jr/Documents/ArchNetwork/oracle
-  ℹ Current working directory: /Users/jr/Documents/ArchNetwork/oracle
-  ✓ Program built successfully
-Select a key to use as the program key: oracle
-  ℹ Program ID: e46ed1e7441ac5d583961122bc1b63a46a84ec5d33a1d8967d2a827e65297531
-Wallet RPC URI: http://bitcoin-node.dev.aws.archnetwork.xyz:18443/wallet/testwallet
-Client connected: 03a06383512c806931d88f55013670454cd95c73611c54ce917552ce9843b50e
-  ✓ Wallet 'testwallet' loaded successfully.
-  ✓ Transaction sent: f3695398563199274125d69e04769c303167f1de599158c3627e83f7493c448d
-  ✓ Transaction confirmed with 1 confirmations
-    Creating program account...
-    Program account created successfully
-    Deploying program transactions...
- [00:00:01] Successfully Processed Deployment Transactions : [####################################################################################################] 10/10 (0s)    Program transactions deployed successfully
-    Making program executable...
-    Transaction sent: 11488915c4535479023ec264e2c65519748c655531ddf4b6f0516d36c4740a41
-    Program made executable successfully
-  ✓ Program deployed successfully
-  ✓ Wallet 'testwallet' unloaded successfully.
-Your app has been deployed successfully!
-  ℹ Program ID: e46ed1e7441ac5d583961122bc1b63a46a84ec5d33a1d8967d2a827e65297531
-```
-
-During the deployment step, the [arch-cli] creates an account for the deployed program logic and sets the account to be executable, making the distinction that the account is to be considered a [Program] rather than a data [Account].
+During the deployment, a new account is created for the deployed program logic and set to be executable, marking it as a [Program] rather than a data [Account].
 
 #### Create state account
 
-From the above output, we should obtain the `program_id`. We can use this `program_id` in order to create a state account that is owned and updated by the program.
+From the deployment output, you should obtain the `program_id`. We can use this `program_id` to create a state account that is owned and updated by the program.
 
 The oracle state account can then be read from by any program in order to retrieve the associated oracle data.
 
 ```bash
-arch-cli account create --name oracle-state-account --program-id e46ed1e7441ac5d583961122bc1b63a46a84ec5d33a1d8967d2a827e65297531
+# The new CLI may not have direct account creation functionality
+# You'll need to use an RPC call to create the account
+
+# For example, using curl:
+curl -X POST http://localhost:9002 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"sendTransaction",
+    "params":[{
+      "signature":"your_signature",
+      "message":{
+        "accountKeys":["your_pubkey", "your_program_id"],
+        "instructions":[{
+          "programId":"system_program_id",
+          "accounts":["your_pubkey", "new_account_pubkey"],
+          "data":"encoded_create_account_data"
+        }]
+      }
+    }]
+  }'
 ```
 
-Example output:
-```bash
-Welcome to the Arch Network CLI
-Loading config for network: development
-  → Loading configuration from /Users/jr/Library/Application Support/arch-cli/config.toml
-  ✓ Loaded network-specific configuration for development
-Creating account for dApp...
-  ℹ Account address: bcrt1pz853jlekzq2c9rvx5lz644qc9c3qx6n28g48jv3hyyknzvhm93rsg7r04f
-Wallet RPC URI: http://bitcoin-node.dev.aws.archnetwork.xyz:18443/wallet/testwallet
-Client connected: 79d37c5aa2b9216b1f4d66cfdfd1e125f9b241536de3ca81ab1a6887881e3e53
-  ✓ Wallet 'testwallet' loaded successfully.
-Please send funds to the following address:
-  → Bitcoin address: bcrt1pz853jlekzq2c9rvx5lz644qc9c3qx6n28g48jv3hyyknzvhm93rsg7r04f
-  ℹ Minimum required: 3000 satoshis
-  ⏳ Waiting for funds...
-  ✓ Transaction sent: fb4f176a0f1a6ed355987c4bfa24491a1e01484b624ffaa00e62d9554e411db1
-  ✓ Transaction confirmed with 1 confirmations
-  ✓ Account created with Arch Network transaction ID: c6033bc2acfb12f9f330a7b79c25287e1126dcb1ee42f64d2ebf206dd3fc55cb
-  ℹ Account public key: "50130456b1bae1cb7ec5b8d2c4afaf08301e899423d1c5908995bc198b6a3326"
-Account created and ownership transferred successfully!
-IMPORTANT: Please save your private key securely. It will not be displayed again.
-  🔑 Private Key: ...
-  🔑 Public Key: 50130456b1bae1cb7ec5b8d2c4afaf08301e899423d1c5908995bc198b6a3326
-  ✓ Wallet 'testwallet' unloaded successfully.
-```
+> Note: The above is a simplified example. You'll need to properly construct, sign, and encode your transaction according to the Arch Network protocol.
 
 In this step, the account is created and ownership is transferred to the program. This allows the program to update the account's data field which holds state for the program.
 
@@ -247,31 +197,6 @@ Below is an example of a different program (we'll call this app-program) that wo
 
 Essentially, what happens here is that when we pass an instruction into our app-program, we must also include the oracle state account alongside any other account that we need for the app-program. In this way, the oracle state account is now in-scope and its data can be read from.
 
-```rust,ignore
-pub fn process_instruction(
-    _program_id: &Pubkey,
-    accounts: &[AccountInfo],
-    instruction_data: &[u8],
-) -> Result<(), ProgramError> {
-    let account_iter = &mut accounts.iter();
-
-    // our app-program's state account
-    let app_program_account = next_account_info(account_iter)?;
-
-    // our oracle data account
-    let oracle_account = next_account_info(account_iter)?; 
-
-    // our oracle data that can now be used within the context of
-    // app-program's business logic
-    let oracle_data = oracle_account.data.try_borrow().unwrap();
-
-    let msg_str = format!("Oracle data: {}", oracle_data);
-
-    msg!(msg_str);
-    ...
-}
-```
-
 <!-- Internal -->
 [Description]: #description
 [Flow]: #flow
@@ -279,14 +204,14 @@ pub fn process_instruction(
 [Implementation]: #implementation
 [Create oracle project]: #create-oracle-project
 [Deploy program]: #deploy-program
-[Create a state account]: #create-state-account
+[Create a state account]: #create-a-state-account
 [Update the state account]: #update-the-state-account
 [Read from the state account]: #read-from-the-state-account
-[Pubkey]: ../program/pubkey.md
-[How to write an Arch program]: ./how-to-write-arch-program.md
-[handler]: ./how-to-write-arch-program.md#handler
+[handler]: #logic
 
 <!-- External -->
-[arch-examples]: https://github.com/Arch-Network/arch-examples/tree/main/examples/oracle
-[arch-cli]: https://github.com/arch-network/arch-cli
+[arch-examples]: https://github.com/arch-network/arch-examples
+[How to write an Arch program]: ./how-to-write-arch-program.md
+[Program]: ../program/program.md
+[Account]: ../program/account.md
 [mempool.space]: https://mempool.space
