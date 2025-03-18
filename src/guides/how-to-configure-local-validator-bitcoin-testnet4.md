@@ -10,39 +10,33 @@ Table of Contents:
 
 ### Config
 
-First, edit the [arch-cli] configuration file and insert the following details into the `testnet` section. 
-
-```bash
-arch-cli config edit
-```
+First, you'll need to configure the network settings for connecting to Bitcoin testnet4. The new CLI accepts these parameters directly when starting the validator.
 
 > Note: We have redacted our Bitcoin node password to prevent abuse; contact us if you need this, otherwise provide your own node credentials and use the below as a reference.
 
-Your [arch-cli] configuration file should resemble something like the following, with the `leader_rpc_endpoint` being the endpoint for reaching your [Local validator], which defaults to port `9002`.
+When starting the validator, you'll need to include the following parameters:
 
-```toml
-[networks.testnet]
-type = "testnet"
-bitcoin_rpc_endpoint = "bitcoin-node.test.aws.archnetwork.xyz"
-bitcoin_rpc_port = "49332"
-bitcoin_rpc_user = "bitcoin"
-bitcoin_rpc_password = "redacted"
-bitcoin_rpc_wallet = "testwallet"
-leader_rpc_endpoint = "http://localhost:9002"
+```bash
+cli validator start --network-mode testnet \
+  --bitcoin-rpc-endpoint bitcoin-node.test.aws.archnetwork.xyz \
+  --bitcoin-rpc-port 49332 \
+  --bitcoin-rpc-username bitcoin \
+  --bitcoin-rpc-password redacted \
+  --bitcoin-rpc-wallet testwallet
 ```
 
 ### Local validator
-> Note: the [arch-cli] (and Docker) can be used to run the local validator.
+> Note: You can start a local validator using the Arch Network CLI tool.
 >
-> Additionally, if you do not already have the local validator installed, please pull it from the [arch-node] releases page. 
+> Additionally, you can download pre-built binaries from the [arch-node releases page](https://github.com/Arch-Network/arch-node/releases). 
 > 
-> **Be sure to download the local variant, not the regular validator.**
+> **Be sure to download the local validator binary, not the regular validator.**
 
 #### Run the local validator
-Use the [arch-cli] command to run the local validator. You'll need to have [Docker] installed and running.
+Use the CLI command to run the local validator. You'll need to have [Docker] installed and running.
 
 ```bash
-arch-cli validator start
+cli validator start --network-mode testnet
 ```
 
 The validator logs can be viewed easily within the [Docker] desktop dashboard.
@@ -50,7 +44,7 @@ The validator logs can be viewed easily within the [Docker] desktop dashboard.
 > Note: You can also run the standalone local validator binary where the logs will be streamed to `stdout` unless otherwise redirected.
 
 **Steps for running standalone validator binary:**
-1. Download the appropriate binary as well as the `system_program.so` file from [arch-node] releases page.
+1. Download the appropriate binary as well as the `system_program.so` file from [arch-node releases page](https://github.com/Arch-Network/arch-node/releases/latest).
 2. Store the `system_program.so` file within a new directory called `/ebpf`.
 
     Your directory structure should resemble the following:
@@ -133,12 +127,12 @@ tail -f node-logs.txt
 Now that everything is setup correctly, we can now deploy our program and begin interacting with it. The deploy step will prove everything works correctly.
 
 ```bash
-arch-cli deploy --network testnet
+cli deploy --network-mode testnet
 ```
 
-And if you are running the local validator binary directly from the command-line, set the `--rpc-endpoint` flag so it overwrites the `leader_rpc_endpoint` in the [arch-cli] config if this information was not changed:
+And if you are running the local validator binary directly from the command-line, set the `--rpc-url` flag to specify your validator endpoint:
 ```bash
-arch-cli deploy --network testnet --rpc-url http://localhost:9002
+cli deploy --network-mode testnet --rpc-url http://localhost:9002
 ```
 
 We hope this guide has been helpful, but as always, feel free to ask question within our [Discord dev-chat] or submit issues within out [public-issues] repo.
@@ -150,7 +144,6 @@ We hope this guide has been helpful, but as always, feel free to ask question wi
 [Log assistance]: #log-assistance
 
 <!-- External -->
-[arch-cli]: https://github.com/arch-network/arch-cli
 [arch-node]: https://github.com/arch-network/arch-node/releases
 [Docker]: https://docker.com
 [Discord dev-chat]: https://discord.com/channels/1241112027963986001/1270921925991989268

@@ -11,7 +11,7 @@ Before you begin development with Arch Network, you'll need to install and confi
 | [Rust] | Latest stable | Core development language |
 | [C++ Compiler] | gcc/clang | Required for native builds |
 | [Solana CLI] | v1.18.18 | Solana development tools |
-| [Arch CLI] | Latest | Arch Network development toolkit |
+| [Arch Network CLI] | Latest | Arch Network development toolkit |
 
 ## Detailed Installation Guide
 
@@ -84,21 +84,26 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 ```
 
-### 4. Install Arch CLI
+### 4. Install Arch Network CLI
 
-The Arch CLI provides essential development tools and a local development environment.
+The Arch Network CLI provides essential development tools and a local development environment.
 
 ```bash
-# Install the CLI
-sh -c "$(curl -sSfL https://raw.githubusercontent.com/arch-network/book/main/install.sh)"
+# Download the appropriate CLI binary for your architecture from:
+# https://github.com/Arch-Network/arch-node/releases/latest
+# For example, for macOS with Apple Silicon:
+curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-apple-darwin
+chmod +x cli
+sudo mv cli /usr/local/bin/
 
 # Verify installation
-arch-cli --version
+cli --version
 ```
 
 ## Features
-The Arch CLI provides:
-- Local development and validator tools
+The Arch Network CLI provides:
+- Local validator node for development
+- Program deployment and management
 - Account and transaction management
 - Block data and program logging
 - Group key and network controls
@@ -107,21 +112,21 @@ The Arch CLI provides:
 
 - Check our [Troubleshooting Guide](#troubleshooting-solana-installation)
 - Join our [Discord dev-chat] for community support
-- Review the [arch-cli repo] documentation
+- Review the [Arch Network CLI repo] documentation
 - Ensure all version requirements are met
 
 <!-- Internal -->
 [Rust]: #install-rust
 [C++ Compiler]: #install-c-compiler
 [Solana CLI]: #install-solana-cli
-[Arch-cli]: #clone-and-install-the-arch-cli
+[Arch Network CLI]: #install-arch-network-cli
 
 <!-- External -->
 [GCC]: https://gcc.gnu.org/
 [gcc-multilib]: https://packages.debian.org/sid/gcc-multilib
 [npm]: https://github.com/npm/cli
 [eBPF]: https://ebpf.io/
-[arch-cli repo]: https://github.com/arch-Network/arch-cli
+[Arch Network CLI repo]: https://github.com/arch-network/arch-node/releases
 [rust]: https://www.rust-lang.org
 [Solana]: https://github.com/solana-labs/solana
 [arch-typescript-sdk]: https://github.com/saturnBTC/arch-typescript-sdk

@@ -320,6 +320,9 @@ Congratulations, you've walked through constructing the our [helloworld] program
 [SystemInstruction]: ../program/system-instruction.md
 [Pubkey]: ../program/pubkey.md
 [The Arch Book]: ../introduction.md
+[Description]: #description
+[Flow]: #flow
+[Data structure]: #data-structure
 
 <!-- External -->
 [docs]: https://docs.arch.network
@@ -328,3 +331,4 @@ Congratulations, you've walked through constructing the our [helloworld] program
 [Bitcoin crate]: https://docs.rs/bitcoin/latest/bitcoin/index.html
 [memory reallocation]: https://github.com/Arch-Network/arch-examples/blob/main/program/src/account.rs#L131-L149
 [Bitcoin transaction]: https://docs.rs/bitcoin/0.32.0/bitcoin/struct.Transaction.html
+[arc-examples]: https://github.com/arch-network/arch-examples

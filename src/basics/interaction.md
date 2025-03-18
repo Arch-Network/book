@@ -5,7 +5,7 @@ Table of Contents:
 - [Logic]
 
 ## Description
-Continuing with our example program, [GraffitiWall], we find an implementation example of how to communicate with a deployed [Program] by looking at the frontend code; specifically, we'll look at the [GrafittiWallComponent.tsx] file.
+Continuing with our example program, a Graffiti Wall, we'll explore an implementation example of how to communicate with a deployed [Program] by looking at the frontend code.
 
 ## Logic
 ```typescript
@@ -33,7 +33,7 @@ class GraffitiMessage {
         kind: 'struct',
         fields: [
           ['timestamp', 'i64'],
-          ['name', ['u8', 16]],
+          ['name', ['u8', 64]],
           ['message', ['u8', 64]]
         ]
       }
@@ -59,18 +59,18 @@ class GraffitiWall {
 }
 ```
 
-We then define the schemas for handling the Wall's message data- these schemas mirror the data structure that are found within the [GraffitiWall] program which ensures data uniformity between the application frontend and program backend during serialization/deserialization.
+We then define the schemas for handling the Wall's message data- these schemas mirror the data structure that are found within the Graffiti Wall program which ensures data uniformity between the application frontend and program backend during serialization/deserialization.
 
 ```rust,ignore
 #[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
 pub struct GraffitiMessage {
     pub timestamp: i64,
-    pub name: [u8; 16],
+    pub name: [u8; 64],
     pub message: [u8; 64],
 }
 ```
 
-Above is the data structure as defined in `src/app/program/src/lib.rs`, our [Program].
+Above is the data structure as defined in our program source code.
 
 ```typescript
   const accountPubkey = PubkeyUtil.fromHex(WALL_ACCOUNT_PUBKEY);
@@ -81,7 +81,7 @@ Above is the data structure as defined in `src/app/program/src/lib.rs`, our [Pro
         seq: {
           struct: {
             timestamp: 'i64',
-            name: { array: { type: 'u8', len: 16 } },
+            name: { array: { type: 'u8', len: 64 } },
             message: { array: { type: 'u8', len: 64 } }
           }
         }
@@ -103,7 +103,7 @@ const checkProgramDeployed = useCallback(async () => {
     }
   } catch (error) {
     console.error('Error checking program:', error);
-    setError('The Arch Graffiti program has not been deployed to the network yet. Please run `arch-cli deploy`.');
+    setError('The Arch Graffiti program has not been deployed to the network yet. Please run `arch-cli deploy` to deploy your program.');
   }
 }, []);
 ```
@@ -177,10 +177,10 @@ We perform a check against the length of this bytedata to ensure that it is not 
             const timestamp = new DataView(wallData.buffer).getBigInt64(offset, true);
             offset += 8;
 
-            // Read name (16 bytes)
-            const nameBytes = wallData.slice(offset, offset + 16);
+            // Read name (64 bytes)
+            const nameBytes = wallData.slice(offset, offset + 64);
             const name = new TextDecoder().decode(nameBytes.filter(x => x !== 0));
-            offset += 16;
+            offset += 64;
 
             // Read message (64 bytes)
             const messageBytes = wallData.slice(offset, offset + 64);
@@ -221,7 +221,7 @@ We'll again skip over some React state management.
 ```typescript
   const serializeGraffitiData = (name: string, message: string): number[] => {
     // Create fixed-size arrays
-    const nameArray = new Uint8Array(16).fill(0);
+    const nameArray = new Uint8Array(64).fill(0);
     const messageArray = new Uint8Array(64).fill(0);
     
     // Convert strings to bytes
@@ -229,7 +229,7 @@ We'll again skip over some React state management.
     const messageBytes = new TextEncoder().encode(message);
     
     // Copy bytes into fixed-size arrays (will truncate if too long)
-    nameArray.set(nameBytes.slice(0, 16));
+    nameArray.set(nameBytes.slice(0, 64));
     messageArray.set(messageBytes.slice(0, 64));
     
     // Create the params object matching the Rust struct
@@ -241,7 +241,7 @@ We'll again skip over some React state management.
     // Define the schema for borsh serialization
     const schema = {
         struct: {
-            name: { array: { type: 'u8', len: 16 } },
+            name: { array: { type: 'u8', len: 64 } },
             message: { array: { type: 'u8', len: 64 } }
         }
     };
@@ -330,15 +330,8 @@ This concludes the logic walkthrough of the [Program] interaction component of o
 <!-- Internal -->
 [Description]: #description
 [Logic]: #logic
-[Program]: ../program/program.md
-[Pubkey]: ../program/pubkey.md
-[Account]: ../program/account.md
-[AccountInfo]: ../program/account.md#accountinfo
-[Instruction]: ../program/instructions-and-messages.md#instructions
-[Message]: ../program/instructions-and-messages.md#messages
-[Signature]: ../sdk/signature.md#signature
-[Transaction]: ../sdk/runtime-transaction.md#runtime-transaction
 
 <!-- External -->
-[GraffitiWall]: https://github.com/Arch-Network/arch-cli/blob/main/templates/demo/app/program/src/lib.rs 
-[GrafittiWallComponent.tsx]: https://github.com/Arch-Network/arch-cli/blob/main/templates/demo/app/frontend/src/components/GraffitiWallComponent.tsx
+[Program]: ../program/program.md
+[AccountInfo]: ../program/account.md
+[Pubkey]: ../program/pubkey.md

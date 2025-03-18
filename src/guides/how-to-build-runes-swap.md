@@ -7,7 +7,7 @@ Before we dive in, please ensure you have:
 - Completed the [environment setup](../getting-started/environment-setup.md)
 - A basic understanding of [Bitcoin Integration](../concepts/bitcoin-integration.md)
 - Familiarity with Rust programming language
-- Your development environment ready with the Arch CLI installed
+- Your development environment ready with the Arch Network CLI installed
 
 ## Lesson 1: Understanding the Basics
 
@@ -26,9 +26,12 @@ We're creating a swap program that will:
 Let's start by creating our project structure. Open your terminal and run:
 
 ```bash
-# Create a new Arch project
-arch-cli project create --name runes-swap
+# Create a new directory for your project
+mkdir runes-swap
 cd runes-swap
+
+# Initialize a new Rust project
+cargo init --lib
 
 # Your project structure should look like this:
 # runes-swap/
@@ -289,43 +292,23 @@ fn process_cancel_offer(
 }
 ```
 
-## Final Steps: Building and Deploying
+## Deploying Your Runes Swap Program
 
-Now that we've implemented our swap program, let's build and deploy it:
+After you've written and tested your program, it's time to deploy it to the Arch Network:
 
 ```bash
 # Build the program
-cargo build-bpf
+cargo build-sbf
 
-# Deploy to your local test validator
-arch-cli program deploy target/deploy/runes_swap.so
+# Deploy the program to the Arch Network
+cli deploy target/deploy/runes_swap.so
 ```
 
-### Testing the Deployed Program
+Make sure you have a validator node running before deployment:
 
-Here's a simple script to test our deployed program:
-
-```typescript
-import { Connection, PublicKey, Transaction } from '@archway/web3.js';
-import { RunesSwapProgram } from './program';
-
-async function testSwap() {
-    // Connect to local test validator
-    const connection = new Connection('http://localhost:8899', 'confirmed');
-    
-    // Create a new swap offer
-    const offer = await RunesSwapProgram.createOffer({
-        runeIdGive: 'RUNE1',
-        amountGive: 100,
-        runeIdWant: 'RUNE2',
-        amountWant: 200,
-        expiry: Date.now() + 3600000, // 1 hour from now
-    });
-    
-    console.log('Created offer:', offer);
-}
-
-testSwap().catch(console.error);
+```bash
+# Start a local validator
+cli validator start
 ```
 
 ## Conclusion

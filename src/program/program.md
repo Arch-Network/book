@@ -54,4 +54,4 @@ The program will likely include a struct to define the structure of its state an
 [handler function]: ./entrypoint.md#handler-function
  
 <!-- External -->
-[lib.rs]: https://github.com/Arch-Network/arch-cli/blob/main/templates/sample/app/program/src/lib.rs
+[lib.rs]: https://github.com/Arch-Network/arch-examples/blob/main/examples/helloworld/program/src/lib.rs

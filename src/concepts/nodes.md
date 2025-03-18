@@ -20,14 +20,14 @@ The validator node also runs the [eBPF] virtual machine and executes the transac
 
 This validator is a lightweight server that only serves as an RPC for developers to get up and running quickly with the least amount of overhead. It simulates a single-node blockchain environment that is meant for efficient, rapid development.
 
-> Note: the [Lightweight Validator] node uses the same image as the [Validator] node though operates singularly for maximum efficiency.
+> Note: the [Lightweight Validator] node uses the same image as the [Validator] node though operates singularly for maximum efficiency. You can start a lightweight validator using the `cli validator start` command.
  
 More can be read about the Arch Network architecture in our [docs].
 
 <!-- External -->
 [docs]: https://docs.arch.network
 [eBPF]: https://ebpf.io/
-[Bootnode]: https://github.com/Arch-Network/arch-cli/blob/main/templates/bootnode.sh
-[Leader]: https://github.com/Arch-Network/arch-cli/blob/main/templates/leader.sh
-[Validator]: https://github.com/Arch-Network/arch-cli/blob/main/templates/validator.sh
-[Lightweight Validator]: https://github.com/Arch-Network/arch-cli/blob/main/templates/validator.sh
+[Bootnode]: https://github.com/Arch-Network/arch-node
+[Leader]: https://github.com/Arch-Network/arch-node
+[Validator]: https://github.com/Arch-Network/arch-node
+[Lightweight Validator]: https://github.com/Arch-Network/arch-node

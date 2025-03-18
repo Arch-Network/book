@@ -6,24 +6,32 @@ This guide provides a streamlined setup process for experienced developers who w
 
 - Git
 - Rust (1.75.0 or later)
+- Solana CLI (latest stable version)
 - 10GB free disk space
 - macOS or Linux
 
-## 🚀 One-Command Setup
+## 🚀 Installation
+
+Download the latest CLI binary for your architecture from the [official releases page](https://github.com/Arch-Network/arch-node/releases/latest).
+
+> Note: The Arch Network source repository is not yet publicly accessible. Binary releases are available for download from the public releases page.
+
+For macOS:
+- [cli-aarch64-apple-darwin](https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-apple-darwin) (Apple Silicon)
+- [cli-x86_64-apple-darwin](https://github.com/Arch-Network/arch-node/releases/latest/download/cli-x86_64-apple-darwin) (Intel)
+
+For Linux:
+- [cli-x86_64-unknown-linux-gnu](https://github.com/Arch-Network/arch-node/releases/latest/download/cli-x86_64-unknown-linux-gnu)
+
+After downloading, make the binary executable and move it to your PATH:
 
 ```bash
-# Download and run the setup script
-curl -L https://raw.githubusercontent.com/arch-network/arch-cli/main/scripts/setup.sh | bash
+# Example for macOS Apple Silicon (M1/M2/M3)
+chmod +x ./cli-aarch64-apple-darwin
+sudo mv ./cli-aarch64-apple-darwin /usr/local/bin/cli
 ```
 
-> ⚠️ **Note**: Always review scripts before running them with sudo privileges!
-
-The script will:
-1. Install required dependencies
-2. Set up Bitcoin Core
-3. Configure Electrs
-4. Install the Arch CLI
-5. Launch the local validator
+> ⚠️ **Note**: Choose the appropriate binary for your system architecture. The current stable release is v0.3.2.
 
 ## 🔍 Verify Your Setup
 
@@ -34,8 +42,8 @@ bitcoin-cli -regtest getblockchaininfo
 # Check Electrs
 curl http://localhost:3002/blocks/tip/height
 
-# Check Arch CLI
-arch-cli --version
+# Check Arch Network CLI
+cli --version
 ```
 
 ## 🎮 Quick Test
@@ -46,7 +54,7 @@ ADDR=$(bitcoin-cli -regtest getnewaddress)
 bitcoin-cli -regtest generatetoaddress 101 $ADDR
 
 # Start the local validator
-arch-cli validator-start
+cli validator start
 ```
 
 ## 🔧 Manual Configuration

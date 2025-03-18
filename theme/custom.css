@@ -2,7 +2,7 @@
 
 :root {
     --sidebar-width: 300px;
-    --content-max-width: 950px;
+    --content-max-width: 850px;
     --menu-bar-height: 40px;
     --arch-primary: #FF6B2B;
     --arch-secondary: #1E2022;
@@ -22,7 +22,7 @@ body {
     font-family: var(--font-sans);
     line-height: 1.6;
     color: #333;
-    background: #f5f7f9;
+    background: #f7f9fb;
 }
 
 /* Layout */
@@ -30,12 +30,12 @@ body {
     position: relative;
     max-width: var(--content-max-width);
     margin: 0 auto;
-    padding: 2.5rem 3rem;
+    padding: 2.5rem 4.5rem;
     background: white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border-radius: 10px;
     margin-top: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 5rem;
     line-height: 1.6;
 }
 
@@ -207,7 +207,8 @@ body {
 @media only screen and (max-width: 480px) {
     /* Further optimize small screens */
     .content {
-        padding: 1rem !important;
+        padding: 1.5rem !important;
+        margin-bottom: 4rem !important;
     }
     
     /* Fix menu bar on very small screens */
@@ -225,6 +226,13 @@ body {
     }
 }
 
+/* Medium screens */
+@media only screen and (min-width: 481px) and (max-width: 768px) {
+    .content {
+        padding: 2rem 2.5rem !important;
+    }
+}
+
 /* Sidebar */
 .sidebar {
     position: fixed;
@@ -236,12 +244,13 @@ body {
     box-sizing: border-box;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
-    background: #f8f9fa;
+    background: linear-gradient(to bottom, #f8f9fa, #f2f4f6);
     z-index: 2000 !important;
     padding-top: calc(var(--menu-bar-height) + 10px);
     display: block;
     transition: transform 0.3s ease !important;
     border-right: 1px solid #eaecef;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 /* Ensure sidebar content is visible */
@@ -249,7 +258,7 @@ body {
     height: 100%;
     overflow-y: auto;
     position: relative;
-    padding: 1rem;
+    padding: 1.5rem 1rem 1rem 1.5rem;
 }
 
 /* Clean up the chapter list */
@@ -259,9 +268,26 @@ body {
     list-style: none;
 }
 
+/* Improve spacing between sections */
+.sidebar .chapter > .chapter-item.affix {
+    margin-top: 28px !important;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-size: 1em;
+    color: var(--arch-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85em;
+}
+
+/* First section doesn't need top margin */
+.sidebar .chapter > .chapter-item.affix:first-child {
+    margin-top: 0 !important;
+}
+
 /* Reduce vertical spacing between items */
 .sidebar .chapter-item {
-    margin: 2px 0 !important;
+    margin: 3px 0 !important;
     padding: 0 !important;
     line-height: 1.4;
 }
@@ -270,12 +296,49 @@ body {
 .sidebar a {
     color: #444 !important;
     text-decoration: none;
-    padding: 5px 0;
+    padding: 7px 10px 7px 5px;
     display: inline-flex !important;
     align-items: center;
     width: 100%;
-    font-size: 0.9em;
-    transition: color 0.2s;
+    font-size: 0.95em;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    position: relative;
+}
+
+.sidebar a:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--arch-primary) !important;
+}
+
+/* Active item styling */
+.sidebar .chapter-item.active > a,
+.sidebar .chapter-item.active > .section,
+.sidebar .chapter-item a.active {
+    color: var(--arch-primary) !important;
+    font-weight: 500;
+    background-color: rgba(255, 107, 43, 0.08);
+}
+
+/* Selected item styling - add a left border */
+.sidebar .chapter-item a.active {
+    border-left: 3px solid var(--arch-primary);
+    padding-left: 7px;
+    position: relative;
+    font-weight: 600;
+}
+
+/* Add a visual indicator dot for active items */
+.sidebar .chapter-item a.active::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: var(--arch-primary);
+    border-radius: 50%;
 }
 
 /* Better chevron styling */
@@ -284,71 +347,61 @@ body {
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    padding: 7px 10px 7px 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-/* Replace default chevrons with cleaner ones */
+.sidebar .chapter-item > .section:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Replace default chevrons with modern symbols */
 .sidebar .chapter-item > .section::after {
-    content: "";
-    width: 10px;
-    height: 10px;
-    margin-left: 5px;
-    border-width: 0 2px 2px 0;
-    border-style: solid;
-    border-color: #999;
-    transform: rotate(45deg);
-    transition: transform 0.2s;
-    display: inline-block;
-    margin-top: -2px;
+    content: "⟩";
+    font-size: 16px;
+    line-height: 1;
+    color: #aaa;
+    transition: all 0.2s ease;
+    opacity: 0.8;
+    margin-right: 4px;
 }
 
 /* Change chevron for expanded sections */
 .sidebar .chapter-item.expanded > .section::after {
-    transform: rotate(-135deg);
-    margin-top: 3px;
+    content: "⟨";
+    transform: rotate(90deg);
+    display: block;
+    margin-top: 2px;
 }
 
-/* Hide empty/malformed chevrons */
-.sidebar .chapter-item > .section em {
-    display: none;
-}
-
-/* Only show chevrons on items with children */
-.sidebar .chapter-item:not(.has-sub) > .section::after {
-    display: none;
+/* Improve animation effect on chevron hover */
+.sidebar .chapter-item > .section:hover::after {
+    opacity: 1;
+    color: var(--arch-primary);
 }
 
 /* Properly indent nested items */
 .sidebar .chapter-item .chapter {
     padding-left: 15px;
-    border-left: 1px solid var(--border-color);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
     margin-left: 5px;
     margin-top: 2px;
+    margin-bottom: 5px;
 }
 
-/* Active item styling */
-.sidebar .chapter-item.active > a,
-.sidebar .chapter-item.active > .section {
-    color: var(--arch-accent) !important;
-    font-weight: 500;
-}
-
-/* Selected item styling */
-.sidebar .chapter-item a.active {
-    color: var(--arch-accent) !important;
-    font-weight: 500;
-}
-
-/* Section headers */
-.sidebar .chapter > .chapter-item.affix {
-    margin-top: 20px !important;
-    font-weight: 600;
-    font-size: 1em;
+/* Add bottom space for sidebar */
+.sidebar-scrollbox {
+    padding-bottom: 80px;
 }
 
 /* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
     .sidebar {
-        background: #22252a;
+        background: linear-gradient(to bottom, #22252a, #1f2227);
+        border-right: 1px solid #333;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
     }
     
     .sidebar a {
@@ -356,15 +409,30 @@ body {
     }
     
     .sidebar a:hover {
+        background-color: rgba(255, 255, 255, 0.05);
         color: var(--arch-primary) !important;
+    }
+    
+    .sidebar .chapter > .chapter-item.affix {
+        color: #e2e4e7;
+    }
+    
+    .sidebar .chapter-item.active > a,
+    .sidebar .chapter-item.active > .section,
+    .sidebar .chapter-item a.active {
+        background-color: rgba(255, 107, 43, 0.12);
     }
 
     .sidebar .chapter-item > .section::after {
-        border-color: #777;
+        color: #777;
     }
     
     .sidebar .chapter-item .chapter {
-        border-color: #444;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar .chapter-item > .section:hover {
+        background-color: rgba(255, 255, 255, 0.05);
     }
 }
 
@@ -462,7 +530,7 @@ body {
 /* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
     .sidebar {
-        background: #22252a;
+        background: linear-gradient(to bottom, #22252a, #1f2227);
     }
     
     .sidebar-scrollbox {
@@ -532,6 +600,34 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.7;
     font-size: 16px;
+}
+
+/* Improve paragraph spacing */
+.content p {
+    margin: 1.2rem 0;
+    line-height: 1.7;
+}
+
+/* Add more space between content elements */
+.content ul, 
+.content ol {
+    margin: 1.2rem 0;
+    padding-left: 2rem;
+}
+
+.content li {
+    margin-bottom: 0.5rem;
+}
+
+/* Add more space above headings for better visual separation */
+.content h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 1.2rem;
+}
+
+.content h3 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
 }
 
 h1, h2, h3, h4, h5 {
@@ -1093,8 +1189,13 @@ code {
     }
 
     body {
-        background-color: var(--bg);
+        background-color: #141519;
         color: var(--fg);
+    }
+    
+    .content {
+        background-color: #22252a;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.2);
     }
 
     .feature-grid li,
@@ -1515,8 +1616,9 @@ h3:hover .header-link {
 @media (prefers-color-scheme: dark) {
     /* Sidebar background and border */
     .sidebar {
-        background: #22252a;
+        background: linear-gradient(to bottom, #22252a, #1f2227);
         border-right: 1px solid #333;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
     }
 
     /* Main navigation items */
@@ -1534,6 +1636,7 @@ h3:hover .header-link {
     }
 
     .sidebar a:hover {
+        background-color: rgba(255, 255, 255, 0.05);
         color: var(--arch-primary) !important;
     }
 
@@ -1732,659 +1835,10 @@ h3:hover .header-link {
 
 /* Extra small screens need even smaller text */
 @media only screen and (max-width: 480px) {
-    /* General diagram text size reduction */
-    .mermaid svg text {
-        font-size: 8px !important;
-        font-weight: 500 !important;
-    }
-    
-    /* Make node text visible by reducing size */
-    .mermaid .node text,
-    .mermaid .nodeLabel {
-        font-size: 8px !important;
-        font-weight: 600 !important;
-        text-align: center !important;
-    }
-    
-    /* Target the connector/edge labels specifically */
-    .mermaid .edgeLabel text,
-    .mermaid .edgeLabel,
-    .mermaid .edgePath text {
-        font-size: 7px !important;
-        font-weight: 600 !important;
-    }
-    
-    /* Fix node text wrapping - prevent letter-by-letter wrapping */
-    .mermaid .node div,
-    .mermaid .node span,
-    .mermaid .node foreignObject div {
-        width: 100% !important;
-        text-align: center !important;
-        word-break: normal !important;
-        white-space: normal !important;
-        /* Set min-width to prevent too narrow boxes */
-        min-width: 60px !important;
-    }
-    
-    /* Make node rect wider to prevent single-character wrapping */
-    .mermaid .node rect,
-    .mermaid .node polygon,
-    .mermaid .node circle {
-        transform: scale(1.5, 1) !important; /* Make 50% wider but not taller */
-        rx: 5 !important; /* Rounded corners */
-    }
-    
-    /* Further scale down diagram for very small screens */
-    .mermaid svg {
-        transform: scale(0.8); /* Smaller scale for better fit */
-        transform-origin: center top;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    /* Slightly adjust vertical spacing for readability */
-    .mermaid .edgePath {
-        transform: scale(1, 0.95); /* Slightly compress vertical spacing */
-    }
-    
-    /* Reduce diagram padding */
-    .mermaid {
-        padding: 0.5rem;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    }
-}
-
-#menu-bar.menu-hidden {
-    transform: translateY(-100%);
-    transition: transform 0.3s ease;
-}
-
-#menu-bar {
-    transition: transform 0.3s ease;
-}
-
-/* Ensure content doesn't jump */
-body {
-    padding-top: var(--menu-bar-height);
-    margin: 0;
-}
-
-/* Force sidebar hidden state */
-body:not(.sidebar-visible) .sidebar {
-    transform: translateX(-100%) !important;
-    display: block !important;
-}
-
-/* Force visible state */
-body.sidebar-visible .sidebar {
-    transform: translateX(0) !important;
-    display: block !important;
-}
-
-/* Close button styling enhancement */
-.sidebar-close-button {
-    position: absolute !important;
-    top: 12px !important;
-    right: 12px !important;
-    width: 32px !important;
-    height: 32px !important;
-    background: rgba(0,0,0,0.2) !important;
-    border: none !important;
-    border-radius: 50% !important;
-    color: white !important;
-    font-size: 16px !important;
-    line-height: 1 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    z-index: 2001 !important;
-}
-
-.sidebar-close-button:hover {
-    background: rgba(0,0,0,0.25) !important;
-}
-
-/* Make sure overlay is on top */
-.sidebar-overlay {
-    z-index: 1999 !important;
-}
-
-/* Only show close button on mobile */
-@media only screen and (min-width: 1101px) {
-    .sidebar-close-button {
-        display: none !important;
-    }
-    
-    /* Desktop: Slide content when sidebar is visible */
-    body.sidebar-visible .content {
-        margin-left: var(--sidebar-width) !important;
-        margin-right: 0 !important;
-        max-width: calc(var(--content-max-width) - var(--sidebar-width)/2) !important;
-    }
-}
-
-/* Mobile content positioning */
-@media only screen and (max-width: 1100px) {
-    /* Make sure content repositions when sidebar closes */
-    .content {
-        margin-left: auto !important;
-        margin-right: auto !important;
-        width: 100% !important;
-        max-width: var(--content-max-width) !important;
-        transform: none !important;
-    }
-    
-    /* When sidebar is visible, move content to make room */
-    body.sidebar-visible .content {
-        transform: translateX(80%) !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
-    }
-    
-    /* Fix backdrop when sidebar is open */
-    body.sidebar-visible {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-    }
-    
-    /* Make sidebar animation smoother */
-    .sidebar {
-        will-change: transform;
-    }
-    
-    /* Ensure overlay covers entire screen */
-    .sidebar-overlay {
-        z-index: 1999 !important;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-    }
-}
-
-/* Fix mdBook's themes and ensure content transforms correctly */
-.light .content,
-.rust .content,
-.coal .content,
-.navy .content,
-.ayu .content {
-    transition: transform 0.3s ease, margin-left 0.3s ease;
-}
-
-/* Enhance the backdrop and content positioning */
-.content {
-    transition: transform 0.3s ease !important;
-    position: relative;
-    z-index: 1;
-}
-
-/* Force sidebar states */
-body:not(.sidebar-visible) .sidebar {
-    transform: translateX(-100%) !important;
-}
-
-body.sidebar-visible .sidebar {
-    transform: translateX(0) !important;
-}
-
-/* Close button improvements */
-.sidebar-close-button {
-    position: absolute !important;
-    top: 12px !important;
-    right: 12px !important;
-    width: 32px !important;
-    height: 32px !important;
-    background: rgba(0,0,0,0.2) !important;
-    border: none !important;
-    border-radius: 50% !important;
-    color: white !important;
-    font-size: 16px !important;
-    line-height: 1 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    cursor: pointer !important;
-    z-index: 2001 !important;
-}
-
-/* Sidebar overlay */
-.sidebar-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 999;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    backdrop-filter: blur(2px);
-}
-
-/* Mobile specific styles */
-@media only screen and (max-width: 1100px) {
-    /* Make content slide */
-    body.sidebar-visible .content {
-        transform: translateX(80%) !important;
-    }
-    
-    /* Fix the sidebar width and position */
-    .sidebar {
-        width: 80% !important;
-        max-width: 280px !important;
-        transition: transform 0.3s ease !important;
-        z-index: 1000 !important;
-    }
-    
-    /* Prevent body scroll when sidebar is open */
-    body.sidebar-visible {
-        overflow: hidden !important;
-        position: fixed !important;
-        width: 100% !important;
-    }
-}
-
-/* Desktop specific styles */
-@media only screen and (min-width: 1101px) {
-    /* Hide the close button on desktop */
-    .sidebar-close-button {
-        display: none !important;
-    }
-    
-    /* Don't transform content on desktop */
-    body.sidebar-visible .content {
-        transform: none !important;
-    }
-}
-
-/* JavaScript fix for dropdowns */
-script {
-    display: none;
-}
-
-/* Fix sidebar navigation appearance */
-
-/* Set consistent styling for sidebar links */
-.sidebar li.chapter-item {
-    margin: 2px 0 !important;
-    padding: 0 !important;
-    line-height: 1.2 !important;
-}
-
-/* Fix the basic link appearance */
-.sidebar a {
-    padding: 5px 0 !important;
-    display: inline-block !important;
-    color: var(--fg) !important;
-    font-size: 0.9em !important;
-    text-decoration: none !important;
-}
-
-/* Fix the default chevrons (hide them) */
-.sidebar .chapter-item > a::before,
-.sidebar .chapter-item > a::after,
-.sidebar .chapter-item > .section::before,
-.sidebar .chapter-item > .section::after,
-.sidebar a::before,
-.sidebar a::after,
-.sidebar a em {
-  display: none !important;
-}
-
-/* Replace with better chevrons */
-.sidebar li.has-sub > a::after {
-    content: "";
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    margin-left: 8px;
-    border-style: solid;
-    border-width: 0 2px 2px 0;
-    border-color: #999;
-    transform: rotate(45deg);
-    position: relative;
-    top: -2px;
-}
-
-/* Hide any existing icons */
-.sidebar .chapter li.chapter-item > a em {
-    display: none !important;
-}
-
-/* Rotate chevron when expanded */
-.sidebar li.chapter-item.expanded > a::after {
-    transform: rotate(-135deg) !important;
-    top: 1px !important;
-}
-
-/* Fix indentation and nested items */
-.sidebar .chapter .section {
-    padding-left: 15px !important;
-    margin-left: 5px !important;
-    border-left: 1px solid var(--border-color) !important;
-}
-
-/* Active item styling */
-.sidebar a.active {
-    color: var(--arch-accent) !important;
-    font-weight: 500 !important;
-}
-
-/* Section spacing */
-.sidebar > .chapter > li.chapter-item {
-    margin-top: 8px !important;
-}
-
-/* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-    .sidebar li.has-sub > a::after {
-        border-color: #777 !important;
-    }
-    
-    .sidebar .chapter-item .section::before {
-        background: #444 !important;
-    }
-}
-
-/* ===== CLEAN TOGGLE IMPLEMENTATION ===== */
-/* First, remove ALL competing toggle styles */
-.sidebar .chapter-item > a::before,
-.sidebar .chapter-item > a::after,
-.sidebar .chapter-item > .section::before,
-.sidebar .chapter-item > .section::after,
-.sidebar a::before,
-.sidebar a::after,
-.sidebar a em {
-  display: none !important;
-}
-
-/* Style the links properly */
-.sidebar .chapter-item > a {
-  display: flex !important;
-  align-items: center !important;
-  padding: 5px 0 !important;
-  width: 100% !important;
-}
-
-/* Custom toggle styling */
-.custom-toggle {
-  display: inline-block !important;
-  margin-right: 8px !important;
-  font-size: 0.7em !important;
-  color: #999 !important;
-  transition: transform 0.2s ease !important;
-  flex-shrink: 0 !important;
-}
-
-/* Rotate when expanded */
-.custom-toggle.expanded {
-  transform: rotate(90deg) !important;
-}
-
-/* Fix section indentation */
-.sidebar .chapter-item .section {
-  padding-left: 15px !important;
-  margin-left: 5px !important;
-  border-left: 1px solid rgba(128, 128, 128, 0.2) !important;
-  margin-top: 2px !important;
-}
-
-/* Dark mode adjustments */
-@media (prefers-color-scheme: dark) {
-  .custom-toggle {
-    color: #777 !important;
-  }
-}
-
-/* Content Positioning Fix */
-.content {
-  margin: 0 auto !important;
-  padding: 0 var(--page-padding) !important;
-  max-width: var(--content-max-width) !important;
-}
-
-/* Only apply left margin when sidebar is visible on desktop */
-@media only screen and (min-width: 1101px) {
-  body.sidebar-visible .content {
-    margin-left: var(--sidebar-width) !important;
-    margin-right: 0 !important;
-  }
-  
-  /* Center content when sidebar is closed */
-  body:not(.sidebar-visible) .content {
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-}
-
-/* Ensure content is centered on mobile regardless of sidebar state */
-@media only screen and (max-width: 1100px) {
-  .content {
-    margin-left: auto !important;
-    margin-right: auto !important;
-    width: 100% !important;
-    max-width: var(--content-max-width) !important;
-    transform: none !important;
-  }
-  
-  /* When sidebar is visible on mobile, use transform instead of margin */
-  body.sidebar-visible .content {
-    transform: translateX(80%) !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-}
-
-/* Additional mobile optimizations */
-@media only screen and (max-width: 1100px) {
-    /* Better padding for readability */
-    .page {
-        padding: 0 10px;
-    }
-    
-    /* Improve tap targets */
-    .sidebar a, 
-    .sidebar .chapter-item {
-        padding: 8px 0;
-    }
-    
-    /* Make content more readable */
-    .content {
-        font-size: 16px;
-        line-height: 1.6;
-    }
-    
-    /* Ensure code blocks are readable but don't overflow */
-    pre {
-        padding: 12px;
-        font-size: 14px;
-        overflow-x: auto;
-        white-space: pre-wrap;
-    }
-}
-
-/* Hide theme toggle button - comprehensive approach */
-#theme-toggle,
-.theme-toggle,
-.theme-button,
-.icon-button.theme,
-button[aria-label*="theme"],
-button[title*="theme"],
-button[aria-label*="Theme"],
-button[title*="Theme"],
-.right-buttons button:nth-last-child(1),
-.right-buttons .icon-button:nth-last-child(1),
-a[href="javascript:window.theme.cycle()"],
-#theme-toggle-button,
-.theme-picker,
-button[id*="theme"],
-button[class*="theme"] {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    position: absolute !important;
-    pointer-events: none !important;
-}
-
-/* Also make sure to hide the theme popup menu if it exists */
-.theme-popup,
-.theme-dropdown,
-div[class*="theme-popup"],
-div[id*="theme-popup"] {
-    display: none !important;
-}
-
-/* Prevent page jumping when title is clicked */
-h1[id], h2[id], h3[id], h4[id], h5[id], h6[id] {
-    scroll-margin-top: var(--menu-bar-height);
-}
-
-/* Prevent default scroll behavior on title click */
-.content h1 a,
-.content h2 a,
-.content h3 a,
-.content h4 a,
-.content h5 a,
-.content h6 a {
-    scroll-behavior: auto !important;
-}
-
-/* Ensure header links don't cause unexpected jumps */
-.header-link {
-    scroll-behavior: auto !important;
-}
-
-/* For mobile specifically, add extra padding to prevent content shift */
-@media only screen and (max-width: 1100px) {
-    h1 {
-        margin-top: 0.5rem !important; 
-        padding-top: 0.5rem !important;
-    }
-    
-    /* Improve content spacing on mobile */
-    .content {
-        padding-top: 10px !important;
-        margin-top: 10px !important;
-    }
-    
-    /* Ensure headings have proper spacing to prevent jumps */
-    h1[id], h2[id], h3[id], h4[id], h5[id], h6[id] {
-        scroll-margin-top: calc(var(--menu-bar-height) + 15px);
-    }
-    
-    /* Prevent title shift */
-    .content h1:first-child {
-        scroll-behavior: auto !important;
-        position: relative !important;
-    }
-}
-
-/* Specifically target the menu bar title to prevent jumps */
-.menu-title,
-#menu-bar .title {
-    pointer-events: none;
-}
-
-/* But enable links within the title */
-.menu-title a,
-#menu-bar .title a {
-    pointer-events: auto;
-}
-
-/* Ensure proper positioning of menu bar on all devices */
-@media only screen and (min-width: 1101px) {
-    #menu-bar {
-        justify-content: flex-start;
-    }
-    
-    .menu-title {
-        margin-right: auto;
-    }
-}
-
-/* Add mobile-optimized content layout */
-@media only screen and (max-width: 1100px) {
-    /* Optimize content for mobile */
-    .content {
-        padding: 1.25rem !important;
-        margin: 0.5rem auto !important;
-        width: auto !important;
-        max-width: 100% !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-    }
-
-    h1 {
-        margin-top: 0 !important;
-    }
-    
-    h2 {
-        font-size: 1.4em !important;
-        padding-bottom: 0.2em !important;
-    }
-    
-    h3 {
-        font-size: 1.1em !important;
-    }
-    
-    /* Improved image responsiveness */
-    .content img,
-    .content svg {
-        max-width: 100% !important;
-        height: auto !important;
-        display: block !important;
-        margin: 1rem auto !important;
-    }
-    
-    /* Better spacing for mobile components */
-    .feature-grid,
-    .next-steps-grid {
-        grid-template-columns: 1fr !important;
-        gap: 1rem !important;
-        margin: 1.5rem 0 !important;
-    }
-    
-    /* Fix box styles for mobile */
-    .path-box, 
-    .quick-start, 
-    .learning-path,
-    .prerequisites-box,
-    .help-box {
-        padding: 1rem 1rem 1rem 1.5rem !important;
-        margin: 1.25rem 0 !important;
-    }
-    
-    /* Mobile-friendly code blocks */
-    pre {
-        padding: 0.75rem !important;
-        margin: 1rem 0 !important;
-        font-size: 13px !important;
-        line-height: 1.4 !important;
-        white-space: pre-wrap !important;
-    }
-    
-    /* Better scrolling for code */
-    .content pre code {
-        white-space: pre;
-        overflow-x: auto;
-        display: block;
-        padding-bottom: 0.5rem;
-    }
-}
-
-/* Enhance tiny screens */
-@media only screen and (max-width: 480px) {
     /* Even more compact layout */
     .content {
         padding: 1rem 0.75rem !important;
+        margin-bottom: 4rem !important;
     }
     
     /* Simpler lists */
@@ -2488,8 +1942,9 @@ h1[id], h2[id], h3[id], h4[id], h5[id], h6[id] {
 /* Page content */
 main {
     position: relative;
-    padding: 0 15px;
+    padding: 0 25px;
     margin: 0 auto;
+    max-width: calc(var(--content-max-width) + 50px);
 }
 
 /* Right sidebar (On this page) */
@@ -2531,4 +1986,18 @@ main {
         background: #2d333b !important;
         border-color: #444c56;
     }
+}
+
+/* Enhanced mobile styling with better bottom margin */
+@media only screen and (max-width: 480px) {
+    .content {
+        padding: 1rem 0.75rem !important;
+        margin-bottom: 4rem !important;
+    }
+}
+
+/* Add subtle transition effects */
+.sidebar a, 
+.sidebar .chapter-item > .section {
+    transition: all 0.2s ease-out;
 }
