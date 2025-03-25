@@ -1,0 +1,426 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>How to create a fungible token - The Arch Book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for the Arch Network - A Bitcoin-native computation environment">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item affix "><li class="part-title">Getting Started</li><li class="chapter-item "><a href="../getting-started/quick-start.html">Quick Start Guide</a></li><li class="chapter-item "><a href="../getting-started/environment-setup.html">Environment Setup</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../getting-started/bitcoin-and-electrs-setup.html">Bitcoin and Electrs Setup</a></li><li class="chapter-item "><a href="../getting-started/setting-up-a-project.html">Setting up a Project</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../concepts/nodes.html">Nodes</a></li></ol></li></ol></li><li class="chapter-item "><a href="../getting-started/resources.html">Resources</a></li><li class="chapter-item affix "><li class="part-title">Core Concepts</li><li class="chapter-item "><a href="../concepts/architecture.html">Architecture Overview</a></li><li class="chapter-item "><a href="../concepts/network-architecture.html">Network Architecture</a></li><li class="chapter-item "><a href="../concepts/bitcoin-integration.html">Bitcoin Integration</a></li><li class="chapter-item "><a href="../concepts/nodes.html">Nodes</a></li><li class="chapter-item "><a href="../program/program.html">Programs</a></li><li class="chapter-item "><a href="../program/utxo.html">UTXOs</a></li><li class="chapter-item affix "><li class="part-title">Programs and beyond</li><li class="chapter-item "><a href="../basics/basics.html">Basics</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../basics/building-deploying-interfacing.html">Building, deploying and interfacing</a></li><li class="chapter-item "><a href="../basics/interaction.html">Program interaction</a></li></ol></li><li class="chapter-item expanded "><a href="../guides/guides.html">Guides</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../guides/how-to-write-arch-program.html">How to write an Arch program</a></li><li class="chapter-item "><a href="../guides/how-to-write-oracle-program.html">How to write an oracle program</a></li><li class="chapter-item expanded "><a href="../guides/how-to-create-a-fungible-token.html" class="active">How to create a fungible token</a></li><li class="chapter-item "><a href="../guides/how-to-build-runes-swap.html">How to build a Bitcoin Runes swap application</a></li><li class="chapter-item "><a href="../guides/how-to-configure-local-validator-bitcoin-testnet4.html">How to configure the local validator with Bitcoin Testnet4</a></li><li class="chapter-item "><a href="../guides/how-to-build-lending-protocol.html">How to Build a Bitcoin Lending Protocol</a></li></ol></li><li class="chapter-item "><li class="part-title">Reference</li><li class="chapter-item "><a href="../program/program.html">Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../program/account.html">Account Structure</a></li><li class="chapter-item "><a href="../program/accounts.html">Account Guide</a></li><li class="chapter-item "><a href="../program/system-functions.html">System Functions</a></li><li class="chapter-item "><a href="../program/entrypoint.html">Entrypoint</a></li><li class="chapter-item "><a href="../program/instructions-and-messages.html">Instructions and Messages</a></li><li class="chapter-item "><a href="../program/pubkey.html">Pubkey</a></li><li class="chapter-item "><a href="../program/syscall.html">Syscall</a></li><li class="chapter-item "><a href="../program/system-instruction.html">System Instruction</a></li><li class="chapter-item "><a href="../program/utxo.html">UTXO</a></li></ol></li><li class="chapter-item "><a href="../sdk/sdk.html">SDK</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/processed-transaction.html">Processed Transaction</a></li><li class="chapter-item "><a href="../sdk/runtime-transaction.html">Runtime Transaction</a></li><li class="chapter-item "><a href="../sdk/signature.html">Signature</a></li></ol></li><li class="chapter-item "><a href="../system-program/system-program.html">System Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../system-program/create-account.html">CreateAccount</a></li><li class="chapter-item "><a href="../system-program/write-bytes.html">WriteBytes</a></li><li class="chapter-item "><a href="../system-program/make-executable.html">MakeExecutable</a></li><li class="chapter-item "><a href="../system-program/assign-ownership.html">AssignOwnership</a></li></ol></li><li class="chapter-item "><a href="../rpc/rpc.html">RPC</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../rpc/http-methods.html">HTTP Methods</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../rpc/http-methods/send-transaction.html">sendTransaction</a></li><li class="chapter-item "><a href="../rpc/http-methods/send-transactions.html">sendTransactions</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-account-address.html">getAccountAddress</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-program-accounts.html">getProgramAccounts</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-block.html">getBlock</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-block-count.html">getBlockCount</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-block-hash.html">getBlockHash</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-current-state.html">getCurrentState</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-peers.html">getPeers</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-processed-transaction.html">getProcessedTransaction</a></li><li class="chapter-item "><a href="../rpc/http-methods/read-account-info.html">readAccountInfo</a></li><li class="chapter-item "><a href="../rpc/http-methods/start-dkg.html">startDkg</a></li><li class="chapter-item "><a href="../rpc/http-methods/is-node-ready.html">isNodeReady</a></li><li class="chapter-item "><a href="../rpc/http-methods/reset-network.html">resetNetwork</a></li></ol></li><li class="chapter-item "><a href="../rpc/deprecated-methods.html">Deprecated Methods</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../rpc/deprecated-methods/get-account-info.html">getAccountInfo</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Arch Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book/edit/main/src/guides/how-to-create-a-fungible-token.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="how-to-create-a-fungible-token"><a class="header" href="#how-to-create-a-fungible-token">How to create a fungible token</a></h1>
+<p>This guide walks through how to implement the Fungible Token Standard program, part of the Arch Program Library, or APL.</p>
+<p>Table of Contents:</p>
+<ul>
+<li><a href="#description">Description</a></li>
+<li><a href="#logic">Logic</a></li>
+<li><a href="#implementation">Implementation</a></li>
+</ul>
+<hr />
+<h3 id="description"><a class="header" href="#description">Description</a></h3>
+<p>The Fungible Token Standard program provides a consistent interface for implementing fungible tokens on Arch. As with all programs within the APL, this program is predeployed and is tested against the Arch runtime.</p>
+<p>The source code can be found within the <a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/fungible-token-standard">arch-examples</a> repo.</p>
+<h3 id="logic"><a class="header" href="#logic">Logic</a></h3>
+<p>If you haven’t already read <a href="./how-to-write-arch-program.html">How to write an Arch program</a>, we recommend starting there to get a basic understanding of the program anatomy before going further.</p>
+<h3 id="implementation"><a class="header" href="#implementation">Implementation</a></h3>
+<ul>
+<li><a href="#deploy">Deploy</a></li>
+<li><a href="#mint">Mint</a></li>
+<li><a href="#transfer">Transfer</a></li>
+<li><a href="#balance-check">Balance check</a></li>
+</ul>
+<h4 id="deploy"><a class="header" href="#deploy">Deploy</a></h4>
+<p>Although the Fungible Token Standard program is part of the APL, and is there predeployed by the validators, for local testing, we can deploy it ourselves. Move to <a href="#mint">Mint</a> if you’d like to skip this step.</p>
+<p>To demonstrate a deploy, we’ll reference: <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/deploy.rs">deploy.rs</a></p>
+<p>We make use of <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_deployment.rs#L1"><code>try_deploy_program</code></a>, a helper function from the <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter">ebpf-counter</a> example to deploy our program.</p>
+<pre><code class="language-rust ignore">pub const ELF_PATH: &amp;str = "./program/target/sbf-solana-solana/release/fungible-token-standard-program.so";
+
+fn deploy_standard_program() {
+    let program_pubkey =
+        try_deploy_program(ELF_PATH, PROGRAM_FILE_PATH, "Fungible-Token-Standard").unwrap();
+
+    println!(
+        "Deployed Fungible token standard program account id {:?}!",
+        program_pubkey.serialize()
+    );
+...
+}</code></pre>
+<h4 id="mint"><a class="header" href="#mint">Mint</a></h4>
+<p>To mint tokens, we must supply a few pieces of information:</p>
+<ul>
+<li>Owner</li>
+<li>Supply</li>
+<li>Ticker</li>
+<li>Decimals</li>
+</ul>
+<p>This data gets stored in the <code>InitializeMintInput</code> struct, which will be used to generate a new instance of the Fungible Token Standard.</p>
+<pre><code class="language-rust ignore">#[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
+pub struct InitializeMintInput {
+    owner: [u8; 32],
+    supply: u64, // in lowest denomination
+    ticker: String,
+    decimals: u8,
+}</code></pre>
+<p>To demonstrate a mint, we’ll reference: <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/tests_mint.rs">tests_mint.rs</a></p>
+<p>We initialize a new instance of <code>InitializeMintInput</code> and pass in the necessary data. In the below case, our owner account will create the token “SPONK,” with a total supply of 1,000,000, which will have only a single decimal, meaning it is divisible by 1.</p>
+<pre><code class="language-rust ignore">// deploy.rs
+let mint_input = InitializeMintInput::new(
+    mint_account_pubkey.serialize(),
+    1000000,
+    "SPONK".to_string(),
+    1,
+);</code></pre>
+<p>We then serialize <code>mint_input</code> so that we can pass it as <code>instruction_data</code> within an <a href="../program/instructions-and-messages.html#instructions">Instruction</a> which then gets submitted to the deployed Fungible Token Standard program.</p>
+<pre><code class="language-rust ignore">let mut instruction_data = vec![0u8];
+
+mint_input
+    .serialize(&amp;mut instruction_data)
+    .expect("Couldnt serialize mint input");
+
+let initialize_mint_instruction = Instruction {
+    program_id: program_pubkey.clone(),
+    accounts: vec![AccountMeta {
+        pubkey: mint_account_pubkey,
+        is_signer: true,
+        is_writable: true,
+    }],
+    data: instruction_data,
+};</code></pre>
+<p>Next, we build a transaction using <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_instructions.rs#L163"><code>build_transaction</code></a> and then submit the transaction with <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_instructions.rs#L196"><code>build_and_send_block</code></a>, both helper function from the <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter">ebpf-counter</a> example.</p>
+<pre><code class="language-rust ignore">let transaction = build_transaction(
+    vec![mint_account_keypair],
+    vec![initialize_mint_instruction],
+);
+
+let block_transactions = build_and_send_block(vec![transaction]);</code></pre>
+<p>We fetch the result of the transaction with <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_instructions.rs#L207"><code>fetch_processed_transactions</code></a> helper function (<a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter">ebpf-counter</a>) and then obtain the mint details by passing the <a href="../program/pubkey.html">Pubkey</a> of the token owner.</p>
+<pre><code class="language-rust ignore">let processed_transactions = fetch_processed_transactions(block_transactions).unwrap();
+
+assert!(matches!(
+    processed_transactions[0].status,
+    Status::Processed
+));
+
+let mint_details = get_mint_info(&amp;mint_account_pubkey).expect("Couldnt deserialize mint info");
+
+println!("Mint account {:?}", mint_account_pubkey.serialize());</code></pre>
+<h4 id="transfer"><a class="header" href="#transfer">Transfer</a></h4>
+<p>To demonstrate a transfer, we’ll reference: <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/tests_transfer.rs">tests_transfer.rs</a></p>
+<p>We obtain a <code>mint_account_pubkey</code>, made possible by using the <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/helpers.rs#L38"><code>try_create_mint_account</code></a> helper function. We pass <code>true</code> as this is a one-time mint event and this will generate a new keypair and <a href="../program/pubkey.html">Pubkey</a>.</p>
+<p>This step will actually create a new token with the following details:</p>
+<ul>
+<li>Supply: 1,000,000</li>
+<li>Ticker: “ARCH”</li>
+<li>Decimals: 2</li>
+<li>Mint Price: 1000 sats</li>
+</ul>
+<pre><code class="language-rust ignore">let mint_account_pubkey = try_create_mint_account(true).unwrap();</code></pre>
+<p>We then fetch the token mint details with <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/helpers.rs#L173"><code>get_mint_info</code></a>.</p>
+<pre><code class="language-rust ignore">let previous_mint_details = get_mint_info(&amp;mint_account_pubkey).unwrap();</code></pre>
+<p>Now, let’s provision our two accounts: the sender and the receiver.</p>
+<pre><code class="language-rust ignore">// sending account
+let (first_account_owner_key_pair, first_account_owner_pubkey, _first_account_owner_address) =
+        generate_new_keypair();
+
+let first_balance_account_pubkey = create_balance_account(
+        &amp;first_account_owner_pubkey,
+        first_account_owner_key_pair,
+        &amp;mint_account_pubkey,
+        &amp;program_pubkey,
+)
+.unwrap();
+
+// receiving account
+let (second_account_owner_key_pair, second_account_owner_pubkey, _second_account_owner_address) =
+    generate_new_keypair();
+
+let second_balance_account_pubkey = create_balance_account(
+    &amp;second_account_owner_pubkey,
+    second_account_owner_key_pair,
+    &amp;mint_account_pubkey,
+    &amp;program_pubkey,
+)
+.unwrap();</code></pre>
+<p>We then procure funds for the sending account. In this case, we’ll mint 10 tokens.</p>
+<pre><code class="language-rust ignore">let mint_amount = 10u64;
+
+let mint_instruction = mint_request_instruction(
+    &amp;mint_account_pubkey,
+    &amp;program_pubkey,
+    &amp;first_balance_account_pubkey,
+    &amp;first_account_owner_pubkey,
+    mint_amount,
+)
+.unwrap();</code></pre>
+<p>We utilize the <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/instruction.rs#L116"><code>transfer_request_instruction</code></a> helper function to generate a transfer <a href="../program/instructions-and-messages.html#instructions">Instruction</a>.</p>
+<pre><code class="language-rust ignore">let transfer_instruction = transfer_request_instruction(
+    &amp;mint_account_pubkey,
+    &amp;program_pubkey,
+    &amp;first_balance_account_pubkey,
+    &amp;first_account_owner_pubkey,
+    &amp;second_balance_account_pubkey,
+    mint_amount,
+)
+.unwrap();</code></pre>
+<p>We build the transaction by passing in the newly created transfer <a href="../program/instructions-and-messages.html#instructions">Instruction</a> as well as the keypair of the sending account, necessary for authorizing the fund transfer.</p>
+<pre><code class="language-rust ignore">let transfer_transaction = build_transaction(
+    vec![first_account_owner_key_pair],
+    vec![transfer_instruction],
+);</code></pre>
+<p>Next, we then submit the transaction with <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_instructions.rs#L196"><code>build_and_send_block</code></a> and then fetch the processed transaction to get the result.</p>
+<pre><code class="language-rust ignore">let block_transactions = build_and_send_block(vec![transfer_transaction]);
+
+let processed_transactions = fetch_processed_transactions(block_transactions).unwrap();
+
+assert!(matches!(
+    processed_transactions[0].status,
+    Status::Processed
+));</code></pre>
+<h4 id="balance-check"><a class="header" href="#balance-check">Balance check</a></h4>
+<p>In order to check the token balance of an account, we’ll make use of the <code>get_balance_account</code> function and pass in the account we are looking to query the balance of; in the below example, we’ll fetch the balances of both the sending and receiving accounts.</p>
+<pre><code class="language-rust ignore">let resulting_sender_balance = get_balance_account(&amp;first_balance_account_pubkey).unwrap();
+
+let resulting_receiver_balance = get_balance_account(&amp;second_balance_account_pubkey).unwrap();
+
+assert_eq!(resulting_receiver_balance.current_balance, mint_amount);
+
+assert_eq!(resulting_sender_balance.current_balance, 0);</code></pre>
+<!-- Internal -->
+<!-- External -->
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../guides/how-to-write-oracle-program.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../guides/how-to-build-runes-swap.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../guides/how-to-write-oracle-program.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../guides/how-to-build-runes-swap.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/mermaid.min.js"></script>
+        <script src="../theme/mermaid-init.js"></script>
+        <script src="../theme/custom.js"></script>
+
+
+    </div>
+    </body>
+</html>

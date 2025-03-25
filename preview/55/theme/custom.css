@@ -1,0 +1,2003 @@
+/* Custom theme for Arch Network Documentation */
+
+:root {
+    --sidebar-width: 300px;
+    --content-max-width: 850px;
+    --menu-bar-height: 40px;
+    --arch-primary: #FF6B2B;
+    --arch-secondary: #1E2022;
+    --arch-accent: #3498db;
+    --arch-success: #2ecc71;
+    --arch-warning: #f1c40f;
+    --arch-error: #e74c3c;
+    --arch-info: #3498db;
+    --z-index-sidebar: 1000;
+    --z-index-menu-toggle: 1001;
+    --z-index-overlay: 999;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", sans-serif;
+    --font-mono: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+body {
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    color: #333;
+    background: #f7f9fb;
+}
+
+/* Layout */
+.content {
+    position: relative;
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding: 2.5rem 4.5rem;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    border-radius: 10px;
+    margin-top: 1.5rem;
+    margin-bottom: 5rem;
+    line-height: 1.6;
+}
+
+/* Menu positioning */
+#menu-bar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: var(--menu-bar-height);
+    background: white !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    margin: 0 !important;
+}
+
+/* Left section with consistent height and alignment */
+#menu-bar .left-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding-left: 15px;
+}
+
+/* Title section with perfect vertical centering */
+#menu-bar .menu-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    flex: 1;
+    font-size: 1.1em;
+    font-weight: 500;
+    color: var(--arch-secondary);
+    white-space: nowrap;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+/* Right section with perfect alignment and spacing */
+#menu-bar .right-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    padding-right: 15px;
+    margin-left: auto;
+    gap: 8px;
+}
+
+/* Button styling with consistent dimensions */
+#menu-bar .icon-button {
+    padding: 0 8px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--arch-secondary);
+}
+
+/* Left button specific styling */
+#menu-bar .left-buttons .icon-button {
+    height: 100%;
+}
+
+/* Right buttons with proper spacing and alignment */
+#menu-bar .right-buttons a {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--arch-secondary);
+    text-decoration: none;
+    width: 32px;
+}
+
+/* Icon size and alignment consistency */
+#menu-bar i.fa {
+    font-size: 1.1em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#menu-bar .right-buttons a:hover {
+    color: var(--arch-primary);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    #menu-bar {
+        background: var(--arch-secondary) !important;
+    }
+    
+    #menu-bar .menu-title {
+        color: white;
+    }
+    
+    #menu-bar .right-buttons a {
+        color: #e2e4e7;
+    }
+}
+
+/* Mobile adjustments with better layout */
+@media only screen and (max-width: 1100px) {
+    /* Enhanced menu bar */
+    #menu-bar {
+        padding: 0 !important;
+        height: var(--menu-bar-height) !important;
+    }
+    
+    /* Left buttons spacing */
+    #menu-bar .left-buttons {
+        padding-left: 10px;
+        height: 100%;
+    }
+    
+    /* Center the title better */
+    #menu-bar .menu-title {
+        justify-content: center;
+        text-align: center;
+        font-size: 1em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 50%;
+    }
+    
+    /* Fix right buttons */
+    #menu-bar .right-buttons {
+        padding-right: 10px;
+        gap: 6px;
+    }
+    
+    /* Right buttons with smaller width */
+    #menu-bar .right-buttons a {
+        width: 28px;
+    }
+    
+    /* Smaller icons */
+    #menu-bar i.fa {
+        font-size: 1em;
+    }
+    
+    /* Improved mobile navigation */
+    .nav-chapters {
+        bottom: 20px;
+        width: 44px;
+        height: 44px;
+        opacity: 0.9;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    
+    .nav-chapters.previous {
+        left: 15px;
+    }
+    
+    .nav-chapters.next {
+        right: 15px;
+    }
+}
+
+/* Extra small screens */
+@media only screen and (max-width: 480px) {
+    /* Further optimize small screens */
+    .content {
+        padding: 1.5rem !important;
+        margin-bottom: 4rem !important;
+    }
+    
+    /* Fix menu bar on very small screens */
+    #menu-bar .menu-title {
+        font-size: 0.9em;
+        max-width: 40%;
+    }
+    
+    /* Tighten up spacing */
+    .path-box, 
+    .quick-start, 
+    .learning-path {
+        padding: 1rem 1rem 1rem 1.5rem;
+        margin: 1rem 0;
+    }
+}
+
+/* Medium screens */
+@media only screen and (min-width: 481px) and (max-width: 768px) {
+    .content {
+        padding: 2rem 2.5rem !important;
+    }
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: var(--sidebar-width);
+    font-size: 0.875em;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    background: linear-gradient(to bottom, #f8f9fa, #f2f4f6);
+    z-index: 2000 !important;
+    padding-top: calc(var(--menu-bar-height) + 10px);
+    display: block;
+    transition: transform 0.3s ease !important;
+    border-right: 1px solid #eaecef;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Ensure sidebar content is visible */
+.sidebar-scrollbox {
+    height: 100%;
+    overflow-y: auto;
+    position: relative;
+    padding: 1.5rem 1rem 1rem 1.5rem;
+}
+
+/* Clean up the chapter list */
+.sidebar .chapter {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+/* Improve spacing between sections */
+.sidebar .chapter > .chapter-item.affix {
+    margin-top: 28px !important;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-size: 1em;
+    color: var(--arch-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85em;
+}
+
+/* First section doesn't need top margin */
+.sidebar .chapter > .chapter-item.affix:first-child {
+    margin-top: 0 !important;
+}
+
+/* Reduce vertical spacing between items */
+.sidebar .chapter-item {
+    margin: 3px 0 !important;
+    padding: 0 !important;
+    line-height: 1.4;
+}
+
+/* Improve link styling and layout */
+.sidebar a {
+    color: #444 !important;
+    text-decoration: none;
+    padding: 7px 10px 7px 5px;
+    display: inline-flex !important;
+    align-items: center;
+    width: 100%;
+    font-size: 0.95em;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    position: relative;
+}
+
+.sidebar a:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--arch-primary) !important;
+}
+
+/* Active item styling */
+.sidebar .chapter-item.active > a,
+.sidebar .chapter-item.active > .section,
+.sidebar .chapter-item a.active {
+    color: var(--arch-primary) !important;
+    font-weight: 500;
+    background-color: rgba(255, 107, 43, 0.08);
+}
+
+/* Selected item styling - add a left border */
+.sidebar .chapter-item a.active {
+    border-left: 3px solid var(--arch-primary);
+    padding-left: 7px;
+    position: relative;
+    font-weight: 600;
+}
+
+/* Add a visual indicator dot for active items */
+.sidebar .chapter-item a.active::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: var(--arch-primary);
+    border-radius: 50%;
+}
+
+/* Better chevron styling */
+.sidebar .chapter-item > .section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 7px 10px 7px 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sidebar .chapter-item > .section:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Replace default chevrons with modern symbols */
+.sidebar .chapter-item > .section::after {
+    content: "⟩";
+    font-size: 16px;
+    line-height: 1;
+    color: #aaa;
+    transition: all 0.2s ease;
+    opacity: 0.8;
+    margin-right: 4px;
+}
+
+/* Change chevron for expanded sections */
+.sidebar .chapter-item.expanded > .section::after {
+    content: "⟨";
+    transform: rotate(90deg);
+    display: block;
+    margin-top: 2px;
+}
+
+/* Improve animation effect on chevron hover */
+.sidebar .chapter-item > .section:hover::after {
+    opacity: 1;
+    color: var(--arch-primary);
+}
+
+/* Properly indent nested items */
+.sidebar .chapter-item .chapter {
+    padding-left: 15px;
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    margin-left: 5px;
+    margin-top: 2px;
+    margin-bottom: 5px;
+}
+
+/* Add bottom space for sidebar */
+.sidebar-scrollbox {
+    padding-bottom: 80px;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .sidebar {
+        background: linear-gradient(to bottom, #22252a, #1f2227);
+        border-right: 1px solid #333;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+    
+    .sidebar a {
+        color: #c9d1d9 !important;
+    }
+    
+    .sidebar a:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--arch-primary) !important;
+    }
+    
+    .sidebar .chapter > .chapter-item.affix {
+        color: #e2e4e7;
+    }
+    
+    .sidebar .chapter-item.active > a,
+    .sidebar .chapter-item.active > .section,
+    .sidebar .chapter-item a.active {
+        background-color: rgba(255, 107, 43, 0.12);
+    }
+
+    .sidebar .chapter-item > .section::after {
+        color: #777;
+    }
+    
+    .sidebar .chapter-item .chapter {
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar .chapter-item > .section:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+}
+
+/* Mobile adjustments */
+@media only screen and (max-width: 1100px) {
+    /* Disable transforms that cause layout problems */
+    body.sidebar-visible .content {
+        transform: none !important;
+    }
+    
+    /* Ensure the sidebar overlays without pushing content */
+    .sidebar {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        width: 80% !important;
+        max-width: 300px !important;
+        height: 100vh !important;
+        z-index: 2000 !important;
+        background: var(--bg) !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s ease !important;
+        overflow-y: auto !important;
+        padding-top: var(--menu-bar-height) !important;
+        -webkit-overflow-scrolling: touch !important;
+        will-change: transform !important;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.3) !important;
+    }
+    
+    /* Ensure visible state */
+    body.sidebar-visible .sidebar {
+        transform: translateX(0) !important;
+    }
+    
+    /* Overlay to block clicks and dim background */
+    .sidebar-overlay {
+        display: none !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background: rgba(0,0,0,0.6) !important;
+        z-index: 1999 !important;
+        opacity: 0 !important;
+        transition: opacity 0.3s ease !important;
+        backdrop-filter: blur(2px) !important;
+        -webkit-backdrop-filter: blur(2px) !important;
+    }
+    
+    /* Show overlay when sidebar is visible */
+    body.sidebar-visible .sidebar-overlay {
+        display: block !important;
+        opacity: 1 !important;
+    }
+    
+    /* No content shifting on mobile - use overlay approach */
+    body.sidebar-visible .content {
+        transform: none !important;
+    }
+    
+    /* Fix navigation arrows */
+    .nav-chapters {
+        position: fixed;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        bottom: 10px;
+        z-index: 50;
+        width: 40px;
+        height: 40px;
+        font-size: 1.5em;
+        border-radius: 50%;
+        background: var(--bg);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        color: var(--fg);
+        opacity: 0.7;
+        transition: opacity 0.3s;
+    }
+    
+    .nav-chapters:hover {
+        opacity: 1;
+    }
+    
+    .nav-chapters.previous {
+        left: 10px;
+    }
+    
+    .nav-chapters.next {
+        right: 10px;
+    }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .sidebar {
+        background: linear-gradient(to bottom, #22252a, #1f2227);
+    }
+    
+    .sidebar-scrollbox {
+        background: #22252a;
+    }
+    
+    #menu-bar-toggle {
+        background: var(--arch-primary);
+        color: #ffffff;
+    }
+    
+    #menu-bar-toggle:hover,
+    #menu-bar-toggle:focus {
+        background: var(--arch-accent);
+    }
+    
+    .sidebar-overlay {
+        background: rgba(0,0,0,0.7);
+    }
+}
+
+/* Dark mode adjustments for the toggle button */
+@media (prefers-color-scheme: dark) and (max-width: 1100px) {
+    #menu-bar-toggle {
+        background: rgba(255, 107, 43, 0.2);
+        color: #ffffff;
+    }
+    
+    #menu-bar-toggle:hover, 
+    #menu-bar-toggle:focus {
+        background: rgba(255, 107, 43, 0.4);
+    }
+    
+    .menu-hint {
+        background: rgba(255, 107, 43, 0.2);
+        color: #ffffff;
+    }
+}
+
+/* Print styles */
+@media print {
+    .right-sidebar,
+    .nav-wide-wrapper {
+        display: none;
+    }
+    
+    main {
+        margin: 0;
+        padding: 0;
+    }
+}
+
+/* Chapter content */
+.chapter {
+    padding: 0 15px;
+}
+
+/* Page content */
+.page {
+    padding: 0;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+/* Typography */
+.content {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+    font-size: 16px;
+}
+
+/* Improve paragraph spacing */
+.content p {
+    margin: 1.2rem 0;
+    line-height: 1.7;
+}
+
+/* Add more space between content elements */
+.content ul, 
+.content ol {
+    margin: 1.2rem 0;
+    padding-left: 2rem;
+}
+
+.content li {
+    margin-bottom: 0.5rem;
+}
+
+/* Add more space above headings for better visual separation */
+.content h2 {
+    margin-top: 2.5rem;
+    margin-bottom: 1.2rem;
+}
+
+.content h3 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    color: #1a1b1d;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+h1 { 
+    font-size: 2.2em;
+    border-bottom: 2px solid var(--arch-primary);
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 1.7em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.3rem;
+}
+
+h3 {
+    font-size: 1.3em;
+}
+
+/* Feature Grid */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem auto;
+    max-width: 100%;
+}
+
+.feature {
+    background: #fff;
+    border: 1px solid #eaecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.feature h4 {
+    color: #1a1b1d;  /* Dark color for light mode */
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1em;
+}
+
+.feature p {
+    margin: 0;
+    color: var(--arch-secondary);
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.feature .text-muted {
+    color: #4a5568;
+}
+
+.feature a {
+    color: var(--arch-accent);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.feature a:hover {
+    color: var(--arch-primary);
+    text-decoration: underline;
+}
+
+/* Path Box */
+.path-box {
+    position: relative;
+    background: #f8f9fa;
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    margin: 1.5rem 0;
+    border-radius: 8px;
+}
+
+.path-box::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--arch-primary);
+    border-radius: 4px 0 0 4px;
+}
+
+/* Quick Start and Learning Path sections */
+.quick-start,
+.learning-path {
+    position: relative;
+    background: #f8f9fa;
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    margin: 1.5rem 0;
+    border-radius: 8px;
+}
+
+.quick-start::before,
+.learning-path::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--arch-primary);
+    border-radius: 4px 0 0 4px;
+}
+
+/* Path content */
+.path-box p,
+.quick-start p,
+.learning-path p {
+    margin: 0.5rem 0;
+}
+
+.path-box ul,
+.quick-start ul,
+.learning-path ul {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.path-box li,
+.quick-start li,
+.learning-path li {
+    margin: 0.5rem 0;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .path-box,
+    .quick-start,
+    .learning-path {
+        background: #2d333b;
+    }
+}
+
+/* Component Box */
+.component-box {
+    background: #fff;
+    border: 1px solid #eaecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.component-box ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+/* Architecture Overview */
+.architecture-overview {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 100%;
+    border: 1px solid var(--border-color);
+}
+
+/* Prerequisites Box */
+.prerequisites-box {
+    background: #fff;
+    border: 1px solid #eaecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.prerequisites-box ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+/* Next Steps Grid */
+.next-steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2.5rem 0 3.5rem 0; /* Increased margins for better spacing */
+    position: relative;
+    z-index: 1;
+}
+
+.next-steps-grid ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.next-steps-grid li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.next-steps-grid a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background: var(--bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--arch-accent);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    margin-right: 0;
+    font-weight: 500;
+    min-height: 80px; /* Set minimum height for consistent look */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.next-steps-grid a::before {
+    content: "→";
+    position: absolute;
+    right: 1.5rem;
+    opacity: 1; /* Always visible */
+    font-size: 1.2rem;
+    transform: translateX(0);
+    transition: all 0.3s ease;
+}
+
+.next-steps-grid a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: var(--arch-primary);
+    transform: scaleY(0.7); /* Always partially visible */
+    transform-origin: bottom;
+    transition: transform 0.3s ease;
+}
+
+.next-steps-grid a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    padding-right: 3rem;
+    border-color: var(--arch-primary);
+    background-color: rgba(255, 107, 43, 0.03); /* Very light orange tint */
+}
+
+.next-steps-grid a:hover::before {
+    transform: translateX(5px);
+    color: var(--arch-primary);
+}
+
+.next-steps-grid a:hover::after {
+    transform: scaleY(1);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .next-steps-grid a {
+        background: var(--arch-secondary);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .next-steps-grid a:hover {
+        box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+        background-color: rgba(255, 107, 43, 0.1); /* Darker orange tint for dark mode */
+    }
+}
+
+/* Help Box */
+.help-box {
+    background: var(--bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    margin: 3rem 0 3rem 0; /* Increased margins for better spacing */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    position: relative;
+}
+
+/* Add a visual indicator to make the help box more interesting */
+.help-box::before {
+    content: "?";
+    position: absolute;
+    top: -15px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    background: var(--arch-accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.help-box ul {
+    list-style: none;
+    margin: 1rem 0 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.75rem 1.5rem;
+}
+
+.help-box li {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.help-box li:before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--arch-accent);
+    font-size: 1.2rem;
+}
+
+.help-box a {
+    color: var(--arch-accent);
+    text-decoration: none;
+    transition: all 0.2s;
+    font-weight: 500;
+    padding: 0.2rem 0;
+}
+
+.help-box a:hover {
+    color: var(--arch-primary);
+    text-decoration: underline;
+}
+
+/* Tip box adjustment to fix spacing */
+.tip {
+    background: #f0fdf4;  /* Light green background for light mode */
+    border-left: 4px solid var(--arch-success);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.5rem;
+    margin: 3rem 0 1.5rem 0; /* Increased top margin for spacing */
+    color: #166534;  /* Dark green text for better contrast */
+}
+
+/* Info Box */
+.info {
+    background: #ebf5fb;
+    border-left: 4px solid var(--arch-info);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    color: #2c3e50;
+}
+
+.info a {
+    color: var(--arch-info);
+}
+
+.info a:hover {
+    color: #2980b9;
+}
+
+/* Tip Box - Light Mode */
+.tip {
+    background: #f0fdf4;  /* Light green background for light mode */
+    border-left: 4px solid var(--arch-success);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    color: #166534;  /* Dark green text for better contrast */
+}
+
+.tip a {
+    color: var(--arch-success);
+}
+
+.tip a:hover {
+    color: #16a34a;
+}
+
+/* Dark mode override for tip box */
+@media (prefers-color-scheme: dark) {
+    .tip {
+        background: #1a2e25;  /* Dark green background */
+        color: #dcfce7;  /* Light green text */
+        border-left-color: var(--arch-success);
+    }
+
+    .tip a {
+        color: #4ade80;  /* Lighter green for links */
+    }
+
+    .tip a:hover {
+        color: #86efac;
+    }
+}
+
+/* Warning Box */
+.warning {
+    background: #2e2616;
+    border-left-color: var(--arch-warning);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+}
+
+/* Error Box */
+.error {
+    background: #2e1616;
+    border-left-color: var(--arch-error);
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+}
+
+/* Code blocks - Light theme */
+pre {
+    background-color: #f8f9fa;
+    border: 1px solid #eaecef;
+    border-radius: 6px;
+    padding: 16px;
+    margin: 1.5rem 0;
+    overflow: auto;
+}
+
+code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    padding: 0.2em 0.4em;
+    background-color: #f6f8fa;
+    border-radius: 3px;
+}
+
+/* Code blocks - Dark theme */
+@media (prefers-color-scheme: dark) {
+    pre {
+        background-color: #2d333b;
+        border-color: #444c56;
+    }
+
+    code {
+        background-color: #2d333b;
+        color: #c9d1d9;
+    }
+
+    /* Remove forced dark background */
+    .content pre {
+        background-color: #2d333b;
+    }
+    
+    .content pre code {
+        background: none;
+        color: #c9d1d9;
+    }
+}
+
+/* Code Copy Button */
+.copy-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #fff;
+    border: 1px solid #eaecef;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+    z-index: 1;
+}
+
+.copy-button:hover {
+    background: var(--arch-primary);
+    color: #fff;
+    border-color: var(--arch-primary);
+}
+
+/* Floating TOC */
+.floating-toc {
+    display: none;
+}
+
+@media (min-width: 1200px) {
+    .floating-toc:not(:empty) ul:not(:empty) {
+        display: block;
+        position: fixed;
+        right: 0;
+        top: calc(var(--menu-bar-height) + 2rem);
+        width: 200px;
+        background: var(--bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+        max-height: calc(100vh - var(--menu-bar-height) - 4rem);
+        overflow-y: auto;
+        margin-right: 1rem;
+    }
+    
+    .floating-toc:empty,
+    .floating-toc ul:empty {
+        display: none;
+    }
+}
+
+.floating-toc h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 0.5rem;
+}
+
+.floating-toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.floating-toc li {
+    margin: 0.5rem 0;
+}
+
+.floating-toc a {
+    text-decoration: none;
+    color: var(--arch-secondary);
+    font-size: 0.9em;
+}
+
+.floating-toc a:hover {
+    color: var(--arch-primary);
+}
+
+.floating-toc a.h3 {
+    padding-left: 1rem;
+    font-size: 0.85em;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --arch-secondary: #e2e4e7;
+        --bg: #1a1b1d;
+        --fg: #e2e4e7;
+        --border-color: #2d3033;
+    }
+
+    body {
+        background-color: #141519;
+        color: var(--fg);
+    }
+    
+    .content {
+        background-color: #22252a;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+    }
+
+    .feature-grid li,
+    .component-box,
+    .prerequisites-box,
+    .next-steps-grid a,
+    .help-box,
+    .floating-toc {
+        background: #1e2227;
+        border-color: #2d3033;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .path-box,
+    .architecture-overview {
+        background: #2d333b;
+    }
+
+    .info {
+        background: #1a2936;
+        border-left-color: var(--arch-info);
+        color: #e2e4e7;
+    }
+
+    .info a {
+        color: #58a6ff;
+    }
+
+    .info a:hover {
+        color: #79b8ff;
+    }
+
+    .tip {
+        background: #1a2e25;
+        border-left-color: var(--arch-success);
+    }
+
+    .warning {
+        background: #2e2616;
+        border-left-color: var(--arch-warning);
+    }
+
+    .error {
+        background: #2e1616;
+        border-left-color: var(--arch-error);
+    }
+
+    pre, code {
+        background-color: #1e2227 !important;
+        border-color: #2d3033;
+        color: #e2e4e7;
+    }
+
+    .copy-button {
+        background: #2d333b;
+        border-color: #444c56;
+        color: #c9d1d9;
+    }
+
+    .copy-button:hover {
+        background: var(--arch-primary);
+        color: #fff;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .floating-toc,
+    .copy-button {
+        display: none;
+    }
+}
+
+/* Navigation elements */
+.nav-wide-wrapper { 
+    display: none;
+}
+
+.mobile-nav-chapters {
+    display: none;
+}
+
+@media only screen and (min-width: 1101px) {
+    .nav-wide-wrapper { 
+        display: block;
+        position: fixed;
+        top: 50%;
+        z-index: 1;
+        pointer-events: none;
+        width: calc(var(--content-max-width) + 140px);
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 0 4rem;
+        transition: left 0.3s ease;
+    }
+
+    /* When sidebar is visible, adjust the nav wrapper position */
+    .sidebar-visible .nav-wide-wrapper {
+        left: calc(50% + var(--sidebar-width)/2);
+    }
+
+    .nav-wide-wrapper a {
+        pointer-events: auto;
+        position: absolute;
+        background: none;
+        border: none;
+        padding: 0;
+        color: var(--fg);
+    }
+
+    .nav-wide-wrapper .next {
+        right: 0;
+    }
+
+    .nav-wide-wrapper .previous {
+        left: 0;
+    }
+}
+
+@media only screen and (max-width: 1100px) {
+    .mobile-nav-chapters {
+        display: flex;
+        justify-content: space-between;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        padding: 1rem;
+        background: var(--bg);
+        border-top: 1px solid var(--border-color);
+    }
+
+    /* Remove if it exists */
+    #menu-bar-hover-placeholder {
+        display: none;
+    }
+}
+
+/* Menu button */
+#menu-bar-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: rgba(0,0,0,0.05);
+    color: var(--fg);
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 10000;
+    padding: 0;
+    position: fixed;
+    top: 8px;
+    left: 8px;
+    font-size: 1.5em;
+    transition: background-color 0.2s ease;
+}
+
+#menu-bar-toggle:hover, 
+#menu-bar-toggle:focus {
+    background: rgba(0,0,0,0.1);
+}
+
+/* Theme button and popup container */
+.theme-container {
+    position: relative;
+    z-index: 1002;
+}
+
+#theme-toggle {
+    padding: 5px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--fg);
+    cursor: pointer;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 1002;
+    min-width: 100px;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+#theme-toggle:hover {
+    background-color: var(--border-color);
+}
+
+.theme-popup {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.5rem;
+    z-index: 1003;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    min-width: 120px;
+    margin-top: 4px;
+    display: none;
+}
+
+.theme-popup button {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: none;
+    background: none;
+    color: var(--fg);
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.2s;
+}
+
+.theme-popup button:hover {
+    background-color: var(--border-color);
+}
+
+.theme-popup.visible {
+    display: block;
+}
+
+/* Headers and arrows */
+h1, h2, h3, h4 {
+    position: relative;
+    padding-right: 1.5em;
+}
+
+.header-link {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 0.8em;
+    color: var(--arch-accent);
+    text-decoration: none;
+}
+
+h1:hover .header-link,
+h2:hover .header-link,
+h3:hover .header-link,
+h4:hover .header-link {
+    opacity: 1;
+}
+
+.chapter-item {
+    margin: 5px 0;
+}
+
+.chapter li {
+    margin: 5px 0;
+}
+
+/* Hide collapse arrows by default */
+.collapse-toggle {
+    display: none;
+}
+
+/* Headers and section toggles */
+.section-toggle {
+    font-size: 0.7em;
+    color: #999;
+    margin-right: 0.3em;
+    cursor: pointer;
+    user-select: none;
+    opacity: 0.6;
+}
+
+h1 .section-toggle,
+h2 .section-toggle,
+h3 .section-toggle {
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+h1:hover .section-toggle,
+h2:hover .section-toggle,
+h3:hover .section-toggle {
+    opacity: 0.6;
+}
+
+/* Remove default arrow styles */
+details > summary {
+    list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+    display: none;
+}
+
+/* Custom arrow style */
+details > summary::before {
+    content: "›";
+    display: inline-block;
+    font-size: 0.9em;
+    color: #999;
+    margin-right: 0.4em;
+    transition: transform 0.2s;
+    opacity: 0.6;
+}
+
+details[open] > summary::before {
+    transform: rotate(90deg);
+}
+
+/* Headers */
+h1, h2, h3, h4 {
+    position: relative;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+h1 { 
+    font-size: 2em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--border-color);
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 1.5em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--border-color);
+}
+
+h3 {
+    font-size: 1.2em;
+}
+
+/* Header links */
+.header-link {
+    opacity: 0;
+    font-size: 0.8em;
+    margin-left: 0.3em;
+    color: #999;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.header-link::before {
+    content: "#";
+    font-size: 0.9em;
+}
+
+h1:hover .header-link,
+h2:hover .header-link,
+h3:hover .header-link {
+    opacity: 0.6;
+}
+
+.header-link:hover {
+    opacity: 1 !important;
+}
+
+/* Inline links */
+.content a {
+    color: #5ba9ee;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.content a:hover {
+    color: #7cbaef;
+}
+
+/* Markdown links */
+.content a[href^="#"] {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Code links */
+.content code a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.content code a:hover {
+    text-decoration: none;
+}
+
+/* List items */
+.content li {
+    margin: 0.5em 0;
+}
+
+.content li p {
+    margin: 0;
+}
+
+/* Remove if it exists for both desktop and mobile screens */
+.menu-bar-hover-placeholder {
+    display: none;
+}
+
+@media only screen and (min-width: 1101px) {
+    .sidebar-visible #menu-bar {
+        left: var(--sidebar-width);
+    }
+}
+
+/* Add this to handle the page wrapper spacing */
+.page-wrapper {
+    /* padding-top: var(--menu-bar-height); */
+    margin-top: 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Sidebar improvements for dark mode */
+@media (prefers-color-scheme: dark) {
+    /* Sidebar background and border */
+    .sidebar {
+        background: linear-gradient(to bottom, #22252a, #1f2227);
+        border-right: 1px solid #333;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Main navigation items */
+    .sidebar .chapter {
+        color: #e2e4e7;
+    }
+
+    .sidebar .chapter-item {
+        color: #c9d1d9;
+    }
+
+    /* Links in sidebar */
+    .sidebar a {
+        color: #c9d1d9 !important;
+    }
+
+    .sidebar a:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--arch-primary) !important;
+    }
+
+    /* Active/selected state */
+    .sidebar .active {
+        background: #2d3033;
+    }
+
+    .sidebar .active a {
+        color: var(--arch-accent) !important;
+    }
+
+    /* Section headers */
+    .sidebar h2,
+    .sidebar h3 {
+        color: #e2e4e7;
+        border-bottom: 1px solid #333;
+    }
+
+    /* Nested items indentation */
+    .sidebar .chapter .chapter-item {
+        padding-left: 20px;
+        border-left: 1px solid #333;
+    }
+
+    /* Toggle indicators */
+    .section-toggle {
+        color: #8b95a1;
+    }
+}
+
+/* Feature cards in dark mode */
+@media (prefers-color-scheme: dark) {
+    .feature-grid li,
+    .component-box,
+    .prerequisites-box,
+    .next-steps-grid a {
+        background: #2d333b;
+        border: 1px solid #444c56;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    /* Feature titles */
+    .feature h4,
+    .component-box h4,
+    .prerequisites-box h4 {
+        color: #ffffff;
+        opacity: 1;
+    }
+
+    /* Feature text */
+    .feature p,
+    .component-box p,
+    .prerequisites-box p {
+        color: #e2e4e7;
+        opacity: 0.9;
+    }
+
+    /* Feature links */
+    .feature a,
+    .component-box a,
+    .prerequisites-box a {
+        color: #58a6ff;
+    }
+
+    .feature a:hover,
+    .component-box a:hover,
+    .prerequisites-box a:hover {
+        color: #79b8ff;
+    }
+
+    /* Grayed out text */
+    .feature .text-muted,
+    .component-box .text-muted,
+    .prerequisites-box .text-muted {
+        color: #8b949e;
+    }
+}
+
+/* Feature text contrast improvements */
+.feature p,
+.component-box p,
+.prerequisites-box p {
+    color: #1a1b1d;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.feature .text-muted,
+.component-box .text-muted,
+.prerequisites-box .text-muted {
+    color: #2d3033;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+    .feature p,
+    .component-box p,
+    .prerequisites-box p {
+        color: #6B7280; /* A darker grey color for the text */
+    }
+
+    .feature .text-muted,
+    .component-box .text-muted,
+    .prerequisites-box .text-muted {
+        color: #8B9467; /* A darker grey color for the muted text */
+    }
+}
+
+/* Feature headings with higher specificity */
+.feature-grid .feature h4,
+.feature-grid .feature .header {
+    color: #1a1b1d;  /* Dark color for light mode */
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1em;
+}
+
+/* Override the general header styles */
+.content .header:link,
+.content .header:visited {
+    color: #1a1b1d;  /* Dark color for light mode */
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+    .feature-grid .feature h4,
+    .feature-grid .feature .header,
+    .content .header:link,
+    .content .header:visited {
+        color: #999999;
+        opacity: 1;
+    }
+}
+
+/* Dark mode override for menu title */
+@media (prefers-color-scheme: dark) {
+    .menu-title {
+        color: #ffffff;
+    }
+    
+    .menu-title:hover {
+        color: var(--arch-accent);
+    }
+}
+
+/* Mermaid diagrams */
+.mermaid {
+    text-align: center;
+    margin: 1.5rem 0;
+    background: var(--bg);
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.mermaid svg {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Mobile optimizations for Mermaid diagrams */
+@media only screen and (max-width: 768px) {
+    /* Make text smaller in Mermaid diagrams on mobile */
+    .mermaid svg text {
+        font-size: 12px !important;
+    }
+    
+    /* Specifically target node labels to ensure they're fully visible */
+    .mermaid .node text,
+    .mermaid .nodeLabel {
+        font-size: 11px !important;
+        line-height: 1.2 !important; 
+    }
+    
+    /* Slightly increase node boxes to accommodate text better */
+    .mermaid .node rect,
+    .mermaid .node polygon,
+    .mermaid .node circle {
+        transform: scale(1.05, 1); /* Scale wider but not taller */
+    }
+    
+    /* Scale down diagram slightly to fit better on mobile */
+    .mermaid svg {
+        transform: scale(0.95);
+        transform-origin: center top;
+        margin: 0 auto !important;
+    }
+    
+    /* Ensure container doesn't overflow */
+    .mermaid {
+        overflow-x: auto;
+        max-width: 100%;
+        padding: 0.75rem;
+    }
+}
+
+/* Extra small screens need even smaller text */
+@media only screen and (max-width: 480px) {
+    /* Even more compact layout */
+    .content {
+        padding: 1rem 0.75rem !important;
+        margin-bottom: 4rem !important;
+    }
+    
+    /* Simpler lists */
+    .content ul, 
+    .content ol {
+        padding-left: 1.25rem !important;
+    }
+    
+    /* Smaller diagrams */
+    .content .mermaid svg {
+        max-width: 100% !important;
+        transform: scale(0.9) !important;
+        transform-origin: left top !important;
+    }
+}
+
+/* Sidebar headers */
+.sidebar h2, 
+.sidebar h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+/* ASCII diagrams */
+.content pre.ascii-diagram {
+    position: relative;
+    margin: 1.5rem 0;
+    background-color: #f6f8fa;
+    border-radius: 6px;
+    padding: 16px;
+    border: 1px solid #eaecef;
+    overflow-x: auto;
+}
+
+.content pre.ascii-diagram code {
+    font-family: "Consolas", "Monaco", "Courier New", monospace;
+    font-size: 14px;
+    line-height: 1.2;
+    white-space: pre;
+    display: block;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    tab-size: 8;
+    -moz-tab-size: 8;
+    overflow-x: auto;
+}
+
+/* Specific ASCII diagram styling */
+.content pre code.language-ascii {
+    font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace !important;
+    line-height: 1.2 !important;
+    white-space: pre !important;
+    font-size: 14px !important;
+    tab-size: 4;
+}
+
+/* Dark mode support for diagrams */
+@media (prefers-color-scheme: dark) {
+    .content pre {
+        background-color: #2d333b !important;
+        border-color: #444c56;
+    }
+    
+    .content pre code {
+        color: #c9d1d9;
+    }
+}
+
+/* Navigation arrows */
+.nav-wide-wrapper { 
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.nav-wide-wrapper a {
+    pointer-events: auto;
+    position: absolute;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--fg);
+    text-decoration: none;
+    box-shadow: none;
+}
+
+.nav-wide-wrapper .previous {
+    left: -70px;
+}
+
+.nav-wide-wrapper .next {
+    right: -70px;
+}
+
+/* Page content */
+main {
+    position: relative;
+    padding: 0 25px;
+    margin: 0 auto;
+    max-width: calc(var(--content-max-width) + 50px);
+}
+
+/* Right sidebar (On this page) */
+.right-sidebar {
+    position: fixed;
+    right: 0;
+    top: 40px;
+    width: var(--sidebar-width);
+    height: calc(100vh - 40px);
+    background: var(--bg);
+    border-left: 1px solid var(--border-color);
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 99;
+}
+
+.right-sidebar h2 {
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #666;
+    margin: 0 0 1em 0;
+    padding: 0;
+    border: none;
+}
+
+.right-sidebar a {
+    color: var(--sidebar-fg);
+    text-decoration: none;
+}
+
+.right-sidebar a:hover {
+    text-decoration: underline;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+    pre code.language-ascii {
+        background: #2d333b !important;
+        border-color: #444c56;
+    }
+}
+
+/* Enhanced mobile styling with better bottom margin */
+@media only screen and (max-width: 480px) {
+    .content {
+        padding: 1rem 0.75rem !important;
+        margin-bottom: 4rem !important;
+    }
+}
+
+/* Add subtle transition effects */
+.sidebar a, 
+.sidebar .chapter-item > .section {
+    transition: all 0.2s ease-out;
+}

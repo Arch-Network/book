@@ -1,0 +1,496 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Bitcoin and Electrs Setup - The Arch Book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for the Arch Network - A Bitcoin-native computation environment">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item affix "><li class="part-title">Getting Started</li><li class="chapter-item "><a href="../getting-started/quick-start.html">Quick Start Guide</a></li><li class="chapter-item expanded "><a href="../getting-started/environment-setup.html">Environment Setup</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../getting-started/bitcoin-and-electrs-setup.html" class="active">Bitcoin and Electrs Setup</a></li><li class="chapter-item "><a href="../getting-started/setting-up-a-project.html">Setting up a Project</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../concepts/nodes.html">Nodes</a></li></ol></li></ol></li><li class="chapter-item "><a href="../getting-started/resources.html">Resources</a></li><li class="chapter-item affix "><li class="part-title">Core Concepts</li><li class="chapter-item "><a href="../concepts/architecture.html">Architecture Overview</a></li><li class="chapter-item "><a href="../concepts/network-architecture.html">Network Architecture</a></li><li class="chapter-item "><a href="../concepts/bitcoin-integration.html">Bitcoin Integration</a></li><li class="chapter-item "><a href="../concepts/nodes.html">Nodes</a></li><li class="chapter-item "><a href="../program/program.html">Programs</a></li><li class="chapter-item "><a href="../program/utxo.html">UTXOs</a></li><li class="chapter-item affix "><li class="part-title">Programs and beyond</li><li class="chapter-item "><a href="../basics/basics.html">Basics</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../basics/building-deploying-interfacing.html">Building, deploying and interfacing</a></li><li class="chapter-item "><a href="../basics/interaction.html">Program interaction</a></li></ol></li><li class="chapter-item "><a href="../guides/guides.html">Guides</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../guides/how-to-write-arch-program.html">How to write an Arch program</a></li><li class="chapter-item "><a href="../guides/how-to-write-oracle-program.html">How to write an oracle program</a></li><li class="chapter-item "><a href="../guides/how-to-create-a-fungible-token.html">How to create a fungible token</a></li><li class="chapter-item "><a href="../guides/how-to-build-runes-swap.html">How to build a Bitcoin Runes swap application</a></li><li class="chapter-item "><a href="../guides/how-to-configure-local-validator-bitcoin-testnet4.html">How to configure the local validator with Bitcoin Testnet4</a></li><li class="chapter-item "><a href="../guides/how-to-build-lending-protocol.html">How to Build a Bitcoin Lending Protocol</a></li></ol></li><li class="chapter-item "><li class="part-title">Reference</li><li class="chapter-item "><a href="../program/program.html">Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../program/account.html">Account Structure</a></li><li class="chapter-item "><a href="../program/accounts.html">Account Guide</a></li><li class="chapter-item "><a href="../program/system-functions.html">System Functions</a></li><li class="chapter-item "><a href="../program/entrypoint.html">Entrypoint</a></li><li class="chapter-item "><a href="../program/instructions-and-messages.html">Instructions and Messages</a></li><li class="chapter-item "><a href="../program/pubkey.html">Pubkey</a></li><li class="chapter-item "><a href="../program/syscall.html">Syscall</a></li><li class="chapter-item "><a href="../program/system-instruction.html">System Instruction</a></li><li class="chapter-item "><a href="../program/utxo.html">UTXO</a></li></ol></li><li class="chapter-item "><a href="../sdk/sdk.html">SDK</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/processed-transaction.html">Processed Transaction</a></li><li class="chapter-item "><a href="../sdk/runtime-transaction.html">Runtime Transaction</a></li><li class="chapter-item "><a href="../sdk/signature.html">Signature</a></li></ol></li><li class="chapter-item "><a href="../system-program/system-program.html">System Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../system-program/create-account.html">CreateAccount</a></li><li class="chapter-item "><a href="../system-program/write-bytes.html">WriteBytes</a></li><li class="chapter-item "><a href="../system-program/make-executable.html">MakeExecutable</a></li><li class="chapter-item "><a href="../system-program/assign-ownership.html">AssignOwnership</a></li></ol></li><li class="chapter-item "><a href="../rpc/rpc.html">RPC</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../rpc/http-methods.html">HTTP Methods</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../rpc/http-methods/send-transaction.html">sendTransaction</a></li><li class="chapter-item "><a href="../rpc/http-methods/send-transactions.html">sendTransactions</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-account-address.html">getAccountAddress</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-program-accounts.html">getProgramAccounts</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-block.html">getBlock</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-block-count.html">getBlockCount</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-block-hash.html">getBlockHash</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-current-state.html">getCurrentState</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-peers.html">getPeers</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-processed-transaction.html">getProcessedTransaction</a></li><li class="chapter-item "><a href="../rpc/http-methods/read-account-info.html">readAccountInfo</a></li><li class="chapter-item "><a href="../rpc/http-methods/start-dkg.html">startDkg</a></li><li class="chapter-item "><a href="../rpc/http-methods/is-node-ready.html">isNodeReady</a></li><li class="chapter-item "><a href="../rpc/http-methods/reset-network.html">resetNetwork</a></li></ol></li><li class="chapter-item "><a href="../rpc/deprecated-methods.html">Deprecated Methods</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../rpc/deprecated-methods/get-account-info.html">getAccountInfo</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Arch Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book/edit/main/src/getting-started/bitcoin-and-electrs-setup.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="-setting-up-bitcoin-core-and-electrs"><a class="header" href="#-setting-up-bitcoin-core-and-electrs">🔗 Setting up Bitcoin Core and Electrs</a></h1>
+<p>Welcome to the detailed component setup guide! Here we’ll walk through setting up Bitcoin Core and Electrs, the foundational components for your Arch Network development environment.</p>
+<h2 id="-what-were-building"><a class="header" href="#-what-were-building">🎯 What We’re Building</a></h2>
+<pre class="mermaid">graph TD
+    A[Your dApp] --&gt;|Interacts with| B[Local Validator]
+    B --&gt;|Queries| C[Electrs]
+    C --&gt;|Reads| D[Bitcoin Core]
+    D --&gt;|Manages| E[Local Blockchain]
+    style A fill:#e74c3c
+    style B fill:#2ecc71
+    style C fill:#3498db
+    style D fill:#f9d71c
+    style E fill:#95a5a6
+</pre>
+<h3 id="-understanding-the-components"><a class="header" href="#-understanding-the-components">🧩 Understanding the Components</a></h3>
+<h4 id="bitcoin-core-"><a class="header" href="#bitcoin-core-">Bitcoin Core 🏦</a></h4>
+<ul>
+<li>Your personal Bitcoin node</li>
+<li>Manages a local blockchain in regtest mode</li>
+<li>Perfect for development - create test Bitcoin at will!</li>
+</ul>
+<h4 id="electrs-"><a class="header" href="#electrs-">Electrs ⚡</a></h4>
+<ul>
+<li>Lightning-fast Bitcoin data indexer</li>
+<li>Makes blockchain queries super efficient</li>
+<li>Essential for real-time dApp responses</li>
+</ul>
+<h2 id="-progress-tracker"><a class="header" href="#-progress-tracker">📋 Progress Tracker</a></h2>
+<ul>
+<li><input disabled="" type="checkbox"/>
+Install Bitcoin Core dependencies</li>
+<li><input disabled="" type="checkbox"/>
+Build Bitcoin Core</li>
+<li><input disabled="" type="checkbox"/>
+Configure Bitcoin Core</li>
+<li><input disabled="" type="checkbox"/>
+Test Bitcoin Core</li>
+<li><input disabled="" type="checkbox"/>
+Build Electrs</li>
+<li><input disabled="" type="checkbox"/>
+Configure Electrs</li>
+<li><input disabled="" type="checkbox"/>
+Test the full stack</li>
+</ul>
+<h2 id="1--bitcoin-core-setup"><a class="header" href="#1--bitcoin-core-setup">1. 🏗️ Bitcoin Core Setup</a></h2>
+<h3 id="11-installing-dependencies"><a class="header" href="#11-installing-dependencies">1.1 Installing Dependencies</a></h3>
+<p>Choose your operating system:</p>
+<h4 id="-macos"><a class="header" href="#-macos">🍎 macOS</a></h4>
+<pre><code class="language-bash"># Install required dependencies via Homebrew
+brew install automake boost ccache git libevent libnatpmp libtool llvm miniupnpc pkg-config python qrencode qt@5 sqlite zeromq
+</code></pre>
+<h4 id="-ubuntudebian-linux"><a class="header" href="#-ubuntudebian-linux">🐧 Ubuntu/Debian Linux</a></h4>
+<pre><code class="language-bash"># Install required dependencies
+sudo apt-get install automake autotools-dev bsdmainutils build-essential ccache clang gcc git libboost-dev libboost-filesystem-dev libboost-system-dev libboost-test-dev libevent-dev libminiupnpc-dev libnatpmp-dev libsqlite3-dev libtool libzmq3-dev pkg-config python3 qtbase5-dev qttools5-dev qttools5-dev-tools qtwayland5 systemtap-sdt-dev
+</code></pre>
+<blockquote>
+<p>💡 <strong>What are these packages?</strong> These are the building blocks needed to compile Bitcoin Core. Each one provides essential functionality, from cryptography to networking.</p>
+</blockquote>
+<h3 id="12--building-bitcoin-core"><a class="header" href="#12--building-bitcoin-core">1.2 🏭 Building Bitcoin Core</a></h3>
+<p>Let’s get the source code and build it:</p>
+<pre><code class="language-bash"># Clone Bitcoin Core
+git clone https://github.com/bitcoin/bitcoin.git
+cd bitcoin
+
+# Switch to latest stable version
+git checkout v28.0
+
+# Prepare the build system
+./autogen.sh
+
+# Configure the build
+./configure
+
+# Build Bitcoin Core (this might take a while ☕)
+make
+
+# Install the binaries
+sudo make install
+</code></pre>
+<blockquote>
+<p>🎯 <strong>Progress Check!</strong> Run <code>bitcoin-cli --version</code> to verify the installation.</p>
+</blockquote>
+<h3 id="13--bitcoin-core-configuration"><a class="header" href="#13--bitcoin-core-configuration">1.3 ⚙️ Bitcoin Core Configuration</a></h3>
+<p>First, let’s create our configuration directory:</p>
+<pre><code class="language-bash"># For macOS
+mkdir -p ~/Library/'Application Support'/Bitcoin
+
+# For Linux
+mkdir -p ~/.bitcoin
+</code></pre>
+<p>Create your <code>bitcoin.conf</code> file:</p>
+<pre><code class="language-bash"># macOS
+nano ~/Library/'Application Support'/Bitcoin/bitcoin.conf
+
+# Linux
+nano ~/.bitcoin/bitcoin.conf
+</code></pre>
+<p>Add this configuration:</p>
+<pre><code class="language-ini"># 🌐 Network Settings
+server=1
+regtest=1
+txindex=1
+prune=0
+
+# 🔒 Security
+rpcuser=bitcoin
+# Change this in production!
+rpcpassword=bitcoinpass  
+
+# 🔧 Performance
+dbcache=150
+maxmempool=100
+
+# 🚀 Development Settings
+fallbackfee=0.001
+maxtxfee=0.002
+
+[regtest]
+rpcbind=0.0.0.0
+rpcport=18443
+wallet=testwallet
+</code></pre>
+<blockquote>
+<p>🔐 <strong>Security Note</strong>: In a production environment, always use strong, unique passwords!</p>
+</blockquote>
+<h3 id="14--launch-bitcoin-core"><a class="header" href="#14--launch-bitcoin-core">1.4 🚀 Launch Bitcoin Core</a></h3>
+<pre><code class="language-bash"># Start Bitcoin Core in regtest mode
+bitcoind -regtest -daemon
+</code></pre>
+<h4 id="-fun-experiment-create-some-test-bitcoin"><a class="header" href="#-fun-experiment-create-some-test-bitcoin">🎮 Fun Experiment: Create Some Test Bitcoin!</a></h4>
+<pre><code class="language-bash"># create wallet
+bitcoin-cli -regtest createwallet "testwallet"
+
+# Generate a new address
+ADDR=$(bitcoin-cli -regtest getnewaddress)
+
+# Mine 101 blocks (need 100 for coin maturity)
+bitcoin-cli -regtest generatetoaddress 101 $ADDR
+
+# Check your balance
+bitcoin-cli -regtest getbalance
+</code></pre>
+<blockquote>
+<p>🎉 You should see 50 BTC! In regtest mode, each block rewards you with 50 BTC.</p>
+</blockquote>
+<h2 id="2--electrs-setup"><a class="header" href="#2--electrs-setup">2. ⚡ Electrs Setup</a></h2>
+<h3 id="21--building-electrs"><a class="header" href="#21--building-electrs">2.1 🔧 Building Electrs</a></h3>
+<pre><code class="language-bash"># Clone our fork of Electrs
+git clone https://github.com/Arch-Network/electrs
+cd electrs
+
+# Build and install
+cargo install --path .
+</code></pre>
+<h3 id="22--running-electrs"><a class="header" href="#22--running-electrs">2.2 🚀 Running Electrs</a></h3>
+<p>For local development:</p>
+<pre><code class="language-bash">electrs -vvvv \
+    --daemon-dir ~/.bitcoin \
+    --network regtest \
+    --cookie bitcoin:bitcoinpass \
+    --main-loop-delay 0 
+</code></pre>
+<p>You should see output like:</p>
+<pre><code>INFO - Electrum RPC server running on 127.0.0.1:50001
+INFO - REST server running on 127.0.0.1:3002
+</code></pre>
+<h2 id="-verification"><a class="header" href="#-verification">🎯 Verification</a></h2>
+<p>Let’s make sure everything is working:</p>
+<pre><code class="language-bash"># 1. Check Bitcoin Core
+bitcoin-cli -regtest getblockchaininfo
+
+# 2. Check Electrs
+curl http://localhost:3002/blocks/tip/height
+</code></pre>
+<h2 id="3--testnet4-configuration"><a class="header" href="#3--testnet4-configuration">3. 🌐 Testnet4 Configuration</a></h2>
+<p>Want to test your dApp in a more realistic environment? Let’s set up testnet4!</p>
+<h3 id="31-bitcoin-core-for-testnet4"><a class="header" href="#31-bitcoin-core-for-testnet4">3.1 Bitcoin Core for Testnet4</a></h3>
+<p>Update your <code>bitcoin.conf</code> to include testnet4 settings:</p>
+<pre><code class="language-ini"># Core Settings [Keep your existing settings]
+
+# Testnet4 Configuration
+[testnet4]
+rpcbind=0.0.0.0           # Bind to all network interfaces
+rpcport=18332             # RPC port for testnet
+wallet=testwallet         # Default wallet name for testnet
+</code></pre>
+<h3 id="32-electrs-for-testnet4"><a class="header" href="#32-electrs-for-testnet4">3.2 Electrs for Testnet4</a></h3>
+<p>For connecting to testnet4, use this configuration:</p>
+<pre><code class="language-bash"># Run Electrs with testnet4 configuration
+electrs -vvvv \
+    --network testnet4 \
+    --daemon-rpc-addr &lt;BITCOIN_NODE_ENDPOINT&gt;:&lt;PORT&gt; \
+    --cookie "&lt;BITCOIN_RPC_USER&gt;:&lt;BITCOIN_RPC_PASSWORD&gt;" \
+    --db-dir ./db \
+    --main-loop-delay 0 \
+    --lightmode \
+    --jsonrpc-import \
+    --electrum-rpc-addr="127.0.0.1:40001" \
+    --http-addr="127.0.0.1:3004"
+</code></pre>
+<p>You should see output like:</p>
+<pre><code class="language-bash">INFO - Electrum RPC server running on 127.0.0.1:40001
+INFO - REST server running on 127.0.0.1:3004
+</code></pre>
+<h3 id="33-local-validator-with-testnet4"><a class="header" href="#33-local-validator-with-testnet4">3.3 Local Validator with Testnet4</a></h3>
+<p>Start your local validator with testnet4 configuration:</p>
+<pre><code class="language-bash">cli validator start \
+    --network-mode testnet4 \
+    --bitcoin-rpc-endpoint &lt;BITCOIN_NODE_ENDPOINT&gt; \
+    --bitcoin-rpc-port &lt;PORT&gt; \
+    --bitcoin-rpc-username &lt;BITCOIN_RPC_USER&gt; \
+    --bitcoin-rpc-password &lt;BITCOIN_RPC_PASSWORD&gt;
+</code></pre>
+<h2 id="4--docker-configuration-alternative"><a class="header" href="#4--docker-configuration-alternative">4. 🐳 Docker Configuration (Alternative)</a></h2>
+<p>If you prefer using Docker for a more isolated setup:</p>
+<pre><code class="language-bash"># Pull the Bitcoin Core image
+docker pull ruimarinho/bitcoin-core:latest
+
+# Run Bitcoin Core in a container
+docker run -d --name bitcoin-core \
+    -p 18443:18443 \
+    -e BITCOIN_RPC_USER=bitcoin \
+    -e BITCOIN_RPC_PASSWORD=bitcoinpass \
+    ruimarinho/bitcoin-core:latest \
+    -regtest=1 \
+    -txindex=1 \
+    -rpcbind=0.0.0.0 \
+    -rpcallowip=0.0.0.0/0 \
+    -rpcuser=bitcoin \
+    -rpcpassword=bitcoinpass
+</code></pre>
+<h2 id="5--next-steps"><a class="header" href="#5--next-steps">5. 🚀 Next Steps</a></h2>
+<p>Now that you have Bitcoin Core and Electrs running, you can:</p>
+<ol>
+<li><a href="./setting-up-a-project.html">Set up your first Arch Network project</a></li>
+<li><a href="../concepts/architecture.html">Explore the Arch Network architecture</a></li>
+<li><a href="../guides/how-to-write-arch-program.html">Learn how to write your first Arch program</a></li>
+</ol>
+<h2 id="-troubleshooting"><a class="header" href="#-troubleshooting">🆘 Troubleshooting</a></h2>
+<h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
+<h4 id="connection-refused-errors"><a class="header" href="#connection-refused-errors">“Connection refused” errors</a></h4>
+<p>Make sure your Bitcoin Core is running. Check with:</p>
+<pre><code class="language-bash">bitcoin-cli -regtest getblockchaininfo
+</code></pre>
+<h4 id="electrs-cant-connect-to-bitcoin-core"><a class="header" href="#electrs-cant-connect-to-bitcoin-core">Electrs can’t connect to Bitcoin Core</a></h4>
+<p>Double-check the cookie and network settings:</p>
+<pre><code class="language-bash"># Verify RPC connection
+curl --user bitcoin:bitcoinpass -d '{"jsonrpc":"1.0","method":"getblockchaininfo","params":[]}' -H 'content-type:text/plain;' http://127.0.0.1:18443/
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../getting-started/environment-setup.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../getting-started/setting-up-a-project.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../getting-started/environment-setup.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../getting-started/setting-up-a-project.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/mermaid.min.js"></script>
+        <script src="../theme/mermaid-init.js"></script>
+        <script src="../theme/custom.js"></script>
+
+
+    </div>
+    </body>
+</html>

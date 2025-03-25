@@ -1,0 +1,412 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>How to write an oracle program - The Arch Book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for the Arch Network - A Bitcoin-native computation environment">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item affix "><li class="part-title">Getting Started</li><li class="chapter-item "><a href="../getting-started/quick-start.html">Quick Start Guide</a></li><li class="chapter-item "><a href="../getting-started/environment-setup.html">Environment Setup</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../getting-started/bitcoin-and-electrs-setup.html">Bitcoin and Electrs Setup</a></li><li class="chapter-item "><a href="../getting-started/setting-up-a-project.html">Setting up a Project</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../concepts/nodes.html">Nodes</a></li></ol></li></ol></li><li class="chapter-item "><a href="../getting-started/resources.html">Resources</a></li><li class="chapter-item affix "><li class="part-title">Core Concepts</li><li class="chapter-item "><a href="../concepts/architecture.html">Architecture Overview</a></li><li class="chapter-item "><a href="../concepts/network-architecture.html">Network Architecture</a></li><li class="chapter-item "><a href="../concepts/bitcoin-integration.html">Bitcoin Integration</a></li><li class="chapter-item "><a href="../concepts/nodes.html">Nodes</a></li><li class="chapter-item "><a href="../program/program.html">Programs</a></li><li class="chapter-item "><a href="../program/utxo.html">UTXOs</a></li><li class="chapter-item affix "><li class="part-title">Programs and beyond</li><li class="chapter-item "><a href="../basics/basics.html">Basics</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../basics/building-deploying-interfacing.html">Building, deploying and interfacing</a></li><li class="chapter-item "><a href="../basics/interaction.html">Program interaction</a></li></ol></li><li class="chapter-item expanded "><a href="../guides/guides.html">Guides</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../guides/how-to-write-arch-program.html">How to write an Arch program</a></li><li class="chapter-item expanded "><a href="../guides/how-to-write-oracle-program.html" class="active">How to write an oracle program</a></li><li class="chapter-item "><a href="../guides/how-to-create-a-fungible-token.html">How to create a fungible token</a></li><li class="chapter-item "><a href="../guides/how-to-build-runes-swap.html">How to build a Bitcoin Runes swap application</a></li><li class="chapter-item "><a href="../guides/how-to-configure-local-validator-bitcoin-testnet4.html">How to configure the local validator with Bitcoin Testnet4</a></li><li class="chapter-item "><a href="../guides/how-to-build-lending-protocol.html">How to Build a Bitcoin Lending Protocol</a></li></ol></li><li class="chapter-item "><li class="part-title">Reference</li><li class="chapter-item "><a href="../program/program.html">Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../program/account.html">Account Structure</a></li><li class="chapter-item "><a href="../program/accounts.html">Account Guide</a></li><li class="chapter-item "><a href="../program/system-functions.html">System Functions</a></li><li class="chapter-item "><a href="../program/entrypoint.html">Entrypoint</a></li><li class="chapter-item "><a href="../program/instructions-and-messages.html">Instructions and Messages</a></li><li class="chapter-item "><a href="../program/pubkey.html">Pubkey</a></li><li class="chapter-item "><a href="../program/syscall.html">Syscall</a></li><li class="chapter-item "><a href="../program/system-instruction.html">System Instruction</a></li><li class="chapter-item "><a href="../program/utxo.html">UTXO</a></li></ol></li><li class="chapter-item "><a href="../sdk/sdk.html">SDK</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/processed-transaction.html">Processed Transaction</a></li><li class="chapter-item "><a href="../sdk/runtime-transaction.html">Runtime Transaction</a></li><li class="chapter-item "><a href="../sdk/signature.html">Signature</a></li></ol></li><li class="chapter-item "><a href="../system-program/system-program.html">System Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../system-program/create-account.html">CreateAccount</a></li><li class="chapter-item "><a href="../system-program/write-bytes.html">WriteBytes</a></li><li class="chapter-item "><a href="../system-program/make-executable.html">MakeExecutable</a></li><li class="chapter-item "><a href="../system-program/assign-ownership.html">AssignOwnership</a></li></ol></li><li class="chapter-item "><a href="../rpc/rpc.html">RPC</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../rpc/http-methods.html">HTTP Methods</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../rpc/http-methods/send-transaction.html">sendTransaction</a></li><li class="chapter-item "><a href="../rpc/http-methods/send-transactions.html">sendTransactions</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-account-address.html">getAccountAddress</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-program-accounts.html">getProgramAccounts</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-block.html">getBlock</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-block-count.html">getBlockCount</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-block-hash.html">getBlockHash</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-current-state.html">getCurrentState</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-peers.html">getPeers</a></li><li class="chapter-item "><a href="../rpc/http-methods/get-processed-transaction.html">getProcessedTransaction</a></li><li class="chapter-item "><a href="../rpc/http-methods/read-account-info.html">readAccountInfo</a></li><li class="chapter-item "><a href="../rpc/http-methods/start-dkg.html">startDkg</a></li><li class="chapter-item "><a href="../rpc/http-methods/is-node-ready.html">isNodeReady</a></li><li class="chapter-item "><a href="../rpc/http-methods/reset-network.html">resetNetwork</a></li></ol></li><li class="chapter-item "><a href="../rpc/deprecated-methods.html">Deprecated Methods</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../rpc/deprecated-methods/get-account-info.html">getAccountInfo</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Arch Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book/edit/main/src/guides/how-to-write-oracle-program.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="how-to-write-an-oracle-program"><a class="header" href="#how-to-write-an-oracle-program">How to write an oracle program</a></h1>
+<p>This guide walks through the innerworkings of an oracle program as well as details how oracle data can be utilized by other programs on Arch Network.</p>
+<p>Table of Contents:</p>
+<ul>
+<li><a href="#description">Description</a></li>
+<li><a href="#flow">Flow</a></li>
+<li><a href="#logic">Logic</a></li>
+<li><a href="#implementation">Implementation</a></li>
+</ul>
+<hr />
+<h3 id="description"><a class="header" href="#description">Description</a></h3>
+<p>Two important aspects of understanding how this oracle example is implemented within Arch:</p>
+<ol>
+<li>The oracle is a program that updates an account which holds the data</li>
+<li>No cross-program invocation occurs since only the account is updated and read from versus this being another program that gets interacted with from another program</li>
+</ol>
+<p>The source code can be found within the <a href="https://github.com/arch-network/arch-examples">arch-examples</a> repo.</p>
+<h3 id="flow"><a class="header" href="#flow">Flow</a></h3>
+<ul>
+<li>Project deploys oracle program</li>
+<li>Project creates state account that the oracle program will control in order to write state to it</li>
+<li>Projects submit data to the oracle state account by submitting instructions to the oracle program</li>
+<li>Programs include oracle state account alongside their program instructions in order to use this referenced data stored in the oracle state account within their program</li>
+<li>Projects submit instructions to oracle program periodically to update oracle state account with fresh data</li>
+</ul>
+<h3 id="logic"><a class="header" href="#logic">Logic</a></h3>
+<p>If you haven’t already read <a href="./how-to-write-arch-program.html">How to write an Arch program</a>, we recommend starting there to get a basic understanding of the program anatomy before going further.</p>
+<p>We’ll look closely at the logic block contained within the <code>update_data</code> <a href="#logic">handler</a>.</p>
+<pre><code class="language-rust ignore">pub fn update_data(
+    program_id: &amp;Pubkey,
+    accounts: &amp;[AccountInfo],
+    instruction_data: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let account_iter = &amp;mut accounts.iter();
+    let oracle_account = next_account_info(account_iter)?;
+
+    assert!(oracle_account.is_signer);
+    assert_eq!(instruction_data.len(), 8);
+
+    ...
+}</code></pre>
+<p>First, we’ll iterate over the accounts that get passed into the function, which includes the newly created state account that will be responsible for managing the oracle’s data.</p>
+<p>We then assert that the oracle state account has the appropriate authority to be written to and update what it stores within its data field. Additionally, we assert that the data we wish to update the account with is at least a certain number of bytes.</p>
+<pre><code class="language-rust ignore">let data_len = oracle_account.data.try_borrow().unwrap().len();
+if instruction_data.len() &gt; data_len {
+    oracle_account.realloc(instruction_data.len(), true)?;
+}</code></pre>
+<p>Next, we calculate the length of the new data that we are looking to store in the account and reallocate memory to the account if the new data is larger than the data currently existing within the account. This step is important for ensuring that there is no remaining, stale data stored in the account before adding new data to it.</p>
+<pre><code class="language-rust ignore">oracle_account
+    .data
+    .try_borrow_mut()
+    .unwrap()
+    .copy_from_slice(instruction_data);
+
+msg!("updated");
+
+Ok(())</code></pre>
+<p>Lastly, we store the new data that is passed into the program via the instruction to the state account for management, thus marking the end of the oracle update process.</p>
+<h3 id="implementation"><a class="header" href="#implementation">Implementation</a></h3>
+<p>Let’s look at an example implementation of this oracle program. This includes:</p>
+<ul>
+<li><a href="#create-oracle-project">Create oracle project</a></li>
+<li><a href="#deploy-program">Deploy program</a></li>
+<li><a href="#create-a-state-account">Create a state account</a></li>
+<li><a href="#update-the-state-account">Update the state account</a></li>
+<li><a href="#read-from-the-state-account">Read from the state account</a></li>
+</ul>
+<h4 id="create-oracle-project"><a class="header" href="#create-oracle-project">Create oracle project</a></h4>
+<p>First, we’ll need to create a new project to hold our oracle logic.</p>
+<pre><code class="language-bash"># Create a new directory for your oracle project
+mkdir oracle
+cd oracle
+
+# Initialize a Rust project
+cargo init --lib
+</code></pre>
+<blockquote>
+<p>Note: The new CLI does not currently have a project creation command. We’ll manually set up our project structure.</p>
+</blockquote>
+<p>You’ll need to create and edit the following files:</p>
+<ul>
+<li><code>Cargo.toml</code> - Add dependencies for your oracle program</li>
+<li><code>src/lib.rs</code> - Implement the oracle program logic</li>
+</ul>
+<p>Example program files can be found in the <a href="https://github.com/arch-network/arch-examples">arch-examples</a> repo.</p>
+<h4 id="deploy-program"><a class="header" href="#deploy-program">Deploy program</a></h4>
+<p>After the project is created, the program is written and the <code>Cargo.toml</code> is set with the proper dependencies, we can deploy the program.</p>
+<pre><code class="language-bash"># Build the program
+cargo build-sbf
+
+# Deploy the program
+cli deploy target/deploy/oracle.so
+</code></pre>
+<p>During the deployment, a new account is created for the deployed program logic and set to be executable, marking it as a <a href="../program/program.html">Program</a> rather than a data <a href="../program/account.html">Account</a>.</p>
+<h4 id="create-state-account"><a class="header" href="#create-state-account">Create state account</a></h4>
+<p>From the deployment output, you should obtain the <code>program_id</code>. We can use this <code>program_id</code> to create a state account that is owned and updated by the program.</p>
+<p>The oracle state account can then be read from by any program in order to retrieve the associated oracle data.</p>
+<pre><code class="language-bash"># The new CLI may not have direct account creation functionality
+# You'll need to use an RPC call to create the account
+
+# For example, using curl:
+curl -X POST http://localhost:9002 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"sendTransaction",
+    "params":[{
+      "signature":"your_signature",
+      "message":{
+        "accountKeys":["your_pubkey", "your_program_id"],
+        "instructions":[{
+          "programId":"system_program_id",
+          "accounts":["your_pubkey", "new_account_pubkey"],
+          "data":"encoded_create_account_data"
+        }]
+      }
+    }]
+  }'
+</code></pre>
+<blockquote>
+<p>Note: The above is a simplified example. You’ll need to properly construct, sign, and encode your transaction according to the Arch Network protocol.</p>
+</blockquote>
+<p>In this step, the account is created and ownership is transferred to the program. This allows the program to update the account’s data field which holds state for the program.</p>
+<h4 id="update-the-state-account"><a class="header" href="#update-the-state-account">Update the state account</a></h4>
+<p>Now that we have created an account and the oracle program has authority to update it, we now want to update the data that the account holds.</p>
+<p>In order to update the data stored in the account, we simply need to make a transaction that includes the data that we wish to update the oracle state account to hold, and submit this within the context of an instruction.</p>
+<p>As an example, below we have a sample rust program that we’ll use to fetch the Bitcoin fees from the <a href="https://mempool.space">mempool.space</a> API and store this fee data in our oracle state account that was created during deployment.</p>
+<blockquote>
+<p>Note: The below is a rust program and is not an Arch program.</p>
+<p>The call to update the oracle state account can be written in any programming language as it is simply an RPC call. For sake of continuity, we’re using rust along with methods from both the <code>program</code> and <code>sdk</code> crates.</p>
+</blockquote>
+<pre><code class="language-rust ignore">use bitcoincore_rpc::{Auth, Client};
+
+let mut old_feerate = 0;
+
+let body: Value = reqwest::blocking::get("https://mempool.space/api/v1/fees/recommended").unwrap().json().unwrap();
+let feerate = body.get("fastestFee").unwrap().as_u64().unwrap();
+
+if old_feerate != feerate {
+    let (txid, instruction_hash) = sign_and_send_instruction(
+        Instruction {
+            program_id: program_pubkey.clone(),
+            accounts: vec![AccountMeta {
+                pubkey: caller_pubkey.clone(),
+                is_signer: true,
+                is_writable: true
+            }],
+            data: feerate.to_le_bytes().to_vec()
+        },
+        vec![caller_keypair],
+    ).expect("signing and sending a transaction should not fail");
+
+    let processed_tx = get_processed_transaction(NODE1_ADDRESS, txid.clone()).expect("get processed transaction should not fail");
+    println!("processed_tx {:?}", processed_tx);
+
+    println!("{:?}", read_account_info(NODE1_ADDRESS, caller_pubkey.clone()));
+
+    old_feerate = feerate;
+}</code></pre>
+<h4 id="read-from-the-state-account"><a class="header" href="#read-from-the-state-account">Read from the state account</a></h4>
+<p>Below is an example of a different program (we’ll call this app-program) that would like to access the oracle data.</p>
+<p>Essentially, what happens here is that when we pass an instruction into our app-program, we must also include the oracle state account alongside any other account that we need for the app-program. In this way, the oracle state account is now in-scope and its data can be read from.</p>
+<!-- Internal -->
+<!-- External -->
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../guides/how-to-write-arch-program.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../guides/how-to-create-a-fungible-token.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../guides/how-to-write-arch-program.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../guides/how-to-create-a-fungible-token.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/mermaid.min.js"></script>
+        <script src="../theme/mermaid-init.js"></script>
+        <script src="../theme/custom.js"></script>
+
+
+    </div>
+    </body>
+</html>
