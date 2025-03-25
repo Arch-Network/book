@@ -12,22 +12,29 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Install mdBook
+      - name: Install mdBook and preprocessors
         run: |
-          curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.35/mdbook-v0.4.35-x86_64-unknown-linux-gnu.tar.gz | tar xzf -
+          # Install mdBook
+          curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.40/mdbook-v0.4.40-x86_64-unknown-linux-gnu.tar.gz | tar xzf -
           sudo mv mdbook /usr/local/bin/
+          
+          # Install mdbook-mermaid
+          curl -L https://github.com/badboy/mdbook-mermaid/releases/download/v0.12.6/mdbook-mermaid-v0.12.6-x86_64-unknown-linux-gnu.tar.gz | tar xzf -
+          sudo mv mdbook-mermaid /usr/local/bin/
+          
+          # Install mdbook-toc
+          curl -L https://github.com/badboy/mdbook-toc/releases/download/0.14.1/mdbook-toc-0.14.1-x86_64-unknown-linux-gnu.tar.gz | tar xzf -
+          sudo mv mdbook-toc /usr/local/bin/
       
       - name: Build documentation
-        run: |
-          cd book
-          mdbook build
+        run: mdbook build
       
       - name: Deploy Preview
         if: github.ref != 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./book/book
+          publish_dir: book
           publish_branch: preview
           destination_dir: preview/${{ github.event.pull_request.number || github.ref_name }}
           commit_message: "Deploy preview for ${{ github.event.pull_request.number || github.ref_name }}"
@@ -37,6 +44,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./book/book
+          publish_dir: book
           publish_branch: gh-pages
           commit_message: "Deploy production documentation" 
