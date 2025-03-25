@@ -6,9 +6,18 @@ on:
   pull_request:
     branches: [ main ]
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v3
       
@@ -29,21 +38,22 @@ jobs:
       - name: Build documentation
         run: mdbook build
       
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'book/book'
+      
       - name: Deploy Preview
         if: github.ref != 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v3
+        id: deployment
+        uses: actions/deploy-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: book
-          publish_branch: preview
-          destination_dir: preview/${{ github.event.pull_request.number || github.ref_name }}
-          commit_message: "Deploy preview for ${{ github.event.pull_request.number || github.ref_name }}"
+          preview: true
       
       - name: Deploy Production
         if: github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: book
-          publish_branch: gh-pages
-          commit_message: "Deploy production documentation" 
+        id: production
+        uses: actions/deploy-pages@v4 
