@@ -33,25 +33,36 @@ jobs:
           sudo mv mdbook-toc /usr/local/bin/
       
       - name: Build documentation
-        run: mdbook build
+        run: |
+          # Build the book
+          mdbook build
+          
+          # Create a temporary directory for the build output
+          mkdir -p /tmp/book-output
+          
+          # Move the built content to the temporary directory
+          mv book/* /tmp/book-output/
+          
+          # Clean up the book directory
+          rm -rf book
       
       - name: Deploy Preview
         if: github.ref != 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: book/book
+          publish_dir: /tmp/book-output
           publish_branch: gh-pages
           destination_dir: preview/${{ github.event.pull_request.number || github.ref_name }}
           commit_message: "Deploy preview for ${{ github.event.pull_request.number || github.ref_name }}"
-          force_orphan: true
+          force_orphan: false
       
       - name: Deploy Production
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: book/book
+          publish_dir: /tmp/book-output
           publish_branch: gh-pages
           commit_message: "Deploy production documentation"
-          force_orphan: true 
+          force_orphan: false 
