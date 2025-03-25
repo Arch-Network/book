@@ -1,0 +1,42 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: mdbook
+      
+      - name: Build documentation
+        run: |
+          cd book
+          mdbook build
+      
+      - name: Deploy Preview
+        if: github.ref != 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./book/book
+          publish_branch: preview
+          destination_dir: preview/${{ github.event.pull_request.number || github.ref_name }}
+          commit_message: "Deploy preview for ${{ github.event.pull_request.number || github.ref_name }}"
+      
+      - name: Deploy Production
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./book/book
+          publish_branch: gh-pages
+          commit_message: "Deploy production documentation" 
