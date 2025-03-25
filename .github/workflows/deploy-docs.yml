@@ -46,6 +46,10 @@ jobs:
           # Clean up the book directory
           rm -rf book
       
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v3
+      
       - name: Deploy Preview
         if: github.ref != 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
@@ -55,7 +59,7 @@ jobs:
           publish_branch: gh-pages
           destination_dir: preview/${{ github.event.pull_request.number || github.ref_name }}
           commit_message: "Deploy preview for ${{ github.event.pull_request.number || github.ref_name }}"
-          force_orphan: false
+          enable_jekyll: false
       
       - name: Deploy Production
         if: github.ref == 'refs/heads/main'
@@ -65,4 +69,4 @@ jobs:
           publish_dir: /tmp/book-output
           publish_branch: gh-pages
           commit_message: "Deploy production documentation"
-          force_orphan: false 
+          enable_jekyll: false 

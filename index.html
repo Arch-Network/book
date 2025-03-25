@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Arch Network Documentation</title>
+    <script>
+        // Get the current path
+        var path = window.location.pathname;
+        
+        // If we're at the root, redirect to the main docs
+        if (path === '/' || path === '/book/') {
+            window.location.href = '/book/introduction.html';
+        }
+        
+        // For preview paths, redirect to the index.html in that directory
+        if (path.includes('/preview/')) {
+            var base = path.split('/preview/')[0];
+            var preview = path.split('/preview/')[1].split('/')[0];
+            window.location.href = base + '/preview/' + preview + '/introduction.html';
+        }
+    </script>
+</head>
+<body>
+    <p>Redirecting to documentation...</p>
+</body>
+</html> 
