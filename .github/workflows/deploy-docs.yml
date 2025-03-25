@@ -37,25 +37,45 @@ jobs:
           # Build the book
           mdbook build
           
-          # Create a temporary directory for the build output
-          mkdir -p /tmp/book-output
-          
-          # Move the built content to the temporary directory
-          mv book/* /tmp/book-output/
-          
-          # Clean up the book directory
-          rm -rf book
-      
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v3
+          # Create root index.html for GitHub Pages
+          cat > book/index.html << 'EOL'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <meta charset="utf-8">
+              <title>Arch Network Documentation</title>
+              <script>
+                  // Get the current path
+                  var path = window.location.pathname;
+                  
+                  // Remove trailing slash if present
+                  if (path.endsWith('/')) {
+                      path = path.slice(0, -1);
+                  }
+                  
+                  // If we're at the root of the book site
+                  if (path === '/book') {
+                      window.location.href = '/book/introduction.html';
+                  }
+                  
+                  // For preview paths
+                  if (path.includes('/preview/')) {
+                      window.location.href = path + '/introduction.html';
+                  }
+              </script>
+          </head>
+          <body>
+              <p>Redirecting to documentation...</p>
+          </body>
+          </html>
+          EOL
       
       - name: Deploy Preview
         if: github.ref != 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: /tmp/book-output
+          publish_dir: book
           publish_branch: gh-pages
           destination_dir: preview/${{ github.event.pull_request.number || github.ref_name }}
           commit_message: "Deploy preview for ${{ github.event.pull_request.number || github.ref_name }}"
@@ -66,7 +86,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: /tmp/book-output
+          publish_dir: book
           publish_branch: gh-pages
           commit_message: "Deploy production documentation"
           enable_jekyll: false 
