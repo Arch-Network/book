@@ -307,4 +307,20 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Add a custom print button handler
+    setTimeout(function() {
+        // Find the print button
+        const printButton = document.querySelector('a[href="print.html"]');
+        if (printButton) {
+            // Remove the href to prevent navigation to print.html entirely
+            printButton.removeAttribute('href');
+            // Add click handler to use window.print() instead
+            printButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.print();
+            });
+            console.log('Print button handler updated to print current page');
+        }
+    }, 300);
 });

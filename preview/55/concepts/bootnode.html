@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bootnode Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <svg width="600" height="400"></svg>
+    <script>
+        const svg = d3.select("svg");
+        const width = +svg.attr("width");
+        const height = +svg.attr("height");
+
+        // Central hub
+        svg.append("circle")
+            .attr("cx", width / 2)
+            .attr("cy", height / 2)
+            .attr("r", 40)
+            .style("fill", "#3498db");
+
+        // Connections
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * 2 * Math.PI;
+            const x = (width / 2) + Math.cos(angle) * 100;
+            const y = (height / 2) + Math.sin(angle) * 100;
+
+            svg.append("line")
+                .attr("x1", width / 2)
+                .attr("y1", height / 2)
+                .attr("x2", x)
+                .attr("y2", y)
+                .style("stroke", "#333")
+                .style("stroke-width", 2);
+
+            svg.append("circle")
+                .attr("cx", x)
+                .attr("cy", y)
+                .attr("r", 10)
+                .style("fill", "#e74c3c");
+        }
+    </script>
+</body>
+</html> 
