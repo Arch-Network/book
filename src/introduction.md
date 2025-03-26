@@ -4,6 +4,10 @@
 This documentation is actively maintained. If you find any issues or have suggestions for improvements, please visit our <a href="https://github.com/arch-network/docs">GitHub repository</a>.
 </div>
 
+<div style="float: right; margin: 0 0 20px 20px; max-width: 40%;">
+    <img src="images/coders.png" alt="Developer coding" style="width: 100%; height: auto;">
+</div>
+
 ## What is Arch Network?
 
 Arch Network is a computation environment that enhances Bitcoin's capabilities by enabling complex operations on Bitcoin UTXOs through its specialized virtual machine. Unlike Layer 2 solutions, Arch Network provides a native computation layer that works directly with Bitcoin's security model.
@@ -21,18 +25,17 @@ Arch Network is a computation environment that enhances Bitcoin's capabilities b
         </ul>
         <a href="getting-started/quick-start.md" class="button">Start Building →</a>
     </div>
-    
-    <div class="path-option">
-        <h3>🏗️ Run a Validator</h3>
-        <p>Set up and run your own validator node on the Arch Network</p>
-        <ul>
-            <li>Set up Bitcoin Core and Electrs</li>
-            <li>Configure and run a validator node</li>
-            <li>Perfect for those wanting to participate in network security</li>
-        </ul>
-        <a href="getting-started/bitcoin-and-electrs-setup.md" class="button">Start Running →</a>
-    </div>
 </div>
+
+### 🏗️ Run a Validator
+
+Set up and run your own validator node on the Arch Network
+
+* Set up Bitcoin Core and Electrs
+* Configure and run a validator node
+* Perfect for those wanting to participate in network security
+
+[Start Running →](getting-started/bitcoin-and-electrs-setup.md)
 
 <div class="network-selector">
     <h3>Network Options</h3>

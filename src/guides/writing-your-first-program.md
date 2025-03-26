@@ -32,7 +32,6 @@ edition = "2021"
 
 [dependencies]
 arch-program = { git = "https://github.com/Arch-Network/arch-program" }
-arch-sdk = { git = "https://github.com/Arch-Network/arch-sdk" }
 borsh = "0.10.3"
 
 [lib]
@@ -139,63 +138,33 @@ cli deploy target/deploy/my_counter_program.so
 
 Save the Program ID output - you'll need it to interact with your program.
 
-2. Verify the deployment:
+## Creating a Counter Account
+
+Before we can use our counter, we need to create an account to store its state:
+
 ```bash
-cli show <PROGRAM_ID>
+cli create-account <PROGRAM_ID> 8
 ```
 
-## Interacting with Your Program
+Save the account address - you'll need it to interact with your counter.
 
-To interact with your program, you'll need to create a client that:
-1. Creates an account for storing the counter state
-2. Sends instructions to increment/decrement/reset the counter
-3. Reads the counter value
+## Testing Your Program
 
-Here's a basic example using the Arch SDK:
+You can now interact with your program using the CLI:
 
-```rust
-use arch_sdk::{
-    arch_program::{pubkey::Pubkey, system_instruction},
-    build_and_sign_transaction, ArchRpcClient,
-};
-
-// Create a client
-let client = ArchRpcClient::new("http://localhost:9002");
-
-// Create an account (you'll need to implement this using system_instruction)
-let create_account_ix = system_instruction::create_account(
-    &payer.pubkey(),
-    &counter_account.pubkey(),
-    rent_lamports,
-    size,
-    &program_id,
-);
-
-// Build and send transaction
-let tx = build_and_sign_transaction(vec![create_account_ix], &[&payer, &counter_account])?;
-let signature = client.send_transaction(&tx)?;
-
-// Wait for confirmation
-client.confirm_transaction(&signature)?;
-
-// Now you can send instructions to your program
-// Implementation left as an exercise
+1. Increment the counter:
+```bash
+cli invoke <PROGRAM_ID> <ACCOUNT_ADDRESS> --data 00
 ```
 
-For a complete example of program interaction, check out our [example repository](https://github.com/Arch-Network/arch-examples).
-
-## Monitoring Your Program
-
-You can monitor your program's execution using the CLI:
-
-1. View transaction logs:
+2. Decrement the counter:
 ```bash
-cli log-program-messages <TX_ID>
+cli invoke <PROGRAM_ID> <ACCOUNT_ADDRESS> --data 01
 ```
 
-2. Check transaction status:
+3. Reset the counter:
 ```bash
-cli confirm <TX_ID>
+cli invoke <PROGRAM_ID> <ACCOUNT_ADDRESS> --data 02
 ```
 
 ## Next Steps
