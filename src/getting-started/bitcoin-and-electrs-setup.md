@@ -1,6 +1,61 @@
-# 🔗 Setting up Bitcoin Core and Electrs
+# 🏗️ Running an Arch Network Validator
 
-Welcome to the detailed component setup guide! Here we'll walk through setting up Bitcoin Core and Electrs, the foundational components for your Arch Network development environment.
+Welcome to the validator setup guide! This comprehensive guide will walk you through setting up a full Arch Network validator node, including all required components. As a validator, you'll be an integral part of the network's security and computation infrastructure.
+
+## 🎯 What You'll Build
+
+```mermaid
+graph TD
+    A[Bitcoin Core] -->|Blockchain Data| B[Electrs]
+    B -->|Efficient Queries| C[Validator Node]
+    C -->|Participate in| D[Arch Network]
+    D -->|Secure| E[Bitcoin Network]
+    classDef default fill:#f8f9fa,stroke:#dee2e6,stroke-width:2px,rx:10px,ry:10px
+    classDef bitcoin fill:#ffd700,stroke:#f4c430,stroke-width:2px,rx:10px,ry:10px
+    classDef electrs fill:#4a90e2,stroke:#357abd,stroke-width:2px,rx:10px,ry:10px
+    classDef validator fill:#2ed573,stroke:#26ae60,stroke-width:2px,rx:10px,ry:10px
+    classDef arch fill:#ff6b81,stroke:#ff4757,stroke-width:2px,rx:10px,ry:10px
+    class A,E bitcoin
+    class B electrs
+    class C validator
+    class D arch
+    linkStyle default stroke:#a4b0be,stroke-width:2px
+```
+
+## 💡 Understanding Your Role
+
+As a validator, you will:
+- Execute smart contracts and validate transactions
+- Participate in network consensus
+- Help secure the Bitcoin integration
+- Earn rewards for your contribution
+
+## 📋 System Requirements
+
+Before starting, ensure you have:
+- 4+ CPU cores
+- 16GB+ RAM
+- 100GB+ SSD storage
+- Stable internet connection
+- Linux (Ubuntu 20.04+ or similar) or macOS (12.0+)
+
+## 🗺️ Setup Overview
+
+1. **Bitcoin Core Setup** (30-45 minutes)
+   - Install dependencies
+   - Build from source
+   - Configure for your network
+
+2. **Electrs Setup** (15-20 minutes)
+   - Build our custom fork
+   - Configure for your network
+
+3. **Validator Setup** (10-15 minutes)
+   - Install Arch Network CLI
+   - Configure validator node
+   - Join the network
+
+Total estimated time: 1-1.5 hours
 
 ## 🎯 What We're Building
 
@@ -10,11 +65,18 @@ graph TD
     B -->|Queries| C[Electrs]
     C -->|Reads| D[Bitcoin Core]
     D -->|Manages| E[Local Blockchain]
-    style A fill:#e74c3c
-    style B fill:#2ecc71
-    style C fill:#3498db
-    style D fill:#f9d71c
-    style E fill:#95a5a6
+    classDef default fill:#f8f9fa,stroke:#dee2e6,stroke-width:2px,rx:10px,ry:10px
+    classDef dapp fill:#ff6b81,stroke:#ff4757,stroke-width:2px,rx:10px,ry:10px
+    classDef validator fill:#2ed573,stroke:#26ae60,stroke-width:2px,rx:10px,ry:10px
+    classDef electrs fill:#4a90e2,stroke:#357abd,stroke-width:2px,rx:10px,ry:10px
+    classDef bitcoin fill:#ffd700,stroke:#f4c430,stroke-width:2px,rx:10px,ry:10px
+    classDef blockchain fill:#a4b0be,stroke:#747d8c,stroke-width:2px,rx:10px,ry:10px
+    class A dapp
+    class B validator
+    class C electrs
+    class D bitcoin
+    class E blockchain
+    linkStyle default stroke:#a4b0be,stroke-width:2px
 ```
 
 ### 🧩 Understanding the Components
@@ -42,25 +104,46 @@ graph TD
 
 ### 1.1 Installing Dependencies
 
-Choose your operating system:
+<div class="platform-select">
+<div class="platform-option">
+<h4>macOS</h4>
 
-#### 🍎 macOS
 ```bash
 # Install required dependencies via Homebrew
-brew install automake boost ccache git libevent libnatpmp libtool llvm miniupnpc pkg-config python qrencode qt@5 sqlite zeromq
+brew install automake boost ccache git libevent libnatpmp libtool \
+    llvm miniupnpc pkg-config python qrencode qt@5 sqlite zeromq
 ```
+</div>
 
-#### 🐧 Ubuntu/Debian Linux
+<div class="platform-option">
+<h4>Ubuntu/Debian Linux</h4>
+
 ```bash
 # Install required dependencies
-sudo apt-get install automake autotools-dev bsdmainutils build-essential ccache clang gcc git libboost-dev libboost-filesystem-dev libboost-system-dev libboost-test-dev libevent-dev libminiupnpc-dev libnatpmp-dev libsqlite3-dev libtool libzmq3-dev pkg-config python3 qtbase5-dev qttools5-dev qttools5-dev-tools qtwayland5 systemtap-sdt-dev
+sudo apt-get update && sudo apt-get install -y \
+    automake autotools-dev bsdmainutils build-essential ccache \
+    clang gcc git libboost-dev libboost-filesystem-dev \
+    libboost-system-dev libboost-test-dev libevent-dev \
+    libminiupnpc-dev libnatpmp-dev libsqlite3-dev libtool \
+    libzmq3-dev pkg-config python3 qtbase5-dev qttools5-dev \
+    qttools5-dev-tools qtwayland5 systemtap-sdt-dev
 ```
+</div>
 
-> 💡 **What are these packages?** These are the building blocks needed to compile Bitcoin Core. Each one provides essential functionality, from cryptography to networking.
+<div class="platform-option">
+<h4>RHEL/Fedora Linux</h4>
+
+```bash
+# Install required dependencies
+sudo dnf install -y automake boost-devel ccache clang gcc git \
+    libevent-devel libnatpmp-devel libtool make miniupnpc-devel \
+    pkg-config python3 qt5-qtbase-devel qt5-qttools-devel \
+    sqlite-devel systemtap-sdt-devel zeromq-devel
+```
+</div>
+</div>
 
 ### 1.2 🏭 Building Bitcoin Core
-
-Let's get the source code and build it:
 
 ```bash
 # Clone Bitcoin Core
@@ -76,49 +159,49 @@ git checkout v28.0
 # Configure the build
 ./configure
 
-# Build Bitcoin Core (this might take a while ☕)
-make
+# Build Bitcoin Core (this might take 30-45 minutes)
+make -j$(nproc)  # Uses all available CPU cores
 
 # Install the binaries
 sudo make install
 ```
 
-> 🎯 **Progress Check!** Run `bitcoin-cli --version` to verify the installation.
-
 ### 1.3 ⚙️ Bitcoin Core Configuration
 
-First, let's create our configuration directory:
+Create your configuration directory:
+
+<div class="platform-select">
+<div class="platform-option">
+<h4>macOS</h4>
 
 ```bash
-# For macOS
 mkdir -p ~/Library/'Application Support'/Bitcoin
-
-# For Linux
-mkdir -p ~/.bitcoin
+CONFIG_DIR=~/Library/'Application Support'/Bitcoin
 ```
+</div>
 
-Create your `bitcoin.conf` file:
+<div class="platform-option">
+<h4>Linux</h4>
 
 ```bash
-# macOS
-nano ~/Library/'Application Support'/Bitcoin/bitcoin.conf
-
-# Linux
-nano ~/.bitcoin/bitcoin.conf
+mkdir -p ~/.bitcoin
+CONFIG_DIR=~/.bitcoin
 ```
+</div>
+</div>
 
-Add this configuration:
+Create and edit your configuration file:
 
-```ini
+```bash
+cat > "$CONFIG_DIR/bitcoin.conf" << 'EOF'
 # 🌐 Network Settings
 server=1
 regtest=1
 txindex=1
 prune=0
 
-# 🔒 Security
+# 🔒 Security (Change these values in production!)
 rpcuser=bitcoin
-# Change this in production!
 rpcpassword=bitcoinpass  
 
 # 🔧 Performance
@@ -133,176 +216,15 @@ maxtxfee=0.002
 rpcbind=0.0.0.0
 rpcport=18443
 wallet=testwallet
+EOF
 ```
-
-> 🔐 **Security Note**: In a production environment, always use strong, unique passwords!
 
 ### 1.4 🚀 Launch Bitcoin Core
 
 ```bash
 # Start Bitcoin Core in regtest mode
 bitcoind -regtest -daemon
-```
 
-#### 🎮 Fun Experiment: Create Some Test Bitcoin!
-
-```bash
-# create wallet
-bitcoin-cli -regtest createwallet "testwallet"
-
-# Generate a new address
-ADDR=$(bitcoin-cli -regtest getnewaddress)
-
-# Mine 101 blocks (need 100 for coin maturity)
-bitcoin-cli -regtest generatetoaddress 101 $ADDR
-
-# Check your balance
-bitcoin-cli -regtest getbalance
-```
-
-> 🎉 You should see 50 BTC! In regtest mode, each block rewards you with 50 BTC.
-
-## 2. ⚡ Electrs Setup
-
-### 2.1 🔧 Building Electrs
-
-```bash
-# Clone our fork of Electrs
-git clone https://github.com/Arch-Network/electrs
-cd electrs
-
-# Build and install
-cargo install --path .
-```
-
-### 2.2 🚀 Running Electrs
-
-For local development:
-
-```bash
-electrs -vvvv \
-    --daemon-dir ~/.bitcoin \
-    --network regtest \
-    --cookie bitcoin:bitcoinpass \
-    --main-loop-delay 0 
-```
-
-You should see output like:
-```
-INFO - Electrum RPC server running on 127.0.0.1:50001
-INFO - REST server running on 127.0.0.1:3002
-```
-
-## 🎯 Verification
-
-Let's make sure everything is working:
-
-```bash
-# 1. Check Bitcoin Core
+# Verify it's running
 bitcoin-cli -regtest getblockchaininfo
-
-# 2. Check Electrs
-curl http://localhost:3002/blocks/tip/height
-```
-
-## 3. 🌐 Testnet4 Configuration
-
-Want to test your dApp in a more realistic environment? Let's set up testnet4!
-
-### 3.1 Bitcoin Core for Testnet4
-
-Update your `bitcoin.conf` to include testnet4 settings:
-
-```ini
-# Core Settings [Keep your existing settings]
-
-# Testnet4 Configuration
-[testnet4]
-rpcbind=0.0.0.0           # Bind to all network interfaces
-rpcport=18332             # RPC port for testnet
-wallet=testwallet         # Default wallet name for testnet
-```
-
-### 3.2 Electrs for Testnet4
-
-For connecting to testnet4, use this configuration:
-
-```bash
-# Run Electrs with testnet4 configuration
-electrs -vvvv \
-    --network testnet4 \
-    --daemon-rpc-addr <BITCOIN_NODE_ENDPOINT>:<PORT> \
-    --cookie "<BITCOIN_RPC_USER>:<BITCOIN_RPC_PASSWORD>" \
-    --db-dir ./db \
-    --main-loop-delay 0 \
-    --lightmode \
-    --jsonrpc-import \
-    --electrum-rpc-addr="127.0.0.1:40001" \
-    --http-addr="127.0.0.1:3004"
-```
-
-You should see output like:
-```bash
-INFO - Electrum RPC server running on 127.0.0.1:40001
-INFO - REST server running on 127.0.0.1:3004
-```
-
-### 3.3 Local Validator with Testnet4
-
-Start your local validator with testnet4 configuration:
-
-```bash
-cli validator start \
-    --network-mode testnet4 \
-    --bitcoin-rpc-endpoint <BITCOIN_NODE_ENDPOINT> \
-    --bitcoin-rpc-port <PORT> \
-    --bitcoin-rpc-username <BITCOIN_RPC_USER> \
-    --bitcoin-rpc-password <BITCOIN_RPC_PASSWORD>
-```
-
-## 4. 🐳 Docker Configuration (Alternative)
-
-If you prefer using Docker for a more isolated setup:
-
-```bash
-# Pull the Bitcoin Core image
-docker pull ruimarinho/bitcoin-core:latest
-
-# Run Bitcoin Core in a container
-docker run -d --name bitcoin-core \
-    -p 18443:18443 \
-    -e BITCOIN_RPC_USER=bitcoin \
-    -e BITCOIN_RPC_PASSWORD=bitcoinpass \
-    ruimarinho/bitcoin-core:latest \
-    -regtest=1 \
-    -txindex=1 \
-    -rpcbind=0.0.0.0 \
-    -rpcallowip=0.0.0.0/0 \
-    -rpcuser=bitcoin \
-    -rpcpassword=bitcoinpass
-```
-
-## 5. 🚀 Next Steps
-
-Now that you have Bitcoin Core and Electrs running, you can:
-
-1. [Set up your first Arch Network project](./setting-up-a-project.md)
-2. [Explore the Arch Network architecture](../concepts/architecture.md)
-3. [Learn how to write your first Arch program](../guides/how-to-write-arch-program.md)
-
-## 🆘 Troubleshooting
-
-### Common Issues
-
-#### "Connection refused" errors
-Make sure your Bitcoin Core is running. Check with:
-```bash
-bitcoin-cli -regtest getblockchaininfo
-```
-
-#### Electrs can't connect to Bitcoin Core
-Double-check the cookie and network settings:
-```bash
-# Verify RPC connection
-curl --user bitcoin:bitcoinpass -d '{"jsonrpc":"1.0","method":"getblockchaininfo","params":[]}' -H 'content-type:text/plain;' http://127.0.0.1:18443/
 ```

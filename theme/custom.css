@@ -11,11 +11,31 @@
     --arch-warning: #f1c40f;
     --arch-error: #e74c3c;
     --arch-info: #3498db;
+    --link-color: var(--arch-primary);
+    --link-hover-color: #ff8c00;
+    --link-hover-bg: rgba(255, 107, 43, 0.1);
+    --link-active-color: #ff8c00;
+    --link-active-bg: rgba(255, 107, 43, 0.15);
+    --transition-speed: 0.2s;
+
+    /* Rust-style sidebar colors for Arch but orange theme */
+    --sidebar-bg: #f7f7f7;
+    --sidebar-fg: #333;
+    --sidebar-active-bg: #fff3e6;
+    --sidebar-active-fg: #ff6600;
+    --sidebar-hover-bg: #fff9f2;
+    --sidebar-hover-fg: #ff8c00;
+    --sidebar-border: #ff8c00;
+    
     --z-index-sidebar: 1000;
     --z-index-menu-toggle: 1001;
     --z-index-overlay: 999;
     --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", sans-serif;
     --font-mono: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+
+    /* Override any mdBook default styles */
+    --links: var(--arch-primary) !important;
+    --links-hover: var(--link-hover-color) !important;
 }
 
 body {
@@ -233,7 +253,7 @@ body {
     }
 }
 
-/* Sidebar */
+/* Sidebar - Rust-style with orange theme */
 .sidebar {
     position: fixed;
     left: 0;
@@ -244,195 +264,186 @@ body {
     box-sizing: border-box;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
-    background: linear-gradient(to bottom, #f8f9fa, #f2f4f6);
-    z-index: 2000 !important;
+    background: var(--sidebar-bg);
+    z-index: var(--z-index-sidebar) !important;
     padding-top: calc(var(--menu-bar-height) + 10px);
     display: block;
-    transition: transform 0.3s ease !important;
-    border-right: 1px solid #eaecef;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    border-right: 1px solid #e0e0e0;
 }
 
-/* Ensure sidebar content is visible */
 .sidebar-scrollbox {
-    height: 100%;
+    padding: 0 10px 10px 10px;
     overflow-y: auto;
-    position: relative;
-    padding: 1.5rem 1rem 1rem 1.5rem;
+    height: 100%;
 }
 
-/* Clean up the chapter list */
+/* Hide scrollbar for webkit browsers */
+.sidebar-scrollbox::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar-scrollbox::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-scrollbox::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.sidebar h2, 
+.sidebar h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: var(--sidebar-fg);
+    font-size: 1.1em;
+}
+
+/* Chapter styling */
 .sidebar .chapter {
-    padding: 0;
-    margin: 0;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-left: 0;
     list-style: none;
 }
 
-/* Improve spacing between sections */
-.sidebar .chapter > .chapter-item.affix {
-    margin-top: 28px !important;
-    margin-bottom: 12px;
-    font-weight: 600;
-    font-size: 1em;
-    color: var(--arch-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.85em;
-}
-
-/* First section doesn't need top margin */
-.sidebar .chapter > .chapter-item.affix:first-child {
-    margin-top: 0 !important;
-}
-
-/* Reduce vertical spacing between items */
+/* Sidebar chapter items */
 .sidebar .chapter-item {
-    margin: 3px 0 !important;
-    padding: 0 !important;
-    line-height: 1.4;
+    padding: 0;
+    margin-bottom: 1px;
+    list-style: none;
 }
 
-/* Improve link styling and layout */
+/* Sidebar links */
 .sidebar a {
-    color: #444 !important;
+    color: var(--sidebar-fg) !important;
     text-decoration: none;
-    padding: 7px 10px 7px 5px;
-    display: inline-flex !important;
-    align-items: center;
-    width: 100%;
-    font-size: 0.95em;
     transition: all 0.2s ease;
+    display: block;
+    padding: 0.5rem 1rem;
     border-radius: 4px;
-    position: relative;
+    border-bottom: none !important;
 }
 
 .sidebar a:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    color: var(--arch-primary) !important;
+    color: var(--sidebar-hover-fg) !important;
+    background: var(--sidebar-hover-bg) !important;
+    transform: translateX(5px);
+    border-bottom: none !important;
 }
 
-/* Active item styling */
-.sidebar .chapter-item.active > a,
-.sidebar .chapter-item.active > .section,
-.sidebar .chapter-item a.active {
-    color: var(--arch-primary) !important;
-    font-weight: 500;
-    background-color: rgba(255, 107, 43, 0.08);
-}
-
-/* Selected item styling - add a left border */
-.sidebar .chapter-item a.active {
-    border-left: 3px solid var(--arch-primary);
-    padding-left: 7px;
-    position: relative;
+.sidebar .chapter-item.active > a {
+    color: var(--sidebar-active-fg);
+    background: var(--sidebar-active-bg);
     font-weight: 600;
 }
 
-/* Add a visual indicator dot for active items */
-.sidebar .chapter-item a.active::before {
-    content: "";
-    position: absolute;
-    left: -10px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 6px;
-    height: 6px;
-    background-color: var(--arch-primary);
-    border-radius: 50%;
-}
-
-/* Better chevron styling */
+/* Sidebar sections (parent items with children) */
 .sidebar .chapter-item > .section {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 7px 10px 7px 5px;
+    display: block;
+    color: var(--sidebar-fg);
+    text-decoration: none;
+    padding: 8px 10px;
     border-radius: 4px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
+/* Hover states */
+.sidebar a:hover,
 .sidebar .chapter-item > .section:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background: var(--sidebar-hover-bg);
+    color: var(--sidebar-hover-fg);
 }
 
-/* Replace default chevrons with modern symbols */
+/* Active chapter/section */
+.sidebar .chapter-item.active > a,
+.sidebar .chapter-item.active > .section,
+.sidebar .chapter-item a.active {
+    background: var(--sidebar-active-bg);
+    color: var(--sidebar-active-fg);
+    font-weight: 500;
+    border-left: 3px solid var(--sidebar-border);
+}
+
+/* Add visual indicator for active item */
+.sidebar .chapter-item a.active::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--arch-primary);
+}
+
+/* Nested chapters */
+.sidebar .chapter-item .chapter {
+    padding-left: 20px;
+}
+
+/* Dropdown indicator for expandable sections */
 .sidebar .chapter-item > .section::after {
-    content: "⟩";
-    font-size: 16px;
-    line-height: 1;
-    color: #aaa;
-    transition: all 0.2s ease;
-    opacity: 0.8;
-    margin-right: 4px;
+    content: "▼";
+    position: absolute;
+    right: 15px;
+    font-size: 0.7em;
+    transform: rotate(-90deg);
+    transition: transform 0.2s;
+    opacity: 0.7;
 }
 
-/* Change chevron for expanded sections */
+/* Rotate indicator when expanded */
 .sidebar .chapter-item.expanded > .section::after {
-    content: "⟨";
-    transform: rotate(90deg);
-    display: block;
-    margin-top: 2px;
+    transform: rotate(0);
 }
 
-/* Improve animation effect on chevron hover */
+/* Improve hover effect on section arrows */
 .sidebar .chapter-item > .section:hover::after {
     opacity: 1;
-    color: var(--arch-primary);
 }
 
-/* Properly indent nested items */
-.sidebar .chapter-item .chapter {
-    padding-left: 15px;
-    border-left: 1px solid rgba(0, 0, 0, 0.1);
-    margin-left: 5px;
-    margin-top: 2px;
-    margin-bottom: 5px;
-}
-
-/* Add bottom space for sidebar */
-.sidebar-scrollbox {
-    padding-bottom: 80px;
-}
-
-/* Dark mode adjustments */
+/* Dark mode support */
 @media (prefers-color-scheme: dark) {
     .sidebar {
-        background: linear-gradient(to bottom, #22252a, #1f2227);
-        border-right: 1px solid #333;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+        background: #242526;
+        border-right: 1px solid #3e3e3e;
     }
     
     .sidebar a {
-        color: #c9d1d9 !important;
+        color: #e2e4e7;
     }
     
     .sidebar a:hover {
-        background-color: rgba(255, 255, 255, 0.05);
-        color: var(--arch-primary) !important;
+        background: #333436;
+        color: #ff8c00;
     }
     
     .sidebar .chapter > .chapter-item.affix {
-        color: #e2e4e7;
+        border-top-color: #3e3e3e;
     }
     
     .sidebar .chapter-item.active > a,
     .sidebar .chapter-item.active > .section,
     .sidebar .chapter-item a.active {
-        background-color: rgba(255, 107, 43, 0.12);
+        background: #41351e;
+        color: #ff8c00;
+        border-left-color: #ff8c00;
     }
-
+    
     .sidebar .chapter-item > .section::after {
-        color: #777;
+        color: #8f8f8f;
     }
     
     .sidebar .chapter-item .chapter {
-        border-color: rgba(255, 255, 255, 0.1);
+        border-left-color: #3e3e3e;
     }
     
     .sidebar .chapter-item > .section:hover {
-        background-color: rgba(255, 255, 255, 0.05);
+        background: #333436;
+        color: #ff8c00;
     }
 }
 
@@ -1557,114 +1568,119 @@ h3:hover .header-link {
     opacity: 1 !important;
 }
 
-/* Inline links */
-.content a {
-    color: #5ba9ee;
+/* Enhanced link styling with higher specificity */
+.content a,
+.content a:link,
+.content a:visited {
+    color: var(--arch-primary) !important;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: all var(--transition-speed) ease-in-out;
+    border-bottom: 1px solid transparent;
 }
 
-.content a:hover {
-    color: #7cbaef;
-}
-
-/* Markdown links */
-.content a[href^="#"] {
-    color: inherit;
-    text-decoration: none;
-}
-
-/* Code links */
-.content code a {
-    color: inherit;
+.content a:hover,
+.content a:active {
+    color: var(--link-hover-color) !important;
+    border-bottom-color: var(--link-hover-color);
+    background-color: var(--link-hover-bg);
     text-decoration: none;
 }
 
-.content code a:hover {
+/* Table of Contents styling */
+.toc {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eaecef;
+}
+
+.toc h2 {
+    margin: 0 0 1.5rem 0;
+    padding: 0 0 0.75rem 0;
+    border-bottom: 2px solid var(--arch-primary);
+    color: var(--arch-secondary);
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.toc-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
     text-decoration: none;
+    color: var(--arch-secondary);
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    background: var(--sidebar-bg);
 }
 
-/* List items */
-.content li {
-    margin: 0.5em 0;
+.toc-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
-.content li p {
-    margin: 0;
+.toc-number {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    font-weight: 600;
+    color: var(--arch-primary);
+    opacity: 0.8;
+    min-width: 2em;
 }
 
-/* Remove if it exists for both desktop and mobile screens */
-.menu-bar-hover-placeholder {
-    display: none;
+.toc-text {
+    font-weight: 500;
 }
 
-@media only screen and (min-width: 1101px) {
-    .sidebar-visible #menu-bar {
-        left: var(--sidebar-width);
-    }
+.toc-right {
+    color: var(--arch-primary);
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.2s ease;
 }
 
-/* Add this to handle the page wrapper spacing */
-.page-wrapper {
-    /* padding-top: var(--menu-bar-height); */
-    margin-top: 0;
-    position: relative;
-    z-index: 1;
+.toc-item:hover {
+    background: var(--link-hover-bg);
+    border-color: var(--arch-primary);
+    color: var(--arch-primary);
 }
 
-/* Sidebar improvements for dark mode */
+.toc-item:hover .toc-right {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Dark mode support */
 @media (prefers-color-scheme: dark) {
-    /* Sidebar background and border */
-    .sidebar {
-        background: linear-gradient(to bottom, #22252a, #1f2227);
-        border-right: 1px solid #333;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    .toc {
+        background: #22252a;
+        border-color: #2d3033;
     }
 
-    /* Main navigation items */
-    .sidebar .chapter {
+    .toc-item {
+        background: #2d333b;
         color: #e2e4e7;
     }
 
-    .sidebar .chapter-item {
-        color: #c9d1d9;
+    .toc-item:hover {
+        background: var(--link-hover-bg);
+        border-color: var(--arch-primary);
+        color: var(--arch-primary);
     }
 
-    /* Links in sidebar */
-    .sidebar a {
-        color: #c9d1d9 !important;
-    }
-
-    .sidebar a:hover {
-        background-color: rgba(255, 255, 255, 0.05);
-        color: var(--arch-primary) !important;
-    }
-
-    /* Active/selected state */
-    .sidebar .active {
-        background: #2d3033;
-    }
-
-    .sidebar .active a {
-        color: var(--arch-accent) !important;
-    }
-
-    /* Section headers */
-    .sidebar h2,
-    .sidebar h3 {
+    .toc h2 {
         color: #e2e4e7;
-        border-bottom: 1px solid #333;
-    }
-
-    /* Nested items indentation */
-    .sidebar .chapter .chapter-item {
-        padding-left: 20px;
-        border-left: 1px solid #333;
-    }
-
-    /* Toggle indicators */
-    .section-toggle {
-        color: #8b95a1;
     }
 }
 

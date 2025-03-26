@@ -8,6 +8,46 @@ This documentation is actively maintained. If you find any issues or have sugges
 
 Arch Network is a computation environment that enhances Bitcoin's capabilities by enabling complex operations on Bitcoin UTXOs through its specialized virtual machine. Unlike Layer 2 solutions, Arch Network provides a native computation layer that works directly with Bitcoin's security model.
 
+## Choose Your Path 👋
+
+<div class="path-selector">
+    <div class="path-option">
+        <h3>🚀 Deploy First</h3>
+        <p>Get your first smart contract running on Arch Network as quickly as possible</p>
+        <ul>
+            <li>Download CLI and deploy a program in 15 minutes</li>
+            <li>Use our pre-configured development environment</li>
+            <li>Perfect for developers wanting to try Arch Network</li>
+        </ul>
+        <a href="getting-started/quick-start.md" class="button">Start Building →</a>
+    </div>
+    
+    <div class="path-option">
+        <h3>🏗️ Run a Validator</h3>
+        <p>Set up and run your own validator node on the Arch Network</p>
+        <ul>
+            <li>Set up Bitcoin Core and Electrs</li>
+            <li>Configure and run a validator node</li>
+            <li>Perfect for those wanting to participate in network security</li>
+        </ul>
+        <a href="getting-started/bitcoin-and-electrs-setup.md" class="button">Start Running →</a>
+    </div>
+</div>
+
+<div class="network-selector">
+    <h3>Network Options</h3>
+    <div class="network-grid">
+        <div class="network-option">
+            <h4>🔧 Regtest</h4>
+            <p>Local development environment with instant block confirmation. Perfect for development and testing.</p>
+        </div>
+        <div class="network-option">
+            <h4>🧪 Testnet</h4>
+            <p>Test network with real Bitcoin testnet integration. For testing in a live environment.</p>
+        </div>
+    </div>
+</div>
+
 ### Key Features
 
 <div class="feature-grid">
@@ -37,53 +77,15 @@ Arch Network is a computation environment that enhances Bitcoin's capabilities b
 </div>
 </div>
 
-## Choose Your Path 
+## Prerequisites
 
-### 🚀 Quick Start (15 minutes)
+<div class="prerequisites-box">
+Before you begin, ensure you have:
 
-<div class="path-box">
-Build your first Arch program:
-
-1. [Set up your development environment](getting-started/environment-setup.md)
-2. [Create and deploy a basic program](guides/how-to-write-arch-program.md)
-3. [Interact with Bitcoin UTXOs](program/utxo.md)
-</div>
-
-### 🎓 Learning Path
-
-<div class="path-box">
-Master Arch development:
-
-1. **Network Architecture** - Understand how nodes work together
-   - [Node Types](concepts/network-architecture.md#node-types)
-   - [Network Communication](concepts/network-architecture.md#network-communication)
-   - [Security Model](concepts/network-architecture.md#security-model)
-
-2. [Bitcoin Integration](concepts/bitcoin-integration.md) - Learn Bitcoin interaction
-   - [UTXO Management](concepts/bitcoin-integration.md#1-utxo-management)
-   - [RPC Integration](concepts/bitcoin-integration.md#2-bitcoin-rpc-integration)
-   - [Transaction Flow](concepts/bitcoin-integration.md#transaction-flow)
-
-3. [Program Development](program/program.md) - Write programs
-   - [Account Management](program/accounts.md)
-   - [Instructions](program/instructions-and-messages.md)
-   - [System Calls](program/syscall.md)
-</div>
-
-### 🛠 Reference
-
-<div class="reference-grid">
-Technical documentation:
-
-- [API Reference](rpc/rpc.md)
-  - [HTTP Methods](rpc/http-methods.md)
-  - [Transaction Processing](sdk/processed-transaction.md)
-- [Program Examples](guides/how-to-write-arch-program.md)
-  - [Oracle Program](guides/how-to-write-oracle-program.md)
-  - [Fungible Token](guides/how-to-create-a-fungible-token.md)
-- [System Program](system-program/system-program.md)
-  - [Account Creation](system-program/create-account.md)
-  - [Program Deployment](system-program/make-executable.md)
+- Node.js v19+ ([installation guide](getting-started/requirements.md))
+- Rust (latest stable)
+- Docker for local development
+- Basic understanding of [Bitcoin UTXOs](program/utxo.md)
 </div>
 
 ## Core Architecture
@@ -120,24 +122,20 @@ Arch Network consists of three main components:
   - UTXO management
 </div>
 
-## Prerequisites
+### 🛠 Reference Documentation
 
-<div class="prerequisites-box">
-Before you begin, ensure you have:
+<div class="reference-grid">
+Technical documentation:
 
-- Node.js v19+ ([installation guide](getting-started/requirements.md))
-- Rust (latest stable)
-- Docker for local development
-- Basic understanding of [Bitcoin UTXOs](program/utxo.md)
-</div>
-
-## Next Steps
-
-<div class="next-steps-grid">
-<a href="getting-started/environment-setup.md">Set Up Development Environment →</a>
-<a href="guides/how-to-write-arch-program.md">Create Your First Program →</a>
-<a href="guides/how-to-configure-local-validator-bitcoin-testnet4.md">Configure Local Validator →</a>
-<a href="https://github.com/Arch-Network/arch-examples">Explore Example Projects →</a>
+- [API Reference](rpc/rpc.md)
+  - [HTTP Methods](rpc/http-methods.md)
+  - [Transaction Processing](sdk/processed-transaction.md)
+- [Program Examples](guides/how-to-write-arch-program.md)
+  - [Oracle Program](guides/how-to-write-oracle-program.md)
+  - [Fungible Token](guides/how-to-create-a-fungible-token.md)
+- [System Program](system-program/system-program.md)
+  - [Account Creation](system-program/create-account.md)
+  - [Program Deployment](system-program/make-executable.md)
 </div>
 
 ## Need Help?
