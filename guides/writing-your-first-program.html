@@ -214,7 +214,6 @@ edition = "2021"
 
 [dependencies]
 arch-program = { git = "https://github.com/Arch-Network/arch-program" }
-arch-sdk = { git = "https://github.com/Arch-Network/arch-sdk" }
 borsh = "0.10.3"
 
 [lib]
@@ -320,60 +319,27 @@ pub fn process_instruction(
 <pre><code class="language-bash">cli deploy target/deploy/my_counter_program.so
 </code></pre>
 <p>Save the Program ID output - you’ll need it to interact with your program.</p>
-<ol start="2">
-<li>Verify the deployment:</li>
-</ol>
-<pre><code class="language-bash">cli show &lt;PROGRAM_ID&gt;
+<h2 id="creating-a-counter-account"><a class="header" href="#creating-a-counter-account">Creating a Counter Account</a></h2>
+<p>Before we can use our counter, we need to create an account to store its state:</p>
+<pre><code class="language-bash">cli create-account &lt;PROGRAM_ID&gt; 8
 </code></pre>
-<h2 id="interacting-with-your-program"><a class="header" href="#interacting-with-your-program">Interacting with Your Program</a></h2>
-<p>To interact with your program, you’ll need to create a client that:</p>
+<p>Save the account address - you’ll need it to interact with your counter.</p>
+<h2 id="testing-your-program"><a class="header" href="#testing-your-program">Testing Your Program</a></h2>
+<p>You can now interact with your program using the CLI:</p>
 <ol>
-<li>Creates an account for storing the counter state</li>
-<li>Sends instructions to increment/decrement/reset the counter</li>
-<li>Reads the counter value</li>
+<li>Increment the counter:</li>
 </ol>
-<p>Here’s a basic example using the Arch SDK:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use arch_sdk::{
-    arch_program::{pubkey::Pubkey, system_instruction},
-    build_and_sign_transaction, ArchRpcClient,
-};
-
-// Create a client
-let client = ArchRpcClient::new("http://localhost:9002");
-
-// Create an account (you'll need to implement this using system_instruction)
-let create_account_ix = system_instruction::create_account(
-    &amp;payer.pubkey(),
-    &amp;counter_account.pubkey(),
-    rent_lamports,
-    size,
-    &amp;program_id,
-);
-
-// Build and send transaction
-let tx = build_and_sign_transaction(vec![create_account_ix], &amp;[&amp;payer, &amp;counter_account])?;
-let signature = client.send_transaction(&amp;tx)?;
-
-// Wait for confirmation
-client.confirm_transaction(&amp;signature)?;
-
-// Now you can send instructions to your program
-// Implementation left as an exercise
-<span class="boring">}</span></code></pre></pre>
-<p>For a complete example of program interaction, check out our <a href="https://github.com/Arch-Network/arch-examples">example repository</a>.</p>
-<h2 id="monitoring-your-program"><a class="header" href="#monitoring-your-program">Monitoring Your Program</a></h2>
-<p>You can monitor your program’s execution using the CLI:</p>
-<ol>
-<li>View transaction logs:</li>
-</ol>
-<pre><code class="language-bash">cli log-program-messages &lt;TX_ID&gt;
+<pre><code class="language-bash">cli invoke &lt;PROGRAM_ID&gt; &lt;ACCOUNT_ADDRESS&gt; --data 00
 </code></pre>
 <ol start="2">
-<li>Check transaction status:</li>
+<li>Decrement the counter:</li>
 </ol>
-<pre><code class="language-bash">cli confirm &lt;TX_ID&gt;
+<pre><code class="language-bash">cli invoke &lt;PROGRAM_ID&gt; &lt;ACCOUNT_ADDRESS&gt; --data 01
+</code></pre>
+<ol start="3">
+<li>Reset the counter:</li>
+</ol>
+<pre><code class="language-bash">cli invoke &lt;PROGRAM_ID&gt; &lt;ACCOUNT_ADDRESS&gt; --data 02
 </code></pre>
 <h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
 <p>Now that you’ve created your first program, you can:</p>
