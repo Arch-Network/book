@@ -31,11 +31,11 @@ Arch Network is a computation environment that enhances Bitcoin's capabilities b
 
 Set up and run your own validator node on the Arch Network
 
-* Set up Bitcoin Core and Electrs
+* Set up Bitcoin Core and Titan
 * Configure and run a validator node
 * Perfect for those wanting to participate in network security
 
-[Start Running →](getting-started/bitcoin-and-electrs-setup.md)
+[Start Running →](getting-started/bitcoin-and-titan-setup.md)
 
 <div class="network-selector">
     <h3>Network Options</h3>

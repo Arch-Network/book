@@ -18,11 +18,11 @@ When starting the validator, you'll need to include the following parameters:
 
 ```bash
 cli validator start --network-mode testnet \
-  --bitcoin-rpc-endpoint bitcoin-node.test.aws.archnetwork.xyz \
-  --bitcoin-rpc-port 49332 \
-  --bitcoin-rpc-username bitcoin \
-  --bitcoin-rpc-password redacted \
-  --bitcoin-rpc-wallet testwallet
+  --titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
+  --titan-rpc-port 49332 \
+  --titan-rpc-username bitcoin \
+  --titan-rpc-password redacted \
+  --titan-rpc-wallet testwallet
 ```
 
 ### Local validator
@@ -62,10 +62,10 @@ The validator logs can be viewed easily within the [Docker] desktop dashboard.
     --network-mode testnet \
     --rpc-bind-ip 127.0.0.1 \
     --rpc-bind-port 9002 \
-    --bitcoin-rpc-endpoint bitcoin-node.test.aws.archnetwork.xyz \
-    --bitcoin-rpc-port 49332 \
-    --bitcoin-rpc-username bitcoin \
-    --bitcoin-rpc-password redacted
+    --titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
+    --titan-rpc-port 49332 \
+    --titan-rpc-username bitcoin \
+    --titan-rpc-password redacted
     ```
 
 ### Help commands
@@ -82,7 +82,13 @@ By removing the `/.arch_data` directory, we can wipe the state and effective sta
 ```bash
 rm -rf .arch_data && RUST_LOG=info \
 ./local_validator \
-...
+--network-mode testnet \
+--rpc-bind-ip 127.0.0.1 \
+--rpc-bind-port 9002 \
+--titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
+--titan-rpc-port 49332 \
+--titan-rpc-username bitcoin \
+--titan-rpc-password redacted
 ```
 
 ##### Pulse check
@@ -111,10 +117,10 @@ rm -rf .arch_data && RUST_LOG=info \
 --network-mode testnet \
 --rpc-bind-ip 127.0.0.1 \
 --rpc-bind-port 9002 \
---bitcoin-rpc-endpoint bitcoin-node.test.aws.archnetwork.xyz \
---bitcoin-rpc-port 49332 \
---bitcoin-rpc-username bitcoin \
---bitcoin-rpc-password redacted \
+--titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
+--titan-rpc-port 49332 \
+--titan-rpc-username bitcoin \
+--titan-rpc-password redacted \
 > node-logs.txt
 ```
 

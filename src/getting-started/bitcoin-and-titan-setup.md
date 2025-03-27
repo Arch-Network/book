@@ -6,17 +6,17 @@ Welcome to the validator setup guide! This comprehensive guide will walk you thr
 
 ```mermaid
 graph TD
-    A[Bitcoin Core] -->|Blockchain Data| B[Electrs]
+    A[Bitcoin Core] -->|Blockchain Data| B[Titan]
     B -->|Efficient Queries| C[Validator Node]
     C -->|Participate in| D[Arch Network]
     D -->|Secure| E[Bitcoin Network]
     classDef default fill:#f8f9fa,stroke:#dee2e6,stroke-width:2px,rx:10px,ry:10px
     classDef bitcoin fill:#ffd700,stroke:#f4c430,stroke-width:2px,rx:10px,ry:10px
-    classDef electrs fill:#4a90e2,stroke:#357abd,stroke-width:2px,rx:10px,ry:10px
+    classDef titan fill:#4a90e2,stroke:#357abd,stroke-width:2px,rx:10px,ry:10px
     classDef validator fill:#2ed573,stroke:#26ae60,stroke-width:2px,rx:10px,ry:10px
     classDef arch fill:#ff6b81,stroke:#ff4757,stroke-width:2px,rx:10px,ry:10px
     class A,E bitcoin
-    class B electrs
+    class B titan
     class C validator
     class D arch
     linkStyle default stroke:#a4b0be,stroke-width:2px
@@ -46,7 +46,7 @@ Before starting, ensure you have:
    - Build from source
    - Configure for your network
 
-2. **Electrs Setup** (15-20 minutes)
+2. **Titan Setup** (15-20 minutes)
    - Build our custom fork
    - Configure for your network
 
@@ -62,18 +62,18 @@ Total estimated time: 1-1.5 hours
 ```mermaid
 graph TD
     A[Your dApp] -->|Interacts with| B[Local Validator]
-    B -->|Queries| C[Electrs]
+    B -->|Queries| C[Titan]
     C -->|Reads| D[Bitcoin Core]
     D -->|Manages| E[Local Blockchain]
     classDef default fill:#f8f9fa,stroke:#dee2e6,stroke-width:2px,rx:10px,ry:10px
     classDef dapp fill:#ff6b81,stroke:#ff4757,stroke-width:2px,rx:10px,ry:10px
     classDef validator fill:#2ed573,stroke:#26ae60,stroke-width:2px,rx:10px,ry:10px
-    classDef electrs fill:#4a90e2,stroke:#357abd,stroke-width:2px,rx:10px,ry:10px
+    classDef titan fill:#4a90e2,stroke:#357abd,stroke-width:2px,rx:10px,ry:10px
     classDef bitcoin fill:#ffd700,stroke:#f4c430,stroke-width:2px,rx:10px,ry:10px
     classDef blockchain fill:#a4b0be,stroke:#747d8c,stroke-width:2px,rx:10px,ry:10px
     class A dapp
     class B validator
-    class C electrs
+    class C titan
     class D bitcoin
     class E blockchain
     linkStyle default stroke:#a4b0be,stroke-width:2px
@@ -86,7 +86,7 @@ graph TD
 - Manages a local blockchain in regtest mode
 - Perfect for development - create test Bitcoin at will!
 
-#### Electrs ⚡
+#### Titan ⚡
 - Lightning-fast Bitcoin data indexer
 - Makes blockchain queries super efficient
 - Essential for real-time dApp responses
@@ -96,8 +96,8 @@ graph TD
 - [ ] Build Bitcoin Core
 - [ ] Configure Bitcoin Core
 - [ ] Test Bitcoin Core
-- [ ] Build Electrs
-- [ ] Configure Electrs
+- [ ] Build Titan
+- [ ] Configure Titan
 - [ ] Test the full stack
 
 ## 1. 🏗️ Bitcoin Core Setup

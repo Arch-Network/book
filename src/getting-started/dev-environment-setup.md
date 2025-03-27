@@ -39,7 +39,7 @@ sudo mv ./cli-aarch64-apple-darwin /usr/local/bin/cli
 # Check Bitcoin Core
 bitcoin-cli -regtest getblockchaininfo
 
-# Check Electrs
+# Check Titan
 curl http://localhost:3002/blocks/tip/height
 
 # Check Arch Network CLI
@@ -59,7 +59,7 @@ cli validator start
 
 ## 🔧 Manual Configuration
 
-If you need to customize your setup, check the [detailed setup guide](bitcoin-and-electrs-setup.md).
+If you need to customize your setup, check the [detailed setup guide](bitcoin-and-titan-setup.md).
 
 ## 🆘 Troubleshooting
 
@@ -70,7 +70,7 @@ If you encounter issues:
    # Check Bitcoin Core
    bitcoin-cli -regtest getblockchaininfo
    
-   # Check Electrs
+   # Check Titan
    curl http://localhost:3002/blocks/tip/height
    ```
 3. Visit our [Discord](https://discord.gg/archnetwork) for help

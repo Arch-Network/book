@@ -4,7 +4,7 @@
 
 # Choose Your Path
 - [🚀 Quick Start Guide](getting-started/quick-start.md)
-- [🏗️ Run a Validator](getting-started/bitcoin-and-electrs-setup.md)
+- [🏗️ Run a Validator](getting-started/bitcoin-and-titan-setup.md)
   - [System Requirements](getting-started/requirements.md)
   - [Network Selection](guides/how-to-configure-local-validator-bitcoin-testnet4.md)
   - [Validator Staking](getting-started/validator-staking.md)

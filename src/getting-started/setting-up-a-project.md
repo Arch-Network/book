@@ -9,7 +9,7 @@ Before starting, ensure you have the following dependencies installed:
 - Solana CLI (Latest stable version)
 - Cargo (v1.81.0 or later)
 - Rust (Latest stable version)
-- Bitcoin Core and Electrs: Required for local validation
+- Bitcoin Core and Titan: Required for local validation
 
 ## Project Setup
 
@@ -65,7 +65,7 @@ Start a local validator for testing:
 cli validator start
 ```
 
-> Important: Ensure Bitcoin Core and Electrs are properly configured and running before starting the validator. See the setup guide for details.
+> Important: Ensure Bitcoin Core and Titan are properly configured and running before starting the validator. See the setup guide for details.
 
 ### 4. Deploy the program
 
@@ -86,7 +86,7 @@ Common issues and solutions:
 
 
 - If validator fails to start:
-  - Verify Bitcoin Core and Electrs are running
+  - Verify Bitcoin Core and Titan are running
   - Check the logs for specific error messages
 
 ## Additional CLI Commands

@@ -179,7 +179,7 @@ cli --version
 <div class="network-option">
 <h4>🖥️ Local Node</h4>
 
-For advanced users who want full control. See our [Bitcoin Node Setup Guide](bitcoin-and-electrs-setup.md).
+For advanced users who want full control. See our [Bitcoin Node Setup Guide](bitcoin-and-titan-setup.md).
 
 **Local Regtest Configuration:**
 ```bash
@@ -215,11 +215,11 @@ For advanced users who want full control. See our [Bitcoin Node Setup Guide](bit
 ```bash
 cli validator start \
   --network-mode mainnet \
-  --bitcoin-rpc-endpoint your_endpoint \
-  --bitcoin-rpc-port your_port \
-  --bitcoin-rpc-username your_username \
-  --bitcoin-rpc-password your_password \
-  --bitcoin-rpc-wallet your_wallet
+  --titan-rpc-endpoint your_endpoint \
+  --titan-rpc-port your_port \
+  --titan-rpc-username your_username \
+  --titan-rpc-password your_password \
+  --titan-rpc-wallet your_wallet
 ```
 
 ## Monitoring & Maintenance
