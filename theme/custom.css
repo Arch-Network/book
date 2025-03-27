@@ -152,15 +152,38 @@ body {
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
     #menu-bar {
-        background: var(--arch-secondary) !important;
+        background: #1e2227 !important;
+        border-bottom: 1px solid #3e3e3e;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
     
     #menu-bar .menu-title {
-        color: white;
+        color: var(--arch-primary) !important;
+        font-weight: 500;
     }
     
     #menu-bar .right-buttons a {
-        color: #e2e4e7;
+        color: #e2e4e7 !important;
+    }
+
+    #menu-bar .right-buttons a:hover {
+        color: var(--arch-primary) !important;
+    }
+
+    #menu-bar .icon-button {
+        color: #e2e4e7 !important;
+    }
+
+    #menu-bar .icon-button:hover {
+        color: var(--arch-primary) !important;
+    }
+
+    #menu-bar .left-buttons .icon-button {
+        color: #e2e4e7 !important;
+    }
+
+    #menu-bar .left-buttons .icon-button:hover {
+        color: var(--arch-primary) !important;
     }
 }
 
@@ -412,7 +435,41 @@ body {
         border-right: 1px solid #3e3e3e;
     }
     
-    /* Make section headers much brighter and more visible */
+    /* Main content heading styles */
+    main h1,
+    main h2,
+    main h3,
+    main h4,
+    main h5 {
+        color: #ffffff !important;
+        border-bottom: none;
+    }
+
+    /* Special styling for h1 headers */
+    main h1 {
+        color: var(--arch-primary) !important;
+        font-size: 2.2em;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+    }
+
+    /* Special styling for h2 headers */
+    main h2 {
+        color: #ffffff !important;
+        font-size: 1.7em;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.3rem;
+    }
+
+    /* Special styling for h3 headers */
+    main h3 {
+        color: #e2e4e7 !important;
+        font-size: 1.3em;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+
     .sidebar h2,
     .sidebar h3,
     .sidebar .chapter-item > .section,
@@ -2153,4 +2210,99 @@ main {
 .sidebar a, 
 .sidebar .chapter-item > .section {
     transition: all 0.2s ease-out;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    /* Main content heading styles */
+    main h1,
+    main h2,
+    main h3,
+    main h4,
+    main h5 {
+        color: #ffffff !important;
+        border-bottom: none;
+    }
+
+    /* Special styling for h1 headers */
+    main h1 {
+        color: var(--arch-primary) !important;
+        font-size: 2.2em;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+    }
+
+    /* Special styling for h2 headers */
+    main h2 {
+        color: #ffffff !important;
+        font-size: 1.7em;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.3rem;
+    }
+
+    /* Special styling for h3 headers */
+    main h3 {
+        color: #e2e4e7 !important;
+        font-size: 1.3em;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .sidebar {
+        background: #1e2227;
+        border-right: 1px solid #3e3e3e;
+    }
+    
+    /* Make section headers much brighter and more visible */
+    .sidebar h2,
+    .sidebar h3,
+    .sidebar .chapter-item > .section,
+    .sidebar ol.chapter .part-title {
+        color: #FF6B2B !important;
+        font-weight: 600;
+    }
+    
+    /* Regular links slightly dimmer but still readable */
+    .sidebar a {
+        color: #e2e4e7 !important;
+    }
+    
+    /* Hover states - only change text color */
+    .sidebar a:hover,
+    .sidebar .chapter-item > .section:hover,
+    .sidebar .chapter-item > a:hover {
+        background: none !important;
+        color: var(--arch-primary) !important;
+        transform: none;
+    }
+    
+    .sidebar .chapter > .chapter-item.affix {
+        border-top-color: #3e3e3e;
+    }
+    
+    /* Active states - keep subtle background for active items only */
+    .sidebar .chapter-item.active > a,
+    .sidebar .chapter-item.active > .section,
+    .sidebar .chapter-item a.active {
+        background: rgba(255, 107, 43, 0.15);
+        color: var(--arch-primary) !important;
+        border-left-color: var(--arch-primary);
+    }
+    
+    .sidebar .chapter-item > .section::after {
+        color: #8f8f8f;
+    }
+    
+    .sidebar .chapter-item .chapter {
+        border-left-color: #3e3e3e;
+    }
+
+    .sidebar-scrollbox::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar-scrollbox::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+    }
 }
