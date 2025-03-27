@@ -408,29 +408,44 @@ body {
 /* Dark mode support */
 @media (prefers-color-scheme: dark) {
     .sidebar {
-        background: #242526;
+        background: #1e2227;
         border-right: 1px solid #3e3e3e;
     }
     
-    .sidebar a {
-        color: #e2e4e7;
+    /* Make section headers much brighter and more visible */
+    .sidebar h2,
+    .sidebar h3,
+    .sidebar .chapter-item > .section,
+    .sidebar ol.chapter .part-title {
+        color: #FF6B2B !important;
+        font-weight: 600;
     }
     
-    .sidebar a:hover {
-        background: #333436;
-        color: #ff8c00;
+    /* Regular links slightly dimmer but still readable */
+    .sidebar a {
+        color: #e2e4e7 !important;
+    }
+    
+    /* Hover states - only change text color */
+    .sidebar a:hover,
+    .sidebar .chapter-item > .section:hover,
+    .sidebar .chapter-item > a:hover {
+        background: none !important;
+        color: var(--arch-primary) !important;
+        transform: none;
     }
     
     .sidebar .chapter > .chapter-item.affix {
         border-top-color: #3e3e3e;
     }
     
+    /* Active states - keep subtle background for active items only */
     .sidebar .chapter-item.active > a,
     .sidebar .chapter-item.active > .section,
     .sidebar .chapter-item a.active {
-        background: #41351e;
-        color: #ff8c00;
-        border-left-color: #ff8c00;
+        background: rgba(255, 107, 43, 0.15);
+        color: var(--arch-primary) !important;
+        border-left-color: var(--arch-primary);
     }
     
     .sidebar .chapter-item > .section::after {
@@ -440,10 +455,23 @@ body {
     .sidebar .chapter-item .chapter {
         border-left-color: #3e3e3e;
     }
-    
+
+    .sidebar-scrollbox::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .sidebar-scrollbox::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Override any light mode hover styles in dark mode */
+@media (prefers-color-scheme: dark) {
+    .sidebar a:hover,
+    .sidebar .chapter-item > a:hover,
     .sidebar .chapter-item > .section:hover {
-        background: #333436;
-        color: #ff8c00;
+        background: none !important;
+        background-color: transparent !important;
     }
 }
 
@@ -1197,6 +1225,7 @@ code {
         --bg: #1a1b1d;
         --fg: #e2e4e7;
         --border-color: #2d3033;
+        --link-hover-bg: rgba(255, 107, 43, 0.15);
     }
 
     body {
@@ -1207,6 +1236,11 @@ code {
     .content {
         background-color: #22252a;
         box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+        color: #e2e4e7;
+    }
+
+    h1, h2, h3, h4, h5 {
+        color: #ffffff;
     }
 
     .feature-grid li,
@@ -1223,6 +1257,7 @@ code {
     .path-box,
     .architecture-overview {
         background: #2d333b;
+        color: #e2e4e7;
     }
 
     .info {
@@ -1241,19 +1276,45 @@ code {
 
     .tip {
         background: #1a2e25;
+        color: #dcfce7;
         border-left-color: var(--arch-success);
+    }
+
+    .tip a {
+        color: #4ade80;
+    }
+
+    .tip a:hover {
+        color: #86efac;
     }
 
     .warning {
         background: #2e2616;
         border-left-color: var(--arch-warning);
+        color: #fef3c7;
     }
 
     .error {
         background: #2e1616;
         border-left-color: var(--arch-error);
+        color: #fecaca;
     }
 
+    /* Table styles in dark mode */
+    table {
+        color: #e2e4e7;
+    }
+
+    th {
+        background: #2d333b;
+        border-bottom: 1px solid #444c56;
+    }
+
+    td {
+        border-bottom: 1px solid #2d3033;
+    }
+
+    /* Code blocks */
     pre, code {
         background-color: #1e2227 !important;
         border-color: #2d3033;
@@ -1269,6 +1330,82 @@ code {
     .copy-button:hover {
         background: var(--arch-primary);
         color: #fff;
+    }
+
+    /* Feature cards */
+    .feature {
+        background: #1e2227;
+        border-color: #2d3033;
+    }
+
+    .feature h4 {
+        color: #ffffff;
+    }
+
+    .feature p {
+        color: #e2e4e7;
+    }
+
+    .feature .text-muted {
+        color: #9ca3af;
+    }
+
+    /* Staking components */
+    .staking-explanation,
+    .staking-card,
+    .transition-card,
+    .economics-card {
+        background: #1e2227;
+        border-color: #2d3033;
+        color: #e2e4e7;
+    }
+
+    .staking-explanation h3,
+    .staking-card h4,
+    .transition-card h4,
+    .economics-card h4 {
+        color: #ffffff;
+    }
+
+    /* Links */
+    .content a,
+    .content a:link,
+    .content a:visited {
+        color: #ff8c00 !important;
+    }
+
+    .content a:hover,
+    .content a:active {
+        color: #ffa94d !important;
+        border-bottom-color: #ffa94d;
+        background-color: rgba(255, 107, 43, 0.15);
+    }
+
+    /* Navigation */
+    .nav-wide-wrapper a {
+        color: #e2e4e7;
+    }
+
+    .nav-wide-wrapper a:hover {
+        color: var(--arch-primary);
+    }
+
+    /* Right sidebar */
+    .right-sidebar {
+        background: #1e2227;
+        border-color: #2d3033;
+    }
+
+    .right-sidebar h2 {
+        color: #e2e4e7;
+    }
+
+    .right-sidebar a {
+        color: #e2e4e7;
+    }
+
+    .right-sidebar a:hover {
+        color: var(--arch-primary);
     }
 }
 
