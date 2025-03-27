@@ -1,4 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Add menu title link wrapper
+    const menuTitle = document.querySelector('#menu-bar .menu-title');
+    if (menuTitle && !menuTitle.querySelector('a')) {
+        const titleText = menuTitle.textContent;
+        const link = document.createElement('a');
+        link.href = '/';
+        link.textContent = titleText;
+        menuTitle.textContent = '';
+        menuTitle.appendChild(link);
+    }
+
     setTimeout(() => {
         // Utility function to check if we're on mobile
         function isMobile() {
