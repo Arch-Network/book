@@ -130,11 +130,21 @@ body {
     flex: 1;
     font-size: 1.1em;
     font-weight: 500;
-    color: var(--arch-secondary);
     white-space: nowrap;
     text-align: center;
     margin: 0;
     padding: 0;
+}
+
+#menu-bar .menu-title a {
+    color: var(--arch-secondary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color var(--transition-speed) ease;
+}
+
+#menu-bar .menu-title a:hover {
+    color: var(--arch-primary);
 }
 
 /* Right section with perfect alignment and spacing */
@@ -194,17 +204,17 @@ body {
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     }
     
-    #menu-bar .menu-title {
+    #menu-bar .menu-title a {
         color: var(--arch-primary) !important;
         font-weight: 500;
     }
     
+    #menu-bar .menu-title a:hover {
+        color: var(--arch-accent) !important;
+    }
+    
     #menu-bar .right-buttons a {
         color: #e2e4e7 !important;
-    }
-
-    #menu-bar .right-buttons a:hover {
-        color: var(--arch-primary) !important;
     }
 
     #menu-bar .icon-button {
@@ -2314,7 +2324,7 @@ main {
         transform: none;
     }
     
-    .sidebar .chapter > .chapter-item.affix {
+    .sidebar .chapter-item.affix {
         border-top-color: #3e3e3e;
     }
     
