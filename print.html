@@ -1572,7 +1572,62 @@ use borsh::{BorshDeserialize, BorshSerialize};</code></pre>
 <li><code>instruction_data</code>: Serialized instruction parameters</li>
 </ul>
 <p>These parameters provide everything our program needs to execute: the context (program_id), the accounts it can read/write, and the instruction-specific data.</p>
-<h2 id="4-program-state"><a class="header" href="#4-program-state">4. Program State</a></h2>
+<h2 id="4-custom-error-handling"><a class="header" href="#4-custom-error-handling">4. Custom Error Handling</a></h2>
+<p>Programs should define their own error types to provide clear and specific error messages. Here’s how to implement custom errors in your Arch program:</p>
+<pre><code class="language-rust ignore">#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum HelloWorldError {
+    /// The provided name is too long (max 50 chars)
+    NameTooLong,
+    /// The provided name contains invalid characters
+    InvalidName,
+    /// Insufficient account balance for fees
+    InsufficientFees,
+    /// Invalid fee transaction format
+    InvalidFeeTransaction,
+}
+
+impl From&lt;HelloWorldError&gt; for ProgramError {
+    fn from(e: HelloWorldError) -&gt; Self {
+        ProgramError::Custom(match e {
+            HelloWorldError::NameTooLong =&gt; 1001,
+            HelloWorldError::InvalidName =&gt; 1002,
+            HelloWorldError::InsufficientFees =&gt; 1003,
+            HelloWorldError::InvalidFeeTransaction =&gt; 1004,
+        })
+    }
+}</code></pre>
+<p>Using custom errors in your program:</p>
+<pre><code class="language-rust ignore">fn validate_name(name: &amp;str) -&gt; Result&lt;(), HelloWorldError&gt; {
+    if name.len() &gt; 50 {
+        return Err(HelloWorldError::NameTooLong);
+    }
+    if !name.chars().all(|c| c.is_alphanumeric() || c.is_whitespace()) {
+        return Err(HelloWorldError::InvalidName);
+    }
+    Ok(())
+}
+
+pub fn process_instruction(
+    _program_id: &amp;Pubkey,
+    accounts: &amp;[AccountInfo],
+    instruction_data: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let params: HelloWorldParams = borsh::from_slice(instruction_data)
+        .map_err(|_| ProgramError::InvalidInstructionData)?;
+    
+    validate_name(&amp;params.name)?;  // Custom error will be converted to ProgramError
+    
+    // ... rest of the implementation
+}</code></pre>
+<p>Best practices for error handling:</p>
+<ol>
+<li>Define descriptive error variants that clearly indicate what went wrong</li>
+<li>Use unique error codes in the 1000+ range to avoid conflicts with system errors</li>
+<li>Implement proper error conversion to <code>ProgramError</code></li>
+<li>Add documentation comments for each error variant</li>
+<li>Consider grouping related errors into separate enums if your program grows large</li>
+</ol>
+<h2 id="5-program-state"><a class="header" href="#5-program-state">5. Program State</a></h2>
 <pre><code class="language-rust ignore">#[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
 pub struct HelloWorldParams {
     /// The name to say hello to
@@ -1586,7 +1641,7 @@ pub struct HelloWorldParams {
 <li><code>tx_hex</code>: A serialized Bitcoin transaction for paying fees</li>
 </ul>
 <p>The <code>BorshSerialize</code> and <code>BorshDeserialize</code> traits allow us to convert this structure to and from bytes for storage and transmission.</p>
-<h2 id="5-program-logic"><a class="header" href="#5-program-logic">5. Program Logic</a></h2>
+<h2 id="6-program-logic"><a class="header" href="#6-program-logic">6. Program Logic</a></h2>
 <p>Let’s break down the main program logic into steps:</p>
 <h3 id="account-validation"><a class="header" href="#account-validation">Account Validation</a></h3>
 <pre><code class="language-rust ignore">if accounts.len() != 1 {
