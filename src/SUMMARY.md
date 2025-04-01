@@ -18,6 +18,15 @@
   - [Runes Swap](guides/how-to-build-runes-swap.md)
   - [Lending Protocol](guides/how-to-build-lending-protocol.md)
 
+# Arch Program Library (APL)
+- [Introduction](apl/introduction.md)
+- [Token Program](apl/token-program.md)
+  - [Architecture](apl/token/architecture.md)
+  - [Usage](apl/token/usage.md)
+  - [Security Model](apl/token/security.md)
+  - [API Reference](apl/token/api.md)
+- [Associated Token Account Program](apl/associated-token-account.md)
+
 # Core Concepts
 - [Architecture Overview](concepts/architecture.md)
 - [Network Architecture](concepts/network-architecture.md)
