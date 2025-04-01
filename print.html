@@ -4148,7 +4148,60 @@ pub struct SecurityParams {
 </ul>
 <!-- Internal -->
 <div style="break-before: page; page-break-before: always;"></div><h1 id="roast-and-frost-consensus"><a class="header" href="#roast-and-frost-consensus">ROAST and FROST Consensus</a></h1>
-<p>This section explores Arch’s innovative consensus mechanism, which combines ROAST (Robust Asynchronous Schnorr Threshold Signatures) and FROST (Flexible Round-Optimized Schnorr Threshold Signatures) to create a secure, efficient, and highly scalable approach to distributed consensus that’s perfectly suited for Bitcoin-based smart contracts.</p>
+<p>This section explores Arch’s consensus mechanism, which combines ROAST (Robust Asynchronous Schnorr Threshold Signatures) and FROST (Flexible Round-Optimized Schnorr Threshold Signatures) to create a secure, efficient, and highly scalable approach to distributed consensus that’s perfectly suited for Bitcoin-based smart contracts.</p>
+<h2 id="implementation-status"><a class="header" href="#implementation-status">Implementation Status</a></h2>
+<p>The consensus mechanism implementation has made significant progress, particularly in the core cryptographic components:</p>
+<ol>
+<li>
+<p><strong>Implemented Components</strong></p>
+<ul>
+<li>Complete Distributed Key Generation (DKG) protocol using FROST-secp256k1</li>
+<li>Two-round DKG process with package handling</li>
+<li>Network message protocol for DKG coordination</li>
+<li>State management and status tracking</li>
+<li>Integration with network layer</li>
+<li>Error handling and recovery mechanisms</li>
+</ul>
+</li>
+<li>
+<p><strong>In Progress</strong></p>
+<ul>
+<li>Additional ROAST protocol components</li>
+<li>Advanced state management features</li>
+<li>Performance optimizations</li>
+<li>Extended monitoring and telemetry</li>
+</ul>
+</li>
+</ol>
+<p>The subsequent sections describe both the implemented features and the complete protocol design.</p>
+<h2 id="core-implementation-details"><a class="header" href="#core-implementation-details">Core Implementation Details</a></h2>
+<h3 id="distributed-key-generation-dkg"><a class="header" href="#distributed-key-generation-dkg">Distributed Key Generation (DKG)</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Core DKG message types for network coordination
+pub enum DKGMessage {
+    StartDKG { message: String },
+    Round1Package { package: round1::Package },
+    Round2Package { package: round2::Package },
+    DKGStatus(DKGStatusMessage),
+}
+
+// DKG state management
+pub enum DKGStatus {
+    Pending(String),
+    Ongoing(String),
+    Failed(String, String),
+    Finished(String),
+    NetworkCompleted(String),
+}
+<span class="boring">}</span></code></pre></pre>
+<p>The DKG implementation provides:</p>
+<ul>
+<li>Two-round key generation protocol</li>
+<li>Secure package exchange between validators</li>
+<li>State tracking and synchronization</li>
+<li>Failure recovery and error handling</li>
+</ul>
 <h2 id="tldr"><a class="header" href="#tldr">TL;DR</a></h2>
 <p>Arch’s consensus mechanism combines ROAST and FROST to provide a robust, Bitcoin-native consensus solution. Validators participate in a threshold signature scheme where blocks are produced by designated leaders and finalized through collective signing. The system maintains both safety and liveness through careful economic incentives and cryptographic guarantees, while ensuring complete compatibility with Bitcoin’s Schnorr signature scheme.</p>
 <h2 id="block-production-process"><a class="header" href="#block-production-process">Block Production Process</a></h2>
@@ -4200,7 +4253,7 @@ pub struct SecurityParams {
 <li>Previous block reference</li>
 <li>Timestamp</li>
 <li>Transaction merkle root</li>
-<li>State transition proofs</li>
+<li>UTXO state updates</li>
 <li>Leader’s signature</li>
 </ul>
 <h2 id="consensus-process"><a class="header" href="#consensus-process">Consensus Process</a></h2>
@@ -4209,17 +4262,124 @@ pub struct SecurityParams {
     A[Receive Block] --&gt; B[Verify Leader]
     B --&gt; C[Verify Signatures]
     C --&gt; D[Execute Transactions]
-    D --&gt; E[Verify State Transitions]
+    D --&gt; E[Verify UTXO States]
     E --&gt; F[Vote Decision]
 </pre>
 <p>When validators receive a new block:</p>
 <ol>
 <li>Verify the block producer is the designated leader</li>
 <li>Validate all transaction signatures</li>
-<li>Execute transactions and verify state transitions</li>
+<li>Execute transactions and verify UTXO states</li>
 <li>Check for any consensus rule violations</li>
 </ol>
-<h3 id="2-frost-signing-process"><a class="header" href="#2-frost-signing-process">2. FROST Signing Process</a></h3>
+<h3 id="2-utxo-based-state-management"><a class="header" href="#2-utxo-based-state-management">2. UTXO-Based State Management</a></h3>
+<pre class="mermaid">graph TD
+    A[Transaction] --&gt; B[UTXO Validation]
+    B --&gt; C[State Update]
+    C --&gt; D[Bitcoin Transaction]
+    D --&gt; E[Validator Signatures]
+    
+    B --&gt; F[Ownership Verification]
+    B --&gt; G[Double-spend Check]
+    B --&gt; H[Confirmation Check]
+    
+    C --&gt; I[Account Updates]
+    C --&gt; J[Program State]
+    C --&gt; K[UTXO Set Changes]
+</pre>
+<p>Arch’s unique approach to state management leverages Bitcoin’s UTXO model while extending it for smart contract functionality:</p>
+<h4 id="utxo-state-tracking"><a class="header" href="#utxo-state-tracking">UTXO State Tracking</a></h4>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct UtxoState {
+    pub meta: UtxoMeta,          // UTXO identification
+    pub status: UtxoStatus,      // Current UTXO status
+    pub owner: Pubkey,           // UTXO owner
+    pub created_at: i64,         // Creation timestamp
+    pub spent_at: Option&lt;i64&gt;,   // Spend timestamp if spent
+}
+
+pub enum UtxoStatus {
+    Pending,    // Waiting for confirmations
+    Active,     // Confirmed and spendable
+    Spent,      // UTXO has been consumed
+    Invalid,    // UTXO was invalidated (e.g., by reorg)
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="state-transition-process"><a class="header" href="#state-transition-process">State Transition Process</a></h4>
+<ol>
+<li>
+<p><strong>UTXO Validation</strong></p>
+<ul>
+<li>Verify UTXO existence on Bitcoin</li>
+<li>Check confirmation requirements (typically 6+)</li>
+<li>Validate ownership and spending conditions</li>
+<li>Prevent double-spending attempts</li>
+</ul>
+</li>
+<li>
+<p><strong>State Updates</strong></p>
+<ul>
+<li>Atomic account data modifications</li>
+<li>Program state transitions</li>
+<li>UTXO set updates</li>
+<li>Cross-validator state consistency</li>
+</ul>
+</li>
+<li>
+<p><strong>Bitcoin Integration</strong></p>
+<ul>
+<li>State anchoring to Bitcoin transactions</li>
+<li>Threshold signature aggregation</li>
+<li>Transaction finality through Bitcoin confirmations</li>
+<li>Reorg handling and state rollbacks</li>
+</ul>
+</li>
+</ol>
+<h4 id="security-properties"><a class="header" href="#security-properties">Security Properties</a></h4>
+<ul>
+<li>
+<p><strong>Ownership Verification</strong></p>
+<ul>
+<li>Public key cryptography using secp256k1</li>
+<li>BIP322 message signing for ownership proofs</li>
+<li>Threshold signature requirements</li>
+</ul>
+</li>
+<li>
+<p><strong>Double-spend Prevention</strong></p>
+<ul>
+<li>UTXO consumption tracking</li>
+<li>Cross-validator consistency checks</li>
+<li>Bitcoin-based finality guarantees</li>
+</ul>
+</li>
+<li>
+<p><strong>State Protection</strong></p>
+<ul>
+<li>Atomic state transitions</li>
+<li>Rollback capability for reorgs</li>
+<li>State root commitments</li>
+<li>Multi-stage verification</li>
+</ul>
+</li>
+</ul>
+<h4 id="performance-optimizations"><a class="header" href="#performance-optimizations">Performance Optimizations</a></h4>
+<ul>
+<li>UTXO caching for frequent access</li>
+<li>Batch processing of state updates</li>
+<li>Parallel transaction validation</li>
+<li>Efficient UTXO lookup mechanisms</li>
+</ul>
+<p>This UTXO-based approach provides several advantages:</p>
+<ol>
+<li>Direct compatibility with Bitcoin’s security model</li>
+<li>Natural support for atomic operations</li>
+<li>Clear ownership and state transition rules</li>
+<li>Built-in protection against double-spending</li>
+<li>Simplified state verification and rollback</li>
+</ol>
+<h3 id="3-frost-signing-process"><a class="header" href="#3-frost-signing-process">3. FROST Signing Process</a></h3>
 <pre class="mermaid">sequenceDiagram
     participant V1 as Validator 1
     participant V2 as Validator 2
@@ -4238,7 +4398,7 @@ pub struct SecurityParams {
 <li>Partial signatures are aggregated into a final signature</li>
 <li>The aggregated signature is verified against the group public key</li>
 </ol>
-<h3 id="3-roast-enhancement-layer"><a class="header" href="#3-roast-enhancement-layer">3. ROAST Enhancement Layer</a></h3>
+<h3 id="4-roast-enhancement-layer"><a class="header" href="#4-roast-enhancement-layer">4. ROAST Enhancement Layer</a></h3>
 <pre class="mermaid">graph TD
     A[Block Proposal] --&gt; B[FROST Signing]
     B --&gt; C[ROAST Protocol]
@@ -4511,7 +4671,7 @@ pub struct SecurityParams {
 <li><strong>Network Adversaries</strong>: Resilient against various network-level attacks</li>
 <li><strong>Cryptographic Security</strong>: Based on well-studied cryptographic assumptions</li>
 </ul>
-<h3 id="security-properties"><a class="header" href="#security-properties">Security Properties</a></h3>
+<h3 id="security-properties-1"><a class="header" href="#security-properties-1">Security Properties</a></h3>
 <ol>
 <li>
 <p><strong>Safety</strong></p>
