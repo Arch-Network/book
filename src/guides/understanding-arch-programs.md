@@ -68,7 +68,70 @@ The entry point function takes three key parameters:
 
 These parameters provide everything our program needs to execute: the context (program_id), the accounts it can read/write, and the instruction-specific data.
 
-## 4. Program State
+## 4. Custom Error Handling
+
+Programs should define their own error types to provide clear and specific error messages. Here's how to implement custom errors in your Arch program:
+
+```rust,ignore
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum HelloWorldError {
+    /// The provided name is too long (max 50 chars)
+    NameTooLong,
+    /// The provided name contains invalid characters
+    InvalidName,
+    /// Insufficient account balance for fees
+    InsufficientFees,
+    /// Invalid fee transaction format
+    InvalidFeeTransaction,
+}
+
+impl From<HelloWorldError> for ProgramError {
+    fn from(e: HelloWorldError) -> Self {
+        ProgramError::Custom(match e {
+            HelloWorldError::NameTooLong => 1001,
+            HelloWorldError::InvalidName => 1002,
+            HelloWorldError::InsufficientFees => 1003,
+            HelloWorldError::InvalidFeeTransaction => 1004,
+        })
+    }
+}
+```
+
+Using custom errors in your program:
+
+```rust,ignore
+fn validate_name(name: &str) -> Result<(), HelloWorldError> {
+    if name.len() > 50 {
+        return Err(HelloWorldError::NameTooLong);
+    }
+    if !name.chars().all(|c| c.is_alphanumeric() || c.is_whitespace()) {
+        return Err(HelloWorldError::InvalidName);
+    }
+    Ok(())
+}
+
+pub fn process_instruction(
+    _program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    instruction_data: &[u8],
+) -> Result<(), ProgramError> {
+    let params: HelloWorldParams = borsh::from_slice(instruction_data)
+        .map_err(|_| ProgramError::InvalidInstructionData)?;
+    
+    validate_name(&params.name)?;  // Custom error will be converted to ProgramError
+    
+    // ... rest of the implementation
+}
+```
+
+Best practices for error handling:
+1. Define descriptive error variants that clearly indicate what went wrong
+2. Use unique error codes in the 1000+ range to avoid conflicts with system errors
+3. Implement proper error conversion to `ProgramError`
+4. Add documentation comments for each error variant
+5. Consider grouping related errors into separate enums if your program grows large
+
+## 5. Program State
 
 ```rust,ignore
 #[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
@@ -86,7 +149,7 @@ This structure defines the data format our program expects. It includes:
 
 The `BorshSerialize` and `BorshDeserialize` traits allow us to convert this structure to and from bytes for storage and transmission.
 
-## 5. Program Logic
+## 6. Program Logic
 
 Let's break down the main program logic into steps:
 
