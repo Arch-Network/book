@@ -1548,8 +1548,12 @@ code {
         width: 100%;
         z-index: 1000;
         padding: 1rem;
-        /* background: var(--bg); */
+        background: #efefef !important;
         border-top: 1px solid #efefef;
+    }
+
+    .mobile-nav-chapters:hover {
+        background: #efefef !important;
     }
 
     .nav-chapters {
@@ -1572,10 +1576,10 @@ code {
         padding: 0px;
     }
 
-    .mobile-nav-chapters:hover {
+    /* .mobile-nav-chapters:hover {
         opacity: 1;
         background: none !important;
-    }
+    } */
 
     a.mobile-nav-chapters.previous {
         left: 20px !important;
@@ -1588,6 +1592,11 @@ code {
         left: auto !important;
         width: auto !important;
         background: none;
+    }
+
+    .mobile-nav-chapters:hover {
+        background: #efefef !important;
+        border: none;
     }
 
     /* Remove any conflicting styles */
