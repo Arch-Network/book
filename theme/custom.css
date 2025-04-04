@@ -539,7 +539,7 @@ body {
         transform: none;
     }
     
-    .sidebar .chapter > .chapter-item.affix {
+    .sidebar .chapter-item.affix {
         border-top-color: #3e3e3e;
     }
     
@@ -1530,6 +1530,79 @@ code {
     display: none;
 }
 
+/* Mobile navigation */
+@media only screen and (max-width: 1100px) {
+    /* Hide desktop navigation completely */
+    .nav-wide-wrapper {
+        display: none !important;
+    }
+
+    /* Show mobile navigation */
+    .mobile-nav-chapters {
+        display: flex !important;
+        justify-content: space-between;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 1000;
+        padding: 1rem;
+        /* background: var(--bg); */
+        border-top: 1px solid #efefef;
+    }
+
+    .nav-chapters {
+        all: unset;
+        position: fixed !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        padding: 0px;
+        font-size: 2em;
+        color: var(--fg);
+        opacity: 0.5;
+        transition: opacity 0.2s;
+        cursor: pointer;
+        z-index: 1001;
+        bottom: 20px !important;
+    }
+
+    .nav-chapters > a {
+        padding: 0px;
+    }
+
+    .mobile-nav-chapters:hover {
+        opacity: 1;
+        background: none !important;
+    }
+
+    a.mobile-nav-chapters.previous {
+        left: 20px !important;
+        width: auto !important;
+        background: none;
+    }
+
+    a.mobile-nav-chapters.next {
+        right: 20px !important;
+        left: auto !important;
+        width: auto !important;
+        background: none;
+    }
+
+    /* Remove any conflicting styles */
+    .nav-chapters.mobile {
+        position: fixed !important;
+        width: auto !important;
+        height: auto !important;
+        transform: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: none !important;
+    }
+}
+
+/* Desktop navigation */
 @media only screen and (min-width: 1101px) {
     .nav-wide-wrapper { 
         display: block;
@@ -1590,26 +1663,6 @@ code {
     .sidebar-visible .nav-wide-wrapper .nav-chapters.previous,
     .sidebar-visible .nav-chapters.previous {
         left: calc(var(--sidebar-width) + 30px);
-    }
-}
-
-@media only screen and (max-width: 1100px) {
-    .mobile-nav-chapters {
-        display: flex;
-        justify-content: space-between;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        z-index: 2;
-        padding: 1rem;
-        background: var(--bg);
-        border-top: 1px solid var(--border-color);
-    }
-
-    /* Remove if it exists */
-    #menu-bar-hover-placeholder {
-        display: none;
     }
 }
 
