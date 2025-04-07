@@ -281,7 +281,7 @@ Build and deploy the program:
 cargo build-sbf
 
 # Deploy to your local validator
-cli deploy ./target/deploy/helloworld.so
+cli deploy ./target/deploy/helloworldprogram.so
 ```
 
 ## 🎮 Test Your Deployment
@@ -300,7 +300,7 @@ cli get-block <BLOCK_HASH>
 When you're ready to deploy to testnet:
 ```bash
 cli validator-start --network-mode testnet
-cli deploy ./target/deploy/helloworld.so --network-mode testnet
+cli deploy ./target/deploy/helloworldprogram.so --network-mode testnet
 ```
 
 ## 📚 Next Steps
