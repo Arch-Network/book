@@ -10,20 +10,28 @@ Table of Contents:
 
 ### Config
 
-First, you'll need to configure the network settings for connecting to Bitcoin testnet4. The new CLI accepts these parameters directly when starting the validator.
+First, you'll need to configure the network settings for connecting to Bitcoin testnet4. The CLI accepts these parameters directly when starting the validator.
 
 > Note: We have redacted our Bitcoin node password to prevent abuse; contact us if you need this, otherwise provide your own node credentials and use the below as a reference.
 
-When starting the validator, you'll need to include the following parameters:
+When starting the validator, you can include the following parameters:
 
 ```bash
-cli validator start --network-mode testnet \
-  --titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
-  --titan-rpc-port 49332 \
-  --titan-rpc-username bitcoin \
-  --titan-rpc-password redacted \
-  --titan-rpc-wallet testwallet
+cli validator-start \
+  --network-mode testnet \
+  --data-dir ./.arch_data \
+  --rpc-bind-ip 127.0.0.1 \
+  --rpc-bind-port 9002 \
+  --titan-endpoint titan-node.test.aws.archnetwork.xyz \
+  --titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
 ```
+
+Optional parameters:
+- `--data-dir` - Directory for storing validator data (default: ./.arch_data)
+- `--rpc-bind-ip` - IP Address for the RPC handler (default: 127.0.0.1)
+- `--rpc-bind-port` - Port for the RPC handler (default: 9002)
+- `--titan-endpoint` - HTTP endpoint for the Titan node
+- `--titan-socket-endpoint` - WebSocket endpoint for the Titan node
 
 ### Local validator
 > Note: You can start a local validator using the Arch Network CLI tool.
@@ -36,7 +44,7 @@ cli validator start --network-mode testnet \
 Use the CLI command to run the local validator. You'll need to have [Docker] installed and running.
 
 ```bash
-cli validator start --network-mode testnet
+cli validator-start --network-mode testnet
 ```
 
 The validator logs can be viewed easily within the [Docker] desktop dashboard.
@@ -62,10 +70,8 @@ The validator logs can be viewed easily within the [Docker] desktop dashboard.
     --network-mode testnet \
     --rpc-bind-ip 127.0.0.1 \
     --rpc-bind-port 9002 \
-    --titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
-    --titan-rpc-port 49332 \
-    --titan-rpc-username bitcoin \
-    --titan-rpc-password redacted
+    --titan-endpoint titan-node.test.aws.archnetwork.xyz \
+    --titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
     ```
 
 ### Help commands
@@ -85,10 +91,8 @@ rm -rf .arch_data && RUST_LOG=info \
 --network-mode testnet \
 --rpc-bind-ip 127.0.0.1 \
 --rpc-bind-port 9002 \
---titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
---titan-rpc-port 49332 \
---titan-rpc-username bitcoin \
---titan-rpc-password redacted
+--titan-endpoint titan-node.test.aws.archnetwork.xyz \
+--titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
 ```
 
 ##### Pulse check
@@ -117,10 +121,8 @@ rm -rf .arch_data && RUST_LOG=info \
 --network-mode testnet \
 --rpc-bind-ip 127.0.0.1 \
 --rpc-bind-port 9002 \
---titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
---titan-rpc-port 49332 \
---titan-rpc-username bitcoin \
---titan-rpc-password redacted \
+--titan-endpoint titan-node.test.aws.archnetwork.xyz \
+--titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332 \
 > node-logs.txt
 ```
 

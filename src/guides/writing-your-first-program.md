@@ -182,3 +182,8 @@ Now that you've created your first program, you can:
 [cross-program invocation]: ../program/program.md
 [Program Examples]: ./guides.md
 [Understanding Arch Programs]: ./understanding-arch-programs.md
+
+```bash
+# Start the Arch Network validator
+cli validator-start
+```

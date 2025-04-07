@@ -140,13 +140,13 @@ Start the local validator:
 
 ```bash
 # Start a local validator
-cli validator start \
+cli validator-start \
     --network-mode devnet \
+    --data-dir ./.arch_data \
+    --rpc-bind-ip 127.0.0.1 \
     --rpc-bind-port 9002 \
-    --titan-rpc-endpoint titan-node.dev.aws.archnetwork.xyz \
-    --titan-rpc-port 18443 \
-    --titan-rpc-username bitcoin \
-    --titan-rpc-password 428bae8f3c94f8c39c50757fc89c39bc7e6ebc70ebf8f618
+    --titan-endpoint titan-node.dev.aws.archnetwork.xyz \
+    --titan-socket-endpoint titan-node.dev.aws.archnetwork.xyz:18443
 ```
 
 </div>
@@ -154,13 +154,13 @@ cli validator start \
 
 ```bash
 # Start a local validator
-cli validator start \
+cli validator-start \
     --network-mode testnet \
+    --data-dir ./.arch_data \
+    --rpc-bind-ip 127.0.0.1 \
     --rpc-bind-port 9002 \
-    --titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
-    --titan-rpc-port 49332 \
-    --titan-rpc-username bitcoin \
-    --titan-rpc-password 428bae8f3c94f8c39c50757fc89c39bc7e6ebc70ebf8f618
+    --titan-endpoint titan-node.test.aws.archnetwork.xyz \
+    --titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
 ```
 
 </div>
@@ -299,7 +299,7 @@ cli get-block <BLOCK_HASH>
 
 When you're ready to deploy to testnet:
 ```bash
-cli validator start --network-mode testnet
+cli validator-start --network-mode testnet
 cli deploy ./target/deploy/helloworld.so --network-mode testnet
 ```
 

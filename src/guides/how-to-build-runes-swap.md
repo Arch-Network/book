@@ -308,7 +308,7 @@ Make sure you have a validator node running before deployment:
 
 ```bash
 # Start a local validator
-cli validator start
+cli validator-start
 ```
 
 ## Conclusion
