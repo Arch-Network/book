@@ -294,24 +294,24 @@ function switchArch(arch) {
 <div class="network-mode-content">
 <div id="dev-network-command">
 <pre><code class="language-bash"># Start a local validator
-cli validator start \
+cli validator-start \
     --network-mode devnet \
+    --data-dir ./.arch_data \
+    --rpc-bind-ip 127.0.0.1 \
     --rpc-bind-port 9002 \
-    --titan-rpc-endpoint titan-node.dev.aws.archnetwork.xyz \
-    --titan-rpc-port 18443 \
-    --titan-rpc-username bitcoin \
-    --titan-rpc-password 428bae8f3c94f8c39c50757fc89c39bc7e6ebc70ebf8f618
+    --titan-endpoint titan-node.dev.aws.archnetwork.xyz \
+    --titan-socket-endpoint titan-node.dev.aws.archnetwork.xyz:18443
 </code></pre>
 </div>
 <div id="test-network-command" style="display: none;">
 <pre><code class="language-bash"># Start a local validator
-cli validator start \
+cli validator-start \
     --network-mode testnet \
+    --data-dir ./.arch_data \
+    --rpc-bind-ip 127.0.0.1 \
     --rpc-bind-port 9002 \
-    --titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
-    --titan-rpc-port 49332 \
-    --titan-rpc-username bitcoin \
-    --titan-rpc-password 428bae8f3c94f8c39c50757fc89c39bc7e6ebc70ebf8f618
+    --titan-endpoint titan-node.test.aws.archnetwork.xyz \
+    --titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
 </code></pre>
 </div>
 </div>
@@ -427,7 +427,7 @@ cli get-block &lt;BLOCK_HASH&gt;
 </code></pre>
 <h2 id="-ready-for-testnet"><a class="header" href="#-ready-for-testnet">🌐 Ready for Testnet?</a></h2>
 <p>When you’re ready to deploy to testnet:</p>
-<pre><code class="language-bash">cli validator start --network-mode testnet
+<pre><code class="language-bash">cli validator-start --network-mode testnet
 cli deploy ./target/deploy/helloworld.so --network-mode testnet
 </code></pre>
 <h2 id="-next-steps"><a class="header" href="#-next-steps">📚 Next Steps</a></h2>

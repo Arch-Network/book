@@ -192,18 +192,27 @@
 <li><a href="#log-assistance">Log assistance</a></li>
 </ul>
 <h3 id="config"><a class="header" href="#config">Config</a></h3>
-<p>First, you’ll need to configure the network settings for connecting to Bitcoin testnet4. The new CLI accepts these parameters directly when starting the validator.</p>
+<p>First, you’ll need to configure the network settings for connecting to Bitcoin testnet4. The CLI accepts these parameters directly when starting the validator.</p>
 <blockquote>
 <p>Note: We have redacted our Bitcoin node password to prevent abuse; contact us if you need this, otherwise provide your own node credentials and use the below as a reference.</p>
 </blockquote>
-<p>When starting the validator, you’ll need to include the following parameters:</p>
-<pre><code class="language-bash">cli validator start --network-mode testnet \
-  --titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
-  --titan-rpc-port 49332 \
-  --titan-rpc-username bitcoin \
-  --titan-rpc-password redacted \
-  --titan-rpc-wallet testwallet
+<p>When starting the validator, you can include the following parameters:</p>
+<pre><code class="language-bash">cli validator-start \
+  --network-mode testnet \
+  --data-dir ./.arch_data \
+  --rpc-bind-ip 127.0.0.1 \
+  --rpc-bind-port 9002 \
+  --titan-endpoint titan-node.test.aws.archnetwork.xyz \
+  --titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
 </code></pre>
+<p>Optional parameters:</p>
+<ul>
+<li><code>--data-dir</code> - Directory for storing validator data (default: ./.arch_data)</li>
+<li><code>--rpc-bind-ip</code> - IP Address for the RPC handler (default: 127.0.0.1)</li>
+<li><code>--rpc-bind-port</code> - Port for the RPC handler (default: 9002)</li>
+<li><code>--titan-endpoint</code> - HTTP endpoint for the Titan node</li>
+<li><code>--titan-socket-endpoint</code> - WebSocket endpoint for the Titan node</li>
+</ul>
 <h3 id="local-validator"><a class="header" href="#local-validator">Local validator</a></h3>
 <blockquote>
 <p>Note: You can start a local validator using the Arch Network CLI tool.</p>
@@ -212,7 +221,7 @@
 </blockquote>
 <h4 id="run-the-local-validator"><a class="header" href="#run-the-local-validator">Run the local validator</a></h4>
 <p>Use the CLI command to run the local validator. You’ll need to have <a href="https://docker.com">Docker</a> installed and running.</p>
-<pre><code class="language-bash">cli validator start --network-mode testnet
+<pre><code class="language-bash">cli validator-start --network-mode testnet
 </code></pre>
 <p>The validator logs can be viewed easily within the <a href="https://docker.com">Docker</a> desktop dashboard.</p>
 <blockquote>
@@ -239,10 +248,8 @@
 --network-mode testnet \
 --rpc-bind-ip 127.0.0.1 \
 --rpc-bind-port 9002 \
---titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
---titan-rpc-port 49332 \
---titan-rpc-username bitcoin \
---titan-rpc-password redacted
+--titan-endpoint titan-node.test.aws.archnetwork.xyz \
+--titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
 </code></pre>
 </li>
 </ol>
@@ -257,10 +264,8 @@
 --network-mode testnet \
 --rpc-bind-ip 127.0.0.1 \
 --rpc-bind-port 9002 \
---titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
---titan-rpc-port 49332 \
---titan-rpc-username bitcoin \
---titan-rpc-password redacted
+--titan-endpoint titan-node.test.aws.archnetwork.xyz \
+--titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
 </code></pre>
 <h5 id="pulse-check"><a class="header" href="#pulse-check">Pulse check</a></h5>
 <p>This <code>cURL</code> command will allow us to ensure that our <a href="#local-validator">Local validator</a> is up and running correctly. We can use this to effective get a pulse check on the node which is helpful for debugging.</p>
@@ -281,10 +286,8 @@ http://localhost:9002/
 --network-mode testnet \
 --rpc-bind-ip 127.0.0.1 \
 --rpc-bind-port 9002 \
---titan-rpc-endpoint titan-node.test.aws.archnetwork.xyz \
---titan-rpc-port 49332 \
---titan-rpc-username bitcoin \
---titan-rpc-password redacted \
+--titan-endpoint titan-node.test.aws.archnetwork.xyz \
+--titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332 \
 &gt; node-logs.txt
 </code></pre>
 <p>Then you can <code>tail</code> the output and view the logs as they stream in.</p>
