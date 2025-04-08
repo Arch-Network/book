@@ -11,6 +11,7 @@
 
 # Program Development
 - [Understanding Arch Programs](guides/understanding-arch-programs.md)
+- [Setting Up a Project](getting-started/setting-up-a-project.md)
 - [Writing Your First Program](guides/writing-your-first-program.md)
 - [Program Examples](guides/guides.md)
   - [Fungible Token](guides/how-to-create-a-fungible-token.md)
