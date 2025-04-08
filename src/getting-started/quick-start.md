@@ -4,149 +4,27 @@ Welcome to Arch Network! Let's get your first program running in under 15 minute
 
 ## Prerequisites
 
-Before starting, ensure you have:
+Before starting, ensure you have all required tools and dependencies installed. See the [System Requirements](requirements.md) page for detailed installation instructions.
 
-### Required Tools
-- Git
-- Rust (latest stable version)
-- Solana CLI (v1.18.18 or later)
-- Arch Network CLI (latest version)
+Quick checklist:
+- [ ] Git (v2.0 or later)
+- [ ] Rust (v1.70 or later)
+- [ ] Solana CLI tools (v1.16 or later)
+- [ ] Arch Network CLI (latest version)
 
-### System Requirements
-- 4+ CPU cores
-- 8GB+ RAM
-- 100GB+ free disk space
-- macOS (12.0+) or Linux (Ubuntu 20.04+)
+Verify your installation:
+```bash
+# Verify installations
+git --version
+rustc --version
+solana --version
+cli --version
+```
 
 ## ⏱️ Time Estimate
 - Total time: ~15 minutes
 - Active time: ~10 minutes
-- Waiting time: ~5 minutes (during installations)
-
-## 📋 Installation Steps
-
-### 1. Install Development Tools
-
-<details>
-<summary>Install Rust (if not installed)</summary>
-
-```bash
-# Install Rust using rustup
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source $HOME/.cargo/env  # Add Rust to your current shell session
-rustc --version  # Verify installation
-```
-</details>
-
-<details>
-<summary>Install Solana CLI (if not installed)</summary>
-
-```bash
-sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
-solana --version  # Verify installation
-```
-</details>
-
-### 2. Install Arch Network CLI
-
-Download the appropriate binary for your system from the [latest releases page](https://github.com/Arch-Network/arch-node/releases/latest):
-
-<div class="network-mode-container">
-<div class="network-mode-header">
-    <h4 id="arch-mode-title">macOS - Apple Silicon (M1/M2/M3)</h4>
-</div>
-
-<div class="network-mode-content">
-<div id="mac-arm-command">
-
-```bash
-curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-apple-darwin
-chmod +x cli
-sudo mv cli /usr/local/bin/
-```
-
-</div>
-<div id="mac-intel-command" style="display: none;">
-
-```bash
-curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-x86_64-apple-darwin
-chmod +x cli
-sudo mv cli /usr/local/bin/
-```
-
-</div>
-<div id="linux-x64-command" style="display: none;">
-
-```bash
-curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-x86_64-unknown-linux-gnu
-chmod +x cli
-sudo mv cli /usr/local/bin/
-```
-
-</div>
-<div id="linux-arm-command" style="display: none;">
-
-```bash
-curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-unknown-linux-gnu
-chmod +x cli
-sudo mv cli /usr/local/bin/
-```
-
-</div>
-</div>
-
-<div class="network-mode-buttons">
-    <button class="network-mode-button active" onclick="switchArch('mac-arm')">macOS ARM</button>
-    <button class="network-mode-button" onclick="switchArch('mac-intel')">macOS Intel</button>
-    <button class="network-mode-button" onclick="switchArch('linux-x64')">Linux x64</button>
-    <button class="network-mode-button" onclick="switchArch('linux-arm')">Linux ARM</button>
-</div>
-</div>
-
-<script>
-function switchArch(arch) {
-    // Update buttons
-    document.querySelectorAll('.network-mode-button').forEach(btn => {
-        btn.classList.remove('active');
-        if (
-            (arch === 'mac-arm' && btn.textContent.includes('macOS ARM')) ||
-            (arch === 'mac-intel' && btn.textContent.includes('macOS Intel')) ||
-            (arch === 'linux-x64' && btn.textContent.includes('Linux x64')) ||
-            (arch === 'linux-arm' && btn.textContent.includes('Linux ARM'))
-        ) {
-            btn.classList.add('active');
-        }
-    });
-
-    // Update title
-    const title = document.getElementById('arch-mode-title');
-    switch (arch) {
-        case 'mac-arm':
-            title.textContent = 'macOS - Apple Silicon (M1/M2/M3)';
-            break;
-        case 'mac-intel':
-            title.textContent = 'macOS - Intel';
-            break;
-        case 'linux-x64':
-            title.textContent = 'Linux - x86_64';
-            break;
-        case 'linux-arm':
-            title.textContent = 'Linux - ARM64';
-            break;
-    }
-
-    // Show/hide appropriate command
-    document.getElementById('mac-arm-command').style.display = arch === 'mac-arm' ? 'block' : 'none';
-    document.getElementById('mac-intel-command').style.display = arch === 'mac-intel' ? 'block' : 'none';
-    document.getElementById('linux-x64-command').style.display = arch === 'linux-x64' ? 'block' : 'none';
-    document.getElementById('linux-arm-command').style.display = arch === 'linux-arm' ? 'block' : 'none';
-}
-</script>
-
-After installation, verify it works:
-```bash
-cli --version
-```
+- Waiting time: ~5 minutes
 
 ## 🚀 Quick Start Project
 
@@ -263,33 +141,69 @@ function switchNetwork(mode) {
 }
 </script>
 
-### 3. Build and Deploy
+## Building and Deploying Your Program
+
+> 💡 For a more detailed guide on program development and deployment, see [Setting Up a Project](setting-up-a-project.md#development-workflow).
+
 ```bash
-# Build the program
+# Build the program using Solana's BPF compiler
 cargo build-sbf
 
-# Deploy to your local validator
+# Deploy to local validator using Arch Network CLI
 cli deploy ./target/deploy/helloworldprogram.so
+
+# Note: Save your program ID for later use
+export PROGRAM_ID=<DEPLOYED_PROGRAM_ADDRESS>
 ```
+
+## Testing Your Deployment
+
+> 💡 For troubleshooting deployment issues, refer to our [Troubleshooting Guide](../reference/troubleshooting.md).
 
 ## 🎮 Test Your Deployment
 
-Once deployed, you can interact with your program:
+> 💡 For detailed testing strategies and examples, see our [Testing Guide](../development/testing.md).
+
 ```bash
-# Show program information
-cli show <PROGRAM_ADDRESS>
+# Verify program deployment
+cli show $PROGRAM_ID
+
+# Get program logs
+cli get-logs $PROGRAM_ID
 
 # Get block information
 cli get-block <BLOCK_HASH>
 ```
 
+### Next Steps
+
+Congratulations! You've successfully deployed your first program. Here's what you can explore next:
+
+- [Program Development Guide](../development/overview.md) - Learn about program architecture and best practices
+- [Client Integration](../clients/overview.md) - Build client applications that interact with your program
+- [Advanced Topics](../advanced/overview.md) - Explore advanced concepts and optimizations
+
 ## 🌐 Ready for Testnet?
 
 When you're ready to deploy to testnet:
 ```bash
-cli validator-start --network-mode testnet
+# Start validator in testnet mode
+cli validator-start \
+    --network-mode testnet \
+    --data-dir ./.arch_data \
+    --rpc-bind-ip 127.0.0.1 \
+    --rpc-bind-port 9002 \
+    --titan-endpoint titan-node.test.aws.archnetwork.xyz \
+    --titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
+
+# Deploy program to testnet
 cli deploy ./target/deploy/helloworldprogram.so --network-mode testnet
+
+# Verify deployment
+cli show <PROGRAM_ADDRESS> --network-mode testnet
 ```
+
+> 💡 Note: Testnet deployments require additional setup and configuration. See our [Testnet Guide](../guides/testnet-deployment.md) for details.
 
 ## 📚 Next Steps
 
