@@ -24,6 +24,28 @@ graph TD
     linkStyle default stroke:#a4b0be,stroke-width:2px
 ```
 
+## 🎯 Component Architecture
+
+```mermaid
+graph TD
+    A[Your dApp] -->|Interacts with| B[Local Validator]
+    B -->|Queries| C[Titan]
+    C -->|Reads| D[Bitcoin Core]
+    D -->|Manages| E[Local Blockchain]
+    classDef default fill:#f8f9fa,stroke:#dee2e6,stroke-width:2px,rx:10px,ry:10px
+    classDef dapp fill:#ff6b81,stroke:#ff4757,stroke-width:2px,rx:10px,ry:10px
+    classDef validator fill:#2ed573,stroke:#26ae60,stroke-width:2px,rx:10px,ry:10px
+    classDef titan fill:#4a90e2,stroke:#357abd,stroke-width:2px,rx:10px,ry:10px
+    classDef bitcoin fill:#ffd700,stroke:#f4c430,stroke-width:2px,rx:10px,ry:10px
+    classDef blockchain fill:#a4b0be,stroke:#747d8c,stroke-width:2px,rx:10px,ry:10px
+    class A dapp
+    class B validator
+    class C titan
+    class D bitcoin
+    class E blockchain
+    linkStyle default stroke:#a4b0be,stroke-width:2px
+```
+
 ## 💡 Understanding Your Role
 
 As a validator, you will:
@@ -64,28 +86,90 @@ Before starting, ensure you have:
 
 Total estimated time: 1-1.5 hours
 
-## 🎯 What We're Building
+## 📱 Terminal Multiplexer Setup
 
-```mermaid
-graph TD
-    A[Your dApp] -->|Interacts with| B[Local Validator]
-    B -->|Queries| C[Titan]
-    C -->|Reads| D[Bitcoin Core]
-    D -->|Manages| E[Local Blockchain]
-    classDef default fill:#f8f9fa,stroke:#dee2e6,stroke-width:2px,rx:10px,ry:10px
-    classDef dapp fill:#ff6b81,stroke:#ff4757,stroke-width:2px,rx:10px,ry:10px
-    classDef validator fill:#2ed573,stroke:#26ae60,stroke-width:2px,rx:10px,ry:10px
-    classDef titan fill:#4a90e2,stroke:#357abd,stroke-width:2px,rx:10px,ry:10px
-    classDef bitcoin fill:#ffd700,stroke:#f4c430,stroke-width:2px,rx:10px,ry:10px
-    classDef blockchain fill:#a4b0be,stroke:#747d8c,stroke-width:2px,rx:10px,ry:10px
-    class A dapp
-    class B validator
-    class C titan
-    class D bitcoin
-    class E blockchain
-    linkStyle default stroke:#a4b0be,stroke-width:2px
+We'll use `tmux` to manage multiple processes (Bitcoin Core, Titan, and the validator) in separate panes. This allows you to monitor all components simultaneously.
+
+**macOS Instructions:**
+```bash
+# Install tmux
+brew install tmux
 ```
 
+**Linux Instructions:**
+```bash
+# Install tmux
+sudo apt-get update && sudo apt-get install -y tmux
+```
+
+### Using tmux
+
+Basic tmux commands (press Ctrl+b first, then the command):
+- `"` - split pane horizontally (creates a new pane below)
+- `%` - split pane vertically (creates a new pane to the right)
+- `↑` or `↓` - navigate between panes using arrow keys
+- `d` - detach from session
+- `x` - kill current pane
+
+To start a new session:
+```bash
+# Create and attach to a new tmux session
+TERM=xterm-256color tmux new -s arch-validator
+```
+
+To reattach to an existing session:
+```bash
+# List sessions
+tmux ls
+
+# Reattach to the session
+tmux attach -t arch-validator
+```
+
+### 🎯 Step-by-Step Component Launch
+
+1. **Start Bitcoin Core** (in first pane):
+   ```bash
+   bitcoind -regtest -daemon
+   tail -f ~/.bitcoin/regtest/debug.log  # For Linux
+   # OR
+   tail -f ~/Library/Application\ Support/Bitcoin/regtest/debug.log  # For macOS
+   ```
+
+2. **Create and launch Titan** (in second pane):
+   - Press `Ctrl+b`, then `"` to create a new pane below
+   - You'll automatically be switched to the new pane
+   ```bash
+   cd ~/Titan
+   cargo run --bin titan -- \
+       --bitcoin-rpc-url http://127.0.0.1:18443 \
+       --bitcoin-rpc-username bitcoin \
+       --bitcoin-rpc-password bitcoinpass \
+       --chain regtest \
+       --index-addresses \
+       --index-bitcoin-transactions \
+       --enable-tcp-subscriptions \
+       --data-dir ./data \
+       --main-loop-interval 0
+   ```
+
+3. **Launch Validator** (in third pane):
+   - Press `Ctrl+b`, then `↑` to go back to the top pane
+   - Press `Ctrl+b`, then `"` to create a new pane between Bitcoin Core and Titan
+   ```bash
+   cd ~/arch-validator
+   ./local_validator-darwin-amd64 \  # For macOS
+   # OR
+   ./local_validator-linux-amd64 \   # For Linux
+       --rpc-bind-ip 127.0.0.1 \
+       --rpc-bind-port 9002 \
+       --titan-endpoint http://127.0.0.1:3030
+   ```
+
+> **Navigation Tips**: 
+> - Use `Ctrl+b` then arrow keys to move between panes at any time
+> - The active pane has a highlighted border
+> - If you get lost, `Ctrl+b` then arrow keys will help you navigate back to where you need to be
 
 ## 1. 🏗️ Bitcoin Core Setup
 
@@ -178,16 +262,6 @@ wallet=testwallet
 EOF
 ```
 
-### 1.4 🚀 Launch Bitcoin Core
-
-```bash
-# Start Bitcoin Core in regtest mode
-bitcoind -regtest -daemon
-
-# Verify it's running
-bitcoin-cli -regtest getblockchaininfo
-```
-
 ## 2. 🚀 Titan Setup
 
 ### 2.1 Installing Rust and Dependencies
@@ -205,6 +279,9 @@ brew install pkg-config openssl
 ```bash
 # Install Rust if you haven't already
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+sudo apt install cargo
+rustup install nightly # For Titan
+rustup default nightly
 
 # Install additional dependencies
 sudo apt-get update && sudo apt-get install -y \
@@ -215,20 +292,20 @@ sudo apt-get update && sudo apt-get install -y \
 
 ```bash
 # Clone Titan repository
+cd ~
 git clone https://github.com/saturnbtc/Titan.git
 cd Titan
 
 # Build Titan (this might take 10-15 minutes)
-cargo build --release
+cargo build --release -Znext-lockfile-bump
 ```
 
 ### 2.3 🚀 Launch Titan
 
+Create a new tmux pane (Ctrl+b, then "):
 ```bash
-# Create data directory
-mkdir -p ./data
-
 # Start Titan
+cd ~/Titan
 cargo run --bin titan -- \
     --bitcoin-rpc-url http://127.0.0.1:18443 \
     --bitcoin-rpc-username bitcoin \
@@ -245,41 +322,41 @@ cargo run --bin titan -- \
 
 ## 3. 🎯 Validator Setup
 
+> **Note**: The validator binary is currently only available for Linux (x86_64/amd64) systems. ARM architectures (including Apple Silicon Macs) are not supported at this time.
+
 ### 3.1 Download the Validator Binary
 
-**macOS Instructions:**
+**Linux (x86_64/amd64) Instructions:**
 ```bash
 # Create a directory for the validator
 mkdir -p ~/arch-validator && cd ~/arch-validator
 
-# Download the latest validator binary (replace VERSION with the latest version)
-curl -LO "https://github.com/Arch-Network/arch-node/releases/latest/download/local_validator-darwin-amd64"
-chmod +x local_validator-darwin-amd64
-```
-
-**Linux Instructions:**
-```bash
-# Create a directory for the validator
-mkdir -p ~/arch-validator && cd ~/arch-validator
-
-# Download the latest validator binary (replace VERSION with the latest version)
+# Download the latest validator binary
 curl -LO "https://github.com/Arch-Network/arch-node/releases/latest/download/local_validator-linux-amd64"
+
+# Make it executable and rename it for convenience
 chmod +x local_validator-linux-amd64
+mv local_validator-linux-amd64 local_validator
 ```
 
 ### 3.2 🚀 Launch the Validator
 
+Create a new tmux pane (Ctrl+b, then "):
 ```bash
-# Start the validator (use appropriate binary name based on your OS)
-./local_validator-darwin-amd64 \  # For macOS
-# OR
-./local_validator-linux-amd64 \   # For Linux
+# Start the validator
+cd ~/arch-validator
+./local_validator \
     --rpc-bind-ip 127.0.0.1 \
     --rpc-bind-port 9002 \
     --titan-endpoint http://127.0.0.1:3030
 ```
 
-> Note: Make sure both Bitcoin Core and Titan are running before starting the validator.
+Your tmux session should now have three panes:
+1. Top: Bitcoin Core logs
+2. Middle: Titan process
+3. Bottom: Validator process
+
+To detach from the session while keeping everything running, press Ctrl+b, then d. You can reattach later using `tmux attach -t arch-validator`.
 
 ## 🎉 Congratulations!
 
