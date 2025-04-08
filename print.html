@@ -350,27 +350,45 @@ Technical documentation:
 </div>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="-quick-start-guide"><a class="header" href="#-quick-start-guide">🚀 Quick Start Guide</a></h1>
 <p>Welcome to Arch Network! Let’s get your first program running in under 15 minutes.</p>
-<h2 id="-what-youll-build"><a class="header" href="#-what-youll-build">🎯 What You’ll Build</a></h2>
-<pre class="mermaid">graph LR
-    A[Your Program] --&gt;|Deploy| B[Local Validator]
-    B --&gt;|Execute| C[Arch Network]
-    classDef default fill:#f8f9fa,stroke:#dee2e6,stroke-width:2px,rx:10px,ry:10px
-    classDef program fill:#ff6b81,stroke:#ff4757,stroke-width:2px,rx:10px,ry:10px
-    classDef validator fill:#2ed573,stroke:#26ae60,stroke-width:2px,rx:10px,ry:10px
-    classDef network fill:#ffd700,stroke:#f4c430,stroke-width:2px,rx:10px,ry:10px
-    class A program
-    class B validator
-    class C network
-    linkStyle default stroke:#a4b0be,stroke-width:2px
-</pre>
+<h2 id="prerequisites-1"><a class="header" href="#prerequisites-1">Prerequisites</a></h2>
+<p>Before starting, ensure you have:</p>
+<h3 id="required-tools"><a class="header" href="#required-tools">Required Tools</a></h3>
+<ul>
+<li>Git</li>
+<li>Rust (latest stable version)</li>
+<li>Solana CLI (v1.18.18 or later)</li>
+<li>Arch Network CLI (latest version)</li>
+</ul>
+<h3 id="system-requirements"><a class="header" href="#system-requirements">System Requirements</a></h3>
+<ul>
+<li>4+ CPU cores</li>
+<li>8GB+ RAM</li>
+<li>100GB+ free disk space</li>
+<li>macOS (12.0+) or Linux (Ubuntu 20.04+)</li>
+</ul>
 <h2 id="-time-estimate"><a class="header" href="#-time-estimate">⏱️ Time Estimate</a></h2>
 <ul>
 <li>Total time: ~15 minutes</li>
 <li>Active time: ~10 minutes</li>
 <li>Waiting time: ~5 minutes (during installations)</li>
 </ul>
-<h2 id="-quick-setup"><a class="header" href="#-quick-setup">📋 Quick Setup</a></h2>
-<h3 id="1-install-cli-2-minutes"><a class="header" href="#1-install-cli-2-minutes">1. Install CLI (2 minutes)</a></h3>
+<h2 id="-installation-steps"><a class="header" href="#-installation-steps">📋 Installation Steps</a></h2>
+<h3 id="1-install-development-tools"><a class="header" href="#1-install-development-tools">1. Install Development Tools</a></h3>
+<details>
+<summary>Install Rust (if not installed)</summary>
+<pre><code class="language-bash"># Install Rust using rustup
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env  # Add Rust to your current shell session
+rustc --version  # Verify installation
+</code></pre>
+</details>
+<details>
+<summary>Install Solana CLI (if not installed)</summary>
+<pre><code class="language-bash">sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
+solana --version  # Verify installation
+</code></pre>
+</details>
+<h3 id="2-install-arch-network-cli"><a class="header" href="#2-install-arch-network-cli">2. Install Arch Network CLI</a></h3>
 <p>Download the appropriate binary for your system from the <a href="https://github.com/Arch-Network/arch-node/releases/latest">latest releases page</a>:</p>
 <div class="network-mode-container">
 <div class="network-mode-header">
@@ -451,8 +469,13 @@ function switchArch(arch) {
 <p>After installation, verify it works:</p>
 <pre><code class="language-bash">cli --version
 </code></pre>
-<h3 id="2-start-local-validator-1-minute"><a class="header" href="#2-start-local-validator-1-minute">2. Start Local Validator (1 minute)</a></h3>
-<p>Start the local validator:</p>
+<h2 id="-quick-start-project"><a class="header" href="#-quick-start-project">🚀 Quick Start Project</a></h2>
+<h3 id="1-clone-example-project"><a class="header" href="#1-clone-example-project">1. Clone Example Project</a></h3>
+<pre><code class="language-bash"># Get the starter example
+git clone https://github.com/Arch-Network/arch-examples
+cd arch-examples/examples/helloworld
+</code></pre>
+<h3 id="2-start-local-validator"><a class="header" href="#2-start-local-validator">2. Start Local Validator</a></h3>
 <div class="network-mode-container">
 <div class="network-mode-header">
     <h4 id="network-mode-title"><a class="header" href="#network-mode-title">Development Network (Default)</a></h4>
@@ -546,37 +569,7 @@ function switchNetwork(mode) {
     document.getElementById('test-network-command').style.display = mode === 'test' ? 'block' : 'none';
 }
 </script>
-<h3 id="3-clone-example-project-2-minutes"><a class="header" href="#3-clone-example-project-2-minutes">3. Clone Example Project (2 minutes)</a></h3>
-<pre><code class="language-bash"># Get the starter example
-git clone https://github.com/Arch-Network/arch-examples
-cd arch-examples/examples/helloworld
-</code></pre>
-<h3 id="4-build-and-deploy-5-minutes"><a class="header" href="#4-build-and-deploy-5-minutes">4. Build and Deploy (5 minutes)</a></h3>
-<div class="platform-select">
-<div class="platform-option">
-<h4 id="first-time-setup"><a class="header" href="#first-time-setup">First Time Setup</a></h4>
-<p>If this is your first time building Arch programs, install the required dependencies:</p>
-<details>
-<summary>macOS Dependencies</summary>
-<pre><code class="language-bash"># Install Rust if not already installed
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-# Install Solana CLI tools
-sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
-</code></pre>
-</details>
-<details>
-<summary>Linux Dependencies</summary>
-<pre><code class="language-bash"># Install Rust if not already installed
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-# Install build essentials
-sudo apt-get update &amp;&amp; sudo apt-get install -y build-essential
-# Install Solana CLI tools
-sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
-</code></pre>
-</details>
-</div>
-</div>
-<p>Build and deploy the program:</p>
+<h3 id="3-build-and-deploy"><a class="header" href="#3-build-and-deploy">3. Build and Deploy</a></h3>
 <pre><code class="language-bash"># Build the program
 cargo build-sbf
 
@@ -614,7 +607,7 @@ cli deploy ./target/deploy/helloworldprogram.so --network-mode testnet
 <p><strong>Select Your Operating System</strong>: This guide provides OS-specific instructions. Please note your OS (macOS or Linux) as you’ll need to follow the appropriate instructions throughout this guide.</p>
 </blockquote>
 <p>Welcome to the validator setup guide! This comprehensive guide will walk you through setting up a full Arch Network validator node, including all required components. As a validator, you’ll be an integral part of the network’s security and computation infrastructure.</p>
-<h2 id="-what-youll-build-1"><a class="header" href="#-what-youll-build-1">🎯 What You’ll Build</a></h2>
+<h2 id="-what-youll-build"><a class="header" href="#-what-youll-build">🎯 What You’ll Build</a></h2>
 <pre class="mermaid">graph TD
     A[Bitcoin Core] --&gt;|Blockchain Data| B[Titan]
     B --&gt;|Efficient Queries| C[Validator Node]
@@ -966,7 +959,7 @@ cd ~/arch-validator
 <li>Ensure all required ports are available and not blocked by a firewall</li>
 </ol>
 <p>For additional help, join our <a href="https://discord.gg/archnetwork">Discord community</a> or visit our <a href="https://github.com/Arch-Network">GitHub repository</a>.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="system-requirements"><a class="header" href="#system-requirements">System Requirements</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="system-requirements-1"><a class="header" href="#system-requirements-1">System Requirements</a></h1>
 <p>Welcome to the Arch Network development guide. This page will walk you through setting up your development environment with all necessary dependencies. Please follow each section carefully to ensure a smooth setup process.</p>
 <h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
 <p>Before you begin development with Arch Network, you’ll need to install and configure the following tools:</p>
@@ -1221,7 +1214,7 @@ http://localhost:9002/
 </a>
 </div>
 </div>
-<h2 id="prerequisites-1"><a class="header" href="#prerequisites-1">Prerequisites</a></h2>
+<h2 id="prerequisites-2"><a class="header" href="#prerequisites-2">Prerequisites</a></h2>
 <div class="requirement-grid">
 <div class="requirement-card">
 <h3 id="-system-requirements-1"><a class="header" href="#-system-requirements-1">🖥️ System Requirements</a></h3>
@@ -1877,7 +1870,7 @@ set_transaction_to_sign(accounts, tx_to_sign)</code></pre>
 <!-- External -->
 <div style="break-before: page; page-break-before: always;"></div><h1 id="writing-your-first-arch-program"><a class="header" href="#writing-your-first-arch-program">Writing Your First Arch Program</a></h1>
 <p>This guide will walk you through creating your first Arch program from scratch. We’ll build a simple counter program that demonstrates the core concepts of Arch development while providing hands-on experience with the development workflow.</p>
-<h2 id="prerequisites-2"><a class="header" href="#prerequisites-2">Prerequisites</a></h2>
+<h2 id="prerequisites-3"><a class="header" href="#prerequisites-3">Prerequisites</a></h2>
 <p>Before starting, ensure you have:</p>
 <ul>
 <li>Rust and Cargo installed</li>
@@ -2706,7 +2699,7 @@ cli validator-start
 <p>Questions? Feel free to ask in the comments below!</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-build-a-bitcoin-lending-protocol"><a class="header" href="#how-to-build-a-bitcoin-lending-protocol">How to Build a Bitcoin Lending Protocol</a></h1>
 <p>This guide walks through building a lending protocol for Bitcoin-based assets (BTC, Runes, Ordinals) on Arch Network. We’ll create a decentralized lending platform similar to Aave, but specifically designed for Bitcoin-based assets.</p>
-<h2 id="prerequisites-3"><a class="header" href="#prerequisites-3">Prerequisites</a></h2>
+<h2 id="prerequisites-4"><a class="header" href="#prerequisites-4">Prerequisites</a></h2>
 <p>Before starting, ensure you have:</p>
 <ul>
 <li>Completed the <a href="guides/../getting-started/environment-setup.html">environment setup</a></li>
