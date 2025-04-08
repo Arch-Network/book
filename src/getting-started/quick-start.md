@@ -162,7 +162,7 @@ export PROGRAM_ID=<DEPLOYED_PROGRAM_ADDRESS>
 
 ## 🎮 Test Your Deployment
 
-> 💡 For detailed testing strategies and examples, see our [Testing Guide](../development/testing.md).
+> 💡 For detailed testing strategies and examples, see our [Testing Guide](../guides/testing-guide.md).
 
 ```bash
 # Verify program deployment

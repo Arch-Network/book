@@ -13,6 +13,7 @@
 - [Understanding Arch Programs](guides/understanding-arch-programs.md)
 - [Setting Up a Project](getting-started/setting-up-a-project.md)
 - [Writing Your First Program](guides/writing-your-first-program.md)
+- [Testing Your Program](guides/testing-guide.md)
 - [Program Examples](guides/guides.md)
   - [Fungible Token](guides/how-to-create-a-fungible-token.md)
   - [Oracle Program](guides/how-to-write-oracle-program.md)
@@ -45,6 +46,6 @@
   - [Program Deployment](system-program/make-executable.md)
 
 # Resources
-- [Troubleshooting](getting-started/troubleshooting.md)
+- [Troubleshooting](reference/troubleshooting.md)
 - [FAQ](getting-started/faq.md)
 - [External Resources](getting-started/resources.md)
