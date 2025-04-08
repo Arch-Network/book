@@ -351,124 +351,31 @@ Technical documentation:
 <div style="break-before: page; page-break-before: always;"></div><h1 id="-quick-start-guide"><a class="header" href="#-quick-start-guide">🚀 Quick Start Guide</a></h1>
 <p>Welcome to Arch Network! Let’s get your first program running in under 15 minutes.</p>
 <h2 id="prerequisites-1"><a class="header" href="#prerequisites-1">Prerequisites</a></h2>
-<p>Before starting, ensure you have:</p>
-<h3 id="required-tools"><a class="header" href="#required-tools">Required Tools</a></h3>
+<p>Before starting, ensure you have all required tools and dependencies installed. See the <a href="getting-started/requirements.html">System Requirements</a> page for detailed installation instructions.</p>
+<p>Quick checklist:</p>
 <ul>
-<li>Git</li>
-<li>Rust (latest stable version)</li>
-<li>Solana CLI (v1.18.18 or later)</li>
-<li>Arch Network CLI (latest version)</li>
+<li><input disabled="" type="checkbox"/>
+Git (v2.0 or later)</li>
+<li><input disabled="" type="checkbox"/>
+Rust (v1.70 or later)</li>
+<li><input disabled="" type="checkbox"/>
+Solana CLI tools (v1.16 or later)</li>
+<li><input disabled="" type="checkbox"/>
+Arch Network CLI (latest version)</li>
 </ul>
-<h3 id="system-requirements"><a class="header" href="#system-requirements">System Requirements</a></h3>
-<ul>
-<li>4+ CPU cores</li>
-<li>8GB+ RAM</li>
-<li>100GB+ free disk space</li>
-<li>macOS (12.0+) or Linux (Ubuntu 20.04+)</li>
-</ul>
+<p>Verify your installation:</p>
+<pre><code class="language-bash"># Verify installations
+git --version
+rustc --version
+solana --version
+cli --version
+</code></pre>
 <h2 id="-time-estimate"><a class="header" href="#-time-estimate">⏱️ Time Estimate</a></h2>
 <ul>
 <li>Total time: ~15 minutes</li>
 <li>Active time: ~10 minutes</li>
-<li>Waiting time: ~5 minutes (during installations)</li>
+<li>Waiting time: ~5 minutes</li>
 </ul>
-<h2 id="-installation-steps"><a class="header" href="#-installation-steps">📋 Installation Steps</a></h2>
-<h3 id="1-install-development-tools"><a class="header" href="#1-install-development-tools">1. Install Development Tools</a></h3>
-<details>
-<summary>Install Rust (if not installed)</summary>
-<pre><code class="language-bash"># Install Rust using rustup
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source $HOME/.cargo/env  # Add Rust to your current shell session
-rustc --version  # Verify installation
-</code></pre>
-</details>
-<details>
-<summary>Install Solana CLI (if not installed)</summary>
-<pre><code class="language-bash">sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
-solana --version  # Verify installation
-</code></pre>
-</details>
-<h3 id="2-install-arch-network-cli"><a class="header" href="#2-install-arch-network-cli">2. Install Arch Network CLI</a></h3>
-<p>Download the appropriate binary for your system from the <a href="https://github.com/Arch-Network/arch-node/releases/latest">latest releases page</a>:</p>
-<div class="network-mode-container">
-<div class="network-mode-header">
-    <h4 id="arch-mode-title"><a class="header" href="#arch-mode-title">macOS - Apple Silicon (M1/M2/M3)</a></h4>
-</div>
-<div class="network-mode-content">
-<div id="mac-arm-command">
-<pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-apple-darwin
-chmod +x cli
-sudo mv cli /usr/local/bin/
-</code></pre>
-</div>
-<div id="mac-intel-command" style="display: none;">
-<pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-x86_64-apple-darwin
-chmod +x cli
-sudo mv cli /usr/local/bin/
-</code></pre>
-</div>
-<div id="linux-x64-command" style="display: none;">
-<pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-x86_64-unknown-linux-gnu
-chmod +x cli
-sudo mv cli /usr/local/bin/
-</code></pre>
-</div>
-<div id="linux-arm-command" style="display: none;">
-<pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-unknown-linux-gnu
-chmod +x cli
-sudo mv cli /usr/local/bin/
-</code></pre>
-</div>
-</div>
-<div class="network-mode-buttons">
-    <button class="network-mode-button active" onclick="switchArch('mac-arm')">macOS ARM</button>
-    <button class="network-mode-button" onclick="switchArch('mac-intel')">macOS Intel</button>
-    <button class="network-mode-button" onclick="switchArch('linux-x64')">Linux x64</button>
-    <button class="network-mode-button" onclick="switchArch('linux-arm')">Linux ARM</button>
-</div>
-</div>
-<script>
-function switchArch(arch) {
-    // Update buttons
-    document.querySelectorAll('.network-mode-button').forEach(btn => {
-        btn.classList.remove('active');
-        if (
-            (arch === 'mac-arm' && btn.textContent.includes('macOS ARM')) ||
-            (arch === 'mac-intel' && btn.textContent.includes('macOS Intel')) ||
-            (arch === 'linux-x64' && btn.textContent.includes('Linux x64')) ||
-            (arch === 'linux-arm' && btn.textContent.includes('Linux ARM'))
-        ) {
-            btn.classList.add('active');
-        }
-    });
-
-    // Update title
-    const title = document.getElementById('arch-mode-title');
-    switch (arch) {
-        case 'mac-arm':
-            title.textContent = 'macOS - Apple Silicon (M1/M2/M3)';
-            break;
-        case 'mac-intel':
-            title.textContent = 'macOS - Intel';
-            break;
-        case 'linux-x64':
-            title.textContent = 'Linux - x86_64';
-            break;
-        case 'linux-arm':
-            title.textContent = 'Linux - ARM64';
-            break;
-    }
-
-    // Show/hide appropriate command
-    document.getElementById('mac-arm-command').style.display = arch === 'mac-arm' ? 'block' : 'none';
-    document.getElementById('mac-intel-command').style.display = arch === 'mac-intel' ? 'block' : 'none';
-    document.getElementById('linux-x64-command').style.display = arch === 'linux-x64' ? 'block' : 'none';
-    document.getElementById('linux-arm-command').style.display = arch === 'linux-arm' ? 'block' : 'none';
-}
-</script>
-<p>After installation, verify it works:</p>
-<pre><code class="language-bash">cli --version
-</code></pre>
 <h2 id="-quick-start-project"><a class="header" href="#-quick-start-project">🚀 Quick Start Project</a></h2>
 <h3 id="1-clone-example-project"><a class="header" href="#1-clone-example-project">1. Clone Example Project</a></h3>
 <pre><code class="language-bash"># Get the starter example
@@ -569,26 +476,63 @@ function switchNetwork(mode) {
     document.getElementById('test-network-command').style.display = mode === 'test' ? 'block' : 'none';
 }
 </script>
-<h3 id="3-build-and-deploy"><a class="header" href="#3-build-and-deploy">3. Build and Deploy</a></h3>
-<pre><code class="language-bash"># Build the program
+<h2 id="building-and-deploying-your-program"><a class="header" href="#building-and-deploying-your-program">Building and Deploying Your Program</a></h2>
+<blockquote>
+<p>💡 For a more detailed guide on program development and deployment, see <a href="getting-started/setting-up-a-project.html#development-workflow">Setting Up a Project</a>.</p>
+</blockquote>
+<pre><code class="language-bash"># Build the program using Solana's BPF compiler
 cargo build-sbf
 
-# Deploy to your local validator
+# Deploy to local validator using Arch Network CLI
 cli deploy ./target/deploy/helloworldprogram.so
+
+# Note: Save your program ID for later use
+export PROGRAM_ID=&lt;DEPLOYED_PROGRAM_ADDRESS&gt;
 </code></pre>
+<h2 id="testing-your-deployment"><a class="header" href="#testing-your-deployment">Testing Your Deployment</a></h2>
+<blockquote>
+<p>💡 For troubleshooting deployment issues, refer to our <a href="getting-started/../reference/troubleshooting.html">Troubleshooting Guide</a>.</p>
+</blockquote>
 <h2 id="-test-your-deployment"><a class="header" href="#-test-your-deployment">🎮 Test Your Deployment</a></h2>
-<p>Once deployed, you can interact with your program:</p>
-<pre><code class="language-bash"># Show program information
-cli show &lt;PROGRAM_ADDRESS&gt;
+<blockquote>
+<p>💡 For detailed testing strategies and examples, see our <a href="getting-started/../development/testing.html">Testing Guide</a>.</p>
+</blockquote>
+<pre><code class="language-bash"># Verify program deployment
+cli show $PROGRAM_ID
+
+# Get program logs
+cli get-logs $PROGRAM_ID
 
 # Get block information
 cli get-block &lt;BLOCK_HASH&gt;
 </code></pre>
+<h3 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h3>
+<p>Congratulations! You’ve successfully deployed your first program. Here’s what you can explore next:</p>
+<ul>
+<li><a href="getting-started/../development/overview.html">Program Development Guide</a> - Learn about program architecture and best practices</li>
+<li><a href="getting-started/../clients/overview.html">Client Integration</a> - Build client applications that interact with your program</li>
+<li><a href="getting-started/../advanced/overview.html">Advanced Topics</a> - Explore advanced concepts and optimizations</li>
+</ul>
 <h2 id="-ready-for-testnet"><a class="header" href="#-ready-for-testnet">🌐 Ready for Testnet?</a></h2>
 <p>When you’re ready to deploy to testnet:</p>
-<pre><code class="language-bash">cli validator-start --network-mode testnet
+<pre><code class="language-bash"># Start validator in testnet mode
+cli validator-start \
+    --network-mode testnet \
+    --data-dir ./.arch_data \
+    --rpc-bind-ip 127.0.0.1 \
+    --rpc-bind-port 9002 \
+    --titan-endpoint titan-node.test.aws.archnetwork.xyz \
+    --titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
+
+# Deploy program to testnet
 cli deploy ./target/deploy/helloworldprogram.so --network-mode testnet
+
+# Verify deployment
+cli show &lt;PROGRAM_ADDRESS&gt; --network-mode testnet
 </code></pre>
+<blockquote>
+<p>💡 Note: Testnet deployments require additional setup and configuration. See our <a href="getting-started/../guides/testnet-deployment.html">Testnet Guide</a> for details.</p>
+</blockquote>
 <h2 id="-next-steps"><a class="header" href="#-next-steps">📚 Next Steps</a></h2>
 <ul>
 <li><a href="getting-started/../guides/how-to-write-arch-program.html">Modify the Hello World program</a></li>
@@ -959,54 +903,86 @@ cd ~/arch-validator
 <li>Ensure all required ports are available and not blocked by a firewall</li>
 </ol>
 <p>For additional help, join our <a href="https://discord.gg/archnetwork">Discord community</a> or visit our <a href="https://github.com/Arch-Network">GitHub repository</a>.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="system-requirements-1"><a class="header" href="#system-requirements-1">System Requirements</a></h1>
-<p>Welcome to the Arch Network development guide. This page will walk you through setting up your development environment with all necessary dependencies. Please follow each section carefully to ensure a smooth setup process.</p>
-<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
-<p>Before you begin development with Arch Network, you’ll need to install and configure the following tools:</p>
-<div class="table-wrapper"><table><thead><tr><th>Requirement</th><th>Minimum Version</th><th>Description</th></tr></thead><tbody>
-<tr><td><a href="getting-started/requirements.html#install-rust">Rust</a></td><td>Latest stable</td><td>Core development language</td></tr>
-<tr><td><a href="getting-started/requirements.html#install-c-compiler">C++ Compiler</a></td><td>gcc/clang</td><td>Required for native builds</td></tr>
-<tr><td><a href="getting-started/requirements.html#install-solana-cli">Solana CLI</a></td><td>v1.18.18</td><td>Solana development tools</td></tr>
-<tr><td><a href="getting-started/requirements.html#install-arch-network-cli">Arch Network CLI</a></td><td>Latest</td><td>Arch Network development toolkit</td></tr>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="system-requirements"><a class="header" href="#system-requirements">System Requirements</a></h1>
+<p>Welcome to the Arch Network development guide. This page contains all the requirements and setup instructions needed to start developing with Arch Network.</p>
+<h2 id="system-requirements-1"><a class="header" href="#system-requirements-1">System Requirements</a></h2>
+<h3 id="hardware-requirements"><a class="header" href="#hardware-requirements">Hardware Requirements</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Component</th><th>Minimum</th><th>Recommended</th></tr></thead><tbody>
+<tr><td>CPU</td><td>4+ cores</td><td>8+ cores</td></tr>
+<tr><td>RAM</td><td>16GB</td><td>32GB</td></tr>
+<tr><td>Storage</td><td>100GB SSD</td><td>500GB+ SSD</td></tr>
+<tr><td>Network</td><td>100Mbps</td><td>1Gbps+</td></tr>
 </tbody></table>
 </div>
-<h2 id="detailed-installation-guide"><a class="header" href="#detailed-installation-guide">Detailed Installation Guide</a></h2>
+<h3 id="software-requirements"><a class="header" href="#software-requirements">Software Requirements</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Requirement</th><th>Minimum Version</th><th>Description</th></tr></thead><tbody>
+<tr><td>Operating System</td><td>Ubuntu 20.04+ / macOS 12.0+</td><td>Latest LTS recommended</td></tr>
+<tr><td>Git</td><td>Latest</td><td>Version control</td></tr>
+<tr><td>Rust</td><td>Latest stable</td><td>Core development language</td></tr>
+<tr><td>Solana CLI</td><td>v1.18.18</td><td>Program compilation tools</td></tr>
+<tr><td>Arch Network CLI</td><td>Latest</td><td>Development toolkit</td></tr>
+</tbody></table>
+</div>
+<h2 id="installation-guide"><a class="header" href="#installation-guide">Installation Guide</a></h2>
 <h3 id="1-install-rust"><a class="header" href="#1-install-rust">1. Install Rust</a></h3>
-<p>Rust is the primary development language for Arch Network programs.</p>
 <pre><code class="language-bash"># Install Rust using rustup
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env  # Add Rust to your current shell session
 
 # Verify installation
 rustc --version
 cargo --version
 </code></pre>
-<blockquote>
-<p>💡 <strong>Note:</strong> Make sure you’re using the stable channel throughout this book.</p>
-</blockquote>
-<h3 id="2-c-compiler-setup"><a class="header" href="#2-c-compiler-setup">2. C++ Compiler Setup</a></h3>
-<h4 id="macos-users"><a class="header" href="#macos-users">MacOS Users</a></h4>
-<p>The C++ compiler comes pre-installed with Xcode Command Line Tools. Verify with:</p>
-<pre><code class="language-bash">gcc --version
+<h3 id="2-install-build-tools"><a class="header" href="#2-install-build-tools">2. Install Build Tools</a></h3>
+<h4 id="macos"><a class="header" href="#macos">macOS</a></h4>
+<pre><code class="language-bash">xcode-select --install  # Install Command Line Tools
 </code></pre>
-<p>If not installed, run:</p>
-<pre><code class="language-bash">xcode-select --install
-</code></pre>
-<h4 id="linux-users-debianubuntu"><a class="header" href="#linux-users-debianubuntu">Linux Users (Debian/Ubuntu)</a></h4>
-<p>Install the required compiler tools:</p>
+<h4 id="linux-debianubuntu"><a class="header" href="#linux-debianubuntu">Linux (Debian/Ubuntu)</a></h4>
 <pre><code class="language-bash">sudo apt-get update
-sudo apt-get install gcc-multilib build-essential jq
+sudo apt-get install -y build-essential gcc-multilib jq
 </code></pre>
 <h3 id="3-install-solana-cli"><a class="header" href="#3-install-solana-cli">3. Install Solana CLI</a></h3>
-<p>The Solana CLI is required for program compilation and deployment.</p>
-<pre><code class="language-bash">sh -c "$(curl -sSfL https://release.anza.xyz/v2.1.13/install)"
+<pre><code class="language-bash">sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
+
+# Verify installation
+solana --version
 </code></pre>
-<blockquote>
-<p>⚠️ <strong>Important Notes:</strong></p>
-<ul>
-<li>Add Solana to your PATH as instructed after installation</li>
-</ul>
-</blockquote>
-<h4 id="troubleshooting-solana-installation"><a class="header" href="#troubleshooting-solana-installation">Troubleshooting Solana Installation</a></h4>
+<h3 id="4-install-arch-network-cli"><a class="header" href="#4-install-arch-network-cli">4. Install Arch Network CLI</a></h3>
+<div class="platform-select">
+<div class="platform-option">
+<h4 id="macos---apple-silicon"><a class="header" href="#macos---apple-silicon">macOS - Apple Silicon</a></h4>
+<pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-apple-darwin
+chmod +x cli
+sudo mv cli /usr/local/bin/
+</code></pre>
+</div>
+<div class="platform-option">
+<h4 id="macos---intel"><a class="header" href="#macos---intel">macOS - Intel</a></h4>
+<pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-x86_64-apple-darwin
+chmod +x cli
+sudo mv cli /usr/local/bin/
+</code></pre>
+</div>
+<div class="platform-option">
+<h4 id="linux---x86_64"><a class="header" href="#linux---x86_64">Linux - x86_64</a></h4>
+<pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-x86_64-unknown-linux-gnu
+chmod +x cli
+sudo mv cli /usr/local/bin/
+</code></pre>
+</div>
+<div class="platform-option">
+<h4 id="linux---arm64"><a class="header" href="#linux---arm64">Linux - ARM64</a></h4>
+<pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-unknown-linux-gnu
+chmod +x cli
+sudo mv cli /usr/local/bin/
+</code></pre>
+</div>
+</div>
+<p>Verify installation:</p>
+<pre><code class="language-bash">cli --version
+</code></pre>
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
+<h3 id="solana-installation-issues"><a class="header" href="#solana-installation-issues">Solana Installation Issues</a></h3>
 <p>If you installed Rust through Homebrew and encounter <code>cargo-build-sbf</code> issues:</p>
 <ol>
 <li>Remove existing Rust installation:</li>
@@ -1014,50 +990,21 @@ sudo apt-get install gcc-multilib build-essential jq
 <pre><code class="language-bash">rustup self uninstall
 </code></pre>
 <ol start="2">
-<li>Verify removal:</li>
-</ol>
-<pre><code class="language-bash">rustup --version  # Should show "command not found"
-</code></pre>
-<ol start="3">
 <li>Perform clean Rust installation:</li>
 </ol>
 <pre><code class="language-bash">curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 </code></pre>
-<ol start="4">
+<ol start="3">
 <li>Reinstall Solana:</li>
 </ol>
 <pre><code class="language-bash">sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 </code></pre>
-<h3 id="4-install-arch-network-cli"><a class="header" href="#4-install-arch-network-cli">4. Install Arch Network CLI</a></h3>
-<p>The Arch Network CLI provides essential development tools and a local development environment.</p>
-<pre><code class="language-bash"># Download the appropriate CLI binary for your architecture from:
-# https://github.com/Arch-Network/arch-node/releases/latest
-# For example, for macOS with Apple Silicon:
-curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-apple-darwin
-chmod +x cli
-sudo mv cli /usr/local/bin/
-
-# Verify installation
-cli --version
-</code></pre>
-<h2 id="features"><a class="header" href="#features">Features</a></h2>
-<p>The Arch Network CLI provides:</p>
-<ul>
-<li>Local validator node for development</li>
-<li>Program deployment and management</li>
-<li>Account and transaction management</li>
-<li>Block data and program logging</li>
-<li>Group key and network controls</li>
-</ul>
 <h2 id="need-help-1"><a class="header" href="#need-help-1">Need Help?</a></h2>
 <ul>
-<li>Check our <a href="getting-started/requirements.html#troubleshooting-solana-installation">Troubleshooting Guide</a></li>
-<li>Join our <a href="https://discord.com/channels/1241112027963986001/1270921925991989268">Discord dev-chat</a> for community support</li>
-<li>Review the <a href="https://github.com/arch-network/arch-node/releases">Arch Network CLI repo</a> documentation</li>
-<li>Ensure all version requirements are met</li>
+<li>Check our <a href="getting-started/troubleshooting.html">Troubleshooting Guide</a></li>
+<li>Join our <a href="https://discord.com/channels/1241112027963986001/1270921925991989268">Discord dev-chat</a></li>
+<li>Review the <a href="https://github.com/arch-network/arch-node/releases">Arch Network CLI documentation</a></li>
 </ul>
-<!-- Internal -->
-<!-- External -->
 <div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-configure-the-local-validator-with-bitcoin-testnet4"><a class="header" href="#how-to-configure-the-local-validator-with-bitcoin-testnet4">How to configure the local validator with Bitcoin Testnet4</a></h1>
 <p>This guide is intended for those wishing to view logs from their programs while benefitting from being connected to Bitcoin testnet4 and therefore gaining access to ordinals/runes helper tools.</p>
 <p>Table of Contents:</p>
@@ -1271,28 +1218,28 @@ http://localhost:9002/
 <h3 id="1-install-arch-network-cli"><a class="header" href="#1-install-arch-network-cli">1. Install Arch Network CLI</a></h3>
 <div class="platform-select">
 <div class="platform-option">
-<h4 id="macos---apple-silicon"><a class="header" href="#macos---apple-silicon">macOS - Apple Silicon</a></h4>
+<h4 id="macos---apple-silicon-1"><a class="header" href="#macos---apple-silicon-1">macOS - Apple Silicon</a></h4>
 <pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-apple-darwin
 chmod +x cli
 sudo mv cli /usr/local/bin/
 </code></pre>
 </div>
 <div class="platform-option">
-<h4 id="macos---intel"><a class="header" href="#macos---intel">macOS - Intel</a></h4>
+<h4 id="macos---intel-1"><a class="header" href="#macos---intel-1">macOS - Intel</a></h4>
 <pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-x86_64-apple-darwin
 chmod +x cli
 sudo mv cli /usr/local/bin/
 </code></pre>
 </div>
 <div class="platform-option">
-<h4 id="linux---x86_64"><a class="header" href="#linux---x86_64">Linux - x86_64</a></h4>
+<h4 id="linux---x86_64-1"><a class="header" href="#linux---x86_64-1">Linux - x86_64</a></h4>
 <pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-x86_64-unknown-linux-gnu
 chmod +x cli
 sudo mv cli /usr/local/bin/
 </code></pre>
 </div>
 <div class="platform-option">
-<h4 id="linux---arm64"><a class="header" href="#linux---arm64">Linux - ARM64</a></h4>
+<h4 id="linux---arm64-1"><a class="header" href="#linux---arm64-1">Linux - ARM64</a></h4>
 <pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-unknown-linux-gnu
 chmod +x cli
 sudo mv cli /usr/local/bin/
@@ -1853,7 +1800,7 @@ set_transaction_to_sign(accounts, tx_to_sign)</code></pre>
 <li>Creates a signing request specifying which inputs need to be signed</li>
 <li>Submits the transaction to be signed by the Arch runtime</li>
 </ol>
-<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<h2 id="next-steps-1"><a class="header" href="#next-steps-1">Next Steps</a></h2>
 <p>Now that you understand the basic structure of an Arch program, you can:</p>
 <ul>
 <li>Learn about more complex account management in the <a href="guides/../program/program.html">Program</a> documentation</li>
@@ -2027,7 +1974,7 @@ pub fn process_instruction(
 </ol>
 <pre><code class="language-bash">cli invoke &lt;PROGRAM_ID&gt; &lt;ACCOUNT_ADDRESS&gt; --data 02
 </code></pre>
-<h2 id="next-steps-1"><a class="header" href="#next-steps-1">Next Steps</a></h2>
+<h2 id="next-steps-2"><a class="header" href="#next-steps-2">Next Steps</a></h2>
 <p>Now that you’ve created your first program, you can:</p>
 <ul>
 <li>Add more features to the counter program</li>
@@ -2687,7 +2634,7 @@ cli validator-start
 <li>Implement proper error handling</li>
 <li>Add detailed documentation</li>
 </ul>
-<h2 id="next-steps-2"><a class="header" href="#next-steps-2">Next Steps</a></h2>
+<h2 id="next-steps-3"><a class="header" href="#next-steps-3">Next Steps</a></h2>
 <p>To further improve your program, consider adding:</p>
 <ol>
 <li>A UI for interacting with the swap program</li>
@@ -3391,7 +3338,7 @@ mod tests {
 <li><strong>Access Control</strong>: Implement proper permission checks for all sensitive operations</li>
 <li><strong>Liquidation Thresholds</strong>: Set appropriate thresholds to maintain protocol solvency</li>
 </ol>
-<h2 id="next-steps-3"><a class="header" href="#next-steps-3">Next Steps</a></h2>
+<h2 id="next-steps-4"><a class="header" href="#next-steps-4">Next Steps</a></h2>
 <ol>
 <li>
 <p>Implement additional features:</p>
@@ -3711,7 +3658,7 @@ fn select_utxos_for_withdrawal(
 <p>Stay connected with the community to learn about new developments and opportunities to contribute to the ecosystem.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="token-program-1"><a class="header" href="#token-program-1">Token Program</a></h1>
 <p>The APL Token Program is the foundation for creating and managing fungible tokens on the Arch Network. This documentation provides a comprehensive guide for developers implementing token functionality in their applications.</p>
-<h2 id="overview-1"><a class="header" href="#overview-1">Overview</a></h2>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
 <p>The Token Program enables:</p>
 <ul>
 <li>Creation and management of fungible tokens (mints)</li>
@@ -4208,7 +4155,7 @@ mod tests {
 <span class="boring">}</span></code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="associated-token-account-program-1"><a class="header" href="#associated-token-account-program-1">Associated Token Account Program</a></h1>
 <p>The Associated Token Account (ATA) Program is a utility program in the Arch Program Library (APL) that standardizes the creation and management of token accounts. It provides a deterministic way to find and create token accounts for any wallet address and token mint combination.</p>
-<h2 id="overview-2"><a class="header" href="#overview-2">Overview</a></h2>
+<h2 id="overview-1"><a class="header" href="#overview-1">Overview</a></h2>
 <p>The Associated Token Account Program enables:</p>
 <ul>
 <li>Deterministic derivation of token account addresses</li>
@@ -6709,7 +6656,7 @@ let instruction = Instruction {
 );</code></pre>
 <!-- Internal -->
 <!-- External -->
-<div style="break-before: page; page-break-before: always;"></div><h1 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="troubleshooting-1"><a class="header" href="#troubleshooting-1">Troubleshooting</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="faq"><a class="header" href="#faq">FAQ</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="resources"><a class="header" href="#resources">Resources</a></h1>
 <h3 id="bitcoin-mempool-and-blockchain-explorer"><a class="header" href="#bitcoin-mempool-and-blockchain-explorer">Bitcoin mempool and blockchain explorer</a></h3>

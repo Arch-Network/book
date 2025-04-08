@@ -183,53 +183,85 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="system-requirements"><a class="header" href="#system-requirements">System Requirements</a></h1>
-<p>Welcome to the Arch Network development guide. This page will walk you through setting up your development environment with all necessary dependencies. Please follow each section carefully to ensure a smooth setup process.</p>
-<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
-<p>Before you begin development with Arch Network, you’ll need to install and configure the following tools:</p>
-<div class="table-wrapper"><table><thead><tr><th>Requirement</th><th>Minimum Version</th><th>Description</th></tr></thead><tbody>
-<tr><td><a href="#install-rust">Rust</a></td><td>Latest stable</td><td>Core development language</td></tr>
-<tr><td><a href="#install-c-compiler">C++ Compiler</a></td><td>gcc/clang</td><td>Required for native builds</td></tr>
-<tr><td><a href="#install-solana-cli">Solana CLI</a></td><td>v1.18.18</td><td>Solana development tools</td></tr>
-<tr><td><a href="#install-arch-network-cli">Arch Network CLI</a></td><td>Latest</td><td>Arch Network development toolkit</td></tr>
+<p>Welcome to the Arch Network development guide. This page contains all the requirements and setup instructions needed to start developing with Arch Network.</p>
+<h2 id="system-requirements-1"><a class="header" href="#system-requirements-1">System Requirements</a></h2>
+<h3 id="hardware-requirements"><a class="header" href="#hardware-requirements">Hardware Requirements</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Component</th><th>Minimum</th><th>Recommended</th></tr></thead><tbody>
+<tr><td>CPU</td><td>4+ cores</td><td>8+ cores</td></tr>
+<tr><td>RAM</td><td>16GB</td><td>32GB</td></tr>
+<tr><td>Storage</td><td>100GB SSD</td><td>500GB+ SSD</td></tr>
+<tr><td>Network</td><td>100Mbps</td><td>1Gbps+</td></tr>
 </tbody></table>
 </div>
-<h2 id="detailed-installation-guide"><a class="header" href="#detailed-installation-guide">Detailed Installation Guide</a></h2>
+<h3 id="software-requirements"><a class="header" href="#software-requirements">Software Requirements</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Requirement</th><th>Minimum Version</th><th>Description</th></tr></thead><tbody>
+<tr><td>Operating System</td><td>Ubuntu 20.04+ / macOS 12.0+</td><td>Latest LTS recommended</td></tr>
+<tr><td>Git</td><td>Latest</td><td>Version control</td></tr>
+<tr><td>Rust</td><td>Latest stable</td><td>Core development language</td></tr>
+<tr><td>Solana CLI</td><td>v1.18.18</td><td>Program compilation tools</td></tr>
+<tr><td>Arch Network CLI</td><td>Latest</td><td>Development toolkit</td></tr>
+</tbody></table>
+</div>
+<h2 id="installation-guide"><a class="header" href="#installation-guide">Installation Guide</a></h2>
 <h3 id="1-install-rust"><a class="header" href="#1-install-rust">1. Install Rust</a></h3>
-<p>Rust is the primary development language for Arch Network programs.</p>
 <pre><code class="language-bash"># Install Rust using rustup
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env  # Add Rust to your current shell session
 
 # Verify installation
 rustc --version
 cargo --version
 </code></pre>
-<blockquote>
-<p>💡 <strong>Note:</strong> Make sure you’re using the stable channel throughout this book.</p>
-</blockquote>
-<h3 id="2-c-compiler-setup"><a class="header" href="#2-c-compiler-setup">2. C++ Compiler Setup</a></h3>
-<h4 id="macos-users"><a class="header" href="#macos-users">MacOS Users</a></h4>
-<p>The C++ compiler comes pre-installed with Xcode Command Line Tools. Verify with:</p>
-<pre><code class="language-bash">gcc --version
+<h3 id="2-install-build-tools"><a class="header" href="#2-install-build-tools">2. Install Build Tools</a></h3>
+<h4 id="macos"><a class="header" href="#macos">macOS</a></h4>
+<pre><code class="language-bash">xcode-select --install  # Install Command Line Tools
 </code></pre>
-<p>If not installed, run:</p>
-<pre><code class="language-bash">xcode-select --install
-</code></pre>
-<h4 id="linux-users-debianubuntu"><a class="header" href="#linux-users-debianubuntu">Linux Users (Debian/Ubuntu)</a></h4>
-<p>Install the required compiler tools:</p>
+<h4 id="linux-debianubuntu"><a class="header" href="#linux-debianubuntu">Linux (Debian/Ubuntu)</a></h4>
 <pre><code class="language-bash">sudo apt-get update
-sudo apt-get install gcc-multilib build-essential jq
+sudo apt-get install -y build-essential gcc-multilib jq
 </code></pre>
 <h3 id="3-install-solana-cli"><a class="header" href="#3-install-solana-cli">3. Install Solana CLI</a></h3>
-<p>The Solana CLI is required for program compilation and deployment.</p>
-<pre><code class="language-bash">sh -c "$(curl -sSfL https://release.anza.xyz/v2.1.13/install)"
+<pre><code class="language-bash">sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
+
+# Verify installation
+solana --version
 </code></pre>
-<blockquote>
-<p>⚠️ <strong>Important Notes:</strong></p>
-<ul>
-<li>Add Solana to your PATH as instructed after installation</li>
-</ul>
-</blockquote>
-<h4 id="troubleshooting-solana-installation"><a class="header" href="#troubleshooting-solana-installation">Troubleshooting Solana Installation</a></h4>
+<h3 id="4-install-arch-network-cli"><a class="header" href="#4-install-arch-network-cli">4. Install Arch Network CLI</a></h3>
+<div class="platform-select">
+<div class="platform-option">
+<h4 id="macos---apple-silicon"><a class="header" href="#macos---apple-silicon">macOS - Apple Silicon</a></h4>
+<pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-apple-darwin
+chmod +x cli
+sudo mv cli /usr/local/bin/
+</code></pre>
+</div>
+<div class="platform-option">
+<h4 id="macos---intel"><a class="header" href="#macos---intel">macOS - Intel</a></h4>
+<pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-x86_64-apple-darwin
+chmod +x cli
+sudo mv cli /usr/local/bin/
+</code></pre>
+</div>
+<div class="platform-option">
+<h4 id="linux---x86_64"><a class="header" href="#linux---x86_64">Linux - x86_64</a></h4>
+<pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-x86_64-unknown-linux-gnu
+chmod +x cli
+sudo mv cli /usr/local/bin/
+</code></pre>
+</div>
+<div class="platform-option">
+<h4 id="linux---arm64"><a class="header" href="#linux---arm64">Linux - ARM64</a></h4>
+<pre><code class="language-bash">curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-unknown-linux-gnu
+chmod +x cli
+sudo mv cli /usr/local/bin/
+</code></pre>
+</div>
+</div>
+<p>Verify installation:</p>
+<pre><code class="language-bash">cli --version
+</code></pre>
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
+<h3 id="solana-installation-issues"><a class="header" href="#solana-installation-issues">Solana Installation Issues</a></h3>
 <p>If you installed Rust through Homebrew and encounter <code>cargo-build-sbf</code> issues:</p>
 <ol>
 <li>Remove existing Rust installation:</li>
@@ -237,50 +269,21 @@ sudo apt-get install gcc-multilib build-essential jq
 <pre><code class="language-bash">rustup self uninstall
 </code></pre>
 <ol start="2">
-<li>Verify removal:</li>
-</ol>
-<pre><code class="language-bash">rustup --version  # Should show "command not found"
-</code></pre>
-<ol start="3">
 <li>Perform clean Rust installation:</li>
 </ol>
 <pre><code class="language-bash">curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 </code></pre>
-<ol start="4">
+<ol start="3">
 <li>Reinstall Solana:</li>
 </ol>
 <pre><code class="language-bash">sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
 </code></pre>
-<h3 id="4-install-arch-network-cli"><a class="header" href="#4-install-arch-network-cli">4. Install Arch Network CLI</a></h3>
-<p>The Arch Network CLI provides essential development tools and a local development environment.</p>
-<pre><code class="language-bash"># Download the appropriate CLI binary for your architecture from:
-# https://github.com/Arch-Network/arch-node/releases/latest
-# For example, for macOS with Apple Silicon:
-curl -L -o cli https://github.com/Arch-Network/arch-node/releases/latest/download/cli-aarch64-apple-darwin
-chmod +x cli
-sudo mv cli /usr/local/bin/
-
-# Verify installation
-cli --version
-</code></pre>
-<h2 id="features"><a class="header" href="#features">Features</a></h2>
-<p>The Arch Network CLI provides:</p>
-<ul>
-<li>Local validator node for development</li>
-<li>Program deployment and management</li>
-<li>Account and transaction management</li>
-<li>Block data and program logging</li>
-<li>Group key and network controls</li>
-</ul>
 <h2 id="need-help"><a class="header" href="#need-help">Need Help?</a></h2>
 <ul>
-<li>Check our <a href="#troubleshooting-solana-installation">Troubleshooting Guide</a></li>
-<li>Join our <a href="https://discord.com/channels/1241112027963986001/1270921925991989268">Discord dev-chat</a> for community support</li>
-<li>Review the <a href="https://github.com/arch-network/arch-node/releases">Arch Network CLI repo</a> documentation</li>
-<li>Ensure all version requirements are met</li>
+<li>Check our <a href="troubleshooting.html">Troubleshooting Guide</a></li>
+<li>Join our <a href="https://discord.com/channels/1241112027963986001/1270921925991989268">Discord dev-chat</a></li>
+<li>Review the <a href="https://github.com/arch-network/arch-node/releases">Arch Network CLI documentation</a></li>
 </ul>
-<!-- Internal -->
-<!-- External -->
 
                     </main>
 
