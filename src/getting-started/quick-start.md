@@ -143,7 +143,7 @@ function switchNetwork(mode) {
 
 ## Building and Deploying Your Program
 
-> 💡 For a more detailed guide on program development and deployment, see [Setting Up a Project](setting-up-a-project.md#development-workflow).
+> 💡 For a more detailed guide on program development and deployment, see [Setting Up a Project](setting-up-a-project.md#project-setup).
 
 ```bash
 # Build the program using Solana's BPF compiler
