@@ -2,30 +2,52 @@
 
 Welcome to Arch Network! Let's get your first program running in under 15 minutes.
 
-## 🎯 What You'll Build
+## Prerequisites
 
-```mermaid
-graph LR
-    A[Your Program] -->|Deploy| B[Local Validator]
-    B -->|Execute| C[Arch Network]
-    classDef default fill:#f8f9fa,stroke:#dee2e6,stroke-width:2px,rx:10px,ry:10px
-    classDef program fill:#ff6b81,stroke:#ff4757,stroke-width:2px,rx:10px,ry:10px
-    classDef validator fill:#2ed573,stroke:#26ae60,stroke-width:2px,rx:10px,ry:10px
-    classDef network fill:#ffd700,stroke:#f4c430,stroke-width:2px,rx:10px,ry:10px
-    class A program
-    class B validator
-    class C network
-    linkStyle default stroke:#a4b0be,stroke-width:2px
-```
+Before starting, ensure you have:
+
+### Required Tools
+- Git
+- Rust (latest stable version)
+- Solana CLI (v1.18.18 or later)
+- Arch Network CLI (latest version)
+
+### System Requirements
+- 4+ CPU cores
+- 8GB+ RAM
+- 100GB+ free disk space
+- macOS (12.0+) or Linux (Ubuntu 20.04+)
 
 ## ⏱️ Time Estimate
 - Total time: ~15 minutes
 - Active time: ~10 minutes
 - Waiting time: ~5 minutes (during installations)
 
-## 📋 Quick Setup
+## 📋 Installation Steps
 
-### 1. Install CLI (2 minutes)
+### 1. Install Development Tools
+
+<details>
+<summary>Install Rust (if not installed)</summary>
+
+```bash
+# Install Rust using rustup
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source $HOME/.cargo/env  # Add Rust to your current shell session
+rustc --version  # Verify installation
+```
+</details>
+
+<details>
+<summary>Install Solana CLI (if not installed)</summary>
+
+```bash
+sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
+solana --version  # Verify installation
+```
+</details>
+
+### 2. Install Arch Network CLI
 
 Download the appropriate binary for your system from the [latest releases page](https://github.com/Arch-Network/arch-node/releases/latest):
 
@@ -126,9 +148,16 @@ After installation, verify it works:
 cli --version
 ```
 
-### 2. Start Local Validator (1 minute)
+## 🚀 Quick Start Project
 
-Start the local validator:
+### 1. Clone Example Project
+```bash
+# Get the starter example
+git clone https://github.com/Arch-Network/arch-examples
+cd arch-examples/examples/helloworld
+```
+
+### 2. Start Local Validator
 
 <div class="network-mode-container">
 <div class="network-mode-header">
@@ -234,48 +263,7 @@ function switchNetwork(mode) {
 }
 </script>
 
-### 3. Clone Example Project (2 minutes)
-```bash
-# Get the starter example
-git clone https://github.com/Arch-Network/arch-examples
-cd arch-examples/examples/helloworld
-```
-
-### 4. Build and Deploy (5 minutes)
-
-<div class="platform-select">
-<div class="platform-option">
-<h4>First Time Setup</h4>
-
-If this is your first time building Arch programs, install the required dependencies:
-
-<details>
-<summary>macOS Dependencies</summary>
-
-```bash
-# Install Rust if not already installed
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-# Install Solana CLI tools
-sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
-```
-</details>
-
-<details>
-<summary>Linux Dependencies</summary>
-
-```bash
-# Install Rust if not already installed
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-# Install build essentials
-sudo apt-get update && sudo apt-get install -y build-essential
-# Install Solana CLI tools
-sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
-```
-</details>
-</div>
-</div>
-
-Build and deploy the program:
+### 3. Build and Deploy
 ```bash
 # Build the program
 cargo build-sbf
