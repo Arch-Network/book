@@ -62,7 +62,7 @@ Start a local validator for testing:
 
 ```bash
 # Start the Arch Network validator
-cli validator start
+cli validator-start
 ```
 
 > Important: Ensure Bitcoin Core and Titan are properly configured and running before starting the validator. See the setup guide for details.
