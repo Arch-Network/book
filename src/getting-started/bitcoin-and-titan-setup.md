@@ -1,5 +1,7 @@
 # 🏗️ Running an Arch Network Validator
 
+> **Select Your Operating System**: This guide provides OS-specific instructions. Please note your OS (macOS or Linux) as you'll need to follow the appropriate instructions throughout this guide.
+
 Welcome to the validator setup guide! This comprehensive guide will walk you through setting up a full Arch Network validator node, including all required components. As a validator, you'll be an integral part of the network's security and computation infrastructure.
 
 ## 🎯 What You'll Build
@@ -35,9 +37,14 @@ As a validator, you will:
 Before starting, ensure you have:
 - 4+ CPU cores
 - 16GB+ RAM
-- 100GB+ SSD storage
-- Stable internet connection
+- Disk Space Requirements:
+  - Regtest mode: 100GB+ SSD storage
+  - Testnet mode: 500GB+ SSD storage (as of 2024, grows over time)
+  - Mainnet mode: 800GB+ SSD storage (as of 2024, grows over time)
+- Stable internet connection (10+ Mbps recommended)
 - Linux (Ubuntu 20.04+ or similar) or macOS (12.0+)
+
+> **Note**: This guide uses regtest mode by default, which requires minimal disk space. If you plan to run on testnet or mainnet, ensure you have sufficient storage as blockchain data grows over time. The actual space needed may be larger than listed above depending on various factors like pruning settings and index options.
 
 ## 🗺️ Setup Overview
 
@@ -47,7 +54,7 @@ Before starting, ensure you have:
    - Configure for your network
 
 2. **Titan Setup** (15-20 minutes)
-   - Build our custom fork
+   - Build Titan from source
    - Configure for your network
 
 3. **Validator Setup** (10-15 minutes)
@@ -79,45 +86,19 @@ graph TD
     linkStyle default stroke:#a4b0be,stroke-width:2px
 ```
 
-### 🧩 Understanding the Components
-
-#### Bitcoin Core 🏦
-- Your personal Bitcoin node
-- Manages a local blockchain in regtest mode
-- Perfect for development - create test Bitcoin at will!
-
-#### Titan ⚡
-- Lightning-fast Bitcoin data indexer
-- Makes blockchain queries super efficient
-- Essential for real-time dApp responses
-
-## 📋 Progress Tracker
-- [ ] Install Bitcoin Core dependencies
-- [ ] Build Bitcoin Core
-- [ ] Configure Bitcoin Core
-- [ ] Test Bitcoin Core
-- [ ] Build Titan
-- [ ] Configure Titan
-- [ ] Test the full stack
 
 ## 1. 🏗️ Bitcoin Core Setup
 
 ### 1.1 Installing Dependencies
 
-<div class="platform-select">
-<div class="platform-option">
-<h4>macOS</h4>
-
+**macOS Instructions:**
 ```bash
 # Install required dependencies via Homebrew
 brew install automake boost ccache git libevent libnatpmp libtool \
     llvm miniupnpc pkg-config python qrencode qt@5 sqlite zeromq
 ```
-</div>
 
-<div class="platform-option">
-<h4>Ubuntu/Debian Linux</h4>
-
+**Linux (Ubuntu/Debian) Instructions:**
 ```bash
 # Install required dependencies
 sudo apt-get update && sudo apt-get install -y \
@@ -128,20 +109,6 @@ sudo apt-get update && sudo apt-get install -y \
     libzmq3-dev pkg-config python3 qtbase5-dev qttools5-dev \
     qttools5-dev-tools qtwayland5 systemtap-sdt-dev
 ```
-</div>
-
-<div class="platform-option">
-<h4>RHEL/Fedora Linux</h4>
-
-```bash
-# Install required dependencies
-sudo dnf install -y automake boost-devel ccache clang gcc git \
-    libevent-devel libnatpmp-devel libtool make miniupnpc-devel \
-    pkg-config python3 qt5-qtbase-devel qt5-qttools-devel \
-    sqlite-devel systemtap-sdt-devel zeromq-devel
-```
-</div>
-</div>
 
 ### 1.2 🏭 Building Bitcoin Core
 
@@ -170,25 +137,17 @@ sudo make install
 
 Create your configuration directory:
 
-<div class="platform-select">
-<div class="platform-option">
-<h4>macOS</h4>
-
+**macOS:**
 ```bash
 mkdir -p ~/Library/'Application Support'/Bitcoin
 CONFIG_DIR=~/Library/'Application Support'/Bitcoin
 ```
-</div>
 
-<div class="platform-option">
-<h4>Linux</h4>
-
+**Linux:**
 ```bash
 mkdir -p ~/.bitcoin
 CONFIG_DIR=~/.bitcoin
 ```
-</div>
-</div>
 
 Create and edit your configuration file:
 
@@ -228,3 +187,121 @@ bitcoind -regtest -daemon
 # Verify it's running
 bitcoin-cli -regtest getblockchaininfo
 ```
+
+## 2. 🚀 Titan Setup
+
+### 2.1 Installing Rust and Dependencies
+
+**macOS Instructions:**
+```bash
+# Install Rust if you haven't already
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Install additional dependencies
+brew install pkg-config openssl
+```
+
+**Linux (Ubuntu/Debian) Instructions:**
+```bash
+# Install Rust if you haven't already
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Install additional dependencies
+sudo apt-get update && sudo apt-get install -y \
+    pkg-config libssl-dev build-essential
+```
+
+### 2.2 Building Titan
+
+```bash
+# Clone Titan repository
+git clone https://github.com/saturnbtc/Titan.git
+cd Titan
+
+# Build Titan (this might take 10-15 minutes)
+cargo build --release
+```
+
+### 2.3 🚀 Launch Titan
+
+```bash
+# Create data directory
+mkdir -p ./data
+
+# Start Titan
+cargo run --bin titan -- \
+    --bitcoin-rpc-url http://127.0.0.1:18443 \
+    --bitcoin-rpc-username bitcoin \
+    --bitcoin-rpc-password bitcoinpass \
+    --chain regtest \
+    --index-addresses \
+    --index-bitcoin-transactions \
+    --enable-tcp-subscriptions \
+    --data-dir ./data \
+    --main-loop-interval 0
+```
+
+> Note: Make sure Bitcoin Core is running before starting Titan. The RPC username and password should match what you set in your `bitcoin.conf` file.
+
+## 3. 🎯 Validator Setup
+
+### 3.1 Download the Validator Binary
+
+**macOS Instructions:**
+```bash
+# Create a directory for the validator
+mkdir -p ~/arch-validator && cd ~/arch-validator
+
+# Download the latest validator binary (replace VERSION with the latest version)
+curl -LO "https://github.com/Arch-Network/arch-node/releases/latest/download/local_validator-darwin-amd64"
+chmod +x local_validator-darwin-amd64
+```
+
+**Linux Instructions:**
+```bash
+# Create a directory for the validator
+mkdir -p ~/arch-validator && cd ~/arch-validator
+
+# Download the latest validator binary (replace VERSION with the latest version)
+curl -LO "https://github.com/Arch-Network/arch-node/releases/latest/download/local_validator-linux-amd64"
+chmod +x local_validator-linux-amd64
+```
+
+### 3.2 🚀 Launch the Validator
+
+```bash
+# Start the validator (use appropriate binary name based on your OS)
+./local_validator-darwin-amd64 \  # For macOS
+# OR
+./local_validator-linux-amd64 \   # For Linux
+    --rpc-bind-ip 127.0.0.1 \
+    --rpc-bind-port 9002 \
+    --titan-endpoint http://127.0.0.1:3030
+```
+
+> Note: Make sure both Bitcoin Core and Titan are running before starting the validator.
+
+## 🎉 Congratulations!
+
+You now have a complete Arch Network validator node running! Your setup includes:
+- Bitcoin Core in regtest mode
+- Titan indexer for efficient Bitcoin data access
+- Arch Network validator node
+
+To verify everything is working:
+1. Bitcoin Core should be accessible at `http://127.0.0.1:18443`
+2. Titan should be accessible at `http://127.0.0.1:3030`
+3. Your validator should be accessible at `http://127.0.0.1:9002`
+
+## 🔍 Troubleshooting
+
+If you encounter any issues:
+1. Ensure all components are running in the correct order:
+   - Bitcoin Core first
+   - Titan second
+   - Validator last
+2. Check the logs of each component for any error messages
+3. Verify your configuration settings match across all components
+4. Ensure all required ports are available and not blocked by a firewall
+
+For additional help, join our [Discord community](https://discord.gg/archnetwork) or visit our [GitHub repository](https://github.com/Arch-Network).
