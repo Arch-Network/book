@@ -23,7 +23,7 @@ This dispatcher function requires the following parameters:
 - `accounts` - Slice reference containing accounts needed to execute an instruction.
 - `instruction_data` - Serialized data containing program instructions.
 
-This returns a [`Result`] representing success (`Ok`) or failture ([`ProgramError`]).
+This returns a [`Result`] representing success (`Ok`) or failure ([`ProgramError`]).
 ```rust,ignore
 pub fn process_instruction(
     program_id: &Pubkey,
