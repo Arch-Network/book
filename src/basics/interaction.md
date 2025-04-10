@@ -90,7 +90,7 @@ Above is the data structure as defined in our program source code.
   };
 ```
 
-Moving along, we set the `accountPubkey` variable with our previously imported Wall account [Pubkey] converted from hexidecimal and then set a new schema for to handle the Graffiti Wall message data.
+Moving along, we set the `accountPubkey` variable with our previously imported Wall account [Pubkey] converted from hexadecimal and then set a new schema for to handle the Graffiti Wall message data.
 
 ```typescript
 const checkProgramDeployed = useCallback(async () => {
@@ -252,7 +252,7 @@ We'll again skip over some React state management.
 
 In this anonymous function we pass in our dapp data, `name` and `message` in order to prepare it for submission to the [Program].
 
-We create two new `Uint8` byte arrays and initialize their appropriate lengths with placeholder zeros, eventually copying the encoded `name` and `message` data into into fixed-size arrays and storing them within the `params` object. 
+We create two new `Uint8` byte arrays and initialize their appropriate lengths with placeholder zeros, eventually copying the encoded `name` and `message` data into fixed-size arrays and storing them within the `params` object. 
 
 We define the schema for the data and serialize the scheme alongside the `params` object which we will use within the following `try` block.
 
