@@ -249,7 +249,7 @@ assert_eq!(resulting_sender_balance.current_balance, 0);
 [Balance Check]: #balance-check
 [Instruction]: ../program/instructions-and-messages.md#instructions
 [Pubkey]: ../program/pubkey.md
-[How to write an Arch program]: ./how-to-write-arch-program.md
+[How to write an Arch program]: ./writing-your-first-program.md
 
 <!-- External -->
 [arch-examples]: https://github.com/Arch-Network/arch-examples/tree/main/examples/fungible-token-standard

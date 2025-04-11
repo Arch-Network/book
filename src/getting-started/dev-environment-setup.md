@@ -77,6 +77,6 @@ If you encounter issues:
 
 ## 📚 Next Steps
 
-1. [Build Your First dApp](../guides/how-to-write-arch-program.md)
+1. [Build Your First dApp](../guides/writing-your-first-program.md)
 2. [Explore Example Projects](../guides/guides.md)
 3. [Read the Architecture Overview](../concepts/architecture.md)

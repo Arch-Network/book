@@ -207,7 +207,7 @@ cli show <PROGRAM_ADDRESS> --network-mode testnet
 
 ## 📚 Next Steps
 
-- [Modify the Hello World program](../guides/how-to-write-arch-program.md)
+- [Modify the Hello World program](../guides/writing-your-first-program.md)
 - [Create a fungible token](../guides/how-to-create-a-fungible-token.md)
 - [Build a Runes swap application](../guides/how-to-build-runes-swap.md)
 - [Set up a full validator node](bitcoin-and-titan-setup.md)

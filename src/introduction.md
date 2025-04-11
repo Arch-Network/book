@@ -133,7 +133,7 @@ Technical documentation:
 - [API Reference](rpc/rpc.md)
   - [HTTP Methods](rpc/http-methods.md)
   - [Transaction Processing](sdk/processed-transaction.md)
-- [Program Examples](guides/how-to-write-arch-program.md)
+- [Program Examples](guides/writing-your-first-program.md)
   - [Oracle Program](guides/how-to-write-oracle-program.md)
   - [Fungible Token](guides/how-to-create-a-fungible-token.md)
 - [System Program](system-program/system-program.md)
@@ -147,7 +147,7 @@ Technical documentation:
 <ul>
 <li><a href="https://discord.gg/archnetwork">Join our Discord</a></li>
 <li><a href="concepts/architecture.md">Read the Architecture Overview</a></li>
-<li><a href="guides/how-to-write-arch-program.md">View Example Programs</a></li>
+<li><a href="guides/writing-your-first-program.md">View Example Programs</a></li>
 <li><a href="concepts/network-architecture.md#monitoring-and-telemetry">Check Network Status</a></li>
 <li><a href="rpc/rpc.md">API Reference</a></li>
 </ul>

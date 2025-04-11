@@ -211,7 +211,7 @@ Essentially, what happens here is that when we pass an instruction into our app-
 
 <!-- External -->
 [arch-examples]: https://github.com/arch-network/arch-examples
-[How to write an Arch program]: ./how-to-write-arch-program.md
+[How to write an Arch program]: ./writing-your-first-program.md
 [Program]: ../program/program.md
 [Account]: ../program/account.md
 [mempool.space]: https://mempool.space
