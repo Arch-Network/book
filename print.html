@@ -321,7 +321,7 @@ Technical documentation:
 <li><a href="sdk/processed-transaction.html">Transaction Processing</a></li>
 </ul>
 </li>
-<li><a href="guides/how-to-write-arch-program.html">Program Examples</a>
+<li><a href="guides/writing-your-first-program.html">Program Examples</a>
 <ul>
 <li><a href="guides/how-to-write-oracle-program.html">Oracle Program</a></li>
 <li><a href="guides/how-to-create-a-fungible-token.html">Fungible Token</a></li>
@@ -340,7 +340,7 @@ Technical documentation:
 <ul>
 <li><a href="https://discord.gg/archnetwork">Join our Discord</a></li>
 <li><a href="concepts/architecture.html">Read the Architecture Overview</a></li>
-<li><a href="guides/how-to-write-arch-program.html">View Example Programs</a></li>
+<li><a href="guides/writing-your-first-program.html">View Example Programs</a></li>
 <li><a href="concepts/network-architecture.html#monitoring-and-telemetry">Check Network Status</a></li>
 <li><a href="rpc/rpc.html">API Reference</a></li>
 </ul>
@@ -535,7 +535,7 @@ cli show &lt;PROGRAM_ADDRESS&gt; --network-mode testnet
 </blockquote>
 <h2 id="-next-steps"><a class="header" href="#-next-steps">📚 Next Steps</a></h2>
 <ul>
-<li><a href="getting-started/../guides/how-to-write-arch-program.html">Modify the Hello World program</a></li>
+<li><a href="getting-started/../guides/writing-your-first-program.html">Modify the Hello World program</a></li>
 <li><a href="getting-started/../guides/how-to-create-a-fungible-token.html">Create a fungible token</a></li>
 <li><a href="getting-started/../guides/how-to-build-runes-swap.html">Build a Runes swap application</a></li>
 <li><a href="getting-started/bitcoin-and-titan-setup.html">Set up a full validator node</a></li>
@@ -2301,7 +2301,7 @@ impl ProgramTest {
 <p>The Fungible Token Standard program provides a consistent interface for implementing fungible tokens on Arch. As with all programs within the APL, this program is predeployed and is tested against the Arch runtime.</p>
 <p>The source code can be found within the <a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/fungible-token-standard">arch-examples</a> repo.</p>
 <h3 id="logic"><a class="header" href="#logic">Logic</a></h3>
-<p>If you haven’t already read <a href="guides/./how-to-write-arch-program.html">How to write an Arch program</a>, we recommend starting there to get a basic understanding of the program anatomy before going further.</p>
+<p>If you haven’t already read <a href="guides/./writing-your-first-program.html">How to write an Arch program</a>, we recommend starting there to get a basic understanding of the program anatomy before going further.</p>
 <h3 id="implementation"><a class="header" href="#implementation">Implementation</a></h3>
 <ul>
 <li><a href="guides/how-to-create-a-fungible-token.html#deploy">Deploy</a></li>
@@ -2493,7 +2493,7 @@ assert_eq!(resulting_sender_balance.current_balance, 0);</code></pre>
 <li>Projects submit instructions to oracle program periodically to update oracle state account with fresh data</li>
 </ul>
 <h3 id="logic-1"><a class="header" href="#logic-1">Logic</a></h3>
-<p>If you haven’t already read <a href="guides/./how-to-write-arch-program.html">How to write an Arch program</a>, we recommend starting there to get a basic understanding of the program anatomy before going further.</p>
+<p>If you haven’t already read <a href="guides/./writing-your-first-program.html">How to write an Arch program</a>, we recommend starting there to get a basic understanding of the program anatomy before going further.</p>
 <p>We’ll look closely at the logic block contained within the <code>update_data</code> <a href="guides/how-to-write-oracle-program.html#logic">handler</a>.</p>
 <pre><code class="language-rust ignore">pub fn update_data(
     program_id: &amp;Pubkey,
