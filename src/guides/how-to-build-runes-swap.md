@@ -335,3 +335,237 @@ To further improve your program, consider adding:
 5. Additional security features
 
 Questions? Feel free to ask in the comments below!
+
+## Implementation Details
+
+### Runes Transfer Implementation
+
+Let's look at the implementation of the `transfer_runes` function used in our swap program:
+
+```rust,ignore
+/// Transfers Runes tokens from one account to another
+/// 
+/// # Arguments
+/// * `from` - The account sending the Runes
+/// * `to` - The account receiving the Runes
+/// * `rune_id` - The identifier of the Rune to transfer
+/// * `amount` - The amount of Runes to transfer
+/// 
+/// # Returns
+/// * `Result<(), ProgramError>` - Success or error code
+fn transfer_runes(
+    from: &AccountInfo,
+    to: &AccountInfo,
+    rune_id: &str,
+    amount: u64,
+) -> Result<(), ProgramError> {
+    // Step 1: Get Bitcoin script pubkey for both accounts
+    let from_script = get_account_script_pubkey(from.key)?;
+    let to_script = get_account_script_pubkey(to.key)?;
+    
+    // Step 2: Create a Bitcoin transaction for the Rune transfer
+    let mut tx = Transaction {
+        version: Version::TWO,
+        lock_time: LockTime::ZERO,
+        input: vec![],
+        output: vec![],
+    };
+    
+    // Step 3: Get UTXOs associated with the sender
+    let utxos = get_account_utxos(from)?;
+    
+    // Step 4: Find UTXOs with the specified Rune
+    let rune_utxos = utxos.iter()
+        .filter(|utxo| has_rune(utxo, rune_id))
+        .collect::<Vec<_>>();
+    
+    // Step 5: Verify sender has enough of the rune
+    let total_runes = rune_utxos.iter()
+        .map(|utxo| get_rune_amount(utxo, rune_id))
+        .sum::<u64>();
+    
+    require!(
+        total_runes >= amount,
+        ProgramError::InsufficientRuneBalance
+    );
+    
+    // Step 6: Select UTXOs for the transfer
+    let selected_utxos = select_utxos_for_transfer(
+        &rune_utxos, 
+        rune_id,
+        amount
+    )?;
+    
+    // Step 7: Add inputs from selected UTXOs
+    for utxo in &selected_utxos {
+        tx.input.push(TxIn {
+            previous_output: OutPoint::new(utxo.txid.into(), utxo.vout),
+            script_sig: Script::new(),
+            sequence: Sequence::MAX,
+            witness: Witness::new(),
+        });
+    }
+    
+    // Step 8: Calculate total input amount
+    let total_input_amount = selected_utxos.iter()
+        .map(|utxo| utxo.amount)
+        .sum::<u64>();
+    
+    // Step 9: Create output with rune transfer
+    let runes_data = create_runes_data(rune_id, amount);
+    tx.output.push(TxOut {
+        value: DUST_LIMIT, // Minimum amount for a valid output
+        script_pubkey: to_script.clone(),
+    });
+    
+    // Step 10: Add change output if needed
+    if total_input_amount > DUST_LIMIT {
+        // Return change to sender
+        let change_amount = total_input_amount - DUST_LIMIT;
+        let change_runes = total_runes - amount;
+        
+        // Create change output with remaining runes
+        if change_amount > 0 {
+            let change_data = create_runes_data(rune_id, change_runes);
+            tx.output.push(TxOut {
+                value: change_amount,
+                script_pubkey: from_script.clone(),
+            });
+        }
+    }
+    
+    // Step 11: Create transaction signing request
+    let tx_to_sign = TransactionToSign {
+        tx_bytes: &bitcoin::consensus::serialize(&tx),
+        inputs_to_sign: &selected_utxos.iter()
+            .enumerate()
+            .map(|(i, utxo)| InputToSign {
+                index: i as u32,
+                signer: *from.key,
+            })
+            .collect::<Vec<_>>(),
+    };
+    
+    // Step 12: Submit transaction for signing by the Arch runtime
+    set_transaction_to_sign(&[from.clone(), to.clone()], tx_to_sign)?;
+    
+    Ok(())
+}
+
+/// Gets UTXOs associated with an account
+fn get_account_utxos(account: &AccountInfo) -> Result<Vec<UtxoMeta>, ProgramError> {
+    // In a real implementation, this would query the Arch state
+    // to get UTXOs associated with the account
+    // This is a simplified placeholder implementation
+    
+    // For tutorial purposes, we simulate fetching UTXOs
+    Ok(vec![])
+}
+
+/// Checks if a UTXO contains a specific Rune
+fn has_rune(utxo: &UtxoMeta, rune_id: &str) -> bool {
+    // In a real implementation, this would parse the Bitcoin
+    // transaction data to check for Rune presence
+    // This is a simplified placeholder for the tutorial
+    
+    true // For tutorial purposes
+}
+
+/// Gets the amount of a specific Rune in a UTXO
+fn get_rune_amount(utxo: &UtxoMeta, rune_id: &str) -> u64 {
+    // In a real implementation, this would parse the Bitcoin
+    // transaction data to get the Rune amount
+    // This is a simplified placeholder for the tutorial
+    
+    1000 // For tutorial purposes
+}
+
+/// Creates Rune-specific data for transaction outputs
+fn create_runes_data(rune_id: &str, amount: u64) -> Vec<u8> {
+    // In a real implementation, this would create the proper
+    // script or OP_RETURN data to encode Rune information
+    // This is a simplified placeholder for the tutorial
+    
+    vec![] // For tutorial purposes
+}
+
+/// Selects appropriate UTXOs for a Rune transfer
+fn select_utxos_for_transfer(
+    utxos: &[&UtxoMeta],
+    rune_id: &str,
+    amount: u64,
+) -> Result<Vec<UtxoMeta>, ProgramError> {
+    // In a real implementation, this would implement a UTXO
+    // selection algorithm optimized for Rune transfers
+    // This is a simplified placeholder for the tutorial
+    
+    // Simply clone the first UTXO for the tutorial
+    if let Some(utxo) = utxos.first() {
+        Ok(vec![(*utxo).clone()])
+    } else {
+        Err(ProgramError::InsufficientFunds)
+    }
+}
+```
+
+The `transfer_runes` function implements the core logic for transferring Runes tokens between accounts. It:
+
+1. Gets the Bitcoin script pubkeys for the sender and receiver
+2. Creates a new Bitcoin transaction
+3. Finds UTXOs containing the desired Rune
+4. Selects appropriate UTXOs for the transfer
+5. Creates outputs with proper Rune encoding
+6. Handles change output for remaining Runes
+7. Sets up the transaction for signing by the Arch runtime
+
+### Rune Ownership Verification
+
+Let's also look at the implementation of the `verify_rune_ownership` function:
+
+```rust,ignore
+/// Verifies that an account owns sufficient Runes
+/// 
+/// # Arguments
+/// * `account` - The account to check
+/// * `rune_id` - The identifier of the Rune to verify
+/// * `required_amount` - The amount of Runes required
+/// 
+/// # Returns
+/// * `Result<(), ProgramError>` - Success or error code
+fn verify_rune_ownership(
+    account: &AccountInfo,
+    rune_id: &str,
+    required_amount: u64,
+) -> Result<(), ProgramError> {
+    // Step 1: Get UTXOs associated with the account
+    let utxos = get_account_utxos(account)?;
+    
+    // Step 2: Filter UTXOs that contain the specified Rune
+    let rune_utxos = utxos.iter()
+        .filter(|utxo| has_rune(utxo, rune_id))
+        .collect::<Vec<_>>();
+    
+    // Step 3: Calculate total Runes owned
+    let total_owned = rune_utxos.iter()
+        .map(|utxo| get_rune_amount(utxo, rune_id))
+        .sum::<u64>();
+    
+    // Step 4: Verify the account has enough Runes
+    if total_owned < required_amount {
+        msg!(
+            "Insufficient Rune balance. Required: {}, Available: {}",
+            required_amount,
+            total_owned
+        );
+        return Err(ProgramError::InsufficientRuneBalance);
+    }
+    
+    Ok(())
+}
+```
+
+This function validates that an account owns a sufficient amount of a specific Rune by:
+1. Getting the account's UTXOs
+2. Filtering those containing the specified Rune
+3. Calculating the total Rune amount owned
+4. Verifying the account has enough to meet the required amount
