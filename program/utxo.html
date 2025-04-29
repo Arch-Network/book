@@ -291,30 +291,7 @@ let transaction = Transaction::new_signed_with_payer(
     &amp;[&amp;payer],
     recent_blockhash
 );</code></pre>
-<h3 id="2-validation--usage"><a class="header" href="#2-validation--usage">2. Validation &amp; Usage</a></h3>
-<p>Programs must implement proper UTXO validation:</p>
-<pre><code class="language-rust ignore">fn validate_utxo(utxo: &amp;UtxoMeta) -&gt; Result&lt;(), ProgramError&gt; {
-    // 1. Verify UTXO exists on Bitcoin
-    let btc_tx = rpc.get_transaction(&amp;utxo.txid)?;
-    
-    // 2. Check confirmation count
-    if btc_tx.confirmations &lt; MIN_CONFIRMATIONS {
-        return Err(ProgramError::InsufficientConfirmations);
-    }
-    
-    // 3. Verify output index exists
-    if utxo.vout as usize &gt;= btc_tx.vout.len() {
-        return Err(ProgramError::InvalidVout);
-    }
-    
-    // 4. Verify UTXO is unspent
-    if is_spent(utxo) {
-        return Err(ProgramError::UtxoAlreadySpent);
-    }
-    
-    Ok(())
-}</code></pre>
-<h3 id="3-state-management"><a class="header" href="#3-state-management">3. State Management</a></h3>
+<h3 id="2-state-management"><a class="header" href="#2-state-management">2. State Management</a></h3>
 <pre><code class="language-rust ignore">// Example UTXO state tracking
 #[derive(Debug)]
 pub struct UtxoState {
@@ -332,45 +309,6 @@ pub enum UtxoStatus {
     Spent,      // UTXO has been consumed
     Invalid,    // UTXO was invalidated (e.g., by reorg)
 }</code></pre>
-<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
-<ol>
-<li>
-<p><strong>Validation</strong></p>
-<ul>
-<li>Always verify UTXO existence on Bitcoin</li>
-<li>Check for sufficient confirmations (recommended: 6+)</li>
-<li>Validate ownership and spending conditions</li>
-<li>Handle Bitcoin reorgs that might invalidate UTXOs</li>
-</ul>
-</li>
-<li>
-<p><strong>State Management</strong></p>
-<ul>
-<li>Implement robust UTXO tracking</li>
-<li>Handle edge cases (reorgs, conflicting txs)</li>
-<li>Consider implementing UTXO caching for performance</li>
-<li>Maintain accurate UTXO sets for your program</li>
-</ul>
-</li>
-<li>
-<p><strong>Security</strong></p>
-<ul>
-<li>Never trust client-provided UTXO data without verification</li>
-<li>Implement proper access controls</li>
-<li>Consider timelock constraints for sensitive operations</li>
-<li>Monitor for suspicious UTXO patterns</li>
-</ul>
-</li>
-<li>
-<p><strong>Performance</strong></p>
-<ul>
-<li>Batch UTXO operations when possible</li>
-<li>Implement efficient UTXO lookup mechanisms</li>
-<li>Consider UTXO consolidation strategies</li>
-<li>Cache frequently accessed UTXO data</li>
-</ul>
-</li>
-</ol>
 <h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
 <p>Common UTXO-related errors to handle:</p>
 <pre><code class="language-rust ignore">pub enum UtxoError {

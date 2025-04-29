@@ -6268,30 +6268,7 @@ let transaction = Transaction::new_signed_with_payer(
     &amp;[&amp;payer],
     recent_blockhash
 );</code></pre>
-<h3 id="2-validation--usage"><a class="header" href="#2-validation--usage">2. Validation &amp; Usage</a></h3>
-<p>Programs must implement proper UTXO validation:</p>
-<pre><code class="language-rust ignore">fn validate_utxo(utxo: &amp;UtxoMeta) -&gt; Result&lt;(), ProgramError&gt; {
-    // 1. Verify UTXO exists on Bitcoin
-    let btc_tx = rpc.get_transaction(&amp;utxo.txid)?;
-    
-    // 2. Check confirmation count
-    if btc_tx.confirmations &lt; MIN_CONFIRMATIONS {
-        return Err(ProgramError::InsufficientConfirmations);
-    }
-    
-    // 3. Verify output index exists
-    if utxo.vout as usize &gt;= btc_tx.vout.len() {
-        return Err(ProgramError::InvalidVout);
-    }
-    
-    // 4. Verify UTXO is unspent
-    if is_spent(utxo) {
-        return Err(ProgramError::UtxoAlreadySpent);
-    }
-    
-    Ok(())
-}</code></pre>
-<h3 id="3-state-management-1"><a class="header" href="#3-state-management-1">3. State Management</a></h3>
+<h3 id="2-state-management"><a class="header" href="#2-state-management">2. State Management</a></h3>
 <pre><code class="language-rust ignore">// Example UTXO state tracking
 #[derive(Debug)]
 pub struct UtxoState {
@@ -6309,45 +6286,6 @@ pub enum UtxoStatus {
     Spent,      // UTXO has been consumed
     Invalid,    // UTXO was invalidated (e.g., by reorg)
 }</code></pre>
-<h2 id="best-practices-4"><a class="header" href="#best-practices-4">Best Practices</a></h2>
-<ol>
-<li>
-<p><strong>Validation</strong></p>
-<ul>
-<li>Always verify UTXO existence on Bitcoin</li>
-<li>Check for sufficient confirmations (recommended: 6+)</li>
-<li>Validate ownership and spending conditions</li>
-<li>Handle Bitcoin reorgs that might invalidate UTXOs</li>
-</ul>
-</li>
-<li>
-<p><strong>State Management</strong></p>
-<ul>
-<li>Implement robust UTXO tracking</li>
-<li>Handle edge cases (reorgs, conflicting txs)</li>
-<li>Consider implementing UTXO caching for performance</li>
-<li>Maintain accurate UTXO sets for your program</li>
-</ul>
-</li>
-<li>
-<p><strong>Security</strong></p>
-<ul>
-<li>Never trust client-provided UTXO data without verification</li>
-<li>Implement proper access controls</li>
-<li>Consider timelock constraints for sensitive operations</li>
-<li>Monitor for suspicious UTXO patterns</li>
-</ul>
-</li>
-<li>
-<p><strong>Performance</strong></p>
-<ul>
-<li>Batch UTXO operations when possible</li>
-<li>Implement efficient UTXO lookup mechanisms</li>
-<li>Consider UTXO consolidation strategies</li>
-<li>Cache frequently accessed UTXO data</li>
-</ul>
-</li>
-</ol>
 <h2 id="error-handling-3"><a class="header" href="#error-handling-3">Error Handling</a></h2>
 <p>Common UTXO-related errors to handle:</p>
 <pre><code class="language-rust ignore">pub enum UtxoError {
@@ -6590,7 +6528,7 @@ pub fn create_pda_account(
     invoke_signed(&amp;ix, &amp;[payer, pda], signer_seeds)?;
     Ok(pda)
 }</code></pre>
-<h3 id="2-state-management"><a class="header" href="#2-state-management">2. State Management</a></h3>
+<h3 id="2-state-management-1"><a class="header" href="#2-state-management-1">2. State Management</a></h3>
 <pre><code class="language-rust ignore">// Example of managing account state
 pub trait AccountState: Sized {
     fn try_from_slice(data: &amp;[u8]) -&gt; Result&lt;Self, Error&gt;;
@@ -6674,7 +6612,7 @@ pub fn process_instruction(
     }
     Ok(())
 }</code></pre>
-<h2 id="best-practices-5"><a class="header" href="#best-practices-5">Best Practices</a></h2>
+<h2 id="best-practices-4"><a class="header" href="#best-practices-4">Best Practices</a></h2>
 <h3 id="1-account-management"><a class="header" href="#1-account-management">1. Account Management</a></h3>
 <ul>
 <li>Always validate account ownership before modifications</li>
@@ -6854,7 +6792,7 @@ pub fn process_instruction(
 </ul>
 </li>
 </ol>
-<h3 id="best-practices-6"><a class="header" href="#best-practices-6">Best Practices:</a></h3>
+<h3 id="best-practices-5"><a class="header" href="#best-practices-5">Best Practices:</a></h3>
 <ol>
 <li>
 <p><strong>Account Validation</strong></p>
@@ -7324,7 +7262,7 @@ cargo build
 <p>View account data:</p>
 <pre><code class="language-bash">cli account &lt;ACCOUNT_ADDRESS&gt;
 </code></pre>
-<h2 id="best-practices-7"><a class="header" href="#best-practices-7">Best Practices</a></h2>
+<h2 id="best-practices-6"><a class="header" href="#best-practices-6">Best Practices</a></h2>
 <ol>
 <li>
 <p><strong>Development Workflow</strong></p>
