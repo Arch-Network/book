@@ -121,35 +121,7 @@ let transaction = Transaction::new_signed_with_payer(
 );
 ```
 
-### 2. Validation & Usage
-
-Programs must implement proper UTXO validation:
-
-```rust,ignore
-fn validate_utxo(utxo: &UtxoMeta) -> Result<(), ProgramError> {
-    // 1. Verify UTXO exists on Bitcoin
-    let btc_tx = rpc.get_transaction(&utxo.txid)?;
-    
-    // 2. Check confirmation count
-    if btc_tx.confirmations < MIN_CONFIRMATIONS {
-        return Err(ProgramError::InsufficientConfirmations);
-    }
-    
-    // 3. Verify output index exists
-    if utxo.vout as usize >= btc_tx.vout.len() {
-        return Err(ProgramError::InvalidVout);
-    }
-    
-    // 4. Verify UTXO is unspent
-    if is_spent(utxo) {
-        return Err(ProgramError::UtxoAlreadySpent);
-    }
-    
-    Ok(())
-}
-```
-
-### 3. State Management
+### 2. State Management
 
 ```rust,ignore
 // Example UTXO state tracking
@@ -170,32 +142,6 @@ pub enum UtxoStatus {
     Invalid,    // UTXO was invalidated (e.g., by reorg)
 }
 ```
-
-## Best Practices
-
-1. **Validation**
-   - Always verify UTXO existence on Bitcoin
-   - Check for sufficient confirmations (recommended: 6+)
-   - Validate ownership and spending conditions
-   - Handle Bitcoin reorgs that might invalidate UTXOs
-
-2. **State Management**
-   - Implement robust UTXO tracking
-   - Handle edge cases (reorgs, conflicting txs)
-   - Consider implementing UTXO caching for performance
-   - Maintain accurate UTXO sets for your program
-
-3. **Security**
-   - Never trust client-provided UTXO data without verification
-   - Implement proper access controls
-   - Consider timelock constraints for sensitive operations
-   - Monitor for suspicious UTXO patterns
-
-4. **Performance**
-   - Batch UTXO operations when possible
-   - Implement efficient UTXO lookup mechanisms
-   - Consider UTXO consolidation strategies
-   - Cache frequently accessed UTXO data
 
 ## Error Handling
 
