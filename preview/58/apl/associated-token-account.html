@@ -1,0 +1,418 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Associated Token Account Program - The Arch Book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for the Arch Network - A Bitcoin-native computation environment">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item affix "><li class="part-title">Choose Your Path</li><li class="chapter-item "><a href="../getting-started/quick-start.html">🚀 Quick Start Guide</a></li><li class="chapter-item "><a href="../getting-started/bitcoin-and-titan-setup.html">🏗️ Run a Validator</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../getting-started/requirements.html">System Requirements</a></li><li class="chapter-item "><a href="../guides/how-to-configure-local-validator-bitcoin-testnet4.html">Network Selection</a></li><li class="chapter-item "><a href="../getting-started/validator-staking.html">Validator Staking</a></li></ol></li><li class="chapter-item "><li class="part-title">Program Development</li><li class="chapter-item "><a href="../guides/understanding-arch-programs.html">Understanding Arch Programs</a></li><li class="chapter-item "><a href="../getting-started/setting-up-a-project.html">Setting Up a Project</a></li><li class="chapter-item "><a href="../guides/writing-your-first-program.html">Writing Your First Program</a></li><li class="chapter-item "><a href="../guides/testing-guide.html">Testing Your Program</a></li><li class="chapter-item "><a href="../guides/guides.html">Program Examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../guides/how-to-create-a-fungible-token.html">Fungible Token</a></li><li class="chapter-item "><a href="../guides/how-to-write-oracle-program.html">Oracle Program</a></li><li class="chapter-item "><a href="../guides/how-to-build-runes-swap.html">Runes Swap</a></li><li class="chapter-item "><a href="../guides/how-to-build-lending-protocol.html">Lending Protocol</a></li></ol></li><li class="chapter-item "><li class="part-title">Arch Program Library (APL)</li><li class="chapter-item "><a href="../apl/introduction.html">Introduction</a></li><li class="chapter-item "><a href="../apl/token-program.html">Token Program</a></li><li class="chapter-item expanded "><a href="../apl/associated-token-account.html" class="active">Associated Token Account Program</a></li><li class="chapter-item affix "><li class="part-title">Core Concepts</li><li class="chapter-item "><a href="../concepts/architecture.html">Architecture Overview</a></li><li class="chapter-item "><a href="../concepts/network-architecture.html">Network Architecture</a></li><li class="chapter-item "><a href="../concepts/bitcoin-integration.html">Bitcoin Integration</a></li><li class="chapter-item "><a href="../concepts/consensus.html">ROAST and FROST Consensus</a></li><li class="chapter-item "><a href="../program/program.html">Programs</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../program/utxo.html">UTXOs</a></li><li class="chapter-item "><a href="../program/accounts.html">Accounts</a></li><li class="chapter-item "><a href="../program/instructions-and-messages.html">Instructions</a></li><li class="chapter-item "><a href="../program/syscall.html">System Calls</a></li></ol></li><li class="chapter-item "><a href="../concepts/nodes.html">Node Operation</a></li><li class="chapter-item affix "><li class="part-title">Reference</li><li class="chapter-item "><a href="../rpc/rpc.html">API Reference</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../rpc/http-methods.html">HTTP Methods</a></li><li class="chapter-item "><a href="../sdk/processed-transaction.html">Transaction Processing</a></li></ol></li><li class="chapter-item "><a href="../system-program/system-program.html">System Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../system-program/create-account.html">Account Creation</a></li><li class="chapter-item "><a href="../system-program/make-executable.html">Program Deployment</a></li></ol></li><li class="chapter-item "><li class="part-title">Resources</li><li class="chapter-item "><a href="../reference/troubleshooting.html">Troubleshooting</a></li><li class="chapter-item "><a href="../getting-started/faq.html">FAQ</a></li><li class="chapter-item "><a href="../getting-started/resources.html">External Resources</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Arch Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book/edit/main/src/apl/associated-token-account.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="associated-token-account-program"><a class="header" href="#associated-token-account-program">Associated Token Account Program</a></h1>
+<p>The Associated Token Account (ATA) Program is a utility program in the Arch Program Library (APL) that standardizes the creation and management of token accounts. It provides a deterministic way to find and create token accounts for any wallet address and token mint combination.</p>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>The Associated Token Account Program enables:</p>
+<ul>
+<li>Deterministic derivation of token account addresses</li>
+<li>Automatic token account creation</li>
+<li>Standardized account management</li>
+<li>Simplified token operations</li>
+</ul>
+<h2 id="program-id"><a class="header" href="#program-id">Program ID</a></h2>
+<pre><code>associated-token-account00000000
+</code></pre>
+<h2 id="core-concepts"><a class="header" href="#core-concepts">Core Concepts</a></h2>
+<h3 id="associated-token-accounts"><a class="header" href="#associated-token-accounts">Associated Token Accounts</a></h3>
+<p>An Associated Token Account is a Program Derived Address (PDA) that is deterministically derived from:</p>
+<ul>
+<li>The wallet owner’s public key</li>
+<li>The token mint address</li>
+</ul>
+<p>This ensures that:</p>
+<ol>
+<li>Each wallet can have exactly one associated token account per token mint</li>
+<li>The account address can be derived by anyone who knows the wallet and mint addresses</li>
+<li>The account ownership and permissions are standardized</li>
+</ol>
+<h3 id="account-structure"><a class="header" href="#account-structure">Account Structure</a></h3>
+<p>The Associated Token Account follows the standard Token Account structure but with additional guarantees about its address derivation and ownership.</p>
+<h2 id="instructions"><a class="header" href="#instructions">Instructions</a></h2>
+<h3 id="create-associated-token-account"><a class="header" href="#create-associated-token-account">Create Associated Token Account</a></h3>
+<p>Creates a new associated token account for a wallet and token mint combination.</p>
+<p>Required accounts:</p>
+<ul>
+<li><code>[signer]</code> Funding account (pays for account creation)</li>
+<li><code>[writable]</code> New associated token account</li>
+<li><code>[]</code> Wallet address (account owner)</li>
+<li><code>[]</code> Token mint</li>
+<li><code>[]</code> System program</li>
+<li><code>[]</code> Token program</li>
+</ul>
+<p>Example:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let associated_token_address = get_associated_token_address(
+    &amp;wallet_address,
+    &amp;token_mint
+);
+
+let create_ata_instruction = create_associated_token_account(
+    &amp;payer.pubkey(),      // Funding account
+    &amp;wallet_address,      // Wallet address
+    &amp;token_mint,         // Token mint
+);
+<span class="boring">}</span></code></pre></pre>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h3 id="account-management"><a class="header" href="#account-management">Account Management</a></h3>
+<ol>
+<li>
+<p><strong>Creation</strong></p>
+<ul>
+<li>Always check if an associated token account exists before creating one</li>
+<li>Use the standard creation instruction to ensure proper initialization</li>
+<li>Handle account creation costs appropriately</li>
+</ul>
+</li>
+<li>
+<p><strong>Usage</strong></p>
+<ul>
+<li>Use associated token accounts as the default choice for user wallets</li>
+<li>Derive addresses deterministically rather than storing them</li>
+<li>Verify account ownership and mint before operations</li>
+</ul>
+</li>
+</ol>
+<h3 id="security-considerations"><a class="header" href="#security-considerations">Security Considerations</a></h3>
+<ol>
+<li>
+<p><strong>Address Derivation</strong></p>
+<ul>
+<li>Always use the official derivation function</li>
+<li>Verify derived addresses match expected patterns</li>
+<li>Handle creation failure cases gracefully</li>
+</ul>
+</li>
+<li>
+<p><strong>Account Validation</strong></p>
+<ul>
+<li>Verify account ownership</li>
+<li>Check token mint association</li>
+<li>Validate account state before operations</li>
+</ul>
+</li>
+</ol>
+<h2 id="integration-examples"><a class="header" href="#integration-examples">Integration Examples</a></h2>
+<h3 id="creating-an-associated-token-account"><a class="header" href="#creating-an-associated-token-account">Creating an Associated Token Account</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Derive the associated token account address
+let associated_token_address = get_associated_token_address(
+    &amp;wallet_address,
+    &amp;token_mint
+);
+
+// Create the account if it doesn't exist
+if get_account_info(&amp;associated_token_address).is_none() {
+    let create_ata_instruction = create_associated_token_account(
+        &amp;payer.pubkey(),
+        &amp;wallet_address,
+        &amp;token_mint
+    );
+    
+    let transaction = Transaction::new_signed_with_payer(
+        &amp;[create_ata_instruction],
+        Some(&amp;payer.pubkey()),
+        &amp;[&amp;payer],
+        recent_blockhash
+    );
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="using-associated-token-accounts-in-transfers"><a class="header" href="#using-associated-token-accounts-in-transfers">Using Associated Token Accounts in Transfers</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Get associated token accounts for source and destination
+let source_ata = get_associated_token_address(
+    &amp;source_wallet,
+    &amp;token_mint
+);
+
+let destination_ata = get_associated_token_address(
+    &amp;destination_wallet,
+    &amp;token_mint
+);
+
+// Create transfer instruction using ATAs
+let transfer_instruction = transfer(
+    &amp;source_ata,
+    &amp;destination_ata,
+    &amp;source_wallet,
+    amount
+);
+<span class="boring">}</span></code></pre></pre>
+<h2 id="common-scenarios"><a class="header" href="#common-scenarios">Common Scenarios</a></h2>
+<h3 id="token-distribution"><a class="header" href="#token-distribution">Token Distribution</a></h3>
+<p>When airdropping or distributing tokens:</p>
+<ol>
+<li>Derive the recipient’s associated token account address</li>
+<li>Create the account if it doesn’t exist</li>
+<li>Transfer tokens to the associated account</li>
+</ol>
+<h3 id="wallet-integration"><a class="header" href="#wallet-integration">Wallet Integration</a></h3>
+<p>When integrating with user wallets:</p>
+<ol>
+<li>Use associated token accounts by default</li>
+<li>Create accounts on-demand when users acquire new tokens</li>
+<li>Display token balances from associated accounts</li>
+</ol>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<p>Common error cases to handle:</p>
+<ul>
+<li>Account already exists</li>
+<li>Insufficient funds for account creation</li>
+<li>Invalid mint association</li>
+<li>Invalid owner</li>
+<li>Account creation failure</li>
+</ul>
+<h2 id="related-topics"><a class="header" href="#related-topics">Related Topics</a></h2>
+<ul>
+<li><a href="./token-program.html">Token Program</a> - The main token program that works with ATAs</li>
+<li><a href="../program/program.html">Programs</a> - Understanding Arch programs</li>
+<li><a href="../program/accounts.html">Accounts</a> - Account model in Arch</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../apl/token-program.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../concepts/architecture.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../apl/token-program.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../concepts/architecture.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/mermaid.min.js"></script>
+        <script src="../theme/mermaid-init.js"></script>
+        <script src="../theme/custom.js"></script>
+
+
+    </div>
+    </body>
+</html>
