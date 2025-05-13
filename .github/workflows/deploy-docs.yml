@@ -16,7 +16,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Install mdBook and preprocessors
         run: |
@@ -53,9 +53,9 @@ jobs:
                       path = path.slice(0, -1);
                   }
                   
-                  // If we're at the root of the book site
-                  if (path === '/book') {
-                      window.location.href = '/book/introduction.html';
+                  // If we're at the root, redirect to introduction
+                  if (path === '' || path === '/') {
+                      window.location.href = '/introduction.html';
                   }
                   
                   // For preview paths
@@ -88,5 +88,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: book
           publish_branch: gh-pages
-          commit_message: "Deploy production documentation"
+          commit_message: Deploy production documentation
           enable_jekyll: false 
