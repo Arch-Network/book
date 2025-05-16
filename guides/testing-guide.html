@@ -201,17 +201,14 @@ mod tests {
 <span class="boring">}</span></code></pre></pre>
 <h3 id="integration-tests"><a class="header" href="#integration-tests">Integration Tests</a></h3>
 <p>Integration tests verify that different parts of your program work together correctly. Create these in the <code>tests</code> directory:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use your_program::*;
+<pre><code class="language-rust ignore">use your_program::*;
 use arch_sdk::test_utils::*;
 
 #[test]
 fn test_full_workflow() {
     let (mut banks_client, payer, recent_blockhash) = setup_test_context();
     // Test your program's workflow
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="test-environment-setup"><a class="header" href="#test-environment-setup">Test Environment Setup</a></h2>
 <h3 id="local-test-validator"><a class="header" href="#local-test-validator">Local Test Validator</a></h3>
 <pre><code class="language-bash"># Start a local test validator
@@ -222,14 +219,11 @@ cli deploy ./target/deploy/your_program.so
 </code></pre>
 <h3 id="test-utilities"><a class="header" href="#test-utilities">Test Utilities</a></h3>
 <p>The Arch SDK provides test utilities to simulate the blockchain environment:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use arch_sdk::{
+<pre><code class="language-rust ignore">use arch_sdk::{
     account::Account,
     pubkey::Pubkey,
     test_utils::{setup_test_context, TestContext},
-};
-<span class="boring">}</span></code></pre></pre>
+};</code></pre>
 <h2 id="testing-best-practices"><a class="header" href="#testing-best-practices">Testing Best Practices</a></h2>
 <ol>
 <li>
@@ -268,7 +262,7 @@ mod tests {
     #[test]
     fn test_create_account() {
         let (mut context, payer, _) = setup_test_context();
-        
+
         // Create test account
         let account = Account::new();
         let create_ix = create_account(
@@ -276,27 +270,27 @@ mod tests {
             &amp;account.pubkey(),
             minimum_balance(),
         );
-        
+
         // Execute instruction
         let result = process_instruction(&amp;mut context, create_ix);
-        
+
         // Verify result
         assert!(result.is_ok());
         let account_data = context.get_account(&amp;account.pubkey()).unwrap();
         assert_eq!(account_data.lamports, minimum_balance());
     }
-    
+
     #[test]
     fn test_invalid_instruction() {
         let (mut context, _, _) = setup_test_context();
-        
+
         // Test with invalid data
         let invalid_ix = Instruction::new_with_bytes(
             program_id(),
             &amp;[0xFF],
             vec![],
         );
-        
+
         // Verify error handling
         let result = process_instruction(&amp;mut context, invalid_ix);
         assert_eq!(
@@ -308,9 +302,7 @@ mod tests {
 <span class="boring">}</span></code></pre></pre>
 <h2 id="common-testing-patterns"><a class="header" href="#common-testing-patterns">Common Testing Patterns</a></h2>
 <h3 id="1-program-test-framework"><a class="header" href="#1-program-test-framework">1. Program Test Framework</a></h3>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>struct ProgramTest {
+<pre><code class="language-rust ignore">struct ProgramTest {
     context: TestContext,
     admin: Keypair,
     users: Vec&lt;Keypair&gt;,
@@ -325,33 +317,26 @@ impl ProgramTest {
             users: vec![],
         }
     }
-    
+
     fn add_user(&amp;mut self) -&gt; Keypair {
         let user = Keypair::new();
         self.users.push(user.clone());
         user
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="2-test-data-helpers"><a class="header" href="#2-test-data-helpers">2. Test Data Helpers</a></h3>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn create_test_state() -&gt; State {
+<pre><code class="language-rust ignore">fn create_test_state() -&gt; State {
     State {
         is_initialized: true,
         owner: Pubkey::new_unique(),
         balance: 1000,
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="debugging-tests"><a class="header" href="#debugging-tests">Debugging Tests</a></h2>
 <ol>
 <li>
 <p>Use the <code>arch_sdk::msg!</code> macro for logging:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>msg!("Processing instruction: {:?}", instruction);
-<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-rust ignore">msg!("Processing instruction: {:?}", instruction);</code></pre>
 </li>
 <li>
 <p>Enable debug output:</p>

@@ -211,9 +211,7 @@
 <p>The subsequent sections describe both the implemented features and the complete protocol design.</p>
 <h2 id="core-implementation-details"><a class="header" href="#core-implementation-details">Core Implementation Details</a></h2>
 <h3 id="distributed-key-generation-dkg"><a class="header" href="#distributed-key-generation-dkg">Distributed Key Generation (DKG)</a></h3>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Core DKG message types for network coordination
+<pre><code class="language-rust ignore">// Core DKG message types for network coordination
 pub enum DKGMessage {
     StartDKG { message: String },
     Round1Package { package: round1::Package },
@@ -228,8 +226,7 @@ pub enum DKGStatus {
     Failed(String, String),
     Finished(String),
     NetworkCompleted(String),
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>The DKG implementation provides:</p>
 <ul>
 <li>Two-round key generation protocol</li>
@@ -313,20 +310,18 @@ pub enum DKGStatus {
     B --&gt; C[State Update]
     C --&gt; D[Bitcoin Transaction]
     D --&gt; E[Validator Signatures]
-    
+
     B --&gt; F[Ownership Verification]
     B --&gt; G[Double-spend Check]
     B --&gt; H[Confirmation Check]
-    
+
     C --&gt; I[Account Updates]
     C --&gt; J[Program State]
     C --&gt; K[UTXO Set Changes]
 </pre>
 <p>Arch’s unique approach to state management leverages Bitcoin’s UTXO model while extending it for smart contract functionality:</p>
 <h4 id="utxo-state-tracking"><a class="header" href="#utxo-state-tracking">UTXO State Tracking</a></h4>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub struct UtxoState {
+<pre><code class="language-rust ignore">pub struct UtxoState {
     pub meta: UtxoMeta,          // UTXO identification
     pub status: UtxoStatus,      // Current UTXO status
     pub owner: Pubkey,           // UTXO owner
@@ -339,8 +334,7 @@ pub enum UtxoStatus {
     Active,     // Confirmed and spendable
     Spent,      // UTXO has been consumed
     Invalid,    // UTXO was invalidated (e.g., by reorg)
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h4 id="state-transition-process"><a class="header" href="#state-transition-process">State Transition Process</a></h4>
 <ol>
 <li>
@@ -448,7 +442,7 @@ pub enum UtxoStatus {
     participant V2 as Validator 2
     participant V3 as Validator 3
     participant N as Network
-    
+
     Note over V1,N: Validator 1 experiences delay
     V2-&gt;&gt;N: Sign Share (t=1)
     V3-&gt;&gt;N: Sign Share (t=1)
@@ -494,7 +488,7 @@ pub enum UtxoStatus {
     participant L1 as Leader 1
     participant L2 as Leader 2
     participant L3 as Leader 3
-    
+
     Note over VS: Round r
     VS-&gt;&gt;L1: Select Leader
     Note over L1: Leader Timeout/Failure

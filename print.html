@@ -1952,9 +1952,7 @@ crate-type = ["cdylib"]
 <ol>
 <li>Define our program’s state structure in <code>src/lib.rs</code>:</li>
 </ol>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use arch_program::{
+<pre><code class="language-rust ignore">use arch_program::{
     account::AccountInfo,
     entrypoint,
     msg,
@@ -1973,14 +1971,11 @@ pub enum CounterInstruction {
     Increment,
     Decrement,
     Reset,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <ol start="2">
 <li>Implement the program logic:</li>
 </ol>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>entrypoint!(process_instruction);
+<pre><code class="language-rust ignore">entrypoint!(process_instruction);
 
 pub fn process_instruction(
     _program_id: &amp;Pubkey,
@@ -1998,7 +1993,7 @@ pub fn process_instruction(
 
     // Deserialize the instruction
     let instruction = CounterInstruction::try_from_slice(instruction_data)?;
-    
+
     // Get current counter value
     let mut counter = match CounterAccount::try_from_slice(&amp;counter_account.data.borrow()) {
         Ok(data) =&gt; data,
@@ -2023,10 +2018,9 @@ pub fn process_instruction(
 
     // Serialize and save the counter
     counter.serialize(&amp;mut &amp;mut counter_account.data.borrow_mut()[..])?;
-    
+
     Ok(())
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="building-the-program"><a class="header" href="#building-the-program">Building the Program</a></h2>
 <ol>
 <li>Build your program:</li>
@@ -2094,17 +2088,14 @@ mod tests {
 <span class="boring">}</span></code></pre></pre>
 <h3 id="integration-tests"><a class="header" href="#integration-tests">Integration Tests</a></h3>
 <p>Integration tests verify that different parts of your program work together correctly. Create these in the <code>tests</code> directory:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use your_program::*;
+<pre><code class="language-rust ignore">use your_program::*;
 use arch_sdk::test_utils::*;
 
 #[test]
 fn test_full_workflow() {
     let (mut banks_client, payer, recent_blockhash) = setup_test_context();
     // Test your program's workflow
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="test-environment-setup"><a class="header" href="#test-environment-setup">Test Environment Setup</a></h2>
 <h3 id="local-test-validator"><a class="header" href="#local-test-validator">Local Test Validator</a></h3>
 <pre><code class="language-bash"># Start a local test validator
@@ -2115,14 +2106,11 @@ cli deploy ./target/deploy/your_program.so
 </code></pre>
 <h3 id="test-utilities"><a class="header" href="#test-utilities">Test Utilities</a></h3>
 <p>The Arch SDK provides test utilities to simulate the blockchain environment:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use arch_sdk::{
+<pre><code class="language-rust ignore">use arch_sdk::{
     account::Account,
     pubkey::Pubkey,
     test_utils::{setup_test_context, TestContext},
-};
-<span class="boring">}</span></code></pre></pre>
+};</code></pre>
 <h2 id="testing-best-practices"><a class="header" href="#testing-best-practices">Testing Best Practices</a></h2>
 <ol>
 <li>
@@ -2161,7 +2149,7 @@ mod tests {
     #[test]
     fn test_create_account() {
         let (mut context, payer, _) = setup_test_context();
-        
+
         // Create test account
         let account = Account::new();
         let create_ix = create_account(
@@ -2169,27 +2157,27 @@ mod tests {
             &amp;account.pubkey(),
             minimum_balance(),
         );
-        
+
         // Execute instruction
         let result = process_instruction(&amp;mut context, create_ix);
-        
+
         // Verify result
         assert!(result.is_ok());
         let account_data = context.get_account(&amp;account.pubkey()).unwrap();
         assert_eq!(account_data.lamports, minimum_balance());
     }
-    
+
     #[test]
     fn test_invalid_instruction() {
         let (mut context, _, _) = setup_test_context();
-        
+
         // Test with invalid data
         let invalid_ix = Instruction::new_with_bytes(
             program_id(),
             &amp;[0xFF],
             vec![],
         );
-        
+
         // Verify error handling
         let result = process_instruction(&amp;mut context, invalid_ix);
         assert_eq!(
@@ -2201,9 +2189,7 @@ mod tests {
 <span class="boring">}</span></code></pre></pre>
 <h2 id="common-testing-patterns"><a class="header" href="#common-testing-patterns">Common Testing Patterns</a></h2>
 <h3 id="1-program-test-framework"><a class="header" href="#1-program-test-framework">1. Program Test Framework</a></h3>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>struct ProgramTest {
+<pre><code class="language-rust ignore">struct ProgramTest {
     context: TestContext,
     admin: Keypair,
     users: Vec&lt;Keypair&gt;,
@@ -2218,33 +2204,26 @@ impl ProgramTest {
             users: vec![],
         }
     }
-    
+
     fn add_user(&amp;mut self) -&gt; Keypair {
         let user = Keypair::new();
         self.users.push(user.clone());
         user
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="2-test-data-helpers"><a class="header" href="#2-test-data-helpers">2. Test Data Helpers</a></h3>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>fn create_test_state() -&gt; State {
+<pre><code class="language-rust ignore">fn create_test_state() -&gt; State {
     State {
         is_initialized: true,
         owner: Pubkey::new_unique(),
         balance: 1000,
     }
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="debugging-tests"><a class="header" href="#debugging-tests">Debugging Tests</a></h2>
 <ol>
 <li>
 <p>Use the <code>arch_sdk::msg!</code> macro for logging:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>msg!("Processing instruction: {:?}", instruction);
-<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-rust ignore">msg!("Processing instruction: {:?}", instruction);</code></pre>
 </li>
 <li>
 <p>Enable debug output:</p>
@@ -4183,7 +4162,7 @@ fn select_utxos_for_withdrawal(
 <li>Account freezing and thawing</li>
 </ul>
 <h2 id="program-id"><a class="header" href="#program-id">Program ID</a></h2>
-<pre><code>apl-token00000000000000000000000
+<pre><code class="language-text">apl-token00000000000000000000000
 </code></pre>
 <h2 id="account-types"><a class="header" href="#account-types">Account Types</a></h2>
 <h3 id="mint-account"><a class="header" href="#mint-account">Mint Account</a></h3>
@@ -4221,22 +4200,17 @@ fn select_utxos_for_withdrawal(
 <h3 id="token-creation-and-initialization"><a class="header" href="#token-creation-and-initialization">Token Creation and Initialization</a></h3>
 <h4 id="initializemint"><a class="header" href="#initializemint">InitializeMint</a></h4>
 <p>Creates a new token type.</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub struct InitializeMint {
+<pre><code class="language-rust ignore">pub struct InitializeMint {
     pub decimals: u8,
     pub mint_authority: Pubkey,
     pub freeze_authority: COption&lt;Pubkey&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>Required accounts:</p>
 <ul>
 <li><code>[writable]</code> The mint to initialize</li>
 </ul>
 <p>Example:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let mint = Keypair::new();
+<pre><code class="language-rust ignore">let mint = Keypair::new();
 let mint_authority = Keypair::new();
 let decimals = 9;
 
@@ -4245,8 +4219,7 @@ let instruction = initialize_mint(
     &amp;mint_authority.pubkey(),
     None, // No freeze authority
     decimals,
-)?;
-<span class="boring">}</span></code></pre></pre>
+)?;</code></pre>
 <h4 id="initializeaccount"><a class="header" href="#initializeaccount">InitializeAccount</a></h4>
 <p>Creates a new account to hold tokens.</p>
 <p>Required accounts:</p>
@@ -4256,17 +4229,14 @@ let instruction = initialize_mint(
 <li><code>[]</code> The owner of the new account</li>
 </ul>
 <p>Example:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let account = Keypair::new();
+<pre><code class="language-rust ignore">let account = Keypair::new();
 let owner = Keypair::new();
 
 let instruction = initialize_account(
     &amp;account.pubkey(),
     &amp;mint.pubkey(),
     &amp;owner.pubkey(),
-)?;
-<span class="boring">}</span></code></pre></pre>
+)?;</code></pre>
 <h4 id="initializemultisig"><a class="header" href="#initializemultisig">InitializeMultisig</a></h4>
 <p>Creates a new multisignature authority.</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
@@ -4281,9 +4251,7 @@ let instruction = initialize_account(
 <li><code>[]</code> The signer accounts (1 to 11)</li>
 </ul>
 <p>Example:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let multisig = Keypair::new();
+<pre><code class="language-rust ignore">let multisig = Keypair::new();
 let signers = vec![signer1.pubkey(), signer2.pubkey(), signer3.pubkey()];
 let min_signers = 2;
 
@@ -4291,8 +4259,7 @@ let instruction = initialize_multisig(
     &amp;multisig.pubkey(),
     &amp;signers,
     min_signers,
-)?;
-<span class="boring">}</span></code></pre></pre>
+)?;</code></pre>
 <h3 id="token-operations"><a class="header" href="#token-operations">Token Operations</a></h3>
 <h4 id="mintto"><a class="header" href="#mintto">MintTo</a></h4>
 <p>Creates new tokens in an account.</p>
@@ -4309,17 +4276,14 @@ let instruction = initialize_multisig(
 <li><code>[signer]</code> The mint authority</li>
 </ul>
 <p>Example:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let amount = 1_000_000_000; // 1 token with 9 decimals
+<pre><code class="language-rust ignore">let amount = 1_000_000_000; // 1 token with 9 decimals
 
 let instruction = mint_to(
     &amp;mint.pubkey(),
     &amp;destination.pubkey(),
     &amp;mint_authority.pubkey(),
     amount,
-)?;
-<span class="boring">}</span></code></pre></pre>
+)?;</code></pre>
 <h4 id="transfer-1"><a class="header" href="#transfer-1">Transfer</a></h4>
 <p>Moves tokens between accounts.</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
@@ -4335,17 +4299,14 @@ let instruction = mint_to(
 <li><code>[signer]</code> Owner/delegate authority</li>
 </ul>
 <p>Example:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let amount = 50_000_000; // 0.05 tokens with 9 decimals
+<pre><code class="language-rust ignore">let amount = 50_000_000; // 0.05 tokens with 9 decimals
 
 let instruction = transfer(
     &amp;source.pubkey(),
     &amp;destination.pubkey(),
     &amp;owner.pubkey(),
     amount,
-)?;
-<span class="boring">}</span></code></pre></pre>
+)?;</code></pre>
 <h4 id="burn"><a class="header" href="#burn">Burn</a></h4>
 <p>Removes tokens from circulation.</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
@@ -4361,17 +4322,14 @@ let instruction = transfer(
 <li><code>[signer]</code> The owner/delegate</li>
 </ul>
 <p>Example:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let amount = 1_000_000_000; // 1 token with 9 decimals
+<pre><code class="language-rust ignore">let amount = 1_000_000_000; // 1 token with 9 decimals
 
 let instruction = burn(
     &amp;account.pubkey(),
     &amp;mint.pubkey(),
     &amp;owner.pubkey(),
     amount,
-)?;
-<span class="boring">}</span></code></pre></pre>
+)?;</code></pre>
 <h3 id="delegation"><a class="header" href="#delegation">Delegation</a></h3>
 <h4 id="approve"><a class="header" href="#approve">Approve</a></h4>
 <p>Delegates authority over tokens.</p>
@@ -4388,17 +4346,14 @@ let instruction = burn(
 <li><code>[signer]</code> Source account owner</li>
 </ul>
 <p>Example:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let amount = 5_000_000_000; // 5 tokens with 9 decimals
+<pre><code class="language-rust ignore">let amount = 5_000_000_000; // 5 tokens with 9 decimals
 
 let instruction = approve(
     &amp;source.pubkey(),
     &amp;delegate.pubkey(),
     &amp;owner.pubkey(),
     amount,
-)?;
-<span class="boring">}</span></code></pre></pre>
+)?;</code></pre>
 <h4 id="revoke"><a class="header" href="#revoke">Revoke</a></h4>
 <p>Removes delegated authority.</p>
 <p>Required accounts:</p>
@@ -4407,38 +4362,29 @@ let instruction = approve(
 <li><code>[signer]</code> Source account owner</li>
 </ul>
 <p>Example:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let instruction = revoke(
+<pre><code class="language-rust ignore">let instruction = revoke(
     &amp;source.pubkey(),
     &amp;owner.pubkey(),
-)?;
-<span class="boring">}</span></code></pre></pre>
+)?;</code></pre>
 <h3 id="account-management"><a class="header" href="#account-management">Account Management</a></h3>
 <h4 id="setauthority"><a class="header" href="#setauthority">SetAuthority</a></h4>
 <p>Changes an authority on a mint or account.</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub struct SetAuthority {
+<pre><code class="language-rust ignore">pub struct SetAuthority {
     pub authority_type: AuthorityType,
     pub new_authority: COption&lt;Pubkey&gt;,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>Required accounts:</p>
 <ul>
 <li><code>[writable]</code> Mint/account to change</li>
 <li><code>[signer]</code> Current authority</li>
 </ul>
 <p>Example:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let instruction = set_authority(
+<pre><code class="language-rust ignore">let instruction = set_authority(
     &amp;mint.pubkey(),
     &amp;current_authority.pubkey(),
     Some(&amp;new_authority.pubkey()),
     AuthorityType::MintTokens,
-)?;
-<span class="boring">}</span></code></pre></pre>
+)?;</code></pre>
 <h4 id="closeaccount"><a class="header" href="#closeaccount">CloseAccount</a></h4>
 <p>Closes a token account with zero balance.</p>
 <p>Required accounts:</p>
@@ -4448,14 +4394,11 @@ let instruction = approve(
 <li><code>[signer]</code> Account owner</li>
 </ul>
 <p>Example:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let instruction = close_account(
+<pre><code class="language-rust ignore">let instruction = close_account(
     &amp;account.pubkey(),
     &amp;destination.pubkey(),
     &amp;owner.pubkey(),
-)?;
-<span class="boring">}</span></code></pre></pre>
+)?;</code></pre>
 <h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
 <p>The program defines specific error types for common failure cases:</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
@@ -4531,9 +4474,7 @@ let instruction = approve(
 </ol>
 <h2 id="common-scenarios"><a class="header" href="#common-scenarios">Common Scenarios</a></h2>
 <h3 id="creating-a-new-token"><a class="header" href="#creating-a-new-token">Creating a New Token</a></h3>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// 1. Create mint account
+<pre><code class="language-rust ignore">// 1. Create mint account
 let mint = Keypair::new();
 let mint_rent = get_minimum_balance_for_rent_exemption(Mint::LEN)?;
 
@@ -4583,12 +4524,9 @@ let transaction = Transaction::new_signed_with_payer(
     Some(&amp;payer.pubkey()),
     &amp;[&amp;payer, &amp;mint, &amp;account],
     recent_blockhash,
-);
-<span class="boring">}</span></code></pre></pre>
+);</code></pre>
 <h3 id="implementing-a-token-transfer"><a class="header" href="#implementing-a-token-transfer">Implementing a Token Transfer</a></h3>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// 1. Get token accounts
+<pre><code class="language-rust ignore">// 1. Get token accounts
 let source = get_associated_token_address(&amp;source_owner, &amp;mint);
 let destination = get_associated_token_address(&amp;destination_owner, &amp;mint);
 
@@ -4606,8 +4544,7 @@ let transaction = Transaction::new_signed_with_payer(
     Some(&amp;payer.pubkey()),
     &amp;[&amp;payer, &amp;source_owner],
     recent_blockhash,
-);
-<span class="boring">}</span></code></pre></pre>
+);</code></pre>
 <h2 id="testing-1"><a class="header" href="#testing-1">Testing</a></h2>
 <p>The Token Program includes comprehensive tests. When implementing token functionality, you should test:</p>
 <ol>
@@ -4649,10 +4586,10 @@ mod tests {
         let source = Keypair::new();
         let destination = Keypair::new();
         let owner = Keypair::new();
-        
+
         // Initialize mint and accounts
         // ... setup code ...
-        
+
         // Test transfer
         let amount = 100;
         let result = transfer(
@@ -4661,7 +4598,7 @@ mod tests {
             &amp;owner.pubkey(),
             amount,
         );
-        
+
         assert!(result.is_ok());
         // Verify balances
         // ... verification code ...
@@ -4679,7 +4616,7 @@ mod tests {
 <li>Simplified token operations</li>
 </ul>
 <h2 id="program-id-1"><a class="header" href="#program-id-1">Program ID</a></h2>
-<pre><code>associated-token-account00000000
+<pre><code class="language-text">associated-token-account00000000
 </code></pre>
 <h2 id="core-concepts"><a class="header" href="#core-concepts">Core Concepts</a></h2>
 <h3 id="associated-token-accounts"><a class="header" href="#associated-token-accounts">Associated Token Accounts</a></h3>
@@ -4709,9 +4646,7 @@ mod tests {
 <li><code>[]</code> Token program</li>
 </ul>
 <p>Example:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let associated_token_address = get_associated_token_address(
+<pre><code class="language-rust ignore">let associated_token_address = get_associated_token_address(
     &amp;wallet_address,
     &amp;token_mint
 );
@@ -4720,8 +4655,7 @@ let create_ata_instruction = create_associated_token_account(
     &amp;payer.pubkey(),      // Funding account
     &amp;wallet_address,      // Wallet address
     &amp;token_mint,         // Token mint
-);
-<span class="boring">}</span></code></pre></pre>
+);</code></pre>
 <h2 id="best-practices-1"><a class="header" href="#best-practices-1">Best Practices</a></h2>
 <h3 id="account-management-1"><a class="header" href="#account-management-1">Account Management</a></h3>
 <ol>
@@ -4763,9 +4697,7 @@ let create_ata_instruction = create_associated_token_account(
 </ol>
 <h2 id="integration-examples"><a class="header" href="#integration-examples">Integration Examples</a></h2>
 <h3 id="creating-an-associated-token-account"><a class="header" href="#creating-an-associated-token-account">Creating an Associated Token Account</a></h3>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Derive the associated token account address
+<pre><code class="language-rust ignore">// Derive the associated token account address
 let associated_token_address = get_associated_token_address(
     &amp;wallet_address,
     &amp;token_mint
@@ -4778,19 +4710,16 @@ if get_account_info(&amp;associated_token_address).is_none() {
         &amp;wallet_address,
         &amp;token_mint
     );
-    
+
     let transaction = Transaction::new_signed_with_payer(
         &amp;[create_ata_instruction],
         Some(&amp;payer.pubkey()),
         &amp;[&amp;payer],
         recent_blockhash
     );
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="using-associated-token-accounts-in-transfers"><a class="header" href="#using-associated-token-accounts-in-transfers">Using Associated Token Accounts in Transfers</a></h3>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Get associated token accounts for source and destination
+<pre><code class="language-rust ignore">// Get associated token accounts for source and destination
 let source_ata = get_associated_token_address(
     &amp;source_wallet,
     &amp;token_mint
@@ -4807,8 +4736,7 @@ let transfer_instruction = transfer(
     &amp;destination_ata,
     &amp;source_wallet,
     amount
-);
-<span class="boring">}</span></code></pre></pre>
+);</code></pre>
 <h2 id="common-scenarios-1"><a class="header" href="#common-scenarios-1">Common Scenarios</a></h2>
 <h3 id="token-distribution"><a class="header" href="#token-distribution">Token Distribution</a></h3>
 <p>When airdropping or distributing tokens:</p>
@@ -5539,9 +5467,7 @@ pub struct SecurityParams {
 <p>The subsequent sections describe both the implemented features and the complete protocol design.</p>
 <h2 id="core-implementation-details"><a class="header" href="#core-implementation-details">Core Implementation Details</a></h2>
 <h3 id="distributed-key-generation-dkg"><a class="header" href="#distributed-key-generation-dkg">Distributed Key Generation (DKG)</a></h3>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Core DKG message types for network coordination
+<pre><code class="language-rust ignore">// Core DKG message types for network coordination
 pub enum DKGMessage {
     StartDKG { message: String },
     Round1Package { package: round1::Package },
@@ -5556,8 +5482,7 @@ pub enum DKGStatus {
     Failed(String, String),
     Finished(String),
     NetworkCompleted(String),
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <p>The DKG implementation provides:</p>
 <ul>
 <li>Two-round key generation protocol</li>
@@ -5641,20 +5566,18 @@ pub enum DKGStatus {
     B --&gt; C[State Update]
     C --&gt; D[Bitcoin Transaction]
     D --&gt; E[Validator Signatures]
-    
+
     B --&gt; F[Ownership Verification]
     B --&gt; G[Double-spend Check]
     B --&gt; H[Confirmation Check]
-    
+
     C --&gt; I[Account Updates]
     C --&gt; J[Program State]
     C --&gt; K[UTXO Set Changes]
 </pre>
 <p>Arch’s unique approach to state management leverages Bitcoin’s UTXO model while extending it for smart contract functionality:</p>
 <h4 id="utxo-state-tracking"><a class="header" href="#utxo-state-tracking">UTXO State Tracking</a></h4>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>pub struct UtxoState {
+<pre><code class="language-rust ignore">pub struct UtxoState {
     pub meta: UtxoMeta,          // UTXO identification
     pub status: UtxoStatus,      // Current UTXO status
     pub owner: Pubkey,           // UTXO owner
@@ -5667,8 +5590,7 @@ pub enum UtxoStatus {
     Active,     // Confirmed and spendable
     Spent,      // UTXO has been consumed
     Invalid,    // UTXO was invalidated (e.g., by reorg)
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h4 id="state-transition-process"><a class="header" href="#state-transition-process">State Transition Process</a></h4>
 <ol>
 <li>
@@ -5776,7 +5698,7 @@ pub enum UtxoStatus {
     participant V2 as Validator 2
     participant V3 as Validator 3
     participant N as Network
-    
+
     Note over V1,N: Validator 1 experiences delay
     V2-&gt;&gt;N: Sign Share (t=1)
     V3-&gt;&gt;N: Sign Share (t=1)
@@ -5822,7 +5744,7 @@ pub enum UtxoStatus {
     participant L1 as Leader 1
     participant L2 as Leader 2
     participant L3 as Leader 3
-    
+
     Note over VS: Round r
     VS-&gt;&gt;L1: Select Leader
     Note over L1: Leader Timeout/Failure
@@ -7179,10 +7101,7 @@ cargo build
 <p><strong>Solution:</strong></p>
 <ul>
 <li>Enable program logging:
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>msg!("Debug output: {:?}", data);
-<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-rust ignore">msg!("Debug output: {:?}", data);</code></pre>
 </li>
 <li>Check account ownership</li>
 <li>Verify instruction data format</li>
