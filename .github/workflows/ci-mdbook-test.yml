@@ -1,4 +1,4 @@
-name: CI mdbook test
+name: mdbook test
 on: [push]
 
 jobs:
