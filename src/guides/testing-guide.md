@@ -24,7 +24,7 @@ mod tests {
 
 Integration tests verify that different parts of your program work together correctly. Create these in the `tests` directory:
 
-```rust
+```rust,ignore
 use your_program::*;
 use arch_sdk::test_utils::*;
 
@@ -51,7 +51,7 @@ cli deploy ./target/deploy/your_program.so
 
 The Arch SDK provides test utilities to simulate the blockchain environment:
 
-```rust
+```rust,ignore
 use arch_sdk::{
     account::Account,
     pubkey::Pubkey,
@@ -87,7 +87,7 @@ mod tests {
     #[test]
     fn test_create_account() {
         let (mut context, payer, _) = setup_test_context();
-        
+
         // Create test account
         let account = Account::new();
         let create_ix = create_account(
@@ -95,27 +95,27 @@ mod tests {
             &account.pubkey(),
             minimum_balance(),
         );
-        
+
         // Execute instruction
         let result = process_instruction(&mut context, create_ix);
-        
+
         // Verify result
         assert!(result.is_ok());
         let account_data = context.get_account(&account.pubkey()).unwrap();
         assert_eq!(account_data.lamports, minimum_balance());
     }
-    
+
     #[test]
     fn test_invalid_instruction() {
         let (mut context, _, _) = setup_test_context();
-        
+
         // Test with invalid data
         let invalid_ix = Instruction::new_with_bytes(
             program_id(),
             &[0xFF],
             vec![],
         );
-        
+
         // Verify error handling
         let result = process_instruction(&mut context, invalid_ix);
         assert_eq!(
@@ -130,7 +130,7 @@ mod tests {
 
 ### 1. Program Test Framework
 
-```rust
+```rust,ignore
 struct ProgramTest {
     context: TestContext,
     admin: Keypair,
@@ -146,7 +146,7 @@ impl ProgramTest {
             users: vec![],
         }
     }
-    
+
     fn add_user(&mut self) -> Keypair {
         let user = Keypair::new();
         self.users.push(user.clone());
@@ -157,7 +157,7 @@ impl ProgramTest {
 
 ### 2. Test Data Helpers
 
-```rust
+```rust,ignore
 fn create_test_state() -> State {
     State {
         is_initialized: true,
@@ -170,7 +170,7 @@ fn create_test_state() -> State {
 ## Debugging Tests
 
 1. Use the `arch_sdk::msg!` macro for logging:
-   ```rust
+   ```rust,ignore
    msg!("Processing instruction: {:?}", instruction);
    ```
 

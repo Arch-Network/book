@@ -12,7 +12,7 @@ The Associated Token Account Program enables:
 
 ## Program ID
 
-```
+```text
 associated-token-account00000000
 ```
 
@@ -45,7 +45,7 @@ Required accounts:
 - `[]` Token program
 
 Example:
-```rust
+```rust,ignore
 let associated_token_address = get_associated_token_address(
     &wallet_address,
     &token_mint
@@ -86,7 +86,7 @@ let create_ata_instruction = create_associated_token_account(
 
 ### Creating an Associated Token Account
 
-```rust
+```rust,ignore
 // Derive the associated token account address
 let associated_token_address = get_associated_token_address(
     &wallet_address,
@@ -100,7 +100,7 @@ if get_account_info(&associated_token_address).is_none() {
         &wallet_address,
         &token_mint
     );
-    
+
     let transaction = Transaction::new_signed_with_payer(
         &[create_ata_instruction],
         Some(&payer.pubkey()),
@@ -112,7 +112,7 @@ if get_account_info(&associated_token_address).is_none() {
 
 ### Using Associated Token Accounts in Transfers
 
-```rust
+```rust,ignore
 // Get associated token accounts for source and destination
 let source_ata = get_associated_token_address(
     &source_wallet,

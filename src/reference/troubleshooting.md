@@ -86,7 +86,7 @@ Error: Program failed to complete: Program failed to process instruction
 
 **Solution:**
 - Enable program logging:
-  ```rust
+  ```rust,ignore
   msg!("Debug output: {:?}", data);
   ```
 - Check account ownership
