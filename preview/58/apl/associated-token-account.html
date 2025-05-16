@@ -193,7 +193,7 @@
 <li>Simplified token operations</li>
 </ul>
 <h2 id="program-id"><a class="header" href="#program-id">Program ID</a></h2>
-<pre><code>associated-token-account00000000
+<pre><code class="language-text">associated-token-account00000000
 </code></pre>
 <h2 id="core-concepts"><a class="header" href="#core-concepts">Core Concepts</a></h2>
 <h3 id="associated-token-accounts"><a class="header" href="#associated-token-accounts">Associated Token Accounts</a></h3>
@@ -223,9 +223,7 @@
 <li><code>[]</code> Token program</li>
 </ul>
 <p>Example:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let associated_token_address = get_associated_token_address(
+<pre><code class="language-rust ignore">let associated_token_address = get_associated_token_address(
     &amp;wallet_address,
     &amp;token_mint
 );
@@ -234,8 +232,7 @@ let create_ata_instruction = create_associated_token_account(
     &amp;payer.pubkey(),      // Funding account
     &amp;wallet_address,      // Wallet address
     &amp;token_mint,         // Token mint
-);
-<span class="boring">}</span></code></pre></pre>
+);</code></pre>
 <h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
 <h3 id="account-management"><a class="header" href="#account-management">Account Management</a></h3>
 <ol>
@@ -277,9 +274,7 @@ let create_ata_instruction = create_associated_token_account(
 </ol>
 <h2 id="integration-examples"><a class="header" href="#integration-examples">Integration Examples</a></h2>
 <h3 id="creating-an-associated-token-account"><a class="header" href="#creating-an-associated-token-account">Creating an Associated Token Account</a></h3>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Derive the associated token account address
+<pre><code class="language-rust ignore">// Derive the associated token account address
 let associated_token_address = get_associated_token_address(
     &amp;wallet_address,
     &amp;token_mint
@@ -292,19 +287,16 @@ if get_account_info(&amp;associated_token_address).is_none() {
         &amp;wallet_address,
         &amp;token_mint
     );
-    
+
     let transaction = Transaction::new_signed_with_payer(
         &amp;[create_ata_instruction],
         Some(&amp;payer.pubkey()),
         &amp;[&amp;payer],
         recent_blockhash
     );
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h3 id="using-associated-token-accounts-in-transfers"><a class="header" href="#using-associated-token-accounts-in-transfers">Using Associated Token Accounts in Transfers</a></h3>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Get associated token accounts for source and destination
+<pre><code class="language-rust ignore">// Get associated token accounts for source and destination
 let source_ata = get_associated_token_address(
     &amp;source_wallet,
     &amp;token_mint
@@ -321,8 +313,7 @@ let transfer_instruction = transfer(
     &amp;destination_ata,
     &amp;source_wallet,
     amount
-);
-<span class="boring">}</span></code></pre></pre>
+);</code></pre>
 <h2 id="common-scenarios"><a class="header" href="#common-scenarios">Common Scenarios</a></h2>
 <h3 id="token-distribution"><a class="header" href="#token-distribution">Token Distribution</a></h3>
 <p>When airdropping or distributing tokens:</p>

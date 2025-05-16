@@ -252,10 +252,7 @@ cargo build
 <p><strong>Solution:</strong></p>
 <ul>
 <li>Enable program logging:
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>msg!("Debug output: {:?}", data);
-<span class="boring">}</span></code></pre></pre>
+<pre><code class="language-rust ignore">msg!("Debug output: {:?}", data);</code></pre>
 </li>
 <li>Check account ownership</li>
 <li>Verify instruction data format</li>

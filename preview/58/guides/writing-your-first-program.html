@@ -230,9 +230,7 @@ crate-type = ["cdylib"]
 <ol>
 <li>Define our program’s state structure in <code>src/lib.rs</code>:</li>
 </ol>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use arch_program::{
+<pre><code class="language-rust ignore">use arch_program::{
     account::AccountInfo,
     entrypoint,
     msg,
@@ -251,14 +249,11 @@ pub enum CounterInstruction {
     Increment,
     Decrement,
     Reset,
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <ol start="2">
 <li>Implement the program logic:</li>
 </ol>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>entrypoint!(process_instruction);
+<pre><code class="language-rust ignore">entrypoint!(process_instruction);
 
 pub fn process_instruction(
     _program_id: &amp;Pubkey,
@@ -276,7 +271,7 @@ pub fn process_instruction(
 
     // Deserialize the instruction
     let instruction = CounterInstruction::try_from_slice(instruction_data)?;
-    
+
     // Get current counter value
     let mut counter = match CounterAccount::try_from_slice(&amp;counter_account.data.borrow()) {
         Ok(data) =&gt; data,
@@ -301,10 +296,9 @@ pub fn process_instruction(
 
     // Serialize and save the counter
     counter.serialize(&amp;mut &amp;mut counter_account.data.borrow_mut()[..])?;
-    
+
     Ok(())
-}
-<span class="boring">}</span></code></pre></pre>
+}</code></pre>
 <h2 id="building-the-program"><a class="header" href="#building-the-program">Building the Program</a></h2>
 <ol>
 <li>Build your program:</li>

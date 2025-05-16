@@ -6,17 +6,17 @@
     <script>
         // Get the current path
         var path = window.location.pathname;
-        
+
         // Remove trailing slash if present
         if (path.endsWith('/')) {
             path = path.slice(0, -1);
         }
-        
+
         // If we're at the root, redirect to introduction
         if (path === '' || path === '/') {
             window.location.href = '/introduction.html';
         }
-        
+
         // For preview paths
         if (path.includes('/preview/')) {
             window.location.href = path + '/introduction.html';
