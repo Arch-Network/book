@@ -13,7 +13,7 @@ The Token Program enables:
 
 ## Program ID
 
-```
+```text
 apl-token00000000000000000000000
 ```
 
@@ -60,7 +60,7 @@ Enables shared authority over token operations:
 #### InitializeMint
 Creates a new token type.
 
-```rust
+```rust,ignore
 pub struct InitializeMint {
     pub decimals: u8,
     pub mint_authority: Pubkey,
@@ -72,7 +72,7 @@ Required accounts:
 - `[writable]` The mint to initialize
 
 Example:
-```rust
+```rust,ignore
 let mint = Keypair::new();
 let mint_authority = Keypair::new();
 let decimals = 9;
@@ -94,7 +94,7 @@ Required accounts:
 - `[]` The owner of the new account
 
 Example:
-```rust
+```rust,ignore
 let account = Keypair::new();
 let owner = Keypair::new();
 
@@ -119,7 +119,7 @@ Required accounts:
 - `[]` The signer accounts (1 to 11)
 
 Example:
-```rust
+```rust,ignore
 let multisig = Keypair::new();
 let signers = vec![signer1.pubkey(), signer2.pubkey(), signer3.pubkey()];
 let min_signers = 2;
@@ -148,7 +148,7 @@ Required accounts:
 - `[signer]` The mint authority
 
 Example:
-```rust
+```rust,ignore
 let amount = 1_000_000_000; // 1 token with 9 decimals
 
 let instruction = mint_to(
@@ -174,7 +174,7 @@ Required accounts:
 - `[signer]` Owner/delegate authority
 
 Example:
-```rust
+```rust,ignore
 let amount = 50_000_000; // 0.05 tokens with 9 decimals
 
 let instruction = transfer(
@@ -200,7 +200,7 @@ Required accounts:
 - `[signer]` The owner/delegate
 
 Example:
-```rust
+```rust,ignore
 let amount = 1_000_000_000; // 1 token with 9 decimals
 
 let instruction = burn(
@@ -228,7 +228,7 @@ Required accounts:
 - `[signer]` Source account owner
 
 Example:
-```rust
+```rust,ignore
 let amount = 5_000_000_000; // 5 tokens with 9 decimals
 
 let instruction = approve(
@@ -247,7 +247,7 @@ Required accounts:
 - `[signer]` Source account owner
 
 Example:
-```rust
+```rust,ignore
 let instruction = revoke(
     &source.pubkey(),
     &owner.pubkey(),
@@ -259,7 +259,7 @@ let instruction = revoke(
 #### SetAuthority
 Changes an authority on a mint or account.
 
-```rust
+```rust,ignore
 pub struct SetAuthority {
     pub authority_type: AuthorityType,
     pub new_authority: COption<Pubkey>,
@@ -271,7 +271,7 @@ Required accounts:
 - `[signer]` Current authority
 
 Example:
-```rust
+```rust,ignore
 let instruction = set_authority(
     &mint.pubkey(),
     &current_authority.pubkey(),
@@ -289,7 +289,7 @@ Required accounts:
 - `[signer]` Account owner
 
 Example:
-```rust
+```rust,ignore
 let instruction = close_account(
     &account.pubkey(),
     &destination.pubkey(),
@@ -358,7 +358,7 @@ pub enum TokenError {
 
 ### Creating a New Token
 
-```rust
+```rust,ignore
 // 1. Create mint account
 let mint = Keypair::new();
 let mint_rent = get_minimum_balance_for_rent_exemption(Mint::LEN)?;
@@ -414,7 +414,7 @@ let transaction = Transaction::new_signed_with_payer(
 
 ### Implementing a Token Transfer
 
-```rust
+```rust,ignore
 // 1. Get token accounts
 let source = get_associated_token_address(&source_owner, &mint);
 let destination = get_associated_token_address(&destination_owner, &mint);
@@ -467,10 +467,10 @@ mod tests {
         let source = Keypair::new();
         let destination = Keypair::new();
         let owner = Keypair::new();
-        
+
         // Initialize mint and accounts
         // ... setup code ...
-        
+
         // Test transfer
         let amount = 100;
         let result = transfer(
@@ -479,7 +479,7 @@ mod tests {
             &owner.pubkey(),
             amount,
         );
-        
+
         assert!(result.is_ok());
         // Verify balances
         // ... verification code ...

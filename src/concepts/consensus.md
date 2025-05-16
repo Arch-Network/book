@@ -26,7 +26,7 @@ The subsequent sections describe both the implemented features and the complete 
 
 ### Distributed Key Generation (DKG)
 
-```rust
+```rust,ignore
 // Core DKG message types for network coordination
 pub enum DKGMessage {
     StartDKG { message: String },
@@ -141,11 +141,11 @@ graph TD
     B --> C[State Update]
     C --> D[Bitcoin Transaction]
     D --> E[Validator Signatures]
-    
+
     B --> F[Ownership Verification]
     B --> G[Double-spend Check]
     B --> H[Confirmation Check]
-    
+
     C --> I[Account Updates]
     C --> J[Program State]
     C --> K[UTXO Set Changes]
@@ -154,7 +154,7 @@ graph TD
 Arch's unique approach to state management leverages Bitcoin's UTXO model while extending it for smart contract functionality:
 
 #### UTXO State Tracking
-```rust
+```rust,ignore
 pub struct UtxoState {
     pub meta: UtxoMeta,          // UTXO identification
     pub status: UtxoStatus,      // Current UTXO status
@@ -262,7 +262,7 @@ sequenceDiagram
     participant V2 as Validator 2
     participant V3 as Validator 3
     participant N as Network
-    
+
     Note over V1,N: Validator 1 experiences delay
     V2->>N: Sign Share (t=1)
     V3->>N: Sign Share (t=1)
@@ -309,7 +309,7 @@ sequenceDiagram
     participant L1 as Leader 1
     participant L2 as Leader 2
     participant L3 as Leader 3
-    
+
     Note over VS: Round r
     VS->>L1: Select Leader
     Note over L1: Leader Timeout/Failure

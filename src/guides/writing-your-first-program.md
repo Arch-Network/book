@@ -47,7 +47,7 @@ Let's create a simple program that:
 - Can reset the counter
 
 1. Define our program's state structure in `src/lib.rs`:
-```rust
+```rust,ignore
 use arch_program::{
     account::AccountInfo,
     entrypoint,
@@ -71,7 +71,7 @@ pub enum CounterInstruction {
 ```
 
 2. Implement the program logic:
-```rust
+```rust,ignore
 entrypoint!(process_instruction);
 
 pub fn process_instruction(
@@ -90,7 +90,7 @@ pub fn process_instruction(
 
     // Deserialize the instruction
     let instruction = CounterInstruction::try_from_slice(instruction_data)?;
-    
+
     // Get current counter value
     let mut counter = match CounterAccount::try_from_slice(&counter_account.data.borrow()) {
         Ok(data) => data,
@@ -115,7 +115,7 @@ pub fn process_instruction(
 
     // Serialize and save the counter
     counter.serialize(&mut &mut counter_account.data.borrow_mut()[..])?;
-    
+
     Ok(())
 }
 ```

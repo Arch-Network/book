@@ -17,26 +17,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install mdBook and preprocessors
         run: |
           # Install mdBook
           curl -L https://github.com/rust-lang/mdBook/releases/download/v0.4.40/mdbook-v0.4.40-x86_64-unknown-linux-gnu.tar.gz | tar xzf -
           sudo mv mdbook /usr/local/bin/
-          
+
           # Install mdbook-mermaid
           curl -L https://github.com/badboy/mdbook-mermaid/releases/download/v0.12.6/mdbook-mermaid-v0.12.6-x86_64-unknown-linux-gnu.tar.gz | tar xzf -
           sudo mv mdbook-mermaid /usr/local/bin/
-          
+
           # Install mdbook-toc
           curl -L https://github.com/badboy/mdbook-toc/releases/download/0.14.1/mdbook-toc-0.14.1-x86_64-unknown-linux-gnu.tar.gz | tar xzf -
           sudo mv mdbook-toc /usr/local/bin/
-      
+
       - name: Build documentation
         run: |
           # Build the book
           mdbook build
-          
+
           # Create root index.html for GitHub Pages
           cat > book/index.html << 'EOL'
           <!DOCTYPE html>
@@ -47,17 +47,17 @@ jobs:
               <script>
                   // Get the current path
                   var path = window.location.pathname;
-                  
+
                   // Remove trailing slash if present
                   if (path.endsWith('/')) {
                       path = path.slice(0, -1);
                   }
-                  
+
                   // If we're at the root, redirect to introduction
                   if (path === '' || path === '/') {
                       window.location.href = '/introduction.html';
                   }
-                  
+
                   // For preview paths
                   if (path.includes('/preview/')) {
                       window.location.href = path + '/introduction.html';
@@ -69,7 +69,7 @@ jobs:
           </body>
           </html>
           EOL
-      
+
       - name: Deploy Preview
         if: github.ref != 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
@@ -80,7 +80,7 @@ jobs:
           destination_dir: preview/${{ github.event.pull_request.number || github.ref_name }}
           commit_message: "Deploy preview for ${{ github.event.pull_request.number || github.ref_name }}"
           enable_jekyll: false
-      
+
       - name: Deploy Production
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
@@ -89,4 +89,4 @@ jobs:
           publish_dir: book
           publish_branch: gh-pages
           commit_message: Deploy production documentation
-          enable_jekyll: false 
+          enable_jekyll: false
