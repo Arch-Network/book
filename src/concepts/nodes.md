@@ -6,7 +6,7 @@ Let's introduce the nodes that comprise the Arch Network stack in greater detail
 
 <div style="display: flex; align-items: flex-start; gap: 20px;">
 <div>
-The bootnode works similarly to DNS seeds in Bitcoin whereby the server handles the first connection to nodes joining the Arch Network.
+The bootnode works similarly to DNS seeds in Bitcoin where the server handles the first connection to nodes joining the Arch Network.
 </div>
 <img src="../images/bootnode.png" alt="Bootnode" style="width: 200px; flex-shrink: 0;" />
 </div>
