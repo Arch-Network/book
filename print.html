@@ -742,17 +742,14 @@ cli orchestrate start
 <li>Validator RPC: <code>http://127.0.0.1:9002</code></li>
 </ul>
 <p><strong>Management Commands:</strong></p>
-<pre><code class="language-bash"># Check status
-cli orchestrate status
-
-# Stop all services
+<pre><code class="language-bash"># Stop all services
 cli orchestrate stop
 
-# View logs
-cli orchestrate logs
+# Check validator status specifically
+cli orchestrate validator-status
 
-# Clean up (removes all data)
-cli orchestrate clean
+# Reset all data (removes all data)
+cli orchestrate reset
 </code></pre>
 <h3 id="option-b-manual-setup-advanced"><a class="header" href="#option-b-manual-setup-advanced">Option B: Manual Setup (Advanced)</a></h3>
 <p>For developers who want full control over their environment.</p>
@@ -800,7 +797,7 @@ cargo run --bin titan -- \
 <h4 id="step-3-validator-setup"><a class="header" href="#step-3-validator-setup">Step 3: Validator Setup</a></h4>
 <p><strong>Start Validator:</strong></p>
 <pre><code class="language-bash"># Using the CLI (recommended)
-cli validator start --network regtest --titan-endpoint http://127.0.0.1:3030
+cli validator-start
 
 # OR using the binary directly
 ./local_validator \
@@ -850,26 +847,29 @@ sudo systemctl start bitcoind
 <h2 id="-verification"><a class="header" href="#-verification">✅ Verification</a></h2>
 <h3 id="check-service-status"><a class="header" href="#check-service-status">Check Service Status</a></h3>
 <p><strong>Automated Setup:</strong></p>
-<pre><code class="language-bash">cli orchestrate status
+<pre><code class="language-bash">cli orchestrate validator-status
 </code></pre>
 <p><strong>Manual Setup:</strong></p>
 <pre><code class="language-bash"># Check Bitcoin Core
 bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoinpass getblockchaininfo
 
 # Check Titan
-curl http://127.0.0.1:3030/health
+curl http://127.0.0.1:3030/status
 
 # Check Validator
 curl -X POST -H 'Content-Type: application/json' \
-    -d '{"jsonrpc":"2.0","id":1,"method":"get_health"}' \
+    -d '{"jsonrpc":"2.0","id":1,"method":"is_node_ready"}' \
     http://127.0.0.1:9002
 </code></pre>
 <h3 id="test-transaction-flow"><a class="header" href="#test-transaction-flow">Test Transaction Flow</a></h3>
 <pre><code class="language-bash"># Deploy a simple program using the CLI
-cli program deploy --program-path ./examples/hello-world --network regtest
+cli deploy ./target/deploy/
 
-# Send a transaction
-cli transaction send --program-id &lt;PROGRAM_ID&gt; --network regtest
+# Check transaction status
+cli tx confirm &lt;TX_ID&gt;
+
+# Get transaction details
+cli tx get &lt;TX_ID&gt;
 </code></pre>
 <h2 id="-troubleshooting"><a class="header" href="#-troubleshooting">🔍 Troubleshooting</a></h2>
 <h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
@@ -877,12 +877,12 @@ cli transaction send --program-id &lt;PROGRAM_ID&gt; --network regtest
 <pre><code class="language-bash"># Check Docker is running
 docker ps
 
-# Check orchestrate logs
-cli orchestrate logs
+# Check validator status
+cli orchestrate validator-status
 
 # Reset everything
 cli orchestrate stop
-cli orchestrate clean
+cli orchestrate reset
 cli orchestrate start
 </code></pre>
 <p><strong>Manual Setup Issues:</strong></p>
