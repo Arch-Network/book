@@ -183,13 +183,10 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="-running-an-arch-network-validator"><a class="header" href="#-running-an-arch-network-validator">🏗️ Running an Arch Network Validator</a></h1>
-<blockquote>
-<p><strong>Select Your Operating System</strong>: This guide provides OS-specific instructions. Please note your OS (macOS or Linux) as you’ll need to follow the appropriate instructions throughout this guide.</p>
-</blockquote>
-<p>Welcome to the validator setup guide! This comprehensive guide will walk you through setting up a full Arch Network validator node, including all required components. As a validator, you’ll be an integral part of the network’s security and computation infrastructure.</p>
+<p>Welcome to the validator setup guide! This guide will walk you through setting up a full Arch Network validator node. You can choose between an automated setup or manual configuration depending on your needs.</p>
 <h2 id="-what-youll-build"><a class="header" href="#-what-youll-build">🎯 What You’ll Build</a></h2>
 <pre class="mermaid">graph TD
-    A[Bitcoin Core] --&gt;|Blockchain Data| B[Titan]
+    A[Bitcoin Core] --&gt;|Blockchain Data| B[Titan Indexer]
     B --&gt;|Efficient Queries| C[Validator Node]
     C --&gt;|Participate in| D[Arch Network]
     D --&gt;|Secure| E[Bitcoin Network]
@@ -202,7 +199,6 @@
     class B titan
     class C validator
     class D arch
-    linkStyle default stroke:#a4b0be,stroke-width:2px
 </pre>
 <h2 id="-component-architecture"><a class="header" href="#-component-architecture">🎯 Component Architecture</a></h2>
 <pre class="mermaid">graph TD
@@ -232,239 +228,93 @@
 <li>Earn rewards for your contribution</li>
 </ul>
 <h2 id="-system-requirements"><a class="header" href="#-system-requirements">📋 System Requirements</a></h2>
-<p>Before starting, ensure you have:</p>
 <ul>
-<li>4+ CPU cores</li>
-<li>16GB+ RAM</li>
-<li>Disk Space Requirements:
+<li><strong>CPU</strong>: 4+ cores recommended</li>
+<li><strong>RAM</strong>: 16GB+ recommended</li>
+<li><strong>Storage</strong>: 100GB+ SSD for regtest, 500GB+ for testnet/mainnet</li>
+<li><strong>Network</strong>: Stable internet connection (10+ Mbps)</li>
+<li><strong>OS</strong>: Linux (Ubuntu 20.04+) or macOS (12.0+)</li>
+</ul>
+<h2 id="-setup-options"><a class="header" href="#-setup-options">🚀 Setup Options</a></h2>
+<p>Choose your preferred setup method:</p>
+<h3 id="option-a-automated-setup-recommended"><a class="header" href="#option-a-automated-setup-recommended">Option A: Automated Setup (Recommended)</a></h3>
+<p>The easiest way to get started using the CLI orchestrate command.</p>
+<p><strong>Prerequisites:</strong></p>
 <ul>
-<li>Regtest mode: 100GB+ SSD storage</li>
-<li>Testnet mode: 500GB+ SSD storage (as of 2024, grows over time)</li>
-<li>Mainnet mode: 800GB+ SSD storage (as of 2024, grows over time)</li>
+<li><strong>Docker</strong>: Required on all platforms - <a href="https://docs.docker.com/engine/install/">Install Docker</a></li>
+<li><strong>Docker Management</strong> (optional but recommended):
+<ul>
+<li><strong>macOS</strong>: <a href="https://orbstack.dev/">OrbStack</a> (recommended) or <a href="https://www.docker.com/products/docker-desktop/">Docker Desktop</a></li>
+<li><strong>Linux</strong>: <a href="https://www.docker.com/products/docker-desktop/">Docker Desktop</a> (optional GUI)</li>
 </ul>
 </li>
-<li>Stable internet connection (10+ Mbps recommended)</li>
-<li>Linux (Ubuntu 20.04+ or similar) or macOS (12.0+)</li>
+<li><strong>Arch Network CLI</strong> - Download from <a href="https://github.com/Arch-Network/arch-node/releases/latest">releases</a></li>
 </ul>
-<blockquote>
-<p><strong>Note</strong>: This guide uses regtest mode by default, which requires minimal disk space. If you plan to run on testnet or mainnet, ensure you have sufficient storage as blockchain data grows over time. The actual space needed may be larger than listed above depending on various factors like pruning settings and index options.</p>
-</blockquote>
-<h2 id="-setup-overview"><a class="header" href="#-setup-overview">🗺️ Setup Overview</a></h2>
-<ol>
-<li>
-<p><strong>Bitcoin Core Setup</strong> (30-45 minutes)</p>
+<p><strong>Setup:</strong></p>
+<pre><code class="language-bash"># 1. Download and install the Arch CLI
+# (Download the appropriate binary for your platform from the releases page)
+
+# 2. Start the complete validator stack
+cli orchestrate start
+</code></pre>
+<p>This automatically starts:</p>
 <ul>
-<li>Install dependencies</li>
-<li>Build from source</li>
-<li>Configure for your network</li>
+<li>Bitcoin Core (regtest mode)</li>
+<li>Titan indexer</li>
+<li>Local validator</li>
+<li>All necessary networking and configuration</li>
 </ul>
-</li>
-<li>
-<p><strong>Titan Setup</strong> (15-20 minutes)</p>
+<p><strong>Service URLs:</strong></p>
 <ul>
-<li>Build Titan from source</li>
-<li>Configure for your network</li>
+<li>Bitcoin Core RPC: <code>http://127.0.0.1:18443</code></li>
+<li>Titan API: <code>http://127.0.0.1:3030</code></li>
+<li>Validator RPC: <code>http://127.0.0.1:9002</code></li>
 </ul>
-</li>
-<li>
-<p><strong>Validator Setup</strong> (10-15 minutes)</p>
-<ul>
-<li>Install Arch Network CLI</li>
-<li>Configure validator node</li>
-<li>Join the network</li>
-</ul>
-</li>
-</ol>
-<p>Total estimated time: 1-1.5 hours</p>
-<h2 id="-terminal-multiplexer-setup"><a class="header" href="#-terminal-multiplexer-setup">📱 Terminal Multiplexer Setup</a></h2>
-<p>We’ll use <code>tmux</code> to manage multiple processes (Bitcoin Core, Titan, and the validator) in separate panes. This allows you to monitor all components simultaneously.</p>
-<p><strong>macOS Instructions:</strong></p>
-<pre><code class="language-bash"># Install tmux
-brew install tmux
-</code></pre>
-<p><strong>Linux Instructions:</strong></p>
-<pre><code class="language-bash"># Install tmux
-sudo apt-get update &amp;&amp; sudo apt-get install -y tmux
-</code></pre>
-<h3 id="using-tmux"><a class="header" href="#using-tmux">Using tmux</a></h3>
-<p>Basic tmux commands (press Ctrl+b first, then the command):</p>
-<ul>
-<li><code>"</code> - split pane horizontally (creates a new pane below)</li>
-<li><code>%</code> - split pane vertically (creates a new pane to the right)</li>
-<li><code>↑</code> or <code>↓</code> - navigate between panes using arrow keys</li>
-<li><code>d</code> - detach from session</li>
-<li><code>x</code> - kill current pane</li>
-</ul>
-<p>To start a new session:</p>
-<pre><code class="language-bash"># Create and attach to a new tmux session
-TERM=xterm-256color tmux new -s arch-validator
-</code></pre>
-<p>To reattach to an existing session:</p>
-<pre><code class="language-bash"># List sessions
-tmux ls
+<p><strong>Management Commands:</strong></p>
+<pre><code class="language-bash"># Check status
+cli orchestrate status
 
-# Reattach to the session
-tmux attach -t arch-validator
-</code></pre>
-<h3 id="-step-by-step-component-launch"><a class="header" href="#-step-by-step-component-launch">🎯 Step-by-Step Component Launch</a></h3>
-<ol>
-<li>
-<p><strong>Start Bitcoin Core</strong> (in first pane):</p>
-<pre><code class="language-bash">bitcoind -regtest -daemon
-tail -f ~/.bitcoin/regtest/debug.log  # For Linux
-# OR
-tail -f ~/Library/Application\ Support/Bitcoin/regtest/debug.log  # For macOS
-</code></pre>
-</li>
-<li>
-<p><strong>Create and launch Titan</strong> (in second pane):</p>
-<ul>
-<li>Press <code>Ctrl+b</code>, then <code>"</code> to create a new pane below</li>
-<li>You’ll automatically be switched to the new pane</li>
-</ul>
-<pre><code class="language-bash">cd ~/Titan
-cargo run --bin titan -- \
-    --bitcoin-rpc-url http://127.0.0.1:18443 \
-    --bitcoin-rpc-username bitcoin \
-    --bitcoin-rpc-password bitcoinpass \
-    --chain regtest \
-    --index-addresses \
-    --index-bitcoin-transactions \
-    --enable-tcp-subscriptions \
-    --data-dir ./data \
-    --main-loop-interval 0
-</code></pre>
-</li>
-<li>
-<p><strong>Launch Validator</strong> (in third pane):</p>
-<ul>
-<li>Press <code>Ctrl+b</code>, then <code>↑</code> to go back to the top pane</li>
-<li>Press <code>Ctrl+b</code>, then <code>"</code> to create a new pane between Bitcoin Core and Titan</li>
-</ul>
-<pre><code class="language-bash">cd ~/arch-validator
-./local_validator-darwin-amd64 \  # For macOS
-# OR
-./local_validator-linux-amd64 \   # For Linux
-    --rpc-bind-ip 127.0.0.1 \
-    --rpc-bind-port 9002 \
-    --titan-endpoint http://127.0.0.1:3030
-</code></pre>
-</li>
-</ol>
-<blockquote>
-<p><strong>Navigation Tips</strong>:</p>
-<ul>
-<li>Use <code>Ctrl+b</code> then arrow keys to move between panes at any time</li>
-<li>The active pane has a highlighted border</li>
-<li>If you get lost, <code>Ctrl+b</code> then arrow keys will help you navigate back to where you need to be</li>
-</ul>
-</blockquote>
-<h2 id="1--bitcoin-core-setup"><a class="header" href="#1--bitcoin-core-setup">1. 🏗️ Bitcoin Core Setup</a></h2>
-<h3 id="11-installing-dependencies"><a class="header" href="#11-installing-dependencies">1.1 Installing Dependencies</a></h3>
-<p><strong>macOS Instructions:</strong></p>
-<pre><code class="language-bash"># Install required dependencies via Homebrew
-brew install automake boost ccache git libevent libnatpmp libtool \
-    llvm miniupnpc pkg-config python qrencode qt@5 sqlite zeromq
-</code></pre>
-<p><strong>Linux (Ubuntu/Debian) Instructions:</strong></p>
-<pre><code class="language-bash"># Install required dependencies
-sudo apt-get update &amp;&amp; sudo apt-get install -y \
-    automake autotools-dev bsdmainutils build-essential ccache \
-    clang gcc git libboost-dev libboost-filesystem-dev \
-    libboost-system-dev libboost-test-dev libevent-dev \
-    libminiupnpc-dev libnatpmp-dev libsqlite3-dev libtool \
-    libzmq3-dev pkg-config python3 qtbase5-dev qttools5-dev \
-    qttools5-dev-tools qtwayland5 systemtap-sdt-dev
-</code></pre>
-<h3 id="12--building-bitcoin-core"><a class="header" href="#12--building-bitcoin-core">1.2 🏭 Building Bitcoin Core</a></h3>
-<pre><code class="language-bash"># Clone Bitcoin Core
-git clone https://github.com/bitcoin/bitcoin.git
-cd bitcoin
+# Stop all services
+cli orchestrate stop
 
-# Switch to latest stable version
-git checkout v28.0
+# View logs
+cli orchestrate logs
 
-# Prepare the build system
-./autogen.sh
-
-# Configure the build
-./configure
-
-# Build Bitcoin Core (this might take 30-45 minutes)
-make -j$(nproc)  # Uses all available CPU cores
-
-# Install the binaries
-sudo make install
+# Clean up (removes all data)
+cli orchestrate clean
 </code></pre>
-<h3 id="13--bitcoin-core-configuration"><a class="header" href="#13--bitcoin-core-configuration">1.3 ⚙️ Bitcoin Core Configuration</a></h3>
-<p>Create your configuration directory:</p>
-<p><strong>macOS:</strong></p>
-<pre><code class="language-bash">mkdir -p ~/Library/'Application Support'/Bitcoin
-CONFIG_DIR=~/Library/'Application Support'/Bitcoin
+<h3 id="option-b-manual-setup-advanced"><a class="header" href="#option-b-manual-setup-advanced">Option B: Manual Setup (Advanced)</a></h3>
+<p>For developers who want full control over their environment.</p>
+<h4 id="step-1-bitcoin-core-setup"><a class="header" href="#step-1-bitcoin-core-setup">Step 1: Bitcoin Core Setup</a></h4>
+<p><strong>Install and Start Bitcoin Core:</strong></p>
+<pre><code class="language-bash"># Install Bitcoin Core (if not already installed)
+# macOS: brew install bitcoin
+# Linux: Download from https://bitcoin.org/en/download
+
+# Start Bitcoin Core in regtest mode
+bitcoind -regtest -port=18444 -rpcport=18443 \
+    -rpcuser=bitcoin -rpcpassword=bitcoinpass \
+    -fallbackfee=0.001
+
+# First-time setup (only needed once)
+# Create a wallet called "testwallet"
+bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoinpass createwallet testwallet
+
+# Generate an address and mine the first 100 blocks to it
+ADDRESS=$(bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoinpass getnewaddress)
+bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoinpass generatetoaddress 100 $ADDRESS
 </code></pre>
-<p><strong>Linux:</strong></p>
-<pre><code class="language-bash">mkdir -p ~/.bitcoin
-CONFIG_DIR=~/.bitcoin
-</code></pre>
-<p>Create and edit your configuration file:</p>
-<pre><code class="language-bash">cat &gt; "$CONFIG_DIR/bitcoin.conf" &lt;&lt; 'EOF'
-# 🌐 Network Settings
-server=1
-regtest=1
-txindex=1
-prune=0
-
-# 🔒 Security (Change these values in production!)
-rpcuser=bitcoin
-rpcpassword=bitcoinpass  
-
-# 🔧 Performance
-dbcache=150
-maxmempool=100
-
-# 🚀 Development Settings
-fallbackfee=0.001
-maxtxfee=0.002
-
-[regtest]
-rpcbind=0.0.0.0
-rpcport=18443
-wallet=testwallet
-EOF
-</code></pre>
-<h2 id="2--titan-setup"><a class="header" href="#2--titan-setup">2. 🚀 Titan Setup</a></h2>
-<h3 id="21-installing-rust-and-dependencies"><a class="header" href="#21-installing-rust-and-dependencies">2.1 Installing Rust and Dependencies</a></h3>
-<p><strong>macOS Instructions:</strong></p>
-<pre><code class="language-bash"># Install Rust if you haven't already
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-
-# Install additional dependencies
-brew install pkg-config openssl
-</code></pre>
-<p><strong>Linux (Ubuntu/Debian) Instructions:</strong></p>
-<pre><code class="language-bash"># Install Rust if you haven't already
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-sudo apt install cargo
-rustup install nightly # For Titan
-rustup default nightly
-
-# Install additional dependencies
-sudo apt-get update &amp;&amp; sudo apt-get install -y \
-    pkg-config libssl-dev build-essential
-</code></pre>
-<h3 id="22-building-titan"><a class="header" href="#22-building-titan">2.2 Building Titan</a></h3>
+<h4 id="step-2-titan-indexer-setup"><a class="header" href="#step-2-titan-indexer-setup">Step 2: Titan Indexer Setup</a></h4>
+<p><strong>Clone and Build Titan:</strong></p>
 <pre><code class="language-bash"># Clone Titan repository
-cd ~
 git clone https://github.com/saturnbtc/Titan.git
 cd Titan
 
-# Build Titan (this might take 10-15 minutes)
-cargo build --release -Znext-lockfile-bump
+# Build Titan
+cargo build --release
 </code></pre>
-<h3 id="23--launch-titan"><a class="header" href="#23--launch-titan">2.3 🚀 Launch Titan</a></h3>
-<p>Create a new tmux pane (Ctrl+b, then “):</p>
-<pre><code class="language-bash"># Start Titan
-cd ~/Titan
+<p><strong>Start Titan:</strong></p>
+<pre><code class="language-bash"># Start Titan indexer
 cargo run --bin titan -- \
     --bitcoin-rpc-url http://127.0.0.1:18443 \
     --bitcoin-rpc-username bitcoin \
@@ -473,71 +323,147 @@ cargo run --bin titan -- \
     --index-addresses \
     --index-bitcoin-transactions \
     --enable-tcp-subscriptions \
-    --data-dir ./data \
-    --main-loop-interval 0
+    --main-loop-interval 0 \
+    --http-listen 127.0.0.1:3030
 </code></pre>
-<blockquote>
-<p>Note: Make sure Bitcoin Core is running before starting Titan. The RPC username and password should match what you set in your <code>bitcoin.conf</code> file.</p>
-</blockquote>
-<h2 id="3--validator-setup"><a class="header" href="#3--validator-setup">3. 🎯 Validator Setup</a></h2>
-<blockquote>
-<p><strong>Note</strong>: The validator binary is currently only available for Linux (x86_64/amd64) systems. ARM architectures (including Apple Silicon Macs) are not supported at this time.</p>
-</blockquote>
-<h3 id="31-download-the-validator-binary"><a class="header" href="#31-download-the-validator-binary">3.1 Download the Validator Binary</a></h3>
-<p><strong>Linux (x86_64/amd64) Instructions:</strong></p>
-<pre><code class="language-bash"># Create a directory for the validator
-mkdir -p ~/arch-validator &amp;&amp; cd ~/arch-validator
+<h4 id="step-3-validator-setup"><a class="header" href="#step-3-validator-setup">Step 3: Validator Setup</a></h4>
+<p><strong>Start Validator:</strong></p>
+<pre><code class="language-bash"># Using the CLI (recommended)
+cli validator start --network regtest --titan-endpoint http://127.0.0.1:3030
 
-# Download the latest validator binary
-curl -LO "https://github.com/Arch-Network/arch-node/releases/latest/download/local_validator-linux-amd64"
-
-# Make it executable and rename it for convenience
-chmod +x local_validator-linux-amd64
-mv local_validator-linux-amd64 local_validator
-</code></pre>
-<h3 id="32--launch-the-validator"><a class="header" href="#32--launch-the-validator">3.2 🚀 Launch the Validator</a></h3>
-<p>Create a new tmux pane (Ctrl+b, then “):</p>
-<pre><code class="language-bash"># Start the validator
-cd ~/arch-validator
+# OR using the binary directly
 ./local_validator \
     --rpc-bind-ip 127.0.0.1 \
     --rpc-bind-port 9002 \
     --titan-endpoint http://127.0.0.1:3030
 </code></pre>
-<p>Your tmux session should now have three panes:</p>
-<ol>
-<li>Top: Bitcoin Core logs</li>
-<li>Middle: Titan process</li>
-<li>Bottom: Validator process</li>
-</ol>
-<p>To detach from the session while keeping everything running, press Ctrl+b, then d. You can reattach later using <code>tmux attach -t arch-validator</code>.</p>
-<h2 id="-congratulations"><a class="header" href="#-congratulations">🎉 Congratulations!</a></h2>
-<p>You now have a complete Arch Network validator node running! Your setup includes:</p>
-<ul>
-<li>Bitcoin Core in regtest mode</li>
-<li>Titan indexer for efficient Bitcoin data access</li>
-<li>Arch Network validator node</li>
-</ul>
-<p>To verify everything is working:</p>
-<ol>
-<li>Bitcoin Core should be accessible at <code>http://127.0.0.1:18443</code></li>
-<li>Titan should be accessible at <code>http://127.0.0.1:3030</code></li>
-<li>Your validator should be accessible at <code>http://127.0.0.1:9002</code></li>
-</ol>
+<h2 id="-process-management"><a class="header" href="#-process-management">🔄 Process Management</a></h2>
+<h3 id="for-automated-setup"><a class="header" href="#for-automated-setup">For Automated Setup</a></h3>
+<p>The orchestrate command handles all process management automatically using Docker containers.</p>
+<h3 id="for-manual-setup"><a class="header" href="#for-manual-setup">For Manual Setup</a></h3>
+<p>You may want to use a process manager to keep services running:</p>
+<p><strong>Using tmux (recommended):</strong></p>
+<pre><code class="language-bash"># Create a new tmux session
+tmux new -s arch-validator
+
+# Split into three panes
+# Ctrl+b then " to split horizontally
+# Ctrl+b then % to split vertically
+# Use arrow keys to navigate between panes
+
+# Start each service in a separate pane:
+# Pane 1: bitcoind
+# Pane 2: Titan
+# Pane 3: Validator
+</code></pre>
+<p><strong>Using systemd (Linux):</strong></p>
+<pre><code class="language-bash"># Create service files for each component
+sudo tee /etc/systemd/system/bitcoind.service &gt; /dev/null &lt;&lt;EOF
+[Unit]
+Description=Bitcoin Core Daemon
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/bitcoind -regtest -port=18444 -rpcport=18443 -rpcuser=bitcoin -rpcpassword=bitcoinpass -fallbackfee=0.001
+User=bitcoin
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Enable and start services
+sudo systemctl enable bitcoind
+sudo systemctl start bitcoind
+</code></pre>
+<h2 id="-verification"><a class="header" href="#-verification">✅ Verification</a></h2>
+<h3 id="check-service-status"><a class="header" href="#check-service-status">Check Service Status</a></h3>
+<p><strong>Automated Setup:</strong></p>
+<pre><code class="language-bash">cli orchestrate status
+</code></pre>
+<p><strong>Manual Setup:</strong></p>
+<pre><code class="language-bash"># Check Bitcoin Core
+bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoinpass getblockchaininfo
+
+# Check Titan
+curl http://127.0.0.1:3030/health
+
+# Check Validator
+curl -X POST -H 'Content-Type: application/json' \
+    -d '{"jsonrpc":"2.0","id":1,"method":"get_health"}' \
+    http://127.0.0.1:9002
+</code></pre>
+<h3 id="test-transaction-flow"><a class="header" href="#test-transaction-flow">Test Transaction Flow</a></h3>
+<pre><code class="language-bash"># Deploy a simple program using the CLI
+cli program deploy --program-path ./examples/hello-world --network regtest
+
+# Send a transaction
+cli transaction send --program-id &lt;PROGRAM_ID&gt; --network regtest
+</code></pre>
 <h2 id="-troubleshooting"><a class="header" href="#-troubleshooting">🔍 Troubleshooting</a></h2>
-<p>If you encounter any issues:</p>
-<ol>
-<li>Ensure all components are running in the correct order:
+<h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
+<p><strong>Docker/Orchestrate Issues:</strong></p>
+<pre><code class="language-bash"># Check Docker is running
+docker ps
+
+# Check orchestrate logs
+cli orchestrate logs
+
+# Reset everything
+cli orchestrate stop
+cli orchestrate clean
+cli orchestrate start
+</code></pre>
+<p><strong>Manual Setup Issues:</strong></p>
+<pre><code class="language-bash"># Check if ports are in use
+lsof -i :18443  # Bitcoin RPC
+lsof -i :3030   # Titan API  
+lsof -i :9002   # Validator RPC
+
+# Check service logs
+tail -f ~/.bitcoin/regtest/debug.log  # Bitcoin Core logs
+</code></pre>
+<p><strong>Connectivity Issues:</strong></p>
 <ul>
-<li>Bitcoin Core first</li>
-<li>Titan second</li>
-<li>Validator last</li>
+<li>Ensure all services start in order: Bitcoin → Titan → Validator</li>
+<li>Verify Bitcoin Core is fully synced before starting Titan</li>
+<li>Check firewall settings aren’t blocking required ports</li>
+<li>Confirm RPC credentials match across all services</li>
 </ul>
-</li>
-<li>Check the logs of each component for any error messages</li>
-<li>Verify your configuration settings match across all components</li>
-<li>Ensure all required ports are available and not blocked by a firewall</li>
+<h2 id="-network-configurations"><a class="header" href="#-network-configurations">🌐 Network Configurations</a></h2>
+<h3 id="regtest-development"><a class="header" href="#regtest-development">Regtest (Development)</a></h3>
+<ul>
+<li><strong>Purpose</strong>: Local development and testing</li>
+<li><strong>Bitcoin Network</strong>: Local regtest blockchain</li>
+<li><strong>Data</strong>: Minimal, starts fresh each time</li>
+<li><strong>Use Case</strong>: Development, testing, learning</li>
+</ul>
+<h3 id="testnet-testing"><a class="header" href="#testnet-testing">Testnet (Testing)</a></h3>
+<pre><code class="language-bash"># For testnet, modify your configuration:
+cli orchestrate start --network testnet
+# OR manually configure with testnet parameters
+</code></pre>
+<h3 id="mainnet-production"><a class="header" href="#mainnet-production">Mainnet (Production)</a></h3>
+<pre><code class="language-bash"># For mainnet (when available):
+cli orchestrate start --network mainnet
+# Requires significant storage and bandwidth
+</code></pre>
+<h2 id="-next-steps"><a class="header" href="#-next-steps">📚 Next Steps</a></h2>
+<p>Once your validator is running:</p>
+<ol>
+<li><strong>Deploy Your First Program</strong>: Follow the <a href="./quick-start.html">Quick Start Guide</a></li>
+<li><strong>Explore RPC Methods</strong>: Check the <a href="../rpc/http-methods.html">RPC API Reference</a></li>
+<li><strong>Build Advanced Programs</strong>: See <a href="../guides/understanding-arch-programs.html">Program Development</a></li>
+<li><strong>Join the Community</strong>: Connect on <a href="https://discord.gg/archnetwork">Discord</a></li>
 </ol>
+<h2 id="-congratulations"><a class="header" href="#-congratulations">🎉 Congratulations!</a></h2>
+<p>You now have a complete Arch Network validator node running! You’re ready to:</p>
+<ul>
+<li>Deploy and test smart contracts</li>
+<li>Participate in network consensus</li>
+<li>Explore Bitcoin-native applications</li>
+<li>Build the future of Bitcoin programmability</li>
+</ul>
 <p>For additional help, join our <a href="https://discord.gg/archnetwork">Discord community</a> or visit our <a href="https://github.com/Arch-Network">GitHub repository</a>.</p>
 
                     </main>
