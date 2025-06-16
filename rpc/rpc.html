@@ -182,8 +182,89 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="rpc"><a class="header" href="#rpc">RPC</a></h1>
-<p>Interact with Arch nodes directly with the JSON RPC API via the HTTP methods.</p>
+                        <h1 id="rpc-api-reference"><a class="header" href="#rpc-api-reference">RPC API Reference</a></h1>
+<p>The Arch Network provides a comprehensive JSON-RPC API for interacting with validator nodes. This API allows you to:</p>
+<ul>
+<li>Query account information and balances</li>
+<li>Submit transactions to the network</li>
+<li>Retrieve block and transaction data</li>
+<li>Monitor network state and readiness</li>
+<li>Manage validator operations</li>
+</ul>
+<h2 id="api-endpoints"><a class="header" href="#api-endpoints">API Endpoints</a></h2>
+<h3 id="default-configuration"><a class="header" href="#default-configuration">Default Configuration</a></h3>
+<ul>
+<li><strong>Default Port</strong>: <code>9002</code> for validator nodes, <code>9001</code> for local validators</li>
+<li><strong>Endpoint URL</strong>: <code>http://localhost:9002</code> (or your node’s IP address)</li>
+<li><strong>Protocol</strong>: HTTP POST with JSON-RPC 2.0</li>
+</ul>
+<h3 id="request-format"><a class="header" href="#request-format">Request Format</a></h3>
+<p>All RPC requests must be sent as HTTP <code>POST</code> requests with:</p>
+<ul>
+<li><strong>Content-Type</strong>: <code>application/json</code></li>
+<li><strong>JSON-RPC Version</strong>: <code>"2.0"</code></li>
+</ul>
+<pre><code class="language-json">{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "method_name",
+  "params": [/* parameters */]
+}
+</code></pre>
+<h3 id="response-format"><a class="header" href="#response-format">Response Format</a></h3>
+<pre><code class="language-json">{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {/* response data */}
+}
+</code></pre>
+<h2 id="available-methods"><a class="header" href="#available-methods">Available Methods</a></h2>
+<p>The following RPC methods are available:</p>
+<h3 id="account-operations"><a class="header" href="#account-operations">Account Operations</a></h3>
+<ul>
+<li><a href="http-methods.html#read_account_info"><code>read_account_info</code></a> - Get account information</li>
+<li><a href="http-methods.html#get_account_address"><code>get_account_address</code></a> - Get Bitcoin address for account</li>
+<li><a href="http-methods.html#get_program_accounts"><code>get_program_accounts</code></a> - Query accounts by program ID</li>
+<li><a href="http-methods.html#get_multiple_accounts"><code>get_multiple_accounts</code></a> - Get multiple accounts at once</li>
+</ul>
+<h3 id="transaction-operations"><a class="header" href="#transaction-operations">Transaction Operations</a></h3>
+<ul>
+<li><a href="http-methods.html#send_transaction"><code>send_transaction</code></a> - Submit a single transaction</li>
+<li><a href="http-methods.html#send_transactions"><code>send_transactions</code></a> - Submit multiple transactions</li>
+<li><a href="http-methods.html#get_processed_transaction"><code>get_processed_transaction</code></a> - Get transaction status and details</li>
+</ul>
+<h3 id="block-operations"><a class="header" href="#block-operations">Block Operations</a></h3>
+<ul>
+<li><a href="http-methods.html#get_block"><code>get_block</code></a> - Get block by hash</li>
+<li><a href="http-methods.html#get_block_by_height"><code>get_block_by_height</code></a> - Get block by height</li>
+<li><a href="http-methods.html#get_block_count"><code>get_block_count</code></a> - Get current block count</li>
+<li><a href="http-methods.html#get_block_hash"><code>get_block_hash</code></a> - Get block hash by height</li>
+<li><a href="http-methods.html#get_best_block_hash"><code>get_best_block_hash</code></a> - Get latest block hash</li>
+</ul>
+<h3 id="network-operations"><a class="header" href="#network-operations">Network Operations</a></h3>
+<ul>
+<li><a href="http-methods.html#is_node_ready"><code>is_node_ready</code></a> - Check node readiness</li>
+<li><a href="http-methods.html#start_dkg"><code>start_dkg</code></a> - Initiate Distributed Key Generation</li>
+<li><a href="http-methods.html#reset_network"><code>reset_network</code></a> - Reset network state (leader only)</li>
+</ul>
+<h2 id="sdk-integration"><a class="header" href="#sdk-integration">SDK Integration</a></h2>
+<p>For easier integration, use the official SDK:</p>
+<ul>
+<li><strong>TypeScript/JavaScript</strong>: <code>@saturnbtcio/arch-sdk</code></li>
+<li><strong>Rust</strong>: <code>arch_sdk</code> crate</li>
+</ul>
+<h2 id="cli-alternative"><a class="header" href="#cli-alternative">CLI Alternative</a></h2>
+<p>Most RPC operations can also be performed using the <a href="../getting-started/quick-start.html#cli-alternative">Arch Network CLI</a>:</p>
+<pre><code class="language-bash"># Deploy a program
+cli deploy &lt;ELF_PATH&gt;
+
+# Check transaction status  
+cli confirm &lt;TX_ID&gt;
+
+# Get account information
+cli account &lt;ACCOUNT_ADDRESS&gt;
+</code></pre>
+<p>For detailed examples and parameter specifications, see the <a href="http-methods.html">HTTP Methods</a> reference.</p>
 
                     </main>
 

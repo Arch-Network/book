@@ -183,43 +183,290 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="http-methods"><a class="header" href="#http-methods">HTTP Methods</a></h1>
-<p>Interact with Arch nodes directly with the JSON RPC API via this list of available HTTP methods.</p>
-<blockquote>
-<p>Note: For client-side needs, use the <a href="https://www.npmjs.com/package/@saturnbtcio/arch-sdk">@saturnbtcio/arch-sdk</a> library as an interface for the RPC methods to interact with an Arch node. Alternatively, the new Arch Network CLI tool provides convenient commands to interact with the network.</p>
-</blockquote>
-<h3 id="endpoint"><a class="header" href="#endpoint">Endpoint</a></h3>
-<p>Default port: <code>9002</code></p>
+<p>This page provides detailed documentation for all available RPC methods in the Arch Network JSON-RPC API.</p>
+<h2 id="endpoint-configuration"><a class="header" href="#endpoint-configuration">Endpoint Configuration</a></h2>
 <ul>
-<li>http://localhost:9002</li>
+<li><strong>Default Port</strong>: <code>9002</code> for validator nodes, <code>9001</code> for local validators</li>
+<li><strong>URL</strong>: <code>http://localhost:9002</code> (replace with your node’s address)</li>
+<li><strong>Content-Type</strong>: <code>application/json</code></li>
 </ul>
-<h3 id="request-format"><a class="header" href="#request-format">Request Format:</a></h3>
-<p>To make a JSON-RPC request, send an HTTP <code>POST</code> request with a <code>Content-Type: application/json</code> header.</p>
-<p>The JSON request data should contain 4 fields:</p>
+<h2 id="account-operations"><a class="header" href="#account-operations">Account Operations</a></h2>
+<h3 id="read_account_info"><a class="header" href="#read_account_info">read_account_info</a></h3>
+<p>Retrieves information for a specified account.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>pubkey</code> - Account public key as a 32-byte array</li>
+</ol>
+<p><strong>Returns:</strong> Account information object with <code>data</code>, <code>owner</code>, <code>utxo</code>, <code>is_executable</code>, and <code>tag</code> fields.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"read_account_info",
+    "params":[
+        [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
+    ]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="get_account_address"><a class="header" href="#get_account_address">get_account_address</a></h3>
+<p>Retrieves the Bitcoin address for a given account public key.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>account_pubkey</code> - Account public key as a 32-byte array</li>
+</ol>
+<p><strong>Returns:</strong> Bitcoin address string (format depends on network mode)</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_account_address",
+    "params":[
+        [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32] 
+    ]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="get_program_accounts"><a class="header" href="#get_program_accounts">get_program_accounts</a></h3>
+<p>Fetches all accounts owned by a specified program ID.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>program_id</code> - Program public key as a 32-byte array</li>
+<li><code>filters</code> (optional) - Array of filter objects:
 <ul>
-<li><code>jsonrpc: &lt;string&gt;</code> - set to “2.0.”</li>
-<li><code>id: &lt;number&gt;</code> - a unique client-generated identifying integer.</li>
-<li><code>method: &lt;string&gt;</code> - a string containing the method to be invoked.</li>
-<li><code>params: &lt;array&gt;</code> - a JSON array of ordered parameter values.</li>
+<li><code>{ "DataSize": &lt;size&gt; }</code> - Filter by account data size</li>
+<li><code>{ "DataContent": { "offset": &lt;offset&gt;, "bytes": &lt;byte_array&gt; } }</code> - Filter by data content</li>
 </ul>
-<h3 id="response-format"><a class="header" href="#response-format">Response Format:</a></h3>
-<p>The response output will be a JSON object with the following fields:</p>
+</li>
+</ol>
+<p><strong>Returns:</strong> Array of account objects with <code>pubkey</code> and <code>account</code> information.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+  "jsonrpc":"2.0",
+  "id":1,
+  "method": "get_program_accounts",
+  "params": [
+    [80,82,242,228,43,246,248,133,88,238,139,124,88,96,107,32,71,40,52,251,90,42,66,176,66,32,147,203,137,211,253,40],
+    [
+      {
+        "DataSize": 165
+      },
+      {
+        "DataContent": {
+          "offset": 0,
+          "bytes": [1, 2, 3, 4]
+        }
+      }
+    ]
+  ]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="get_multiple_accounts"><a class="header" href="#get_multiple_accounts">get_multiple_accounts</a></h3>
+<p>Retrieves information for multiple accounts in a single request.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>pubkeys</code> - Array of account public keys (32-byte arrays)</li>
+</ol>
+<p><strong>Returns:</strong> Array of account information objects.</p>
+<h2 id="transaction-operations"><a class="header" href="#transaction-operations">Transaction Operations</a></h2>
+<h3 id="send_transaction"><a class="header" href="#send_transaction">send_transaction</a></h3>
+<p>Submits a single transaction to the network.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>transaction</code> - RuntimeTransaction object containing:
 <ul>
-<li><code>jsonrpc: &lt;string&gt;</code> - matching the value set in the request.</li>
-<li><code>id: &lt;number&gt;</code> - matching the value set in the request.</li>
-<li><code>result: &lt;array|boolean|number|object|string&gt;</code> - requested data, success confirmation or boolean flag.</li>
+<li><code>version</code> - Transaction version (currently 0)</li>
+<li><code>signatures</code> - Array of transaction signatures</li>
+<li><code>message</code> - Transaction message with signers and instructions</li>
 </ul>
-<h3 id="cli-alternative"><a class="header" href="#cli-alternative">CLI Alternative</a></h3>
-<p>Many of these RPC methods can be accessed through the Arch Network CLI tool with simpler commands:</p>
-<pre><code class="language-bash"># Start a local validator
-cli validator start
+</li>
+</ol>
+<p><strong>Returns:</strong> Transaction ID (txid) string</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"send_transaction",
+    "params":[{
+        "version": 0,
+        "signatures": [
+            {"0": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64]}
+        ],
+        "message": {
+            "signers": [[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]],
+            "instructions": [
+                {
+                    "program_id": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32],
+                    "accounts": [
+                        {
+                            "pubkey": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32],
+                            "is_signer": true,
+                            "is_writable": true
+                        }
+                    ],
+                    "data": [1,2,3,4]
+                }
+            ]
+        }
+    }]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="send_transactions"><a class="header" href="#send_transactions">send_transactions</a></h3>
+<p>Submits multiple transactions to the network.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>transactions</code> - Array of serialized transactions (byte arrays)</li>
+</ol>
+<p><strong>Returns:</strong> Array of transaction ID strings</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"send_transactions",
+    "params": [
+        [
+            [1,2,3,4,5,6,7,8,9,10],
+            [11,12,13,14,15,16,17,18,19,20]
+        ]
+    ]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="get_processed_transaction"><a class="header" href="#get_processed_transaction">get_processed_transaction</a></h3>
+<p>Retrieves a processed transaction and its status.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>transaction_id</code> - Transaction ID string</li>
+</ol>
+<p><strong>Returns:</strong> Object containing <code>runtime_transaction</code>, <code>status</code>, and <code>bitcoin_txids</code></p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_processed_transaction",
+    "params":[
+        "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+    ]
+}' http://localhost:9002/
+</code></pre>
+<h2 id="block-operations"><a class="header" href="#block-operations">Block Operations</a></h2>
+<h3 id="get_block"><a class="header" href="#get_block">get_block</a></h3>
+<p>Retrieves a block by its hash.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>block_hash</code> - Block hash string</li>
+<li><code>filter</code> (optional) - Block transaction filter</li>
+</ol>
+<p><strong>Returns:</strong> Block object with transaction data</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_block",
+    "params":[
+        "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f" 
+    ]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="get_block_by_height"><a class="header" href="#get_block_by_height">get_block_by_height</a></h3>
+<p>Retrieves a block by its height.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>block_height</code> - Block height number</li>
+<li><code>filter</code> (optional) - Block transaction filter</li>
+</ol>
+<p><strong>Returns:</strong> Block object with transaction data</p>
+<h3 id="get_block_count"><a class="header" href="#get_block_count">get_block_count</a></h3>
+<p>Retrieves the current block count.</p>
+<p><strong>Parameters:</strong> None</p>
+<p><strong>Returns:</strong> Current block count as a number</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_block_count",
+    "params":[]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="get_block_hash"><a class="header" href="#get_block_hash">get_block_hash</a></h3>
+<p>Retrieves the block hash for a given height.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>block_height</code> - Block height number</li>
+</ol>
+<p><strong>Returns:</strong> Block hash string</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_block_hash",
+    "params":[680000]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="get_best_block_hash"><a class="header" href="#get_best_block_hash">get_best_block_hash</a></h3>
+<p>Retrieves the hash of the latest block.</p>
+<p><strong>Parameters:</strong> None</p>
+<p><strong>Returns:</strong> Latest block hash string</p>
+<h2 id="network-operations"><a class="header" href="#network-operations">Network Operations</a></h2>
+<h3 id="is_node_ready"><a class="header" href="#is_node_ready">is_node_ready</a></h3>
+<p>Checks if the node is ready to process requests.</p>
+<p><strong>Parameters:</strong> None</p>
+<p><strong>Returns:</strong> Boolean indicating readiness</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"is_node_ready",
+    "params":[]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="start_dkg"><a class="header" href="#start_dkg">start_dkg</a></h3>
+<p>Initiates the Distributed Key Generation process.</p>
+<p><strong>Parameters:</strong> None</p>
+<p><strong>Returns:</strong> Success message or error</p>
+<p><strong>Restrictions:</strong></p>
+<ul>
+<li>DKG must not have already occurred</li>
+<li>Node must be in <code>WaitingForDkg</code> state</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"start_dkg",
+    "params":[]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="reset_network"><a class="header" href="#reset_network">reset_network</a></h3>
+<p>Resets the network state (leader nodes only).</p>
+<p><strong>Parameters:</strong> None</p>
+<p><strong>Returns:</strong> Success message or error</p>
+<p><strong>Restrictions:</strong></p>
+<ul>
+<li>Only network leader can initiate</li>
+<li>Specific validator states required</li>
+<li>20-second timeout for operations</li>
+</ul>
+<h2 id="cli-alternative"><a class="header" href="#cli-alternative">CLI Alternative</a></h2>
+<p>Many RPC methods are available through the Arch Network CLI:</p>
+<pre><code class="language-bash"># Start local validator
+cli validator-start
 
-# Deploy a program
+# Deploy a program  
 cli deploy &lt;ELF_PATH&gt;
 
 # Show program information
 cli show &lt;PROGRAM_ADDRESS&gt;
 
-# Confirm transaction status
+# Check transaction status
 cli confirm &lt;TX_ID&gt;
 
 # Get block information
@@ -228,18 +475,32 @@ cli get-block &lt;BLOCK_HASH&gt;
 # Get current block height
 cli get-block-height
 
-# Log program messages in a transaction
+# Get program messages from transaction
 cli log-program-messages &lt;TX_ID&gt;
-
-# Get group key
-cli get-group-key &lt;PUBKEY&gt;
 
 # Change account owner
 cli change-owner &lt;ACCOUNT_ADDRESS&gt; &lt;NEW_OWNER&gt;
 </code></pre>
-<p>For more details on the CLI tool, download the latest version from the <a href="https://github.com/Arch-Network/arch-node/releases/latest">Arch Network CLI releases page</a>.</p>
-<!-- External -->
-<!-- Note: The main Arch Network repository is not yet publicly accessible. -->
+<p>For CLI installation and usage, see the <a href="../getting-started/quick-start.html">Quick Start Guide</a>.</p>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<p>All RPC methods return JSON-RPC 2.0 compliant error responses:</p>
+<pre><code class="language-json">{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "error": {
+    "code": -32600,
+    "message": "Invalid Request",
+    "data": "Additional error details"
+  }
+}
+</code></pre>
+<p>Common error codes:</p>
+<ul>
+<li><code>-32600</code>: Invalid Request</li>
+<li><code>-32601</code>: Method not found</li>
+<li><code>-32602</code>: Invalid params</li>
+<li><code>-32603</code>: Internal error</li>
+</ul>
 
                     </main>
 

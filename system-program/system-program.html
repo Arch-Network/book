@@ -183,16 +183,201 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="system-program"><a class="header" href="#system-program">System Program</a></h1>
-<p>The Arch System Program is Arch’s core program. This program contains a set of variants that can be thought-of as native functionality that can be used within any Arch program.</p>
-<p>The System Program creates new accounts, assigns accounts to owning programs, marks accounts as executable, and writes data to the accounts.</p>
-<p>In order to make calls to the System Program, the following mapping can help you point to the correct functionality.</p>
-<div class="table-wrapper"><table><thead><tr><th>index</th><th>method</th></tr></thead><tbody>
-<tr><td>0</td><td>CreateAccount</td></tr>
-<tr><td>1</td><td>WriteBytes</td></tr>
-<tr><td>2</td><td>MakeExecutable</td></tr>
-<tr><td>3</td><td>AssignOwnership</td></tr>
-</tbody></table>
-</div>
+<p>The Arch System Program is the core program that manages fundamental account operations on the Arch Network. This program provides essential functionality for account creation, ownership management, UTXO anchoring, and lamport transfers.</p>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>The System Program handles:</p>
+<ul>
+<li><strong>Account Creation</strong>: Creating new accounts with specified ownership and data allocation</li>
+<li><strong>UTXO Integration</strong>: Anchoring accounts to Bitcoin UTXOs for native Bitcoin integration</li>
+<li><strong>Ownership Management</strong>: Transferring account ownership between programs</li>
+<li><strong>Lamport Transfers</strong>: Moving lamports (the base unit of value) between accounts</li>
+<li><strong>Space Allocation</strong>: Allocating data storage space for accounts</li>
+</ul>
+<h2 id="available-instructions"><a class="header" href="#available-instructions">Available Instructions</a></h2>
+<h3 id="createaccount"><a class="header" href="#createaccount">CreateAccount</a></h3>
+<p>Creates a new account with the specified parameters.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>lamports: u64</code> - Number of lamports to transfer to the new account</li>
+<li><code>space: u64</code> - Number of bytes of memory to allocate</li>
+<li><code>owner: Pubkey</code> - Address of the program that will own the new account</li>
+</ul>
+<p><strong>Account References:</strong></p>
+<ol>
+<li><code>[WRITE, SIGNER]</code> Funding account (payer)</li>
+<li><code>[WRITE, SIGNER]</code> New account to create</li>
+</ol>
+<p><strong>Example:</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_program::{
+    system_instruction,
+    pubkey::Pubkey,
+};
+
+let instruction = system_instruction::create_account(
+    &amp;from_pubkey,
+    &amp;to_pubkey,
+    1_000_000,  // lamports
+    165,        // space in bytes
+    &amp;owner_pubkey,
+);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="createaccountwithanchor"><a class="header" href="#createaccountwithanchor">CreateAccountWithAnchor</a></h3>
+<p>Creates a new account and anchors it to a specific Bitcoin UTXO.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>lamports: u64</code> - Number of lamports to transfer</li>
+<li><code>space: u64</code> - Number of bytes to allocate</li>
+<li><code>owner: Pubkey</code> - Program that will own the account</li>
+<li><code>txid: [u8; 32]</code> - Bitcoin transaction ID</li>
+<li><code>vout: u32</code> - Output index in the Bitcoin transaction</li>
+</ul>
+<p><strong>Account References:</strong></p>
+<ol>
+<li><code>[WRITE, SIGNER]</code> Funding account</li>
+<li><code>[WRITE, SIGNER]</code> New account to create</li>
+</ol>
+<p><strong>Example:</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let instruction = system_instruction::create_account_with_anchor(
+    &amp;from_pubkey,
+    &amp;to_pubkey,
+    1_000_000,  // lamports
+    165,        // space
+    &amp;owner_pubkey,
+    txid,       // Bitcoin transaction ID
+    vout,       // Bitcoin output index
+);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="assign"><a class="header" href="#assign">Assign</a></h3>
+<p>Changes the owner of an existing account.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>owner: Pubkey</code> - New owner program</li>
+</ul>
+<p><strong>Account References:</strong></p>
+<ol>
+<li><code>[WRITE, SIGNER]</code> Account to reassign</li>
+</ol>
+<p><strong>Example:</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let instruction = system_instruction::assign(
+    &amp;account_pubkey,
+    &amp;new_owner_pubkey,
+);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="anchor"><a class="header" href="#anchor">Anchor</a></h3>
+<p>Anchors an existing account to a Bitcoin UTXO.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>txid: [u8; 32]</code> - Bitcoin transaction ID</li>
+<li><code>vout: u32</code> - Output index</li>
+</ul>
+<p><strong>Account References:</strong></p>
+<ol>
+<li><code>[WRITE, SIGNER]</code> Account to anchor</li>
+</ol>
+<h3 id="transfer"><a class="header" href="#transfer">Transfer</a></h3>
+<p>Transfers lamports from one account to another.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>lamports: u64</code> - Amount to transfer</li>
+</ul>
+<p><strong>Account References:</strong></p>
+<ol>
+<li><code>[WRITE, SIGNER]</code> Source account</li>
+<li><code>[WRITE]</code> Destination account</li>
+</ol>
+<p><strong>Example:</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let instruction = system_instruction::transfer(
+    &amp;from_pubkey,
+    &amp;to_pubkey,
+    500_000,  // lamports to transfer
+);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="allocate"><a class="header" href="#allocate">Allocate</a></h3>
+<p>Allocates space in an account without funding it.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>space: u64</code> - Number of bytes to allocate</li>
+</ul>
+<p><strong>Account References:</strong></p>
+<ol>
+<li><code>[WRITE, SIGNER]</code> Account to allocate space for</li>
+</ol>
+<p><strong>Example:</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let instruction = system_instruction::allocate(
+    &amp;account_pubkey,
+    1024,  // bytes to allocate
+);
+<span class="boring">}</span></code></pre></pre>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<p>The System Program can return the following errors:</p>
+<ul>
+<li><code>AccountAlreadyInUse</code> - Account with the same address already exists</li>
+<li><code>ResultWithNegativeLamports</code> - Account doesn’t have enough lamports for operation</li>
+<li><code>InvalidProgramId</code> - Cannot assign account to this program ID</li>
+<li><code>InvalidAccountDataLength</code> - Cannot allocate account data of this length</li>
+<li><code>MaxSeedLengthExceeded</code> - Requested seed length is too long</li>
+<li><code>AddressWithSeedMismatch</code> - Address doesn’t match derived seed</li>
+</ul>
+<h2 id="important-constants"><a class="header" href="#important-constants">Important Constants</a></h2>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Minimum lamports required for any account
+pub const MIN_ACCOUNT_LAMPORTS: u64 = 1024;
+
+// Maximum permitted data length for accounts
+pub const MAX_PERMITTED_DATA_LENGTH: usize = 10 * 1024 * 1024; // 10MB
+<span class="boring">}</span></code></pre></pre>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h3 id="account-creation"><a class="header" href="#account-creation">Account Creation</a></h3>
+<ol>
+<li><strong>Always fund with sufficient lamports</strong>: Accounts need at least <code>MIN_ACCOUNT_LAMPORTS</code> to be created</li>
+<li><strong>Use appropriate space allocation</strong>: Allocate only the space you need to minimize costs</li>
+<li><strong>Set correct ownership</strong>: Ensure the owner program can properly manage the account</li>
+</ol>
+<h3 id="utxo-integration"><a class="header" href="#utxo-integration">UTXO Integration</a></h3>
+<ol>
+<li><strong>Verify UTXO existence</strong>: Ensure the referenced Bitcoin UTXO exists and is confirmed</li>
+<li><strong>Use proper confirmation counts</strong>: Wait for sufficient Bitcoin confirmations before using anchored accounts</li>
+<li><strong>Handle reorgs gracefully</strong>: Account for potential Bitcoin reorganizations</li>
+</ol>
+<h3 id="security-considerations"><a class="header" href="#security-considerations">Security Considerations</a></h3>
+<ol>
+<li><strong>Validate signers</strong>: Always verify that required accounts are properly signed</li>
+<li><strong>Check ownership</strong>: Verify account ownership before operations</li>
+<li><strong>Handle edge cases</strong>: Account for insufficient funds, invalid parameters, etc.</li>
+</ol>
+<h2 id="integration-with-bitcoin"><a class="header" href="#integration-with-bitcoin">Integration with Bitcoin</a></h2>
+<p>The System Program’s UTXO anchoring functionality enables direct integration with Bitcoin:</p>
+<ul>
+<li><strong>Account-UTXO Mapping</strong>: Accounts can be directly linked to Bitcoin UTXOs</li>
+<li><strong>Ownership Verification</strong>: Bitcoin signatures can prove account ownership</li>
+<li><strong>State Synchronization</strong>: Account states can be synchronized with Bitcoin state</li>
+</ul>
+<p>This integration provides:</p>
+<ul>
+<li>Native Bitcoin security guarantees</li>
+<li>Direct UTXO management capabilities</li>
+<li>Seamless Bitcoin transaction integration</li>
+<li>Provable ownership and state anchoring</li>
+</ul>
+<h2 id="related-documentation"><a class="header" href="#related-documentation">Related Documentation</a></h2>
+<ul>
+<li><a href="../program/accounts.html">Account Model</a> - Understanding Arch’s account structure</li>
+<li><a href="../program/instructions-and-messages.html">Instructions and Messages</a> - How instructions work</li>
+<li><a href="../concepts/bitcoin-integration.html">Bitcoin Integration</a> - Bitcoin-native features</li>
+<li><a href="../program/utxo.html">UTXO Management</a> - Working with Bitcoin UTXOs</li>
+</ul>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
