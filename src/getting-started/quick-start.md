@@ -48,6 +48,12 @@ cli validator-start \
 ```
 
 #### Option B: Local Development (Regtest)
+**Prerequisites:**
+- **Docker**: Required on all platforms - [Install Docker](https://docs.docker.com/engine/install/)
+- **Docker Management** (optional but recommended):
+  - **macOS**: [OrbStack](https://orbstack.dev/) (recommended) or [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+  - **Linux**: [Docker Desktop](https://www.docker.com/products/docker-desktop/) (optional GUI)
+
 ```bash
 # Use the orchestrate command for full local devnet
 cli orchestrate start
