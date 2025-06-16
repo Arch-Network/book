@@ -182,21 +182,43 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="setup-options"><a class="header" href="#setup-options">Setup Options</a></h1>
-<p>This guide covers different configuration options for your Arch Network validator, including connecting to various networks like testnet4 for access to ordinals/runes helper tools.</p>
-<p>Table of Contents:</p>
+                        <h1 id="configuring-local-validator-with-bitcoin-testnet4"><a class="header" href="#configuring-local-validator-with-bitcoin-testnet4">Configuring Local Validator with Bitcoin Testnet4</a></h1>
+<p>This guide covers how to configure your Arch Network local validator to connect to Bitcoin testnet4, which provides access to additional tools and features for development and testing, including ordinals and runes functionality.</p>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>Bitcoin testnet4 is the latest Bitcoin test network that provides:</p>
 <ul>
-<li><a href="#config">Config</a></li>
-<li><a href="#local-validator">Local validator</a></li>
-<li><a href="#help-commands">Help commands</a></li>
-<li><a href="#log-assistance">Log assistance</a></li>
+<li><strong>Ordinals Support</strong>: Create and test Bitcoin ordinal inscriptions</li>
+<li><strong>Runes Protocol</strong>: Test BRC-20 and rune token functionality</li>
+<li><strong>Enhanced Tooling</strong>: Access to advanced Bitcoin testing tools</li>
+<li><strong>Real Network Conditions</strong>: More realistic testing environment than regtest</li>
 </ul>
-<h3 id="config"><a class="header" href="#config">Config</a></h3>
-<p>First, you’ll need to configure the network settings for connecting to Bitcoin testnet4. The CLI accepts these parameters directly when starting the validator.</p>
-<blockquote>
-<p>Note: We have redacted our Bitcoin node password to prevent abuse; contact us if you need this, otherwise provide your own node credentials and use the below as a reference.</p>
-</blockquote>
-<p>When starting the validator, you can include the following parameters:</p>
+<p><strong>When to Use This Setup:</strong></p>
+<ul>
+<li>Testing ordinals/runes integration</li>
+<li>Developing Bitcoin-native features</li>
+<li>Testing with external Bitcoin services</li>
+<li>Preparing for mainnet deployment</li>
+</ul>
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<p>Before starting, ensure you have:</p>
+<ul>
+<li><strong>Arch Network CLI</strong> installed - <a href="https://github.com/Arch-Network/arch-node/releases/latest">Download Latest</a></li>
+<li><strong>Docker</strong> installed and running - <a href="https://docs.docker.com/get-docker/">Install Docker</a></li>
+<li><strong>Bitcoin Core</strong> (optional, for advanced users) - <a href="https://bitcoin.org/en/download">Install Guide</a></li>
+</ul>
+<h2 id="quick-start-recommended"><a class="header" href="#quick-start-recommended">Quick Start (Recommended)</a></h2>
+<p>The easiest way to run a local validator with testnet4 connectivity:</p>
+<pre><code class="language-bash"># Start validator connected to hosted testnet4 infrastructure
+cli validator-start --network-mode testnet
+</code></pre>
+<p>This connects to Arch’s hosted testnet4 infrastructure including:</p>
+<ul>
+<li>Bitcoin testnet4 node</li>
+<li>Titan indexer</li>
+<li>Network coordination services</li>
+</ul>
+<h2 id="configuration-options"><a class="header" href="#configuration-options">Configuration Options</a></h2>
+<h3 id="basic-testnet4-configuration"><a class="header" href="#basic-testnet4-configuration">Basic Testnet4 Configuration</a></h3>
 <pre><code class="language-bash">cli validator-start \
   --network-mode testnet \
   --data-dir ./.arch_data \
@@ -205,104 +227,217 @@
   --titan-endpoint titan-node.test.aws.archnetwork.xyz \
   --titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
 </code></pre>
-<p>Optional parameters:</p>
-<ul>
-<li><code>--data-dir</code> - Directory for storing validator data (default: ./.arch_data)</li>
-<li><code>--rpc-bind-ip</code> - IP Address for the RPC handler (default: 127.0.0.1)</li>
-<li><code>--rpc-bind-port</code> - Port for the RPC handler (default: 9002)</li>
-<li><code>--titan-endpoint</code> - HTTP endpoint for the Titan node</li>
-<li><code>--titan-socket-endpoint</code> - WebSocket endpoint for the Titan node</li>
-</ul>
-<h3 id="local-validator"><a class="header" href="#local-validator">Local validator</a></h3>
-<blockquote>
-<p>Note: You can start a local validator using the Arch Network CLI tool.</p>
-<p>Additionally, you can download pre-built binaries from the <a href="https://github.com/Arch-Network/arch-node/releases">arch-node releases page</a>.</p>
-<p><strong>Be sure to download the local validator binary, not the regular validator.</strong></p>
-</blockquote>
-<h4 id="run-the-local-validator"><a class="header" href="#run-the-local-validator">Run the local validator</a></h4>
-<p>Use the CLI command to run the local validator. You’ll need to have <a href="https://docker.com">Docker</a> installed and running.</p>
-<pre><code class="language-bash">cli validator-start --network-mode testnet
+<h3 id="custom-network-configuration"><a class="header" href="#custom-network-configuration">Custom Network Configuration</a></h3>
+<p>If you want to run your own Bitcoin testnet4 node:</p>
+<pre><code class="language-bash"># Start your Bitcoin testnet4 node
+bitcoind \
+  -testnet4 \
+  -server \
+  -rpcuser=bitcoin \
+  -rpcpassword=bitcoinpass \
+  -rpcbind=0.0.0.0 \
+  -rpcallowip=0.0.0.0/0 \
+  -fallbackfee=0.00001 \
+  -zmqpubrawblock=tcp://0.0.0.0:28332 \
+  -zmqpubrawtx=tcp://0.0.0.0:28333
+
+# Start validator with custom Bitcoin node
+cli validator-start \
+  --network-mode testnet \
+  --bitcoin-rpc-endpoint http://localhost:48332 \
+  --bitcoin-rpc-username bitcoin \
+  --bitcoin-rpc-password bitcoinpass
 </code></pre>
-<p>The validator logs can be viewed easily within the <a href="https://docker.com">Docker</a> desktop dashboard.</p>
-<blockquote>
-<p>Note: You can also run the standalone local validator binary where the logs will be streamed to <code>stdout</code> unless otherwise redirected.</p>
-</blockquote>
-<p><strong>Steps for running standalone validator binary:</strong></p>
+<h2 id="configuration-parameters"><a class="header" href="#configuration-parameters">Configuration Parameters</a></h2>
+<h3 id="core-settings"><a class="header" href="#core-settings">Core Settings</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Parameter</th><th>Description</th><th>Default</th></tr></thead><tbody>
+<tr><td><code>--network-mode</code></td><td>Network to connect to (<code>regtest</code>, <code>testnet</code>, <code>mainnet</code>)</td><td><code>regtest</code></td></tr>
+<tr><td><code>--data-dir</code></td><td>Directory for validator data storage</td><td><code>./.arch_data</code></td></tr>
+<tr><td><code>--rpc-bind-ip</code></td><td>IP address for RPC server</td><td><code>127.0.0.1</code></td></tr>
+<tr><td><code>--rpc-bind-port</code></td><td>Port for RPC server</td><td><code>9002</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="bitcoin-integration"><a class="header" href="#bitcoin-integration">Bitcoin Integration</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Parameter</th><th>Description</th><th>Default</th></tr></thead><tbody>
+<tr><td><code>--bitcoin-rpc-endpoint</code></td><td>Bitcoin node RPC URL</td><td>Uses hosted node</td></tr>
+<tr><td><code>--bitcoin-rpc-username</code></td><td>Bitcoin RPC username</td><td>-</td></tr>
+<tr><td><code>--bitcoin-rpc-password</code></td><td>Bitcoin RPC password</td><td>-</td></tr>
+</tbody></table>
+</div>
+<h3 id="titan-indexer"><a class="header" href="#titan-indexer">Titan Indexer</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Parameter</th><th>Description</th><th>Default</th></tr></thead><tbody>
+<tr><td><code>--titan-endpoint</code></td><td>Titan HTTP endpoint</td><td>Hosted endpoint</td></tr>
+<tr><td><code>--titan-socket-endpoint</code></td><td>Titan WebSocket endpoint</td><td>Hosted endpoint</td></tr>
+</tbody></table>
+</div>
+<h2 id="advanced-setup-standalone-binary"><a class="header" href="#advanced-setup-standalone-binary">Advanced Setup: Standalone Binary</a></h2>
+<p>For advanced users who want more control over the validator process:</p>
+<h3 id="download-and-setup"><a class="header" href="#download-and-setup">Download and Setup</a></h3>
 <ol>
 <li>
-<p>Download the appropriate binary as well as the <code>system_program.so</code> file from <a href="https://github.com/Arch-Network/arch-node/releases/latest">arch-node releases page</a>.</p>
-</li>
-<li>
-<p>Store the <code>system_program.so</code> file within a new directory called <code>/ebpf</code>.</p>
-<p>Your directory structure should resemble the following:</p>
-<pre><code class="language-bash">tmp/
-├─ ebpf/
-│  ├─ system_program.so
-├─ local_validator
+<p><strong>Download Required Files</strong>:</p>
+<pre><code class="language-bash"># Create working directory
+mkdir arch-testnet4-validator
+cd arch-testnet4-validator
+
+# Download validator binary and system program
+wget https://github.com/Arch-Network/arch-node/releases/latest/download/local_validator
+wget https://github.com/Arch-Network/arch-node/releases/latest/download/system_program.so
+
+# Create required directory structure
+mkdir ebpf
+mv system_program.so ebpf/
+chmod +x local_validator
 </code></pre>
 </li>
 <li>
-<p>Run the binary and pass the relevant flags dependening on your target network.</p>
-<pre><code class="language-bash">RUST_LOG=info \
-./local_validator \
---network-mode testnet \
---rpc-bind-ip 127.0.0.1 \
---rpc-bind-port 9002 \
---titan-endpoint titan-node.test.aws.archnetwork.xyz \
---titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
+<p><strong>Verify Directory Structure</strong>:</p>
+<pre><code>arch-testnet4-validator/
+├── ebpf/
+│   └── system_program.so
+└── local_validator
 </code></pre>
 </li>
 </ol>
-<h3 id="help-commands"><a class="header" href="#help-commands">Help commands</a></h3>
-<p>This section includes some helpful material when needing to restart the node state or better ensure our infrastructure is operational before proceeding.</p>
-<h4 id="arch-node"><a class="header" href="#arch-node">Arch node</a></h4>
-<p>The below commands can be used to assist with running the <a href="#local-validator">Local validator</a>.</p>
-<h5 id="start-fresh"><a class="header" href="#start-fresh">Start fresh</a></h5>
-<p>By removing the <code>/.arch_data</code> directory, we can wipe the state and effective start the node again from genesis (block: 0).</p>
-<pre><code class="language-bash">rm -rf .arch_data &amp;&amp; RUST_LOG=info \
-./local_validator \
---network-mode testnet \
---rpc-bind-ip 127.0.0.1 \
---rpc-bind-port 9002 \
---titan-endpoint titan-node.test.aws.archnetwork.xyz \
---titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
+<h3 id="run-standalone-validator"><a class="header" href="#run-standalone-validator">Run Standalone Validator</a></h3>
+<pre><code class="language-bash">RUST_LOG=info ./local_validator \
+  --network-mode testnet \
+  --rpc-bind-ip 127.0.0.1 \
+  --rpc-bind-port 9002 \
+  --titan-endpoint titan-node.test.aws.archnetwork.xyz \
+  --titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
 </code></pre>
-<h5 id="pulse-check"><a class="header" href="#pulse-check">Pulse check</a></h5>
-<p>This <code>cURL</code> command will allow us to ensure that our <a href="#local-validator">Local validator</a> is up and running correctly. We can use this to effective get a pulse check on the node which is helpful for debugging.</p>
-<pre><code class="language-bash">curl -vL POST -H 'Content-Type: application/json' -d '
-{
+<h2 id="testing-your-setup"><a class="header" href="#testing-your-setup">Testing Your Setup</a></h2>
+<h3 id="health-check"><a class="header" href="#health-check">Health Check</a></h3>
+<p>Verify your validator is running correctly:</p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '{
     "jsonrpc":"2.0",
     "id":1,
     "method":"is_node_ready",
     "params":[]
-}' \
-http://localhost:9002/
+}' http://localhost:9002/
 </code></pre>
-<h3 id="log-assistance"><a class="header" href="#log-assistance">Log assistance</a></h3>
-<p>Ordinarily, the arch-node logs will flood your terminal screen (or the <a href="https://docker.com">Docker</a> logs). This is less than idea when needing to review them carefully, so you can also direct the <code>stdout</code> to a file for later reading.</p>
-<p>Here’s an example of how to do this:</p>
-<pre><code class="language-bash">rm -rf .arch_data &amp;&amp; RUST_LOG=info \
-./local_validator \
---network-mode testnet \
---rpc-bind-ip 127.0.0.1 \
---rpc-bind-port 9002 \
---titan-endpoint titan-node.test.aws.archnetwork.xyz \
---titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332 \
-&gt; node-logs.txt
+<p><strong>Expected Response:</strong></p>
+<pre><code class="language-json">{
+    "jsonrpc": "2.0",
+    "result": true,
+    "id": 1
+}
 </code></pre>
-<p>Then you can <code>tail</code> the output and view the logs as they stream in.</p>
-<pre><code class="language-bash">tail -f node-logs.txt
+<h3 id="deploy-test-program"><a class="header" href="#deploy-test-program">Deploy Test Program</a></h3>
+<p>Test program deployment to verify everything works:</p>
+<pre><code class="language-bash"># Using CLI (automatic endpoint detection)
+cli deploy --network-mode testnet
+
+# Using CLI with explicit endpoint
+cli deploy --network-mode testnet --rpc-url http://localhost:9002
 </code></pre>
-<h3 id="deploy--interact"><a class="header" href="#deploy--interact">Deploy + interact</a></h3>
-<p>Now that everything is setup correctly, we can now deploy our program and begin interacting with it. The deploy step will prove everything works correctly.</p>
-<pre><code class="language-bash">cli deploy --network-mode testnet
+<h3 id="check-validator-status"><a class="header" href="#check-validator-status">Check Validator Status</a></h3>
+<pre><code class="language-bash">cli validator-status --rpc-url http://localhost:9002
 </code></pre>
-<p>And if you are running the local validator binary directly from the command-line, set the <code>--rpc-url</code> flag to specify your validator endpoint:</p>
-<pre><code class="language-bash">cli deploy --network-mode testnet --rpc-url http://localhost:9002
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
+<h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
+<h4 id="1-connection-refused"><a class="header" href="#1-connection-refused">1. Connection Refused</a></h4>
+<pre><code class="language-bash"># Check if validator is running
+curl -X POST http://localhost:9002/ \
+  -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"is_node_ready","params":[]}'
 </code></pre>
-<p>We hope this guide has been helpful, but as always, feel free to ask question within our <a href="https://discord.com/channels/1241112027963986001/1270921925991989268">Discord dev-chat</a> or submit issues within out <a href="https://github.com/arch-network/public-issues">public-issues</a> repo.</p>
-<!-- Internal -->
-<!-- External -->
+<h4 id="2-reset-validator-state"><a class="header" href="#2-reset-validator-state">2. Reset Validator State</a></h4>
+<pre><code class="language-bash"># Stop validator first (Ctrl+C or docker stop)
+rm -rf .arch_data
+
+# Restart validator
+cli validator-start --network-mode testnet
+</code></pre>
+<h4 id="3-view-logs"><a class="header" href="#3-view-logs">3. View Logs</a></h4>
+<p><strong>Docker Logs:</strong></p>
+<pre><code class="language-bash"># Find container name
+docker ps
+
+# View logs
+docker logs -f &lt;container_name&gt;
+</code></pre>
+<p><strong>Standalone Binary Logs:</strong></p>
+<pre><code class="language-bash"># Redirect logs to file
+RUST_LOG=info ./local_validator \
+  --network-mode testnet \
+  [other options] &gt; validator.log 2&gt;&amp;1
+
+# Monitor logs in another terminal
+tail -f validator.log
+</code></pre>
+<h4 id="4-network-connectivity-issues"><a class="header" href="#4-network-connectivity-issues">4. Network Connectivity Issues</a></h4>
+<pre><code class="language-bash"># Test connection to Titan endpoint
+curl -I https://titan-node.test.aws.archnetwork.xyz
+
+# Test WebSocket endpoint (requires wscat)
+wscat -c wss://titan-node.test.aws.archnetwork.xyz:49332
+</code></pre>
+<h2 id="development-workflow"><a class="header" href="#development-workflow">Development Workflow</a></h2>
+<h3 id="1-development-cycle"><a class="header" href="#1-development-cycle">1. Development Cycle</a></h3>
+<pre><code class="language-bash"># Start validator
+cli validator-start --network-mode testnet
+
+# Build your program
+cd your-program
+cargo build-sbf
+
+# Deploy and test
+cli deploy --network-mode testnet
+cli invoke [program-id] [account] --data [instruction-data]
+</code></pre>
+<h3 id="2-reset-between-tests"><a class="header" href="#2-reset-between-tests">2. Reset Between Tests</a></h3>
+<pre><code class="language-bash"># Quick reset
+cli orchestrate reset
+
+# Full reset (if needed)
+rm -rf .arch_data
+cli validator-start --network-mode testnet
+</code></pre>
+<h3 id="3-working-with-testnet4-features"><a class="header" href="#3-working-with-testnet4-features">3. Working with Testnet4 Features</a></h3>
+<p><strong>Ordinals Testing:</strong></p>
+<pre><code class="language-bash"># Your program can interact with ordinal inscriptions
+# Use the Bitcoin testnet4 ordinals APIs
+</code></pre>
+<p><strong>Runes Integration:</strong></p>
+<pre><code class="language-bash"># Test rune token operations
+# Integrate with runes protocol via Bitcoin transactions
+</code></pre>
+<h2 id="production-considerations"><a class="header" href="#production-considerations">Production Considerations</a></h2>
+<h3 id="security"><a class="header" href="#security">Security</a></h3>
+<ul>
+<li><strong>Never expose RPC ports</strong> publicly in production</li>
+<li><strong>Use strong credentials</strong> for Bitcoin RPC connections</li>
+<li><strong>Monitor validator health</strong> continuously</li>
+</ul>
+<h3 id="performance"><a class="header" href="#performance">Performance</a></h3>
+<ul>
+<li><strong>Allocate sufficient resources</strong> (4+ GB RAM recommended)</li>
+<li><strong>Use SSD storage</strong> for data directory</li>
+<li><strong>Monitor disk usage</strong> (logs can grow large)</li>
+</ul>
+<h3 id="networking"><a class="header" href="#networking">Networking</a></h3>
+<ul>
+<li><strong>Configure firewalls</strong> appropriately</li>
+<li><strong>Use SSL/TLS</strong> for external connections</li>
+<li><strong>Monitor network latency</strong> to Bitcoin and Titan nodes</li>
+</ul>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<ol>
+<li><strong>Deploy Your First Program</strong>: Follow the <a href="./writing-your-first-program.html">Writing Your First Program</a> guide</li>
+<li><strong>Test Thoroughly</strong>: Use the <a href="./testing-guide.html">Testing Guide</a> for comprehensive testing</li>
+<li><strong>Explore Examples</strong>: Check out <a href="./guides.html">advanced examples</a> for complex scenarios</li>
+<li><strong>Join the Community</strong>: Get help on <a href="https://discord.gg/archnetwork">Discord</a> if you run into issues</li>
+</ol>
+<h2 id="additional-resources"><a class="header" href="#additional-resources">Additional Resources</a></h2>
+<ul>
+<li><a href="../rpc/http-methods.html">Arch Network CLI Reference</a></li>
+<li><a href="https://mempool.space/testnet4">Bitcoin Testnet4 Faucet</a></li>
+<li><a href="https://docs.ordinals.com/">Ordinals Documentation</a></li>
+<li><a href="https://runes.com/">Runes Protocol Guide</a></li>
+</ul>
+<p><strong>Need Help?</strong> Join our <a href="https://discord.gg/archnetwork">Discord community</a> or file issues on our <a href="https://github.com/Arch-Network/arch-node/issues">GitHub</a>.</p>
 
                     </main>
 

@@ -183,214 +183,493 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="understanding-arch-programs"><a class="header" href="#understanding-arch-programs">Understanding Arch Programs</a></h1>
-<p>This guide analyzes a simple Hello World program to introduce the core concepts of Arch program development. We’ll break down each component of the program to understand how Arch programs work.</p>
-<h2 id="program-overview"><a class="header" href="#program-overview">Program Overview</a></h2>
-<p>The Hello World program is a simple smart contract that stores a greeting message for a given name. While simple, it demonstrates the key concepts of Arch program development including:</p>
+<p>This comprehensive guide walks you through building Arch Network programs by examining a complete, working example. We’ll build a “Hello World” program that demonstrates all the essential concepts you need to start developing on Arch Network.</p>
+<h2 id="what-youll-learn"><a class="header" href="#what-youll-learn">What You’ll Learn</a></h2>
+<p>By the end of this guide, you’ll understand:</p>
 <ul>
-<li>Program structure and entrypoints</li>
-<li>Account management</li>
-<li>State updates</li>
-<li>Bitcoin transaction handling</li>
-<li>Fee management</li>
+<li>Program structure and architecture</li>
+<li>Account management and state handling</li>
+<li>Bitcoin transaction integration</li>
+<li>Error handling best practices</li>
+<li>Testing and deployment patterns</li>
 </ul>
-<p>Let’s break down each part of the program.</p>
-<h2 id="1-program-dependencies"><a class="header" href="#1-program-dependencies">1. Program Dependencies</a></h2>
-<pre><code class="language-rust ignore">use arch_program::{
+<h2 id="complete-example-hello-world-program"><a class="header" href="#complete-example-hello-world-program">Complete Example: Hello World Program</a></h2>
+<p>Let’s build a complete program that stores personalized greetings and demonstrates key Arch Network concepts.</p>
+<h3 id="1-project-setup"><a class="header" href="#1-project-setup">1. Project Setup</a></h3>
+<p>First, create your program with the correct dependencies:</p>
+<p><strong>Cargo.toml</strong></p>
+<pre><code class="language-toml">[package]
+name = "hello_world_program"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+arch_program = { path = "../../program" }
+borsh = { version = "1.5.1", features = ["derive"] }
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[workspace]
+</code></pre>
+<h3 id="2-program-dependencies-and-imports"><a class="header" href="#2-program-dependencies-and-imports">2. Program Dependencies and Imports</a></h3>
+<p><strong>src/lib.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_program::{
     account::AccountInfo,
     bitcoin::{self, absolute::LockTime, transaction::Version, Transaction},
     entrypoint,
     helper::add_state_transition,
     input_to_sign::InputToSign,
     msg,
-    program::{
-        get_account_script_pubkey, get_bitcoin_block_height, next_account_info,
-        set_transaction_to_sign,
-    },
+    program::{next_account_info, set_transaction_to_sign},
     program_error::ProgramError,
     pubkey::Pubkey,
     transaction_to_sign::TransactionToSign,
 };
-use borsh::{BorshDeserialize, BorshSerialize};</code></pre>
-<p>The program starts by importing necessary dependencies:</p>
+use borsh::{BorshDeserialize, BorshSerialize};
+<span class="boring">}</span></code></pre></pre>
+<p><strong>Key Dependencies Explained:</strong></p>
 <ul>
-<li><code>AccountInfo</code>: Provides access to account data and metadata</li>
-<li><code>bitcoin</code>: Core Bitcoin types and functionality for transaction handling</li>
-<li><code>entrypoint</code>: Macro for registering the program’s entry point</li>
-<li><code>msg</code>: Logging functionality for debugging</li>
-<li><code>borsh</code>: Serialization/deserialization for program data</li>
+<li><code>AccountInfo</code>: Access to account data and metadata</li>
+<li><code>bitcoin</code>: Bitcoin transaction types and functionality</li>
+<li><code>entrypoint</code>: Macro for registering program entry point</li>
+<li><code>helper::add_state_transition</code>: Manages Bitcoin state transitions</li>
+<li><code>msg</code>: Logging for debugging and monitoring</li>
+<li><code>borsh</code>: Efficient serialization for program data</li>
 </ul>
-<h2 id="2-program-entry-point"><a class="header" href="#2-program-entry-point">2. Program Entry Point</a></h2>
-<pre><code class="language-rust ignore">entrypoint!(process_instruction);</code></pre>
-<p>Every Arch program needs a single entry point that the runtime will call. The <code>entrypoint!</code> macro registers our <code>process_instruction</code> function as this entry point. This tells the Arch runtime which function to call when our program is invoked.</p>
-<h2 id="3-program-parameters"><a class="header" href="#3-program-parameters">3. Program Parameters</a></h2>
-<pre><code class="language-rust ignore">pub fn process_instruction(
-    _program_id: &amp;Pubkey,
-    accounts: &amp;[AccountInfo],
-    instruction_data: &amp;[u8],
-) -&gt; Result&lt;(), ProgramError&gt;</code></pre>
-<p>The entry point function takes three key parameters:</p>
-<ul>
-<li><code>program_id</code>: The public key of our program (unused in this example)</li>
-<li><code>accounts</code>: Array of accounts the instruction will operate on</li>
-<li><code>instruction_data</code>: Serialized instruction parameters</li>
-</ul>
-<p>These parameters provide everything our program needs to execute: the context (program_id), the accounts it can read/write, and the instruction-specific data.</p>
-<h2 id="4-custom-error-handling"><a class="header" href="#4-custom-error-handling">4. Custom Error Handling</a></h2>
-<p>Programs should define their own error types to provide clear and specific error messages. Here’s how to implement custom errors in your Arch program:</p>
-<pre><code class="language-rust ignore">#[derive(Debug, Clone, PartialEq, Eq)]
+<h3 id="3-program-data-structures"><a class="header" href="#3-program-data-structures">3. Program Data Structures</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>/// Parameters sent to our Hello World program
+#[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
+pub struct HelloWorldParams {
+    /// The name to include in the greeting
+    pub name: String,
+    /// Bitcoin transaction for paying fees
+    pub tx_hex: Vec&lt;u8&gt;,
+}
+
+/// State stored in the account
+#[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
+pub struct GreetingAccount {
+    /// The greeting message
+    pub message: String,
+    /// Who was greeted
+    pub name: String,
+    /// When this greeting was created (block height)
+    pub created_at: u64,
+    /// How many times this account has been updated
+    pub update_count: u32,
+}
+
+impl GreetingAccount {
+    pub const MAX_SIZE: usize = 4 + 50 + 4 + 50 + 8 + 4; // Borsh overhead + data
+    
+    pub fn new(name: String, message: String, block_height: u64) -&gt; Self {
+        Self {
+            message,
+            name,
+            created_at: block_height,
+            update_count: 1,
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="4-custom-error-handling"><a class="header" href="#4-custom-error-handling">4. Custom Error Handling</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>/// Custom errors for our Hello World program
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum HelloWorldError {
     /// The provided name is too long (max 50 chars)
     NameTooLong,
+    /// The provided name is empty
+    NameEmpty,
     /// The provided name contains invalid characters
-    InvalidName,
-    /// Insufficient account balance for fees
+    InvalidCharacters,
+    /// Account data is corrupted
+    InvalidAccountData,
+    /// Insufficient fees provided
     InsufficientFees,
-    /// Invalid fee transaction format
-    InvalidFeeTransaction,
 }
 
 impl From&lt;HelloWorldError&gt; for ProgramError {
     fn from(e: HelloWorldError) -&gt; Self {
         ProgramError::Custom(match e {
             HelloWorldError::NameTooLong =&gt; 1001,
-            HelloWorldError::InvalidName =&gt; 1002,
-            HelloWorldError::InsufficientFees =&gt; 1003,
-            HelloWorldError::InvalidFeeTransaction =&gt; 1004,
+            HelloWorldError::NameEmpty =&gt; 1002,
+            HelloWorldError::InvalidCharacters =&gt; 1003,
+            HelloWorldError::InvalidAccountData =&gt; 1004,
+            HelloWorldError::InsufficientFees =&gt; 1005,
         })
     }
-}</code></pre>
-<p>Using custom errors in your program:</p>
-<pre><code class="language-rust ignore">fn validate_name(name: &amp;str) -&gt; Result&lt;(), HelloWorldError&gt; {
+}
+
+/// Validates the provided name
+fn validate_name(name: &amp;str) -&gt; Result&lt;(), HelloWorldError&gt; {
+    if name.is_empty() {
+        return Err(HelloWorldError::NameEmpty);
+    }
+    
     if name.len() &gt; 50 {
         return Err(HelloWorldError::NameTooLong);
     }
-    if !name.chars().all(|c| c.is_alphanumeric() || c.is_whitespace()) {
-        return Err(HelloWorldError::InvalidName);
+    
+    if !name.chars().all(|c| c.is_alphanumeric() || c.is_whitespace() || c == '-' || c == '_') {
+        return Err(HelloWorldError::InvalidCharacters);
     }
+    
     Ok(())
 }
+<span class="boring">}</span></code></pre></pre>
+<h3 id="5-program-entry-point-and-logic"><a class="header" href="#5-program-entry-point-and-logic">5. Program Entry Point and Logic</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Register our program's entry point
+entrypoint!(process_instruction);
 
+/// Main program entry point
 pub fn process_instruction(
     _program_id: &amp;Pubkey,
     accounts: &amp;[AccountInfo],
     instruction_data: &amp;[u8],
 ) -&gt; Result&lt;(), ProgramError&gt; {
+    msg!("Hello World program invoked");
+
+    // Parse instruction data
     let params: HelloWorldParams = borsh::from_slice(instruction_data)
         .map_err(|_| ProgramError::InvalidInstructionData)?;
     
-    validate_name(&amp;params.name)?;  // Custom error will be converted to ProgramError
+    // Validate input
+    validate_name(&amp;params.name)?;
     
-    // ... rest of the implementation
-}</code></pre>
-<p>Best practices for error handling:</p>
-<ol>
-<li>Define descriptive error variants that clearly indicate what went wrong</li>
-<li>Use unique error codes in the 1000+ range to avoid conflicts with system errors</li>
-<li>Implement proper error conversion to <code>ProgramError</code></li>
-<li>Add documentation comments for each error variant</li>
-<li>Consider grouping related errors into separate enums if your program grows large</li>
-</ol>
-<h2 id="5-program-state"><a class="header" href="#5-program-state">5. Program State</a></h2>
-<pre><code class="language-rust ignore">#[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
-pub struct HelloWorldParams {
-    /// The name to say hello to
-    pub name: String,
-    /// Raw Bitcoin transaction for fees
-    pub tx_hex: Vec&lt;u8&gt;,
-}</code></pre>
-<p>This structure defines the data format our program expects. It includes:</p>
-<ul>
-<li><code>name</code>: The name to include in the greeting</li>
-<li><code>tx_hex</code>: A serialized Bitcoin transaction for paying fees</li>
-</ul>
-<p>The <code>BorshSerialize</code> and <code>BorshDeserialize</code> traits allow us to convert this structure to and from bytes for storage and transmission.</p>
-<h2 id="6-program-logic"><a class="header" href="#6-program-logic">6. Program Logic</a></h2>
-<p>Let’s break down the main program logic into steps:</p>
-<h3 id="account-validation"><a class="header" href="#account-validation">Account Validation</a></h3>
-<pre><code class="language-rust ignore">if accounts.len() != 1 {
-    return Err(ProgramError::Custom(501));
+    msg!("Processing greeting for: {}", params.name);
+
+    // Validate accounts
+    if accounts.len() != 1 {
+        msg!("Expected 1 account, got {}", accounts.len());
+        return Err(ProgramError::NotEnoughAccountKeys);
+    }
+
+    let account_iter = &amp;mut accounts.iter();
+    let greeting_account = next_account_info(account_iter)?;
+
+    // Verify account permissions
+    if !greeting_account.is_writable {
+        msg!("Account must be writable");
+        return Err(ProgramError::InvalidAccountData);
+    }
+
+    if !greeting_account.is_signer {
+        msg!("Account must be a signer");
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+
+    // Process the greeting
+    process_greeting(greeting_account, &amp;params)?;
+    
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(greeting_account, &amp;params.tx_hex)?;
+
+    msg!("Hello World program completed successfully");
+    Ok(())
 }
 
-let account_iter = &amp;mut accounts.iter();
-let account = next_account_info(account_iter)?;
+/// Processes the greeting and updates account state
+fn process_greeting(
+    account: &amp;AccountInfo,
+    params: &amp;HelloWorldParams,
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let current_data_len = account.data.borrow().len();
+    
+    // Check if account is initialized
+    let mut greeting_data = if current_data_len == 0 {
+        msg!("Initializing new greeting account");
+        GreetingAccount::new(
+            params.name.clone(),
+            format!("Hello, {}! Welcome to Arch Network!", params.name),
+            0, // We'll get actual block height in a real implementation
+        )
+    } else {
+        // Update existing account
+        let existing_data = GreetingAccount::try_from_slice(&amp;account.data.borrow())
+            .map_err(|_| HelloWorldError::InvalidAccountData)?;
+        
+        msg!("Updating greeting for existing account");
+        GreetingAccount {
+            message: format!("Hello again, {}! Visit count: {}", 
+                           params.name, existing_data.update_count + 1),
+            name: params.name.clone(),
+            created_at: existing_data.created_at,
+            update_count: existing_data.update_count + 1,
+        }
+    };
 
-assert!(account.is_writable);
-assert!(account.is_signer);</code></pre>
-<p>The program first performs several important validations:</p>
-<ul>
-<li>Checks that exactly one account is provided</li>
-<li>Ensures the account is writable (can be modified)</li>
-<li>Verifies the account is a signer (authorized to make changes)</li>
-</ul>
-<p>These checks are crucial for security and proper program execution.</p>
-<h3 id="state-management"><a class="header" href="#state-management">State Management</a></h3>
-<pre><code class="language-rust ignore">let params: HelloWorldParams = borsh::from_slice(instruction_data).unwrap();
-let new_data = format!("Hello {}", params.name);
+    // Serialize the new data
+    let serialized_data = borsh::to_vec(&amp;greeting_data)
+        .map_err(|_| ProgramError::InvalidAccountData)?;
 
-let data_len = account.data.try_borrow().unwrap().len();
-if new_data.as_bytes().len() &gt; data_len {
-    account.realloc(new_data.len(), true)?;
+    // Ensure account has enough space
+    if serialized_data.len() &gt; current_data_len {
+        msg!("Reallocating account space from {} to {} bytes", 
+             current_data_len, serialized_data.len());
+        account.realloc(serialized_data.len(), true)?;
+    }
+
+    // Write the data
+    account.data.borrow_mut().copy_from_slice(&amp;serialized_data);
+    
+    msg!("Greeting stored: {}", greeting_data.message);
+    Ok(())
 }
 
-account.data.try_borrow_mut().unwrap().copy_from_slice(new_data.as_bytes());</code></pre>
-<p>The state management section:</p>
-<ol>
-<li>Deserializes the instruction parameters into our <code>HelloWorldParams</code> structure</li>
-<li>Creates the greeting message</li>
-<li>Checks if the account has enough space for our data</li>
-<li>Reallocates space if needed</li>
-<li>Stores the greeting in the account’s data</li>
-</ol>
-<h3 id="bitcoin-transaction-handling"><a class="header" href="#bitcoin-transaction-handling">Bitcoin Transaction Handling</a></h3>
-<pre><code class="language-rust ignore">let fees_tx: Transaction = bitcoin::consensus::deserialize(&amp;params.tx_hex).unwrap();
+/// Handles Bitcoin transaction for state transition
+fn handle_bitcoin_transaction(
+    account: &amp;AccountInfo,
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    if tx_hex.is_empty() {
+        return Err(HelloWorldError::InsufficientFees.into());
+    }
 
-let mut tx = Transaction {
-    version: Version::TWO,
-    lock_time: LockTime::ZERO,
-    input: vec![],
-    output: vec![],
-};
+    // Deserialize the fee transaction
+    let fees_tx: Transaction = bitcoin::consensus::deserialize(tx_hex)
+        .map_err(|_| HelloWorldError::InsufficientFees)?;
 
+    msg!("Processing Bitcoin transaction with {} inputs", fees_tx.input.len());
+
+    // Create state transition transaction
+    let mut tx = Transaction {
+        version: Version::TWO,
+        lock_time: LockTime::ZERO,
+        input: vec![],
+        output: vec![],
+    };
+
+    // Add state transition for our account
+    add_state_transition(&amp;mut tx, account);
+    
+    // Add fee input
+    if !fees_tx.input.is_empty() {
+        tx.input.push(fees_tx.input[0].clone());
+    }
+
+    // Prepare transaction for signing
+    let tx_to_sign = TransactionToSign {
+        tx_bytes: &amp;bitcoin::consensus::serialize(&amp;tx),
+        inputs_to_sign: &amp;[InputToSign {
+            index: 0,
+            signer: account.key.clone(),
+        }],
+    };
+
+    msg!("Submitting transaction for signing");
+    set_transaction_to_sign(&amp;[account.clone()], tx_to_sign)?;
+
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="program-architecture-breakdown"><a class="header" href="#program-architecture-breakdown">Program Architecture Breakdown</a></h2>
+<h3 id="1-entrypoint-pattern"><a class="header" href="#1-entrypoint-pattern">1. <strong>Entrypoint Pattern</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>entrypoint!(process_instruction);
+<span class="boring">}</span></code></pre></pre>
+<p>Every Arch program needs exactly one entry point. The <code>entrypoint!</code> macro registers your <code>process_instruction</code> function as the program’s main entry point.</p>
+<h3 id="2-function-signature"><a class="header" href="#2-function-signature">2. <strong>Function Signature</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn process_instruction(
+    _program_id: &amp;Pubkey,
+    accounts: &amp;[AccountInfo],
+    instruction_data: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt;
+<span class="boring">}</span></code></pre></pre>
+<p><strong>Parameters explained:</strong></p>
+<ul>
+<li><code>program_id</code>: Your program’s public key (often unused in simple programs)</li>
+<li><code>accounts</code>: Array of accounts this instruction will read/write</li>
+<li><code>instruction_data</code>: Serialized parameters for your specific instruction</li>
+</ul>
+<h3 id="3-account-validation"><a class="header" href="#3-account-validation">3. <strong>Account Validation</strong></a></h3>
+<p>Always validate accounts before use:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Check account count
+if accounts.len() != expected_count {
+    return Err(ProgramError::NotEnoughAccountKeys);
+}
+
+// Check permissions
+if !account.is_writable {
+    return Err(ProgramError::InvalidAccountData);
+}
+
+if !account.is_signer {
+    return Err(ProgramError::MissingRequiredSignature);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="4-state-management"><a class="header" href="#4-state-management">4. <strong>State Management</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Read existing state
+let data = MyState::try_from_slice(&amp;account.data.borrow())?;
+
+// Modify state
+let new_data = MyState { /* updated fields */ };
+
+// Serialize and store
+let serialized = borsh::to_vec(&amp;new_data)?;
+account.data.borrow_mut().copy_from_slice(&amp;serialized);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="5-bitcoin-integration"><a class="header" href="#5-bitcoin-integration">5. <strong>Bitcoin Integration</strong></a></h3>
+<p>Every state change must be committed to Bitcoin:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Create Bitcoin transaction
+let mut tx = Transaction { /* ... */ };
+
+// Add state transition
 add_state_transition(&amp;mut tx, account);
-tx.input.push(fees_tx.input[0].clone());</code></pre>
-<p>This section handles the Bitcoin transaction aspects:</p>
-<ol>
-<li>Deserializes the fee transaction provided by the user</li>
-<li>Creates a new Bitcoin transaction for our state update</li>
-<li>Adds the state transition to the transaction</li>
-<li>Includes the fee input to pay for the transaction</li>
-</ol>
-<h3 id="transaction-signing"><a class="header" href="#transaction-signing">Transaction Signing</a></h3>
-<pre><code class="language-rust ignore">let tx_to_sign = TransactionToSign {
-    tx_bytes: &amp;bitcoin::consensus::serialize(&amp;tx),
-    inputs_to_sign: &amp;[InputToSign {
-        index: 0,
-        signer: account.key.clone(),
-    }],
+
+// Submit for signing
+set_transaction_to_sign(accounts, TransactionToSign { /* ... */ })?;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="testing-your-program"><a class="header" href="#testing-your-program">Testing Your Program</a></h2>
+<p>Create comprehensive tests for your program:</p>
+<p><strong>tests/integration_test.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_sdk::helper::sign_and_send_instruction;
+use arch_test_sdk::{
+    get_balance_bitcoin, initialize_client, Account, Balance
 };
 
-set_transaction_to_sign(accounts, tx_to_sign)</code></pre>
-<p>Finally, the program prepares the transaction for signing:</p>
-<ol>
-<li>Serializes the Bitcoin transaction</li>
-<li>Creates a signing request specifying which inputs need to be signed</li>
-<li>Submits the transaction to be signed by the Arch runtime</li>
-</ol>
+#[test]
+fn test_hello_world_basic() {
+    let (client, _boot_info) = initialize_client();
+    
+    let program_pubkey = deploy_program();
+    let user_account = Account::new();
+    
+    // Test initial greeting
+    let params = HelloWorldParams {
+        name: "Alice".to_string(),
+        tx_hex: create_fee_transaction(),
+    };
+    
+    let result = send_hello_instruction(&amp;client, &amp;program_pubkey, &amp;user_account, params);
+    assert!(result.is_ok());
+    
+    // Verify state was stored correctly
+    let account_data = client.read_account_info(user_account.pubkey()).unwrap();
+    let greeting = GreetingAccount::try_from_slice(&amp;account_data.data).unwrap();
+    
+    assert_eq!(greeting.name, "Alice");
+    assert!(greeting.message.contains("Hello, Alice"));
+    assert_eq!(greeting.update_count, 1);
+}
+
+#[test]
+fn test_error_handling() {
+    // Test name too long
+    let params = HelloWorldParams {
+        name: "A".repeat(100), // Too long
+        tx_hex: create_fee_transaction(),
+    };
+    
+    let result = send_hello_instruction(&amp;client, &amp;program_pubkey, &amp;user_account, params);
+    assert!(result.is_err());
+    
+    // Test empty name
+    let params = HelloWorldParams {
+        name: "".to_string(),
+        tx_hex: create_fee_transaction(),
+    };
+    
+    let result = send_hello_instruction(&amp;client, &amp;program_pubkey, &amp;user_account, params);
+    assert!(result.is_err());
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h3 id="1-error-handling"><a class="header" href="#1-error-handling">1. <strong>Error Handling</strong></a></h3>
+<ul>
+<li>Define custom error types for better debugging</li>
+<li>Use descriptive error messages with <code>msg!</code></li>
+<li>Validate all inputs before processing</li>
+<li>Handle both program logic and Bitcoin transaction errors</li>
+</ul>
+<h3 id="2-account-management"><a class="header" href="#2-account-management">2. <strong>Account Management</strong></a></h3>
+<ul>
+<li>Always check account permissions (<code>is_signer</code>, <code>is_writable</code>)</li>
+<li>Validate account ownership when needed</li>
+<li>Use <code>realloc</code> when data size changes</li>
+<li>Consider account rent and minimum balances</li>
+</ul>
+<h3 id="3-state-design"><a class="header" href="#3-state-design">3. <strong>State Design</strong></a></h3>
+<ul>
+<li>Keep state structures simple and well-defined</li>
+<li>Use Borsh for efficient serialization</li>
+<li>Consider data size limits</li>
+<li>Plan for state evolution</li>
+</ul>
+<h3 id="4-bitcoin-integration"><a class="header" href="#4-bitcoin-integration">4. <strong>Bitcoin Integration</strong></a></h3>
+<ul>
+<li>Always include fee transactions</li>
+<li>Validate transaction structure</li>
+<li>Use proper input/output management</li>
+<li>Handle signing requirements correctly</li>
+</ul>
+<h3 id="5-security"><a class="header" href="#5-security">5. <strong>Security</strong></a></h3>
+<ul>
+<li>Validate all input parameters</li>
+<li>Check account ownership and permissions</li>
+<li>Prevent reentrancy attacks</li>
+<li>Use safe arithmetic operations</li>
+</ul>
+<h2 id="common-patterns"><a class="header" href="#common-patterns">Common Patterns</a></h2>
+<h3 id="program-derived-addresses-pdas"><a class="header" href="#program-derived-addresses-pdas">Program-Derived Addresses (PDAs)</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let (pda, bump) = Pubkey::find_program_address(
+    &amp;[b"greeting", user.key.as_ref()],
+    program_id
+);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="cross-program-invocation-cpi"><a class="header" href="#cross-program-invocation-cpi">Cross-Program Invocation (CPI)</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let instruction = system_instruction::create_account(/* ... */);
+invoke(&amp;instruction, &amp;[account1, account2, system_program])?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="multiple-instructions"><a class="header" href="#multiple-instructions">Multiple Instructions</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>match MyInstruction::try_from_slice(instruction_data)? {
+    MyInstruction::Initialize { .. } =&gt; process_initialize(accounts)?,
+    MyInstruction::Update { .. } =&gt; process_update(accounts)?,
+    MyInstruction::Close =&gt; process_close(accounts)?,
+}
+<span class="boring">}</span></code></pre></pre>
 <h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
-<p>Now that you understand the basic structure of an Arch program, you can:</p>
+<p>Now that you understand the fundamentals:</p>
+<ol>
+<li><strong>Explore Advanced Examples</strong>: Check out the <a href="../apl/token-program.html">token program</a> and <a href="./how-to-write-oracle-program.html">oracle implementation</a></li>
+<li><strong>Learn Testing</strong>: Set up comprehensive test suites for your programs</li>
+<li><strong>Understand PDAs</strong>: Master program-derived addresses for complex state management</li>
+<li><strong>Study CPI</strong>: Learn cross-program invocation for composable programs</li>
+<li><strong>Deploy and Monitor</strong>: Learn deployment and monitoring best practices</li>
+</ol>
+<h2 id="additional-resources"><a class="header" href="#additional-resources">Additional Resources</a></h2>
 <ul>
-<li>Learn about more complex account management in the <a href="../program/program.html">Program</a> documentation</li>
-<li>Explore cross-program invocation for program composition</li>
-<li>Study the Bitcoin transaction lifecycle in our <a href="https://docs.arch.network">docs</a></li>
-<li>Build more complex programs using these fundamentals</li>
+<li><a href="https://github.com/Arch-Network/arch-examples">Program Examples Repository</a></li>
+<li><a href="../apl/token-program.html">APL Token Implementation</a></li>
+<li><a href="../concepts/bitcoin-integration.html">Bitcoin Integration Guide</a></li>
+<li><a href="../rpc/http-methods.html">RPC API Reference</a></li>
 </ul>
-<p>For practical examples, check out our other guides:</p>
-<ul>
-<li><a href="./how-to-create-a-fungible-token.html">How to create a fungible token</a></li>
-<li><a href="./how-to-build-runes-swap.html">How to build a Runes swap</a></li>
-</ul>
-<!-- Internal -->
-<!-- External -->
+<p>The complete code for this example is available in the <a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/helloworld">Hello World example</a>.</p>
 
                     </main>
 

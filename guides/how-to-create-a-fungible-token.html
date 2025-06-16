@@ -182,185 +182,466 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="how-to-create-a-fungible-token"><a class="header" href="#how-to-create-a-fungible-token">How to create a fungible token</a></h1>
-<p>This guide walks through how to implement the Fungible Token Standard program, part of the Arch Program Library, or APL.</p>
-<p>Table of Contents:</p>
+                        <h1 id="using-apl-tokens-on-arch-network"><a class="header" href="#using-apl-tokens-on-arch-network">Using APL Tokens on Arch Network</a></h1>
+<p>This guide shows you how to work with fungible tokens on Arch Network using the built-in <strong>APL (Arch Program Library) Token Program</strong>. APL tokens are based on Solana’s SPL token standard and provide a robust foundation for creating and managing tokens on Arch Network.</p>
+<h2 id="what-youll-learn"><a class="header" href="#what-youll-learn">What You’ll Learn</a></h2>
+<p>By the end of this guide, you’ll understand how to:</p>
 <ul>
-<li><a href="#description">Description</a></li>
-<li><a href="#logic">Logic</a></li>
-<li><a href="#implementation">Implementation</a></li>
+<li><strong>Create token mints</strong> using the APL token program</li>
+<li><strong>Initialize token accounts</strong> for holding tokens</li>
+<li><strong>Mint tokens</strong> to accounts</li>
+<li><strong>Transfer tokens</strong> between accounts</li>
+<li><strong>Approve delegations</strong> for spending tokens</li>
+<li><strong>Burn tokens</strong> and manage token lifecycle</li>
 </ul>
-<hr />
-<h3 id="description"><a class="header" href="#description">Description</a></h3>
-<p>The Fungible Token Standard program provides a consistent interface for implementing fungible tokens on Arch. As with all programs within the APL, this program is predeployed and is tested against the Arch runtime.</p>
-<p>The source code can be found within the <a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/fungible-token-standard">arch-examples</a> repo.</p>
-<h3 id="logic"><a class="header" href="#logic">Logic</a></h3>
-<p>If you haven’t already read <a href="./writing-your-first-program.html">How to write an Arch program</a>, we recommend starting there to get a basic understanding of the program anatomy before going further.</p>
-<h3 id="implementation"><a class="header" href="#implementation">Implementation</a></h3>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>The APL Token Program is Arch Network’s native token standard, providing:</p>
 <ul>
-<li><a href="#deploy">Deploy</a></li>
-<li><a href="#mint">Mint</a></li>
-<li><a href="#transfer">Transfer</a></li>
-<li><a href="#balance-check">Balance check</a></li>
+<li><strong>SPL Token Compatibility</strong>: Based on Solana’s proven token standard</li>
+<li><strong>Bitcoin Integration</strong>: All operations are recorded on Bitcoin</li>
+<li><strong>Comprehensive Features</strong>: Minting, transferring, burning, delegation, freezing</li>
+<li><strong>Multisig Support</strong>: Multiple signature authorities for enhanced security</li>
 </ul>
-<h4 id="deploy"><a class="header" href="#deploy">Deploy</a></h4>
-<p>Although the Fungible Token Standard program is part of the APL, and is there predeployed by the validators, for local testing, we can deploy it ourselves. Move to <a href="#mint">Mint</a> if you’d like to skip this step.</p>
-<p>To demonstrate a deploy, we’ll reference: <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/deploy.rs">deploy.rs</a></p>
-<p>We make use of <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_deployment.rs#L1"><code>try_deploy_program</code></a>, a helper function from the <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter">ebpf-counter</a> example to deploy our program.</p>
-<pre><code class="language-rust ignore">pub const ELF_PATH: &amp;str = "./program/target/sbf-solana-solana/release/fungible-token-standard-program.so";
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<p>Before starting, ensure you have:</p>
+<ul>
+<li><strong>Rust 1.70+</strong> and Cargo installed (<a href="https://rustup.rs/">Install Rust</a>)</li>
+<li><strong>Solana CLI 1.16+</strong> (DO NOT upgrade to 2.x) - <a href="https://docs.solana.com/cli/install-solana-cli-tools">Install Guide</a></li>
+<li><strong>Arch Network CLI</strong> - <a href="https://github.com/Arch-Network/arch-node/releases/latest">Download Latest</a></li>
+<li><strong>Running validator</strong> (see <a href="./how-to-configure-local-validator-bitcoin-testnet4.html">Validator Setup Guide</a>)</li>
+<li><strong>Basic familiarity</strong> with Arch Network program development</li>
+</ul>
+<h2 id="apl-token-program-id"><a class="header" href="#apl-token-program-id">APL Token Program ID</a></h2>
+<p>The APL Token Program has a fixed program ID:</p>
+<pre><code class="language-text">apl-token00000000000000000000000
+</code></pre>
+<h2 id="step-1-project-setup"><a class="header" href="#step-1-project-setup">Step 1: Project Setup</a></h2>
+<h3 id="11-create-project-structure"><a class="header" href="#11-create-project-structure">1.1 Create Project Structure</a></h3>
+<pre><code class="language-bash"># Create project directory
+mkdir arch-token-example
+cd arch-token-example
 
-fn deploy_standard_program() {
-    let program_pubkey =
-        try_deploy_program(ELF_PATH, PROGRAM_FILE_PATH, "Fungible-Token-Standard").unwrap();
+# Initialize Rust project
+cargo init --bin
+</code></pre>
+<h3 id="12-configure-dependencies"><a class="header" href="#12-configure-dependencies">1.2 Configure Dependencies</a></h3>
+<p><strong>Cargo.toml</strong></p>
+<pre><code class="language-toml">[package]
+name = "arch_token_example"
+version = "0.1.0"
+edition = "2021"
 
-    println!(
-        "Deployed Fungible token standard program account id {:?}!",
-        program_pubkey.serialize()
+[dependencies]
+arch_sdk = "0.5.2"
+arch_program = "0.5.2"
+arch_test_sdk = "0.5.2"
+apl-token = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
+apl-associated-token-account = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
+borsh = { version = "1.5.1", features = ["derive"] }
+bitcoincore-rpc = "0.18.0"
+bitcoin = { version = "0.32.3", features = ["serde", "rand"] }
+hex = "0.4.3"
+log = "0.4"
+env_logger = "0.10"
+
+[dev-dependencies]
+serial_test = "3.1.1"
+</code></pre>
+<h2 id="step-2-basic-token-operations"><a class="header" href="#step-2-basic-token-operations">Step 2: Basic Token Operations</a></h2>
+<h3 id="21-initialize-a-token-mint"><a class="header" href="#21-initialize-a-token-mint">2.1 Initialize a Token Mint</a></h3>
+<p>First, let’s create a new token mint:</p>
+<p><strong>src/main.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::Mint;
+use arch_program::{program_pack::Pack, sanitized::ArchMessage};
+use arch_sdk::{build_and_sign_transaction, generate_new_keypair, ArchRpcClient, Status};
+use arch_test_sdk::{
+    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
+    helper::{create_and_fund_account_with_faucet, send_transactions_and_wait},
+};
+
+fn main() {
+    env_logger::init();
+    
+    let client = ArchRpcClient::new(NODE1_ADDRESS);
+
+    // Create authority keypair (this will be the mint authority)
+    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
+    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
+
+    // Create mint account
+    let (token_mint_keypair, token_mint_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
+
+    // Create the mint account
+    let create_account_instruction = arch_program::system_instruction::create_account(
+        &amp;authority_pubkey,
+        &amp;token_mint_pubkey,
+        arch_program::account::MIN_ACCOUNT_LAMPORTS,
+        Mint::LEN as u64,
+        &amp;apl_token::id(),
     );
-...
-}</code></pre>
-<h4 id="mint"><a class="header" href="#mint">Mint</a></h4>
-<p>To mint tokens, we must supply a few pieces of information:</p>
+
+    // Initialize the mint
+    let initialize_mint_instruction = apl_token::instruction::initialize_mint(
+        &amp;apl_token::id(),
+        &amp;token_mint_pubkey,
+        &amp;authority_pubkey,
+        None, // No freeze authority
+        9,    // 9 decimals (like USDC)
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[create_account_instruction, initialize_mint_instruction],
+            Some(authority_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![authority_keypair, token_mint_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+
+    println!("Token mint created: {}", token_mint_pubkey);
+}</code></pre></pre>
+<h3 id="22-create-token-accounts"><a class="header" href="#22-create-token-accounts">2.2 Create Token Accounts</a></h3>
+<p>Token accounts hold tokens for specific owners:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn initialize_token_account(
+    client: &amp;ArchRpcClient,
+    token_mint_pubkey: arch_program::pubkey::Pubkey,
+    owner_keypair: bitcoin::key::Keypair,
+) -&gt; (bitcoin::key::Keypair, arch_program::pubkey::Pubkey) {
+    let owner_pubkey = arch_program::pubkey::Pubkey::from_slice(
+        &amp;owner_keypair.x_only_public_key().0.serialize()
+    );
+
+    let (token_account_keypair, token_account_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
+
+    // Create the account
+    let create_account_instruction = arch_program::system_instruction::create_account(
+        &amp;owner_pubkey,
+        &amp;token_account_pubkey,
+        arch_program::account::MIN_ACCOUNT_LAMPORTS,
+        apl_token::state::Account::LEN as u64,
+        &amp;apl_token::id(),
+    );
+
+    // Initialize the token account
+    let initialize_account_instruction = apl_token::instruction::initialize_account(
+        &amp;apl_token::id(),
+        &amp;token_account_pubkey,
+        &amp;token_mint_pubkey,
+        &amp;owner_pubkey,
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[create_account_instruction, initialize_account_instruction],
+            Some(owner_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![owner_keypair, token_account_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+
+    (token_account_keypair, token_account_pubkey)
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="23-mint-tokens"><a class="header" href="#23-mint-tokens">2.3 Mint Tokens</a></h3>
+<p>Mint new tokens to a token account:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn mint_tokens(
+    client: &amp;ArchRpcClient,
+    mint_pubkey: &amp;arch_program::pubkey::Pubkey,
+    account_pubkey: &amp;arch_program::pubkey::Pubkey,
+    authority_pubkey: &amp;arch_program::pubkey::Pubkey,
+    authority_keypair: bitcoin::key::Keypair,
+    amount: u64,
+) {
+    let mint_instruction = apl_token::instruction::mint_to(
+        &amp;apl_token::id(),
+        mint_pubkey,
+        account_pubkey,
+        authority_pubkey,
+        &amp;[], // No additional signers for single authority
+        amount,
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[mint_instruction],
+            Some(*authority_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![authority_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+    
+    println!("Minted {} tokens", amount);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="24-transfer-tokens"><a class="header" href="#24-transfer-tokens">2.4 Transfer Tokens</a></h3>
+<p>Transfer tokens between accounts:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn transfer_tokens(
+    client: &amp;ArchRpcClient,
+    source_account: &amp;arch_program::pubkey::Pubkey,
+    destination_account: &amp;arch_program::pubkey::Pubkey,
+    owner_pubkey: &amp;arch_program::pubkey::Pubkey,
+    owner_keypair: bitcoin::key::Keypair,
+    amount: u64,
+) {
+    let transfer_instruction = apl_token::instruction::transfer(
+        &amp;apl_token::id(),
+        source_account,
+        destination_account,
+        owner_pubkey,
+        &amp;[owner_pubkey], // Owner must sign
+        amount,
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[transfer_instruction],
+            Some(*owner_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![owner_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+    
+    println!("Transferred {} tokens", amount);
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="step-3-advanced-token-operations"><a class="header" href="#step-3-advanced-token-operations">Step 3: Advanced Token Operations</a></h2>
+<h3 id="31-approve-delegations"><a class="header" href="#31-approve-delegations">3.1 Approve Delegations</a></h3>
+<p>Allow another account to spend tokens on your behalf:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn approve_delegate(
+    client: &amp;ArchRpcClient,
+    source_account: &amp;arch_program::pubkey::Pubkey,
+    delegate_account: &amp;arch_program::pubkey::Pubkey,
+    owner_pubkey: &amp;arch_program::pubkey::Pubkey,
+    owner_keypair: bitcoin::key::Keypair,
+    amount: u64,
+) {
+    let approve_instruction = apl_token::instruction::approve(
+        &amp;apl_token::id(),
+        source_account,
+        delegate_account,
+        owner_pubkey,
+        &amp;[owner_pubkey],
+        amount,
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[approve_instruction],
+            Some(*owner_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![owner_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+    
+    println!("Approved {} tokens for delegation", amount);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="32-burn-tokens"><a class="header" href="#32-burn-tokens">3.2 Burn Tokens</a></h3>
+<p>Remove tokens from circulation:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn burn_tokens(
+    client: &amp;ArchRpcClient,
+    account_pubkey: &amp;arch_program::pubkey::Pubkey,
+    mint_pubkey: &amp;arch_program::pubkey::Pubkey,
+    owner_pubkey: &amp;arch_program::pubkey::Pubkey,
+    owner_keypair: bitcoin::key::Keypair,
+    amount: u64,
+) {
+    let burn_instruction = apl_token::instruction::burn(
+        &amp;apl_token::id(),
+        account_pubkey,
+        mint_pubkey,
+        owner_pubkey,
+        &amp;[owner_pubkey],
+        amount,
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[burn_instruction],
+            Some(*owner_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![owner_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+    
+    println!("Burned {} tokens", amount);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="33-freeze-and-thaw-accounts"><a class="header" href="#33-freeze-and-thaw-accounts">3.3 Freeze and Thaw Accounts</a></h3>
+<p>If you set a freeze authority when creating the mint, you can freeze/thaw accounts:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn freeze_account(
+    client: &amp;ArchRpcClient,
+    account_pubkey: &amp;arch_program::pubkey::Pubkey,
+    mint_pubkey: &amp;arch_program::pubkey::Pubkey,
+    freeze_authority_pubkey: &amp;arch_program::pubkey::Pubkey,
+    freeze_authority_keypair: bitcoin::key::Keypair,
+) {
+    let freeze_instruction = apl_token::instruction::freeze_account(
+        &amp;apl_token::id(),
+        account_pubkey,
+        mint_pubkey,
+        freeze_authority_pubkey,
+        &amp;[freeze_authority_pubkey],
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[freeze_instruction],
+            Some(*freeze_authority_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![freeze_authority_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+    
+    println!("Account frozen");
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="step-4-complete-example"><a class="header" href="#step-4-complete-example">Step 4: Complete Example</a></h2>
+<p>Here’s a complete example that demonstrates the full token lifecycle:</p>
+<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::{Mint, Account, AccountState};
+use arch_program::{program_pack::Pack, sanitized::ArchMessage};
+use arch_sdk::{build_and_sign_transaction, generate_new_keypair, ArchRpcClient, Status};
+use arch_test_sdk::{
+    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
+    helper::{create_and_fund_account_with_faucet, read_account_info, send_transactions_and_wait},
+};
+
+fn main() {
+    env_logger::init();
+    
+    let client = ArchRpcClient::new(NODE1_ADDRESS);
+
+    // 1. Create authority and mint
+    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
+    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
+
+    let (_, token_mint_pubkey) = create_token_mint(&amp;client, authority_pubkey, authority_keypair);
+    
+    // 2. Create token accounts for two users
+    let (user1_keypair, user1_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
+    create_and_fund_account_with_faucet(&amp;user1_keypair, BITCOIN_NETWORK);
+    
+    let (user2_keypair, user2_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
+    create_and_fund_account_with_faucet(&amp;user2_keypair, BITCOIN_NETWORK);
+
+    let (_, user1_token_account) = create_token_account(&amp;client, token_mint_pubkey, user1_keypair);
+    let (_, user2_token_account) = create_token_account(&amp;client, token_mint_pubkey, user2_keypair);
+
+    // 3. Mint tokens to user1
+    mint_tokens(&amp;client, &amp;token_mint_pubkey, &amp;user1_token_account, &amp;authority_pubkey, authority_keypair, 1000);
+
+    // 4. Check balance
+    let account_info = read_account_info(user1_token_account);
+    let account_data = Account::unpack(&amp;account_info.data).unwrap();
+    println!("User1 balance: {}", account_data.amount);
+
+    // 5. Transfer tokens from user1 to user2
+    transfer_tokens(&amp;client, &amp;user1_token_account, &amp;user2_token_account, &amp;user1_pubkey, user1_keypair, 500);
+
+    // 6. Check both balances
+    let user1_info = read_account_info(user1_token_account);
+    let user1_data = Account::unpack(&amp;user1_info.data).unwrap();
+    println!("User1 balance after transfer: {}", user1_data.amount);
+
+    let user2_info = read_account_info(user2_token_account);
+    let user2_data = Account::unpack(&amp;user2_info.data).unwrap();
+    println!("User2 balance after transfer: {}", user2_data.amount);
+
+    println!("Token operations completed successfully!");
+}</code></pre></pre>
+<h2 id="running-the-example"><a class="header" href="#running-the-example">Running the Example</a></h2>
+<pre><code class="language-bash"># First, ensure your validator is running
+cli orchestrate validator-status
+
+# Then run the example code
+cargo run
+</code></pre>
+<h2 id="key-concepts"><a class="header" href="#key-concepts">Key Concepts</a></h2>
+<h3 id="account-types"><a class="header" href="#account-types">Account Types</a></h3>
+<ol>
+<li><strong>Mint Account</strong>: Stores token metadata and authorities</li>
+<li><strong>Token Account</strong>: Holds token balances for specific owners</li>
+<li><strong>Multisig Account</strong>: Enables shared authority over operations</li>
+</ol>
+<h3 id="authority-types"><a class="header" href="#authority-types">Authority Types</a></h3>
 <ul>
-<li>Owner</li>
-<li>Supply</li>
-<li>Ticker</li>
-<li>Decimals</li>
+<li><strong>Mint Authority</strong>: Can mint new tokens</li>
+<li><strong>Freeze Authority</strong>: Can freeze/thaw token accounts</li>
+<li><strong>Owner</strong>: Controls token account operations</li>
+<li><strong>Delegate</strong>: Can spend approved amounts on behalf of owner</li>
 </ul>
-<p>This data gets stored in the <code>InitializeMintInput</code> struct, which will be used to generate a new instance of the Fungible Token Standard.</p>
-<pre><code class="language-rust ignore">#[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
-pub struct InitializeMintInput {
-    owner: [u8; 32],
-    supply: u64, // in lowest denomination
-    ticker: String,
-    decimals: u8,
-}</code></pre>
-<p>To demonstrate a mint, we’ll reference: <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/tests_mint.rs">tests_mint.rs</a></p>
-<p>We initialize a new instance of <code>InitializeMintInput</code> and pass in the necessary data. In the below case, our owner account will create the token “SPONK,” with a total supply of 1,000,000, which will have only a single decimal, meaning it is divisible by 1.</p>
-<pre><code class="language-rust ignore">// deploy.rs
-let mint_input = InitializeMintInput::new(
-    mint_account_pubkey.serialize(),
-    1000000,
-    "SPONK".to_string(),
-    1,
-);</code></pre>
-<p>We then serialize <code>mint_input</code> so that we can pass it as <code>instruction_data</code> within an <a href="../program/instructions-and-messages.html#instructions">Instruction</a> which then gets submitted to the deployed Fungible Token Standard program.</p>
-<pre><code class="language-rust ignore">let mut instruction_data = vec![0u8];
-
-mint_input
-    .serialize(&amp;mut instruction_data)
-    .expect("Couldnt serialize mint input");
-
-let initialize_mint_instruction = Instruction {
-    program_id: program_pubkey.clone(),
-    accounts: vec![AccountMeta {
-        pubkey: mint_account_pubkey,
-        is_signer: true,
-        is_writable: true,
-    }],
-    data: instruction_data,
-};</code></pre>
-<p>Next, we build a transaction using <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_instructions.rs#L163"><code>build_transaction</code></a> and then submit the transaction with <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_instructions.rs#L196"><code>build_and_send_block</code></a>, both helper function from the <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter">ebpf-counter</a> example.</p>
-<pre><code class="language-rust ignore">let transaction = build_transaction(
-    vec![mint_account_keypair],
-    vec![initialize_mint_instruction],
-);
-
-let block_transactions = build_and_send_block(vec![transaction]);</code></pre>
-<p>We fetch the result of the transaction with <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_instructions.rs#L207"><code>fetch_processed_transactions</code></a> helper function (<a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter">ebpf-counter</a>) and then obtain the mint details by passing the <a href="../program/pubkey.html">Pubkey</a> of the token owner.</p>
-<pre><code class="language-rust ignore">let processed_transactions = fetch_processed_transactions(block_transactions).unwrap();
-
-assert!(matches!(
-    processed_transactions[0].status,
-    Status::Processed
-));
-
-let mint_details = get_mint_info(&amp;mint_account_pubkey).expect("Couldnt deserialize mint info");
-
-println!("Mint account {:?}", mint_account_pubkey.serialize());</code></pre>
-<h4 id="transfer"><a class="header" href="#transfer">Transfer</a></h4>
-<p>To demonstrate a transfer, we’ll reference: <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/tests_transfer.rs">tests_transfer.rs</a></p>
-<p>We obtain a <code>mint_account_pubkey</code>, made possible by using the <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/helpers.rs#L38"><code>try_create_mint_account</code></a> helper function. We pass <code>true</code> as this is a one-time mint event and this will generate a new keypair and <a href="../program/pubkey.html">Pubkey</a>.</p>
-<p>This step will actually create a new token with the following details:</p>
+<h3 id="state-management"><a class="header" href="#state-management">State Management</a></h3>
+<p>All token operations are recorded on Bitcoin, providing:</p>
 <ul>
-<li>Supply: 1,000,000</li>
-<li>Ticker: “ARCH”</li>
-<li>Decimals: 2</li>
-<li>Mint Price: 1000 sats</li>
+<li><strong>Immutable History</strong>: All transfers are permanently recorded</li>
+<li><strong>Transparency</strong>: Public verification of all operations</li>
+<li><strong>Security</strong>: Bitcoin’s security model protects token state</li>
 </ul>
-<pre><code class="language-rust ignore">let mint_account_pubkey = try_create_mint_account(true).unwrap();</code></pre>
-<p>We then fetch the token mint details with <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/helpers.rs#L173"><code>get_mint_info</code></a>.</p>
-<pre><code class="language-rust ignore">let previous_mint_details = get_mint_info(&amp;mint_account_pubkey).unwrap();</code></pre>
-<p>Now, let’s provision our two accounts: the sender and the receiver.</p>
-<pre><code class="language-rust ignore">// sending account
-let (first_account_owner_key_pair, first_account_owner_pubkey, _first_account_owner_address) =
-        generate_new_keypair();
+<h2 id="testing"><a class="header" href="#testing">Testing</a></h2>
+<p>Create comprehensive tests for your token operations:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod tests {
+    use super::*;
+    use serial_test::serial;
 
-let first_balance_account_pubkey = create_balance_account(
-        &amp;first_account_owner_pubkey,
-        first_account_owner_key_pair,
-        &amp;mint_account_pubkey,
-        &amp;program_pubkey,
-)
-.unwrap();
-
-// receiving account
-let (second_account_owner_key_pair, second_account_owner_pubkey, _second_account_owner_address) =
-    generate_new_keypair();
-
-let second_balance_account_pubkey = create_balance_account(
-    &amp;second_account_owner_pubkey,
-    second_account_owner_key_pair,
-    &amp;mint_account_pubkey,
-    &amp;program_pubkey,
-)
-.unwrap();</code></pre>
-<p>We then procure funds for the sending account. In this case, we’ll mint 10 tokens.</p>
-<pre><code class="language-rust ignore">let mint_amount = 10u64;
-
-let mint_instruction = mint_request_instruction(
-    &amp;mint_account_pubkey,
-    &amp;program_pubkey,
-    &amp;first_balance_account_pubkey,
-    &amp;first_account_owner_pubkey,
-    mint_amount,
-)
-.unwrap();</code></pre>
-<p>We utilize the <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/instruction.rs#L116"><code>transfer_request_instruction</code></a> helper function to generate a transfer <a href="../program/instructions-and-messages.html#instructions">Instruction</a>.</p>
-<pre><code class="language-rust ignore">let transfer_instruction = transfer_request_instruction(
-    &amp;mint_account_pubkey,
-    &amp;program_pubkey,
-    &amp;first_balance_account_pubkey,
-    &amp;first_account_owner_pubkey,
-    &amp;second_balance_account_pubkey,
-    mint_amount,
-)
-.unwrap();</code></pre>
-<p>We build the transaction by passing in the newly created transfer <a href="../program/instructions-and-messages.html#instructions">Instruction</a> as well as the keypair of the sending account, necessary for authorizing the fund transfer.</p>
-<pre><code class="language-rust ignore">let transfer_transaction = build_transaction(
-    vec![first_account_owner_key_pair],
-    vec![transfer_instruction],
-);</code></pre>
-<p>Next, we then submit the transaction with <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_instructions.rs#L196"><code>build_and_send_block</code></a> and then fetch the processed transaction to get the result.</p>
-<pre><code class="language-rust ignore">let block_transactions = build_and_send_block(vec![transfer_transaction]);
-
-let processed_transactions = fetch_processed_transactions(block_transactions).unwrap();
-
-assert!(matches!(
-    processed_transactions[0].status,
-    Status::Processed
-));</code></pre>
-<h4 id="balance-check"><a class="header" href="#balance-check">Balance check</a></h4>
-<p>In order to check the token balance of an account, we’ll make use of the <code>get_balance_account</code> function and pass in the account we are looking to query the balance of; in the below example, we’ll fetch the balances of both the sending and receiving accounts.</p>
-<pre><code class="language-rust ignore">let resulting_sender_balance = get_balance_account(&amp;first_balance_account_pubkey).unwrap();
-
-let resulting_receiver_balance = get_balance_account(&amp;second_balance_account_pubkey).unwrap();
-
-assert_eq!(resulting_receiver_balance.current_balance, mint_amount);
-
-assert_eq!(resulting_sender_balance.current_balance, 0);</code></pre>
-<!-- Internal -->
-<!-- External -->
+    #[test]
+    #[serial]
+    fn test_complete_token_lifecycle() {
+        // Test mint creation, token accounts, minting, transfers, etc.
+        // See examples/token/src/lib.rs for comprehensive test examples
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<ul>
+<li>Explore <strong>Associated Token Accounts</strong> for simplified account management</li>
+<li>Implement <strong>Multisig authorities</strong> for enhanced security</li>
+<li>Study the complete examples in <code>examples/token/src/lib.rs</code></li>
+<li>Review the <strong>APL Token Program documentation</strong> for advanced features</li>
+</ul>
+<p>The APL Token Program provides a robust, battle-tested foundation for tokenization on Arch Network, leveraging the security and transparency of Bitcoin while maintaining compatibility with proven SPL token patterns.</p>
 
                     </main>
 

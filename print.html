@@ -1038,21 +1038,43 @@ sudo mv cli /usr/local/bin/
 <li>Join our <a href="https://discord.com/channels/1241112027963986001/1270921925991989268">Discord dev-chat</a></li>
 <li>Review the <a href="https://github.com/arch-network/arch-node/releases">Arch Network CLI documentation</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="setup-options"><a class="header" href="#setup-options">Setup Options</a></h1>
-<p>This guide covers different configuration options for your Arch Network validator, including connecting to various networks like testnet4 for access to ordinals/runes helper tools.</p>
-<p>Table of Contents:</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="configuring-local-validator-with-bitcoin-testnet4"><a class="header" href="#configuring-local-validator-with-bitcoin-testnet4">Configuring Local Validator with Bitcoin Testnet4</a></h1>
+<p>This guide covers how to configure your Arch Network local validator to connect to Bitcoin testnet4, which provides access to additional tools and features for development and testing, including ordinals and runes functionality.</p>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>Bitcoin testnet4 is the latest Bitcoin test network that provides:</p>
 <ul>
-<li><a href="guides/how-to-configure-local-validator-bitcoin-testnet4.html#config">Config</a></li>
-<li><a href="guides/how-to-configure-local-validator-bitcoin-testnet4.html#local-validator">Local validator</a></li>
-<li><a href="guides/how-to-configure-local-validator-bitcoin-testnet4.html#help-commands">Help commands</a></li>
-<li><a href="guides/how-to-configure-local-validator-bitcoin-testnet4.html#log-assistance">Log assistance</a></li>
+<li><strong>Ordinals Support</strong>: Create and test Bitcoin ordinal inscriptions</li>
+<li><strong>Runes Protocol</strong>: Test BRC-20 and rune token functionality</li>
+<li><strong>Enhanced Tooling</strong>: Access to advanced Bitcoin testing tools</li>
+<li><strong>Real Network Conditions</strong>: More realistic testing environment than regtest</li>
 </ul>
-<h3 id="config"><a class="header" href="#config">Config</a></h3>
-<p>First, you’ll need to configure the network settings for connecting to Bitcoin testnet4. The CLI accepts these parameters directly when starting the validator.</p>
-<blockquote>
-<p>Note: We have redacted our Bitcoin node password to prevent abuse; contact us if you need this, otherwise provide your own node credentials and use the below as a reference.</p>
-</blockquote>
-<p>When starting the validator, you can include the following parameters:</p>
+<p><strong>When to Use This Setup:</strong></p>
+<ul>
+<li>Testing ordinals/runes integration</li>
+<li>Developing Bitcoin-native features</li>
+<li>Testing with external Bitcoin services</li>
+<li>Preparing for mainnet deployment</li>
+</ul>
+<h2 id="prerequisites-2"><a class="header" href="#prerequisites-2">Prerequisites</a></h2>
+<p>Before starting, ensure you have:</p>
+<ul>
+<li><strong>Arch Network CLI</strong> installed - <a href="https://github.com/Arch-Network/arch-node/releases/latest">Download Latest</a></li>
+<li><strong>Docker</strong> installed and running - <a href="https://docs.docker.com/get-docker/">Install Docker</a></li>
+<li><strong>Bitcoin Core</strong> (optional, for advanced users) - <a href="https://bitcoin.org/en/download">Install Guide</a></li>
+</ul>
+<h2 id="quick-start-recommended"><a class="header" href="#quick-start-recommended">Quick Start (Recommended)</a></h2>
+<p>The easiest way to run a local validator with testnet4 connectivity:</p>
+<pre><code class="language-bash"># Start validator connected to hosted testnet4 infrastructure
+cli validator-start --network-mode testnet
+</code></pre>
+<p>This connects to Arch’s hosted testnet4 infrastructure including:</p>
+<ul>
+<li>Bitcoin testnet4 node</li>
+<li>Titan indexer</li>
+<li>Network coordination services</li>
+</ul>
+<h2 id="configuration-options"><a class="header" href="#configuration-options">Configuration Options</a></h2>
+<h3 id="basic-testnet4-configuration"><a class="header" href="#basic-testnet4-configuration">Basic Testnet4 Configuration</a></h3>
 <pre><code class="language-bash">cli validator-start \
   --network-mode testnet \
   --data-dir ./.arch_data \
@@ -1061,104 +1083,217 @@ sudo mv cli /usr/local/bin/
   --titan-endpoint titan-node.test.aws.archnetwork.xyz \
   --titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
 </code></pre>
-<p>Optional parameters:</p>
-<ul>
-<li><code>--data-dir</code> - Directory for storing validator data (default: ./.arch_data)</li>
-<li><code>--rpc-bind-ip</code> - IP Address for the RPC handler (default: 127.0.0.1)</li>
-<li><code>--rpc-bind-port</code> - Port for the RPC handler (default: 9002)</li>
-<li><code>--titan-endpoint</code> - HTTP endpoint for the Titan node</li>
-<li><code>--titan-socket-endpoint</code> - WebSocket endpoint for the Titan node</li>
-</ul>
-<h3 id="local-validator"><a class="header" href="#local-validator">Local validator</a></h3>
-<blockquote>
-<p>Note: You can start a local validator using the Arch Network CLI tool.</p>
-<p>Additionally, you can download pre-built binaries from the <a href="https://github.com/Arch-Network/arch-node/releases">arch-node releases page</a>.</p>
-<p><strong>Be sure to download the local validator binary, not the regular validator.</strong></p>
-</blockquote>
-<h4 id="run-the-local-validator"><a class="header" href="#run-the-local-validator">Run the local validator</a></h4>
-<p>Use the CLI command to run the local validator. You’ll need to have <a href="https://docker.com">Docker</a> installed and running.</p>
-<pre><code class="language-bash">cli validator-start --network-mode testnet
+<h3 id="custom-network-configuration"><a class="header" href="#custom-network-configuration">Custom Network Configuration</a></h3>
+<p>If you want to run your own Bitcoin testnet4 node:</p>
+<pre><code class="language-bash"># Start your Bitcoin testnet4 node
+bitcoind \
+  -testnet4 \
+  -server \
+  -rpcuser=bitcoin \
+  -rpcpassword=bitcoinpass \
+  -rpcbind=0.0.0.0 \
+  -rpcallowip=0.0.0.0/0 \
+  -fallbackfee=0.00001 \
+  -zmqpubrawblock=tcp://0.0.0.0:28332 \
+  -zmqpubrawtx=tcp://0.0.0.0:28333
+
+# Start validator with custom Bitcoin node
+cli validator-start \
+  --network-mode testnet \
+  --bitcoin-rpc-endpoint http://localhost:48332 \
+  --bitcoin-rpc-username bitcoin \
+  --bitcoin-rpc-password bitcoinpass
 </code></pre>
-<p>The validator logs can be viewed easily within the <a href="https://docker.com">Docker</a> desktop dashboard.</p>
-<blockquote>
-<p>Note: You can also run the standalone local validator binary where the logs will be streamed to <code>stdout</code> unless otherwise redirected.</p>
-</blockquote>
-<p><strong>Steps for running standalone validator binary:</strong></p>
+<h2 id="configuration-parameters"><a class="header" href="#configuration-parameters">Configuration Parameters</a></h2>
+<h3 id="core-settings"><a class="header" href="#core-settings">Core Settings</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Parameter</th><th>Description</th><th>Default</th></tr></thead><tbody>
+<tr><td><code>--network-mode</code></td><td>Network to connect to (<code>regtest</code>, <code>testnet</code>, <code>mainnet</code>)</td><td><code>regtest</code></td></tr>
+<tr><td><code>--data-dir</code></td><td>Directory for validator data storage</td><td><code>./.arch_data</code></td></tr>
+<tr><td><code>--rpc-bind-ip</code></td><td>IP address for RPC server</td><td><code>127.0.0.1</code></td></tr>
+<tr><td><code>--rpc-bind-port</code></td><td>Port for RPC server</td><td><code>9002</code></td></tr>
+</tbody></table>
+</div>
+<h3 id="bitcoin-integration"><a class="header" href="#bitcoin-integration">Bitcoin Integration</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Parameter</th><th>Description</th><th>Default</th></tr></thead><tbody>
+<tr><td><code>--bitcoin-rpc-endpoint</code></td><td>Bitcoin node RPC URL</td><td>Uses hosted node</td></tr>
+<tr><td><code>--bitcoin-rpc-username</code></td><td>Bitcoin RPC username</td><td>-</td></tr>
+<tr><td><code>--bitcoin-rpc-password</code></td><td>Bitcoin RPC password</td><td>-</td></tr>
+</tbody></table>
+</div>
+<h3 id="titan-indexer"><a class="header" href="#titan-indexer">Titan Indexer</a></h3>
+<div class="table-wrapper"><table><thead><tr><th>Parameter</th><th>Description</th><th>Default</th></tr></thead><tbody>
+<tr><td><code>--titan-endpoint</code></td><td>Titan HTTP endpoint</td><td>Hosted endpoint</td></tr>
+<tr><td><code>--titan-socket-endpoint</code></td><td>Titan WebSocket endpoint</td><td>Hosted endpoint</td></tr>
+</tbody></table>
+</div>
+<h2 id="advanced-setup-standalone-binary"><a class="header" href="#advanced-setup-standalone-binary">Advanced Setup: Standalone Binary</a></h2>
+<p>For advanced users who want more control over the validator process:</p>
+<h3 id="download-and-setup"><a class="header" href="#download-and-setup">Download and Setup</a></h3>
 <ol>
 <li>
-<p>Download the appropriate binary as well as the <code>system_program.so</code> file from <a href="https://github.com/Arch-Network/arch-node/releases/latest">arch-node releases page</a>.</p>
-</li>
-<li>
-<p>Store the <code>system_program.so</code> file within a new directory called <code>/ebpf</code>.</p>
-<p>Your directory structure should resemble the following:</p>
-<pre><code class="language-bash">tmp/
-├─ ebpf/
-│  ├─ system_program.so
-├─ local_validator
+<p><strong>Download Required Files</strong>:</p>
+<pre><code class="language-bash"># Create working directory
+mkdir arch-testnet4-validator
+cd arch-testnet4-validator
+
+# Download validator binary and system program
+wget https://github.com/Arch-Network/arch-node/releases/latest/download/local_validator
+wget https://github.com/Arch-Network/arch-node/releases/latest/download/system_program.so
+
+# Create required directory structure
+mkdir ebpf
+mv system_program.so ebpf/
+chmod +x local_validator
 </code></pre>
 </li>
 <li>
-<p>Run the binary and pass the relevant flags dependening on your target network.</p>
-<pre><code class="language-bash">RUST_LOG=info \
-./local_validator \
---network-mode testnet \
---rpc-bind-ip 127.0.0.1 \
---rpc-bind-port 9002 \
---titan-endpoint titan-node.test.aws.archnetwork.xyz \
---titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
+<p><strong>Verify Directory Structure</strong>:</p>
+<pre><code>arch-testnet4-validator/
+├── ebpf/
+│   └── system_program.so
+└── local_validator
 </code></pre>
 </li>
 </ol>
-<h3 id="help-commands"><a class="header" href="#help-commands">Help commands</a></h3>
-<p>This section includes some helpful material when needing to restart the node state or better ensure our infrastructure is operational before proceeding.</p>
-<h4 id="arch-node"><a class="header" href="#arch-node">Arch node</a></h4>
-<p>The below commands can be used to assist with running the <a href="guides/how-to-configure-local-validator-bitcoin-testnet4.html#local-validator">Local validator</a>.</p>
-<h5 id="start-fresh"><a class="header" href="#start-fresh">Start fresh</a></h5>
-<p>By removing the <code>/.arch_data</code> directory, we can wipe the state and effective start the node again from genesis (block: 0).</p>
-<pre><code class="language-bash">rm -rf .arch_data &amp;&amp; RUST_LOG=info \
-./local_validator \
---network-mode testnet \
---rpc-bind-ip 127.0.0.1 \
---rpc-bind-port 9002 \
---titan-endpoint titan-node.test.aws.archnetwork.xyz \
---titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
+<h3 id="run-standalone-validator"><a class="header" href="#run-standalone-validator">Run Standalone Validator</a></h3>
+<pre><code class="language-bash">RUST_LOG=info ./local_validator \
+  --network-mode testnet \
+  --rpc-bind-ip 127.0.0.1 \
+  --rpc-bind-port 9002 \
+  --titan-endpoint titan-node.test.aws.archnetwork.xyz \
+  --titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
 </code></pre>
-<h5 id="pulse-check"><a class="header" href="#pulse-check">Pulse check</a></h5>
-<p>This <code>cURL</code> command will allow us to ensure that our <a href="guides/how-to-configure-local-validator-bitcoin-testnet4.html#local-validator">Local validator</a> is up and running correctly. We can use this to effective get a pulse check on the node which is helpful for debugging.</p>
-<pre><code class="language-bash">curl -vL POST -H 'Content-Type: application/json' -d '
-{
+<h2 id="testing-your-setup"><a class="header" href="#testing-your-setup">Testing Your Setup</a></h2>
+<h3 id="health-check"><a class="header" href="#health-check">Health Check</a></h3>
+<p>Verify your validator is running correctly:</p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '{
     "jsonrpc":"2.0",
     "id":1,
     "method":"is_node_ready",
     "params":[]
-}' \
-http://localhost:9002/
+}' http://localhost:9002/
 </code></pre>
-<h3 id="log-assistance"><a class="header" href="#log-assistance">Log assistance</a></h3>
-<p>Ordinarily, the arch-node logs will flood your terminal screen (or the <a href="https://docker.com">Docker</a> logs). This is less than idea when needing to review them carefully, so you can also direct the <code>stdout</code> to a file for later reading.</p>
-<p>Here’s an example of how to do this:</p>
-<pre><code class="language-bash">rm -rf .arch_data &amp;&amp; RUST_LOG=info \
-./local_validator \
---network-mode testnet \
---rpc-bind-ip 127.0.0.1 \
---rpc-bind-port 9002 \
---titan-endpoint titan-node.test.aws.archnetwork.xyz \
---titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332 \
-&gt; node-logs.txt
+<p><strong>Expected Response:</strong></p>
+<pre><code class="language-json">{
+    "jsonrpc": "2.0",
+    "result": true,
+    "id": 1
+}
 </code></pre>
-<p>Then you can <code>tail</code> the output and view the logs as they stream in.</p>
-<pre><code class="language-bash">tail -f node-logs.txt
+<h3 id="deploy-test-program"><a class="header" href="#deploy-test-program">Deploy Test Program</a></h3>
+<p>Test program deployment to verify everything works:</p>
+<pre><code class="language-bash"># Using CLI (automatic endpoint detection)
+cli deploy --network-mode testnet
+
+# Using CLI with explicit endpoint
+cli deploy --network-mode testnet --rpc-url http://localhost:9002
 </code></pre>
-<h3 id="deploy--interact"><a class="header" href="#deploy--interact">Deploy + interact</a></h3>
-<p>Now that everything is setup correctly, we can now deploy our program and begin interacting with it. The deploy step will prove everything works correctly.</p>
-<pre><code class="language-bash">cli deploy --network-mode testnet
+<h3 id="check-validator-status"><a class="header" href="#check-validator-status">Check Validator Status</a></h3>
+<pre><code class="language-bash">cli validator-status --rpc-url http://localhost:9002
 </code></pre>
-<p>And if you are running the local validator binary directly from the command-line, set the <code>--rpc-url</code> flag to specify your validator endpoint:</p>
-<pre><code class="language-bash">cli deploy --network-mode testnet --rpc-url http://localhost:9002
+<h2 id="troubleshooting-1"><a class="header" href="#troubleshooting-1">Troubleshooting</a></h2>
+<h3 id="common-issues-1"><a class="header" href="#common-issues-1">Common Issues</a></h3>
+<h4 id="1-connection-refused"><a class="header" href="#1-connection-refused">1. Connection Refused</a></h4>
+<pre><code class="language-bash"># Check if validator is running
+curl -X POST http://localhost:9002/ \
+  -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"is_node_ready","params":[]}'
 </code></pre>
-<p>We hope this guide has been helpful, but as always, feel free to ask question within our <a href="https://discord.com/channels/1241112027963986001/1270921925991989268">Discord dev-chat</a> or submit issues within out <a href="https://github.com/arch-network/public-issues">public-issues</a> repo.</p>
-<!-- Internal -->
-<!-- External -->
+<h4 id="2-reset-validator-state"><a class="header" href="#2-reset-validator-state">2. Reset Validator State</a></h4>
+<pre><code class="language-bash"># Stop validator first (Ctrl+C or docker stop)
+rm -rf .arch_data
+
+# Restart validator
+cli validator-start --network-mode testnet
+</code></pre>
+<h4 id="3-view-logs"><a class="header" href="#3-view-logs">3. View Logs</a></h4>
+<p><strong>Docker Logs:</strong></p>
+<pre><code class="language-bash"># Find container name
+docker ps
+
+# View logs
+docker logs -f &lt;container_name&gt;
+</code></pre>
+<p><strong>Standalone Binary Logs:</strong></p>
+<pre><code class="language-bash"># Redirect logs to file
+RUST_LOG=info ./local_validator \
+  --network-mode testnet \
+  [other options] &gt; validator.log 2&gt;&amp;1
+
+# Monitor logs in another terminal
+tail -f validator.log
+</code></pre>
+<h4 id="4-network-connectivity-issues"><a class="header" href="#4-network-connectivity-issues">4. Network Connectivity Issues</a></h4>
+<pre><code class="language-bash"># Test connection to Titan endpoint
+curl -I https://titan-node.test.aws.archnetwork.xyz
+
+# Test WebSocket endpoint (requires wscat)
+wscat -c wss://titan-node.test.aws.archnetwork.xyz:49332
+</code></pre>
+<h2 id="development-workflow"><a class="header" href="#development-workflow">Development Workflow</a></h2>
+<h3 id="1-development-cycle"><a class="header" href="#1-development-cycle">1. Development Cycle</a></h3>
+<pre><code class="language-bash"># Start validator
+cli validator-start --network-mode testnet
+
+# Build your program
+cd your-program
+cargo build-sbf
+
+# Deploy and test
+cli deploy --network-mode testnet
+cli invoke [program-id] [account] --data [instruction-data]
+</code></pre>
+<h3 id="2-reset-between-tests"><a class="header" href="#2-reset-between-tests">2. Reset Between Tests</a></h3>
+<pre><code class="language-bash"># Quick reset
+cli orchestrate reset
+
+# Full reset (if needed)
+rm -rf .arch_data
+cli validator-start --network-mode testnet
+</code></pre>
+<h3 id="3-working-with-testnet4-features"><a class="header" href="#3-working-with-testnet4-features">3. Working with Testnet4 Features</a></h3>
+<p><strong>Ordinals Testing:</strong></p>
+<pre><code class="language-bash"># Your program can interact with ordinal inscriptions
+# Use the Bitcoin testnet4 ordinals APIs
+</code></pre>
+<p><strong>Runes Integration:</strong></p>
+<pre><code class="language-bash"># Test rune token operations
+# Integrate with runes protocol via Bitcoin transactions
+</code></pre>
+<h2 id="production-considerations"><a class="header" href="#production-considerations">Production Considerations</a></h2>
+<h3 id="security-1"><a class="header" href="#security-1">Security</a></h3>
+<ul>
+<li><strong>Never expose RPC ports</strong> publicly in production</li>
+<li><strong>Use strong credentials</strong> for Bitcoin RPC connections</li>
+<li><strong>Monitor validator health</strong> continuously</li>
+</ul>
+<h3 id="performance"><a class="header" href="#performance">Performance</a></h3>
+<ul>
+<li><strong>Allocate sufficient resources</strong> (4+ GB RAM recommended)</li>
+<li><strong>Use SSD storage</strong> for data directory</li>
+<li><strong>Monitor disk usage</strong> (logs can grow large)</li>
+</ul>
+<h3 id="networking"><a class="header" href="#networking">Networking</a></h3>
+<ul>
+<li><strong>Configure firewalls</strong> appropriately</li>
+<li><strong>Use SSL/TLS</strong> for external connections</li>
+<li><strong>Monitor network latency</strong> to Bitcoin and Titan nodes</li>
+</ul>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<ol>
+<li><strong>Deploy Your First Program</strong>: Follow the <a href="guides/./writing-your-first-program.html">Writing Your First Program</a> guide</li>
+<li><strong>Test Thoroughly</strong>: Use the <a href="guides/./testing-guide.html">Testing Guide</a> for comprehensive testing</li>
+<li><strong>Explore Examples</strong>: Check out <a href="guides/./guides.html">advanced examples</a> for complex scenarios</li>
+<li><strong>Join the Community</strong>: Get help on <a href="https://discord.gg/archnetwork">Discord</a> if you run into issues</li>
+</ol>
+<h2 id="additional-resources"><a class="header" href="#additional-resources">Additional Resources</a></h2>
+<ul>
+<li><a href="guides/../rpc/http-methods.html">Arch Network CLI Reference</a></li>
+<li><a href="https://mempool.space/testnet4">Bitcoin Testnet4 Faucet</a></li>
+<li><a href="https://docs.ordinals.com/">Ordinals Documentation</a></li>
+<li><a href="https://runes.com/">Runes Protocol Guide</a></li>
+</ul>
+<p><strong>Need Help?</strong> Join our <a href="https://discord.gg/archnetwork">Discord community</a> or file issues on our <a href="https://github.com/Arch-Network/arch-node/issues">GitHub</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="running-your-node"><a class="header" href="#running-your-node">Running Your Node</a></h1>
 <blockquote>
 <p>⚠️ <strong>Mainnet Status</strong>: Arch Network mainnet has not launched yet. This guide currently covers testnet operations. ARCH token staking and mainnet validator operations will be available when mainnet launches. More details coming soon.</p>
@@ -1198,7 +1333,7 @@ http://localhost:9002/
 </a>
 </div>
 </div>
-<h2 id="prerequisites-2"><a class="header" href="#prerequisites-2">Prerequisites</a></h2>
+<h2 id="prerequisites-3"><a class="header" href="#prerequisites-3">Prerequisites</a></h2>
 <div class="requirement-grid">
 <div class="requirement-card">
 <h3 id="-system-requirements-2"><a class="header" href="#-system-requirements-2">🖥️ System Requirements</a></h3>
@@ -1697,217 +1832,496 @@ th {
     color: #2c3e50;
 }
 </style> <div style="break-before: page; page-break-before: always;"></div><h1 id="understanding-arch-programs"><a class="header" href="#understanding-arch-programs">Understanding Arch Programs</a></h1>
-<p>This guide analyzes a simple Hello World program to introduce the core concepts of Arch program development. We’ll break down each component of the program to understand how Arch programs work.</p>
-<h2 id="program-overview"><a class="header" href="#program-overview">Program Overview</a></h2>
-<p>The Hello World program is a simple smart contract that stores a greeting message for a given name. While simple, it demonstrates the key concepts of Arch program development including:</p>
+<p>This comprehensive guide walks you through building Arch Network programs by examining a complete, working example. We’ll build a “Hello World” program that demonstrates all the essential concepts you need to start developing on Arch Network.</p>
+<h2 id="what-youll-learn"><a class="header" href="#what-youll-learn">What You’ll Learn</a></h2>
+<p>By the end of this guide, you’ll understand:</p>
 <ul>
-<li>Program structure and entrypoints</li>
-<li>Account management</li>
-<li>State updates</li>
-<li>Bitcoin transaction handling</li>
-<li>Fee management</li>
+<li>Program structure and architecture</li>
+<li>Account management and state handling</li>
+<li>Bitcoin transaction integration</li>
+<li>Error handling best practices</li>
+<li>Testing and deployment patterns</li>
 </ul>
-<p>Let’s break down each part of the program.</p>
-<h2 id="1-program-dependencies"><a class="header" href="#1-program-dependencies">1. Program Dependencies</a></h2>
-<pre><code class="language-rust ignore">use arch_program::{
+<h2 id="complete-example-hello-world-program"><a class="header" href="#complete-example-hello-world-program">Complete Example: Hello World Program</a></h2>
+<p>Let’s build a complete program that stores personalized greetings and demonstrates key Arch Network concepts.</p>
+<h3 id="1-project-setup"><a class="header" href="#1-project-setup">1. Project Setup</a></h3>
+<p>First, create your program with the correct dependencies:</p>
+<p><strong>Cargo.toml</strong></p>
+<pre><code class="language-toml">[package]
+name = "hello_world_program"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+arch_program = { path = "../../program" }
+borsh = { version = "1.5.1", features = ["derive"] }
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[workspace]
+</code></pre>
+<h3 id="2-program-dependencies-and-imports"><a class="header" href="#2-program-dependencies-and-imports">2. Program Dependencies and Imports</a></h3>
+<p><strong>src/lib.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_program::{
     account::AccountInfo,
     bitcoin::{self, absolute::LockTime, transaction::Version, Transaction},
     entrypoint,
     helper::add_state_transition,
     input_to_sign::InputToSign,
     msg,
-    program::{
-        get_account_script_pubkey, get_bitcoin_block_height, next_account_info,
-        set_transaction_to_sign,
-    },
+    program::{next_account_info, set_transaction_to_sign},
     program_error::ProgramError,
     pubkey::Pubkey,
     transaction_to_sign::TransactionToSign,
 };
-use borsh::{BorshDeserialize, BorshSerialize};</code></pre>
-<p>The program starts by importing necessary dependencies:</p>
+use borsh::{BorshDeserialize, BorshSerialize};
+<span class="boring">}</span></code></pre></pre>
+<p><strong>Key Dependencies Explained:</strong></p>
 <ul>
-<li><code>AccountInfo</code>: Provides access to account data and metadata</li>
-<li><code>bitcoin</code>: Core Bitcoin types and functionality for transaction handling</li>
-<li><code>entrypoint</code>: Macro for registering the program’s entry point</li>
-<li><code>msg</code>: Logging functionality for debugging</li>
-<li><code>borsh</code>: Serialization/deserialization for program data</li>
+<li><code>AccountInfo</code>: Access to account data and metadata</li>
+<li><code>bitcoin</code>: Bitcoin transaction types and functionality</li>
+<li><code>entrypoint</code>: Macro for registering program entry point</li>
+<li><code>helper::add_state_transition</code>: Manages Bitcoin state transitions</li>
+<li><code>msg</code>: Logging for debugging and monitoring</li>
+<li><code>borsh</code>: Efficient serialization for program data</li>
 </ul>
-<h2 id="2-program-entry-point"><a class="header" href="#2-program-entry-point">2. Program Entry Point</a></h2>
-<pre><code class="language-rust ignore">entrypoint!(process_instruction);</code></pre>
-<p>Every Arch program needs a single entry point that the runtime will call. The <code>entrypoint!</code> macro registers our <code>process_instruction</code> function as this entry point. This tells the Arch runtime which function to call when our program is invoked.</p>
-<h2 id="3-program-parameters"><a class="header" href="#3-program-parameters">3. Program Parameters</a></h2>
-<pre><code class="language-rust ignore">pub fn process_instruction(
-    _program_id: &amp;Pubkey,
-    accounts: &amp;[AccountInfo],
-    instruction_data: &amp;[u8],
-) -&gt; Result&lt;(), ProgramError&gt;</code></pre>
-<p>The entry point function takes three key parameters:</p>
-<ul>
-<li><code>program_id</code>: The public key of our program (unused in this example)</li>
-<li><code>accounts</code>: Array of accounts the instruction will operate on</li>
-<li><code>instruction_data</code>: Serialized instruction parameters</li>
-</ul>
-<p>These parameters provide everything our program needs to execute: the context (program_id), the accounts it can read/write, and the instruction-specific data.</p>
-<h2 id="4-custom-error-handling"><a class="header" href="#4-custom-error-handling">4. Custom Error Handling</a></h2>
-<p>Programs should define their own error types to provide clear and specific error messages. Here’s how to implement custom errors in your Arch program:</p>
-<pre><code class="language-rust ignore">#[derive(Debug, Clone, PartialEq, Eq)]
+<h3 id="3-program-data-structures"><a class="header" href="#3-program-data-structures">3. Program Data Structures</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>/// Parameters sent to our Hello World program
+#[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
+pub struct HelloWorldParams {
+    /// The name to include in the greeting
+    pub name: String,
+    /// Bitcoin transaction for paying fees
+    pub tx_hex: Vec&lt;u8&gt;,
+}
+
+/// State stored in the account
+#[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
+pub struct GreetingAccount {
+    /// The greeting message
+    pub message: String,
+    /// Who was greeted
+    pub name: String,
+    /// When this greeting was created (block height)
+    pub created_at: u64,
+    /// How many times this account has been updated
+    pub update_count: u32,
+}
+
+impl GreetingAccount {
+    pub const MAX_SIZE: usize = 4 + 50 + 4 + 50 + 8 + 4; // Borsh overhead + data
+    
+    pub fn new(name: String, message: String, block_height: u64) -&gt; Self {
+        Self {
+            message,
+            name,
+            created_at: block_height,
+            update_count: 1,
+        }
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="4-custom-error-handling"><a class="header" href="#4-custom-error-handling">4. Custom Error Handling</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>/// Custom errors for our Hello World program
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum HelloWorldError {
     /// The provided name is too long (max 50 chars)
     NameTooLong,
+    /// The provided name is empty
+    NameEmpty,
     /// The provided name contains invalid characters
-    InvalidName,
-    /// Insufficient account balance for fees
+    InvalidCharacters,
+    /// Account data is corrupted
+    InvalidAccountData,
+    /// Insufficient fees provided
     InsufficientFees,
-    /// Invalid fee transaction format
-    InvalidFeeTransaction,
 }
 
 impl From&lt;HelloWorldError&gt; for ProgramError {
     fn from(e: HelloWorldError) -&gt; Self {
         ProgramError::Custom(match e {
             HelloWorldError::NameTooLong =&gt; 1001,
-            HelloWorldError::InvalidName =&gt; 1002,
-            HelloWorldError::InsufficientFees =&gt; 1003,
-            HelloWorldError::InvalidFeeTransaction =&gt; 1004,
+            HelloWorldError::NameEmpty =&gt; 1002,
+            HelloWorldError::InvalidCharacters =&gt; 1003,
+            HelloWorldError::InvalidAccountData =&gt; 1004,
+            HelloWorldError::InsufficientFees =&gt; 1005,
         })
     }
-}</code></pre>
-<p>Using custom errors in your program:</p>
-<pre><code class="language-rust ignore">fn validate_name(name: &amp;str) -&gt; Result&lt;(), HelloWorldError&gt; {
+}
+
+/// Validates the provided name
+fn validate_name(name: &amp;str) -&gt; Result&lt;(), HelloWorldError&gt; {
+    if name.is_empty() {
+        return Err(HelloWorldError::NameEmpty);
+    }
+    
     if name.len() &gt; 50 {
         return Err(HelloWorldError::NameTooLong);
     }
-    if !name.chars().all(|c| c.is_alphanumeric() || c.is_whitespace()) {
-        return Err(HelloWorldError::InvalidName);
+    
+    if !name.chars().all(|c| c.is_alphanumeric() || c.is_whitespace() || c == '-' || c == '_') {
+        return Err(HelloWorldError::InvalidCharacters);
     }
+    
     Ok(())
 }
+<span class="boring">}</span></code></pre></pre>
+<h3 id="5-program-entry-point-and-logic"><a class="header" href="#5-program-entry-point-and-logic">5. Program Entry Point and Logic</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Register our program's entry point
+entrypoint!(process_instruction);
 
+/// Main program entry point
 pub fn process_instruction(
     _program_id: &amp;Pubkey,
     accounts: &amp;[AccountInfo],
     instruction_data: &amp;[u8],
 ) -&gt; Result&lt;(), ProgramError&gt; {
+    msg!("Hello World program invoked");
+
+    // Parse instruction data
     let params: HelloWorldParams = borsh::from_slice(instruction_data)
         .map_err(|_| ProgramError::InvalidInstructionData)?;
     
-    validate_name(&amp;params.name)?;  // Custom error will be converted to ProgramError
+    // Validate input
+    validate_name(&amp;params.name)?;
     
-    // ... rest of the implementation
-}</code></pre>
-<p>Best practices for error handling:</p>
-<ol>
-<li>Define descriptive error variants that clearly indicate what went wrong</li>
-<li>Use unique error codes in the 1000+ range to avoid conflicts with system errors</li>
-<li>Implement proper error conversion to <code>ProgramError</code></li>
-<li>Add documentation comments for each error variant</li>
-<li>Consider grouping related errors into separate enums if your program grows large</li>
-</ol>
-<h2 id="5-program-state"><a class="header" href="#5-program-state">5. Program State</a></h2>
-<pre><code class="language-rust ignore">#[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
-pub struct HelloWorldParams {
-    /// The name to say hello to
-    pub name: String,
-    /// Raw Bitcoin transaction for fees
-    pub tx_hex: Vec&lt;u8&gt;,
-}</code></pre>
-<p>This structure defines the data format our program expects. It includes:</p>
-<ul>
-<li><code>name</code>: The name to include in the greeting</li>
-<li><code>tx_hex</code>: A serialized Bitcoin transaction for paying fees</li>
-</ul>
-<p>The <code>BorshSerialize</code> and <code>BorshDeserialize</code> traits allow us to convert this structure to and from bytes for storage and transmission.</p>
-<h2 id="6-program-logic"><a class="header" href="#6-program-logic">6. Program Logic</a></h2>
-<p>Let’s break down the main program logic into steps:</p>
-<h3 id="account-validation"><a class="header" href="#account-validation">Account Validation</a></h3>
-<pre><code class="language-rust ignore">if accounts.len() != 1 {
-    return Err(ProgramError::Custom(501));
+    msg!("Processing greeting for: {}", params.name);
+
+    // Validate accounts
+    if accounts.len() != 1 {
+        msg!("Expected 1 account, got {}", accounts.len());
+        return Err(ProgramError::NotEnoughAccountKeys);
+    }
+
+    let account_iter = &amp;mut accounts.iter();
+    let greeting_account = next_account_info(account_iter)?;
+
+    // Verify account permissions
+    if !greeting_account.is_writable {
+        msg!("Account must be writable");
+        return Err(ProgramError::InvalidAccountData);
+    }
+
+    if !greeting_account.is_signer {
+        msg!("Account must be a signer");
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+
+    // Process the greeting
+    process_greeting(greeting_account, &amp;params)?;
+    
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(greeting_account, &amp;params.tx_hex)?;
+
+    msg!("Hello World program completed successfully");
+    Ok(())
 }
 
-let account_iter = &amp;mut accounts.iter();
-let account = next_account_info(account_iter)?;
+/// Processes the greeting and updates account state
+fn process_greeting(
+    account: &amp;AccountInfo,
+    params: &amp;HelloWorldParams,
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let current_data_len = account.data.borrow().len();
+    
+    // Check if account is initialized
+    let mut greeting_data = if current_data_len == 0 {
+        msg!("Initializing new greeting account");
+        GreetingAccount::new(
+            params.name.clone(),
+            format!("Hello, {}! Welcome to Arch Network!", params.name),
+            0, // We'll get actual block height in a real implementation
+        )
+    } else {
+        // Update existing account
+        let existing_data = GreetingAccount::try_from_slice(&amp;account.data.borrow())
+            .map_err(|_| HelloWorldError::InvalidAccountData)?;
+        
+        msg!("Updating greeting for existing account");
+        GreetingAccount {
+            message: format!("Hello again, {}! Visit count: {}", 
+                           params.name, existing_data.update_count + 1),
+            name: params.name.clone(),
+            created_at: existing_data.created_at,
+            update_count: existing_data.update_count + 1,
+        }
+    };
 
-assert!(account.is_writable);
-assert!(account.is_signer);</code></pre>
-<p>The program first performs several important validations:</p>
-<ul>
-<li>Checks that exactly one account is provided</li>
-<li>Ensures the account is writable (can be modified)</li>
-<li>Verifies the account is a signer (authorized to make changes)</li>
-</ul>
-<p>These checks are crucial for security and proper program execution.</p>
-<h3 id="state-management"><a class="header" href="#state-management">State Management</a></h3>
-<pre><code class="language-rust ignore">let params: HelloWorldParams = borsh::from_slice(instruction_data).unwrap();
-let new_data = format!("Hello {}", params.name);
+    // Serialize the new data
+    let serialized_data = borsh::to_vec(&amp;greeting_data)
+        .map_err(|_| ProgramError::InvalidAccountData)?;
 
-let data_len = account.data.try_borrow().unwrap().len();
-if new_data.as_bytes().len() &gt; data_len {
-    account.realloc(new_data.len(), true)?;
+    // Ensure account has enough space
+    if serialized_data.len() &gt; current_data_len {
+        msg!("Reallocating account space from {} to {} bytes", 
+             current_data_len, serialized_data.len());
+        account.realloc(serialized_data.len(), true)?;
+    }
+
+    // Write the data
+    account.data.borrow_mut().copy_from_slice(&amp;serialized_data);
+    
+    msg!("Greeting stored: {}", greeting_data.message);
+    Ok(())
 }
 
-account.data.try_borrow_mut().unwrap().copy_from_slice(new_data.as_bytes());</code></pre>
-<p>The state management section:</p>
-<ol>
-<li>Deserializes the instruction parameters into our <code>HelloWorldParams</code> structure</li>
-<li>Creates the greeting message</li>
-<li>Checks if the account has enough space for our data</li>
-<li>Reallocates space if needed</li>
-<li>Stores the greeting in the account’s data</li>
-</ol>
-<h3 id="bitcoin-transaction-handling"><a class="header" href="#bitcoin-transaction-handling">Bitcoin Transaction Handling</a></h3>
-<pre><code class="language-rust ignore">let fees_tx: Transaction = bitcoin::consensus::deserialize(&amp;params.tx_hex).unwrap();
+/// Handles Bitcoin transaction for state transition
+fn handle_bitcoin_transaction(
+    account: &amp;AccountInfo,
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    if tx_hex.is_empty() {
+        return Err(HelloWorldError::InsufficientFees.into());
+    }
 
-let mut tx = Transaction {
-    version: Version::TWO,
-    lock_time: LockTime::ZERO,
-    input: vec![],
-    output: vec![],
-};
+    // Deserialize the fee transaction
+    let fees_tx: Transaction = bitcoin::consensus::deserialize(tx_hex)
+        .map_err(|_| HelloWorldError::InsufficientFees)?;
 
+    msg!("Processing Bitcoin transaction with {} inputs", fees_tx.input.len());
+
+    // Create state transition transaction
+    let mut tx = Transaction {
+        version: Version::TWO,
+        lock_time: LockTime::ZERO,
+        input: vec![],
+        output: vec![],
+    };
+
+    // Add state transition for our account
+    add_state_transition(&amp;mut tx, account);
+    
+    // Add fee input
+    if !fees_tx.input.is_empty() {
+        tx.input.push(fees_tx.input[0].clone());
+    }
+
+    // Prepare transaction for signing
+    let tx_to_sign = TransactionToSign {
+        tx_bytes: &amp;bitcoin::consensus::serialize(&amp;tx),
+        inputs_to_sign: &amp;[InputToSign {
+            index: 0,
+            signer: account.key.clone(),
+        }],
+    };
+
+    msg!("Submitting transaction for signing");
+    set_transaction_to_sign(&amp;[account.clone()], tx_to_sign)?;
+
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="program-architecture-breakdown"><a class="header" href="#program-architecture-breakdown">Program Architecture Breakdown</a></h2>
+<h3 id="1-entrypoint-pattern"><a class="header" href="#1-entrypoint-pattern">1. <strong>Entrypoint Pattern</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>entrypoint!(process_instruction);
+<span class="boring">}</span></code></pre></pre>
+<p>Every Arch program needs exactly one entry point. The <code>entrypoint!</code> macro registers your <code>process_instruction</code> function as the program’s main entry point.</p>
+<h3 id="2-function-signature"><a class="header" href="#2-function-signature">2. <strong>Function Signature</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn process_instruction(
+    _program_id: &amp;Pubkey,
+    accounts: &amp;[AccountInfo],
+    instruction_data: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt;
+<span class="boring">}</span></code></pre></pre>
+<p><strong>Parameters explained:</strong></p>
+<ul>
+<li><code>program_id</code>: Your program’s public key (often unused in simple programs)</li>
+<li><code>accounts</code>: Array of accounts this instruction will read/write</li>
+<li><code>instruction_data</code>: Serialized parameters for your specific instruction</li>
+</ul>
+<h3 id="3-account-validation"><a class="header" href="#3-account-validation">3. <strong>Account Validation</strong></a></h3>
+<p>Always validate accounts before use:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Check account count
+if accounts.len() != expected_count {
+    return Err(ProgramError::NotEnoughAccountKeys);
+}
+
+// Check permissions
+if !account.is_writable {
+    return Err(ProgramError::InvalidAccountData);
+}
+
+if !account.is_signer {
+    return Err(ProgramError::MissingRequiredSignature);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="4-state-management"><a class="header" href="#4-state-management">4. <strong>State Management</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Read existing state
+let data = MyState::try_from_slice(&amp;account.data.borrow())?;
+
+// Modify state
+let new_data = MyState { /* updated fields */ };
+
+// Serialize and store
+let serialized = borsh::to_vec(&amp;new_data)?;
+account.data.borrow_mut().copy_from_slice(&amp;serialized);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="5-bitcoin-integration"><a class="header" href="#5-bitcoin-integration">5. <strong>Bitcoin Integration</strong></a></h3>
+<p>Every state change must be committed to Bitcoin:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Create Bitcoin transaction
+let mut tx = Transaction { /* ... */ };
+
+// Add state transition
 add_state_transition(&amp;mut tx, account);
-tx.input.push(fees_tx.input[0].clone());</code></pre>
-<p>This section handles the Bitcoin transaction aspects:</p>
-<ol>
-<li>Deserializes the fee transaction provided by the user</li>
-<li>Creates a new Bitcoin transaction for our state update</li>
-<li>Adds the state transition to the transaction</li>
-<li>Includes the fee input to pay for the transaction</li>
-</ol>
-<h3 id="transaction-signing"><a class="header" href="#transaction-signing">Transaction Signing</a></h3>
-<pre><code class="language-rust ignore">let tx_to_sign = TransactionToSign {
-    tx_bytes: &amp;bitcoin::consensus::serialize(&amp;tx),
-    inputs_to_sign: &amp;[InputToSign {
-        index: 0,
-        signer: account.key.clone(),
-    }],
+
+// Submit for signing
+set_transaction_to_sign(accounts, TransactionToSign { /* ... */ })?;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="testing-your-program"><a class="header" href="#testing-your-program">Testing Your Program</a></h2>
+<p>Create comprehensive tests for your program:</p>
+<p><strong>tests/integration_test.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_sdk::helper::sign_and_send_instruction;
+use arch_test_sdk::{
+    get_balance_bitcoin, initialize_client, Account, Balance
 };
 
-set_transaction_to_sign(accounts, tx_to_sign)</code></pre>
-<p>Finally, the program prepares the transaction for signing:</p>
+#[test]
+fn test_hello_world_basic() {
+    let (client, _boot_info) = initialize_client();
+    
+    let program_pubkey = deploy_program();
+    let user_account = Account::new();
+    
+    // Test initial greeting
+    let params = HelloWorldParams {
+        name: "Alice".to_string(),
+        tx_hex: create_fee_transaction(),
+    };
+    
+    let result = send_hello_instruction(&amp;client, &amp;program_pubkey, &amp;user_account, params);
+    assert!(result.is_ok());
+    
+    // Verify state was stored correctly
+    let account_data = client.read_account_info(user_account.pubkey()).unwrap();
+    let greeting = GreetingAccount::try_from_slice(&amp;account_data.data).unwrap();
+    
+    assert_eq!(greeting.name, "Alice");
+    assert!(greeting.message.contains("Hello, Alice"));
+    assert_eq!(greeting.update_count, 1);
+}
+
+#[test]
+fn test_error_handling() {
+    // Test name too long
+    let params = HelloWorldParams {
+        name: "A".repeat(100), // Too long
+        tx_hex: create_fee_transaction(),
+    };
+    
+    let result = send_hello_instruction(&amp;client, &amp;program_pubkey, &amp;user_account, params);
+    assert!(result.is_err());
+    
+    // Test empty name
+    let params = HelloWorldParams {
+        name: "".to_string(),
+        tx_hex: create_fee_transaction(),
+    };
+    
+    let result = send_hello_instruction(&amp;client, &amp;program_pubkey, &amp;user_account, params);
+    assert!(result.is_err());
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h3 id="1-error-handling"><a class="header" href="#1-error-handling">1. <strong>Error Handling</strong></a></h3>
+<ul>
+<li>Define custom error types for better debugging</li>
+<li>Use descriptive error messages with <code>msg!</code></li>
+<li>Validate all inputs before processing</li>
+<li>Handle both program logic and Bitcoin transaction errors</li>
+</ul>
+<h3 id="2-account-management"><a class="header" href="#2-account-management">2. <strong>Account Management</strong></a></h3>
+<ul>
+<li>Always check account permissions (<code>is_signer</code>, <code>is_writable</code>)</li>
+<li>Validate account ownership when needed</li>
+<li>Use <code>realloc</code> when data size changes</li>
+<li>Consider account rent and minimum balances</li>
+</ul>
+<h3 id="3-state-design"><a class="header" href="#3-state-design">3. <strong>State Design</strong></a></h3>
+<ul>
+<li>Keep state structures simple and well-defined</li>
+<li>Use Borsh for efficient serialization</li>
+<li>Consider data size limits</li>
+<li>Plan for state evolution</li>
+</ul>
+<h3 id="4-bitcoin-integration"><a class="header" href="#4-bitcoin-integration">4. <strong>Bitcoin Integration</strong></a></h3>
+<ul>
+<li>Always include fee transactions</li>
+<li>Validate transaction structure</li>
+<li>Use proper input/output management</li>
+<li>Handle signing requirements correctly</li>
+</ul>
+<h3 id="5-security"><a class="header" href="#5-security">5. <strong>Security</strong></a></h3>
+<ul>
+<li>Validate all input parameters</li>
+<li>Check account ownership and permissions</li>
+<li>Prevent reentrancy attacks</li>
+<li>Use safe arithmetic operations</li>
+</ul>
+<h2 id="common-patterns"><a class="header" href="#common-patterns">Common Patterns</a></h2>
+<h3 id="program-derived-addresses-pdas"><a class="header" href="#program-derived-addresses-pdas">Program-Derived Addresses (PDAs)</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let (pda, bump) = Pubkey::find_program_address(
+    &amp;[b"greeting", user.key.as_ref()],
+    program_id
+);
+<span class="boring">}</span></code></pre></pre>
+<h3 id="cross-program-invocation-cpi"><a class="header" href="#cross-program-invocation-cpi">Cross-Program Invocation (CPI)</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let instruction = system_instruction::create_account(/* ... */);
+invoke(&amp;instruction, &amp;[account1, account2, system_program])?;
+<span class="boring">}</span></code></pre></pre>
+<h3 id="multiple-instructions"><a class="header" href="#multiple-instructions">Multiple Instructions</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>match MyInstruction::try_from_slice(instruction_data)? {
+    MyInstruction::Initialize { .. } =&gt; process_initialize(accounts)?,
+    MyInstruction::Update { .. } =&gt; process_update(accounts)?,
+    MyInstruction::Close =&gt; process_close(accounts)?,
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="next-steps-1"><a class="header" href="#next-steps-1">Next Steps</a></h2>
+<p>Now that you understand the fundamentals:</p>
 <ol>
-<li>Serializes the Bitcoin transaction</li>
-<li>Creates a signing request specifying which inputs need to be signed</li>
-<li>Submits the transaction to be signed by the Arch runtime</li>
+<li><strong>Explore Advanced Examples</strong>: Check out the <a href="guides/../apl/token-program.html">token program</a> and <a href="guides/./how-to-write-oracle-program.html">oracle implementation</a></li>
+<li><strong>Learn Testing</strong>: Set up comprehensive test suites for your programs</li>
+<li><strong>Understand PDAs</strong>: Master program-derived addresses for complex state management</li>
+<li><strong>Study CPI</strong>: Learn cross-program invocation for composable programs</li>
+<li><strong>Deploy and Monitor</strong>: Learn deployment and monitoring best practices</li>
 </ol>
-<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
-<p>Now that you understand the basic structure of an Arch program, you can:</p>
+<h2 id="additional-resources-1"><a class="header" href="#additional-resources-1">Additional Resources</a></h2>
 <ul>
-<li>Learn about more complex account management in the <a href="guides/../program/program.html">Program</a> documentation</li>
-<li>Explore cross-program invocation for program composition</li>
-<li>Study the Bitcoin transaction lifecycle in our <a href="https://docs.arch.network">docs</a></li>
-<li>Build more complex programs using these fundamentals</li>
+<li><a href="https://github.com/Arch-Network/arch-examples">Program Examples Repository</a></li>
+<li><a href="guides/../apl/token-program.html">APL Token Implementation</a></li>
+<li><a href="guides/../concepts/bitcoin-integration.html">Bitcoin Integration Guide</a></li>
+<li><a href="guides/../rpc/http-methods.html">RPC API Reference</a></li>
 </ul>
-<p>For practical examples, check out our other guides:</p>
-<ul>
-<li><a href="guides/./how-to-create-a-fungible-token.html">How to create a fungible token</a></li>
-<li><a href="guides/./how-to-build-runes-swap.html">How to build a Runes swap</a></li>
-</ul>
-<!-- Internal -->
-<!-- External -->
+<p>The complete code for this example is available in the <a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/helloworld">Hello World example</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="setting-up-an-arch-network-project"><a class="header" href="#setting-up-an-arch-network-project">Setting up an Arch Network Project</a></h1>
 <p>This guide walks you through creating your first Arch Network project. You’ll learn how to set up, build, and deploy a “Hello World” program to the Arch Network using the Arch Network CLI tool.</p>
-<h2 id="prerequisites-3"><a class="header" href="#prerequisites-3">Prerequisites</a></h2>
+<h2 id="prerequisites-4"><a class="header" href="#prerequisites-4">Prerequisites</a></h2>
 <p>Before starting, ensure you have the following dependencies installed:</p>
 <ul>
 <li>Arch Network CLI (Latest)</li>
@@ -1961,7 +2375,7 @@ cli validator-start
 <pre><code class="language-bash"># Deploy the program
 cli deploy ./target/deploy/
 </code></pre>
-<h3 id="troubleshooting-1"><a class="header" href="#troubleshooting-1">Troubleshooting</a></h3>
+<h3 id="troubleshooting-2"><a class="header" href="#troubleshooting-2">Troubleshooting</a></h3>
 <p>Common issues and solutions:</p>
 <ul>
 <li>
@@ -1995,547 +2409,2077 @@ cli get-block-height
 </code></pre>
 <p>For a complete list of available commands, refer to the <a href="https://github.com/Arch-Network/arch-node/releases/latest">Arch Network CLI documentation</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="writing-your-first-arch-program"><a class="header" href="#writing-your-first-arch-program">Writing Your First Arch Program</a></h1>
-<p>This guide will walk you through creating your first Arch program from scratch. We’ll build a simple counter program that demonstrates the core concepts of Arch development while providing hands-on experience with the development workflow.</p>
-<h2 id="prerequisites-4"><a class="header" href="#prerequisites-4">Prerequisites</a></h2>
+<p>This comprehensive guide walks you through creating your first Arch program from scratch. We’ll build a feature-rich counter program that demonstrates the complete development workflow and all essential concepts you need for building production-ready Arch Network applications.</p>
+<h2 id="what-youll-build"><a class="header" href="#what-youll-build">What You’ll Build</a></h2>
+<p>By the end of this guide, you’ll have created a complete counter program that:</p>
+<ul>
+<li>Manages state in program accounts</li>
+<li>Handles multiple instruction types</li>
+<li>Integrates with Bitcoin transactions</li>
+<li>Includes comprehensive error handling</li>
+<li>Provides extensive testing coverage</li>
+<li>Follows security best practices</li>
+</ul>
+<h2 id="prerequisites-5"><a class="header" href="#prerequisites-5">Prerequisites</a></h2>
 <p>Before starting, ensure you have:</p>
 <ul>
-<li>Rust and Cargo installed</li>
-<li><a href="guides/../getting-started/quick-start.html">CLI</a> installed and configured (see <a href="guides/../getting-started/quick-start.html">Quick Start Guide</a>)</li>
-<li>A running validator node</li>
-<li>Basic understanding of <a href="guides/../concepts/architecture.html">Arch concepts</a></li>
+<li><strong>Rust 1.70+</strong> and Cargo installed (<a href="https://rustup.rs/">Install Rust</a>)</li>
+<li><strong>Solana CLI 1.16+</strong> (DO NOT upgrade to 2.x) - <a href="https://docs.solana.com/cli/install-solana-cli-tools">Install Guide</a></li>
+<li><strong>Arch Network CLI</strong> - <a href="https://github.com/Arch-Network/arch-node/releases/latest">Download Latest</a></li>
+<li><strong>Running validator</strong> (see <a href="guides/../getting-started/bitcoin-and-titan-setup.html">Validator Setup Guide</a>)</li>
+<li><strong>Basic Rust knowledge</strong> and understanding of <a href="guides/../concepts/architecture.html">Arch concepts</a></li>
 </ul>
-<h2 id="project-setup-1"><a class="header" href="#project-setup-1">Project Setup</a></h2>
-<ol>
-<li>Create a new project directory:</li>
-</ol>
-<pre><code class="language-bash">mkdir my-counter-program
+<h2 id="step-1-project-setup"><a class="header" href="#step-1-project-setup">Step 1: Project Setup</a></h2>
+<h3 id="11-create-project-structure"><a class="header" href="#11-create-project-structure">1.1 Create Project Structure</a></h3>
+<pre><code class="language-bash"># Create project directory
+mkdir my-counter-program
 cd my-counter-program
+
+# Create program directory
+mkdir program
+cd program
+
+# Initialize Rust library
+cargo init --lib
 </code></pre>
-<ol start="2">
-<li>Initialize a new Rust project:</li>
-</ol>
-<pre><code class="language-bash">cargo init --lib
-</code></pre>
-<ol start="3">
-<li>Add necessary dependencies to <code>Cargo.toml</code>:</li>
-</ol>
+<h3 id="12-configure-dependencies"><a class="header" href="#12-configure-dependencies">1.2 Configure Dependencies</a></h3>
+<p>Create a proper <code>Cargo.toml</code>:</p>
+<p><strong>program/Cargo.toml</strong></p>
 <pre><code class="language-toml">[package]
-name = "my-counter-program"
+name = "my_counter_program"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-arch-program = { git = "https://github.com/Arch-Network/arch-program" }
-borsh = "0.10.3"
+arch_program = "0.5.2"
+borsh = { version = "1.5.1", features = ["derive"] }
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "lib"]
+
+[workspace]
 </code></pre>
-<h2 id="writing-the-program"><a class="header" href="#writing-the-program">Writing the Program</a></h2>
-<p>Let’s create a simple program that:</p>
-<ul>
-<li>Stores a counter in an account</li>
-<li>Can increment the counter</li>
-<li>Can decrement the counter</li>
-<li>Can reset the counter</li>
-</ul>
-<ol>
-<li>Define our program’s state structure in <code>src/lib.rs</code>:</li>
-</ol>
-<pre><code class="language-rust ignore">use arch_program::{
+<h3 id="13-project-structure"><a class="header" href="#13-project-structure">1.3 Project Structure</a></h3>
+<p>Your project should look like this:</p>
+<pre><code>my-counter-program/
+├── program/
+│   ├── src/
+│   │   └── lib.rs
+│   └── Cargo.toml
+├── client/          # We'll add this later
+└── tests/           # We'll add this later
+</code></pre>
+<h2 id="step-2-define-program-data-structures"><a class="header" href="#step-2-define-program-data-structures">Step 2: Define Program Data Structures</a></h2>
+<p>Create comprehensive data structures for your program:</p>
+<p><strong>program/src/lib.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_program::{
     account::AccountInfo,
+    bitcoin::{self, absolute::LockTime, transaction::Version, Transaction},
     entrypoint,
+    helper::add_state_transition,
+    input_to_sign::InputToSign,
     msg,
+    program::{next_account_info, set_transaction_to_sign},
     program_error::ProgramError,
     pubkey::Pubkey,
+    transaction_to_sign::TransactionToSign,
 };
 use borsh::{BorshDeserialize, BorshSerialize};
 
-#[derive(BorshSerialize, BorshDeserialize, Debug)]
+/// Counter program state stored in accounts
+#[derive(BorshSerialize, BorshDeserialize, Debug, Clone, PartialEq)]
 pub struct CounterAccount {
-    pub count: u64,
+    /// Current counter value
+    pub count: i64,
+    /// Who created this counter
+    pub authority: Pubkey,
+    /// When this counter was created (block height)
+    pub created_at: u64,
+    /// When this counter was last updated
+    pub updated_at: u64,
+    /// Total number of operations performed
+    pub operation_count: u64,
+    /// Whether the counter is frozen
+    pub is_frozen: bool,
 }
 
-#[derive(BorshSerialize, BorshDeserialize, Debug)]
-pub enum CounterInstruction {
-    Increment,
-    Decrement,
-    Reset,
-}</code></pre>
-<ol start="2">
-<li>Implement the program logic:</li>
-</ol>
-<pre><code class="language-rust ignore">entrypoint!(process_instruction);
+impl CounterAccount {
+    pub const SIZE: usize = 8 + 32 + 8 + 8 + 8 + 1; // i64 + Pubkey + u64 + u64 + u64 + bool
+    
+    pub fn new(authority: Pubkey, block_height: u64) -&gt; Self {
+        Self {
+            count: 0,
+            authority,
+            created_at: block_height,
+            updated_at: block_height,
+            operation_count: 0,
+            is_frozen: false,
+        }
+    }
+}
 
+/// Instructions that can be performed on the counter
+#[derive(BorshSerialize, BorshDeserialize, Debug, Clone, PartialEq)]
+pub enum CounterInstruction {
+    /// Initialize a new counter
+    /// Accounts:
+    /// 0. [writable, signer] Counter account to initialize
+    Initialize,
+    
+    /// Increment the counter by a specified amount
+    /// Accounts:
+    /// 0. [writable] Counter account to increment
+    /// 1. [signer] Authority or allowed user
+    Increment { amount: u32 },
+    
+    /// Decrement the counter by a specified amount
+    /// Accounts:
+    /// 0. [writable] Counter account to decrement
+    /// 1. [signer] Authority or allowed user
+    Decrement { amount: u32 },
+    
+    /// Reset the counter to zero
+    /// Accounts:
+    /// 0. [writable] Counter account to reset
+    /// 1. [signer] Authority only
+    Reset,
+    
+    /// Freeze the counter to prevent modifications
+    /// Accounts:
+    /// 0. [writable] Counter account to freeze
+    /// 1. [signer] Authority only
+    Freeze,
+    
+    /// Unfreeze the counter to allow modifications
+    /// Accounts:
+    /// 0. [writable] Counter account to unfreeze
+    /// 1. [signer] Authority only
+    Unfreeze,
+}
+
+/// Parameters for counter operations that require Bitcoin transactions
+#[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
+pub struct CounterParams {
+    /// The instruction to execute
+    pub instruction: CounterInstruction,
+    /// Bitcoin transaction for fees
+    pub tx_hex: Vec&lt;u8&gt;,
+}
+
+/// Custom errors for the counter program
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CounterError {
+    /// Counter is frozen and cannot be modified
+    CounterFrozen,
+    /// Only the authority can perform this operation
+    UnauthorizedAccess,
+    /// Counter overflow occurred
+    Overflow,
+    /// Counter underflow occurred
+    Underflow,
+    /// Invalid instruction data
+    InvalidInstruction,
+    /// Counter account not initialized
+    UninitializedAccount,
+    /// Invalid account provided
+    InvalidAccount,
+    /// Insufficient fees provided
+    InsufficientFees,
+}
+
+impl From&lt;CounterError&gt; for ProgramError {
+    fn from(e: CounterError) -&gt; Self {
+        ProgramError::Custom(match e {
+            CounterError::CounterFrozen =&gt; 1001,
+            CounterError::UnauthorizedAccess =&gt; 1002,
+            CounterError::Overflow =&gt; 1003,
+            CounterError::Underflow =&gt; 1004,
+            CounterError::InvalidInstruction =&gt; 1005,
+            CounterError::UninitializedAccount =&gt; 1006,
+            CounterError::InvalidAccount =&gt; 1007,
+            CounterError::InsufficientFees =&gt; 1008,
+        })
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="step-3-implement-program-logic"><a class="header" href="#step-3-implement-program-logic">Step 3: Implement Program Logic</a></h2>
+<p>Add the complete program implementation:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Register program entrypoint
+entrypoint!(process_instruction);
+
+/// Main program entrypoint
 pub fn process_instruction(
     _program_id: &amp;Pubkey,
     accounts: &amp;[AccountInfo],
     instruction_data: &amp;[u8],
 ) -&gt; Result&lt;(), ProgramError&gt; {
-    // Get the account to store counter data
+    msg!("Counter program invoked");
+
+    // Parse instruction data
+    let params: CounterParams = borsh::from_slice(instruction_data)
+        .map_err(|_| CounterError::InvalidInstruction)?;
+
+    msg!("Processing instruction: {:?}", params.instruction);
+
+    // Dispatch to appropriate handler
+    match params.instruction {
+        CounterInstruction::Initialize =&gt; {
+            process_initialize(accounts, &amp;params.tx_hex)
+        }
+        CounterInstruction::Increment { amount } =&gt; {
+            process_increment(accounts, amount, &amp;params.tx_hex)
+        }
+        CounterInstruction::Decrement { amount } =&gt; {
+            process_decrement(accounts, amount, &amp;params.tx_hex)
+        }
+        CounterInstruction::Reset =&gt; {
+            process_reset(accounts, &amp;params.tx_hex)
+        }
+        CounterInstruction::Freeze =&gt; {
+            process_freeze(accounts, &amp;params.tx_hex)
+        }
+        CounterInstruction::Unfreeze =&gt; {
+            process_unfreeze(accounts, &amp;params.tx_hex)
+        }
+    }
+}
+
+/// Initialize a new counter account
+fn process_initialize(
+    accounts: &amp;[AccountInfo],
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
     let account_iter = &amp;mut accounts.iter();
     let counter_account = next_account_info(account_iter)?;
 
-    // Verify account is writable
+    // Verify account permissions
     if !counter_account.is_writable {
-        return Err(ProgramError::InvalidAccountData);
+        return Err(CounterError::InvalidAccount.into());
     }
 
-    // Deserialize the instruction
-    let instruction = CounterInstruction::try_from_slice(instruction_data)?;
+    if !counter_account.is_signer {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
 
-    // Get current counter value
-    let mut counter = match CounterAccount::try_from_slice(&amp;counter_account.data.borrow()) {
-        Ok(data) =&gt; data,
-        Err(_) =&gt; CounterAccount { count: 0 },
-    };
-
-    // Process the instruction
-    match instruction {
-        CounterInstruction::Increment =&gt; {
-            counter.count = counter.count.checked_add(1).ok_or(ProgramError::Custom(1))?;
-            msg!("Counter incremented to {}", counter.count);
-        }
-        CounterInstruction::Decrement =&gt; {
-            counter.count = counter.count.checked_sub(1).ok_or(ProgramError::Custom(2))?;
-            msg!("Counter decremented to {}", counter.count);
-        }
-        CounterInstruction::Reset =&gt; {
-            counter.count = 0;
-            msg!("Counter reset to 0");
+    // Check if account is already initialized
+    if counter_account.data.borrow().len() &gt;= CounterAccount::SIZE {
+        let existing_data = CounterAccount::try_from_slice(&amp;counter_account.data.borrow());
+        if existing_data.is_ok() {
+            msg!("Counter account already initialized");
+            return Err(CounterError::InvalidAccount.into());
         }
     }
 
-    // Serialize and save the counter
-    counter.serialize(&amp;mut &amp;mut counter_account.data.borrow_mut()[..])?;
+    // Initialize counter account
+    let counter_data = CounterAccount::new(*counter_account.key, 0); // TODO: Get actual block height
+    
+    // Ensure account has enough space
+    if counter_account.data.borrow().len() &lt; CounterAccount::SIZE {
+        counter_account.realloc(CounterAccount::SIZE, true)?;
+    }
+
+    // Serialize and store data
+    let serialized_data = borsh::to_vec(&amp;counter_data)
+        .map_err(|_| ProgramError::InvalidAccountData)?;
+    
+    counter_account.data.borrow_mut()[..serialized_data.len()]
+        .copy_from_slice(&amp;serialized_data);
+
+    msg!("Counter initialized with authority: {}", counter_account.key);
+
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(counter_account, tx_hex)?;
 
     Ok(())
-}</code></pre>
-<h2 id="building-the-program"><a class="header" href="#building-the-program">Building the Program</a></h2>
+}
+
+/// Increment the counter
+fn process_increment(
+    accounts: &amp;[AccountInfo],
+    amount: u32,
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let account_iter = &amp;mut accounts.iter();
+    let counter_account = next_account_info(account_iter)?;
+    let authority_account = next_account_info(account_iter).unwrap_or(counter_account);
+
+    // Verify account permissions
+    if !counter_account.is_writable {
+        return Err(CounterError::InvalidAccount.into());
+    }
+
+    if !authority_account.is_signer {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Load and validate counter data
+    let mut counter_data = CounterAccount::try_from_slice(&amp;counter_account.data.borrow())
+        .map_err(|_| CounterError::UninitializedAccount)?;
+
+    // Check if counter is frozen
+    if counter_data.is_frozen {
+        return Err(CounterError::CounterFrozen.into());
+    }
+
+    // Perform increment with overflow protection
+    let new_count = counter_data.count
+        .checked_add(amount as i64)
+        .ok_or(CounterError::Overflow)?;
+
+    // Update counter data
+    counter_data.count = new_count;
+    counter_data.updated_at = 0; // TODO: Get actual block height
+    counter_data.operation_count += 1;
+
+    // Save updated data
+    save_counter_data(counter_account, &amp;counter_data)?;
+
+    msg!("Counter incremented by {} to {}", amount, new_count);
+
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(counter_account, tx_hex)?;
+
+    Ok(())
+}
+
+/// Decrement the counter
+fn process_decrement(
+    accounts: &amp;[AccountInfo],
+    amount: u32,
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let account_iter = &amp;mut accounts.iter();
+    let counter_account = next_account_info(account_iter)?;
+    let authority_account = next_account_info(account_iter).unwrap_or(counter_account);
+
+    // Verify account permissions
+    if !counter_account.is_writable {
+        return Err(CounterError::InvalidAccount.into());
+    }
+
+    if !authority_account.is_signer {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Load and validate counter data
+    let mut counter_data = CounterAccount::try_from_slice(&amp;counter_account.data.borrow())
+        .map_err(|_| CounterError::UninitializedAccount)?;
+
+    // Check if counter is frozen
+    if counter_data.is_frozen {
+        return Err(CounterError::CounterFrozen.into());
+    }
+
+    // Perform decrement with underflow protection
+    let new_count = counter_data.count
+        .checked_sub(amount as i64)
+        .ok_or(CounterError::Underflow)?;
+
+    // Update counter data
+    counter_data.count = new_count;
+    counter_data.updated_at = 0; // TODO: Get actual block height
+    counter_data.operation_count += 1;
+
+    // Save updated data
+    save_counter_data(counter_account, &amp;counter_data)?;
+
+    msg!("Counter decremented by {} to {}", amount, new_count);
+
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(counter_account, tx_hex)?;
+
+    Ok(())
+}
+
+/// Reset the counter to zero
+fn process_reset(
+    accounts: &amp;[AccountInfo],
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let account_iter = &amp;mut accounts.iter();
+    let counter_account = next_account_info(account_iter)?;
+    let authority_account = next_account_info(account_iter)?;
+
+    // Verify account permissions
+    if !counter_account.is_writable {
+        return Err(CounterError::InvalidAccount.into());
+    }
+
+    if !authority_account.is_signer {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Load and validate counter data
+    let mut counter_data = CounterAccount::try_from_slice(&amp;counter_account.data.borrow())
+        .map_err(|_| CounterError::UninitializedAccount)?;
+
+    // Check authority
+    if counter_data.authority != *authority_account.key {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Check if counter is frozen
+    if counter_data.is_frozen {
+        return Err(CounterError::CounterFrozen.into());
+    }
+
+    // Reset counter
+    counter_data.count = 0;
+    counter_data.updated_at = 0; // TODO: Get actual block height
+    counter_data.operation_count += 1;
+
+    // Save updated data
+    save_counter_data(counter_account, &amp;counter_data)?;
+
+    msg!("Counter reset to 0");
+
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(counter_account, tx_hex)?;
+
+    Ok(())
+}
+
+/// Freeze the counter
+fn process_freeze(
+    accounts: &amp;[AccountInfo],
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let account_iter = &amp;mut accounts.iter();
+    let counter_account = next_account_info(account_iter)?;
+    let authority_account = next_account_info(account_iter)?;
+
+    // Verify account permissions
+    if !counter_account.is_writable {
+        return Err(CounterError::InvalidAccount.into());
+    }
+
+    if !authority_account.is_signer {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Load and validate counter data
+    let mut counter_data = CounterAccount::try_from_slice(&amp;counter_account.data.borrow())
+        .map_err(|_| CounterError::UninitializedAccount)?;
+
+    // Check authority
+    if counter_data.authority != *authority_account.key {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Freeze counter
+    counter_data.is_frozen = true;
+    counter_data.updated_at = 0; // TODO: Get actual block height
+    counter_data.operation_count += 1;
+
+    // Save updated data
+    save_counter_data(counter_account, &amp;counter_data)?;
+
+    msg!("Counter frozen");
+
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(counter_account, tx_hex)?;
+
+    Ok(())
+}
+
+/// Unfreeze the counter
+fn process_unfreeze(
+    accounts: &amp;[AccountInfo],
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let account_iter = &amp;mut accounts.iter();
+    let counter_account = next_account_info(account_iter)?;
+    let authority_account = next_account_info(account_iter)?;
+
+    // Verify account permissions
+    if !counter_account.is_writable {
+        return Err(CounterError::InvalidAccount.into());
+    }
+
+    if !authority_account.is_signer {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Load and validate counter data
+    let mut counter_data = CounterAccount::try_from_slice(&amp;counter_account.data.borrow())
+        .map_err(|_| CounterError::UninitializedAccount)?;
+
+    // Check authority
+    if counter_data.authority != *authority_account.key {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Unfreeze counter
+    counter_data.is_frozen = false;
+    counter_data.updated_at = 0; // TODO: Get actual block height
+    counter_data.operation_count += 1;
+
+    // Save updated data
+    save_counter_data(counter_account, &amp;counter_data)?;
+
+    msg!("Counter unfrozen");
+
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(counter_account, tx_hex)?;
+
+    Ok(())
+}
+
+/// Helper function to save counter data
+fn save_counter_data(
+    counter_account: &amp;AccountInfo,
+    counter_data: &amp;CounterAccount,
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let serialized_data = borsh::to_vec(counter_data)
+        .map_err(|_| ProgramError::InvalidAccountData)?;
+    
+    counter_account.data.borrow_mut()[..serialized_data.len()]
+        .copy_from_slice(&amp;serialized_data);
+    
+    Ok(())
+}
+
+/// Handle Bitcoin transaction for state changes
+fn handle_bitcoin_transaction(
+    account: &amp;AccountInfo,
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    if tx_hex.is_empty() {
+        return Err(CounterError::InsufficientFees.into());
+    }
+
+    // Deserialize the fee transaction
+    let fees_tx: Transaction = bitcoin::consensus::deserialize(tx_hex)
+        .map_err(|_| CounterError::InsufficientFees)?;
+
+    msg!("Processing Bitcoin transaction with {} inputs", fees_tx.input.len());
+
+    // Create state transition transaction
+    let mut tx = Transaction {
+        version: Version::TWO,
+        lock_time: LockTime::ZERO,
+        input: vec![],
+        output: vec![],
+    };
+
+    // Add state transition for our account
+    add_state_transition(&amp;mut tx, account);
+    
+    // Add fee input
+    if !fees_tx.input.is_empty() {
+        tx.input.push(fees_tx.input[0].clone());
+    }
+
+    // Prepare transaction for signing
+    let tx_to_sign = TransactionToSign {
+        tx_bytes: &amp;bitcoin::consensus::serialize(&amp;tx),
+        inputs_to_sign: &amp;[InputToSign {
+            index: 0,
+            signer: account.key.clone(),
+        }],
+    };
+
+    msg!("Submitting transaction for signing");
+    set_transaction_to_sign(&amp;[account.clone()], tx_to_sign)?;
+
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="step-4-build-your-program"><a class="header" href="#step-4-build-your-program">Step 4: Build Your Program</a></h2>
+<p>Build your program using the Solana toolchain:</p>
+<pre><code class="language-bash">cd program
+
+# Build the program
+cargo build-sbf
+
+# Verify the build output
+ls target/deploy/
+</code></pre>
+<p>You should see <code>my_counter_program.so</code> in the <code>target/deploy/</code> directory.</p>
+<h2 id="step-5-deploy-your-program"><a class="header" href="#step-5-deploy-your-program">Step 5: Deploy Your Program</a></h2>
+<p>Deploy your program to the Arch Network:</p>
+<pre><code class="language-bash"># Deploy to testnet (recommended for testing)
+cli deploy ./target/deploy/ --network-mode testnet
+
+# Or deploy to local network for development
+cli deploy ./target/deploy/ --network-mode regtest
+</code></pre>
+<p><strong>Save the Program ID</strong> from the output - you’ll need it for testing!</p>
+<h2 id="step-6-create-a-client-for-testing"><a class="header" href="#step-6-create-a-client-for-testing">Step 6: Create a Client for Testing</a></h2>
+<p>Create a client to interact with your program:</p>
+<p><strong>client/Cargo.toml</strong></p>
+<pre><code class="language-toml">[package]
+name = "counter_client"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+arch_sdk = "0.5.2"
+my_counter_program = { path = "../program" }
+borsh = "1.5.1"
+tokio = { version = "1.0", features = ["full"] }
+</code></pre>
+<p><strong>client/src/main.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021">use arch_sdk::{
+    instruction::Instruction,
+    message::ArchMessage,
+    pubkey::Pubkey,
+    signer::{create_account, Keypair},
+    transaction::Transaction,
+};
+use my_counter_program::{CounterInstruction, CounterParams, CounterAccount};
+
+fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    // Your program ID (replace with actual deployed program ID)
+    let program_id = Pubkey::from_str("YOUR_PROGRAM_ID_HERE")?;
+    
+    // Create a new account for the counter
+    let counter_keypair = Keypair::new();
+    
+    // Create fee transaction (simplified)
+    let fee_tx = create_fee_transaction();
+    
+    // Test initialize instruction
+    test_initialize(&amp;program_id, &amp;counter_keypair, &amp;fee_tx)?;
+    
+    // Test increment instruction
+    test_increment(&amp;program_id, &amp;counter_keypair, &amp;fee_tx, 5)?;
+    
+    // Test decrement instruction
+    test_decrement(&amp;program_id, &amp;counter_keypair, &amp;fee_tx, 2)?;
+    
+    // Test reset instruction
+    test_reset(&amp;program_id, &amp;counter_keypair, &amp;fee_tx)?;
+    
+    println!("All tests completed successfully!");
+    Ok(())
+}
+
+fn test_initialize(
+    program_id: &amp;Pubkey,
+    counter_keypair: &amp;Keypair,
+    fee_tx: &amp;[u8],
+) -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let params = CounterParams {
+        instruction: CounterInstruction::Initialize,
+        tx_hex: fee_tx.to_vec(),
+    };
+    
+    let instruction = Instruction {
+        program_id: *program_id,
+        accounts: vec![
+            AccountMeta::new(counter_keypair.pubkey(), true),
+        ],
+        data: borsh::to_vec(&amp;params)?,
+    };
+    
+    // Send transaction (implementation depends on your client setup)
+    send_transaction(&amp;instruction, &amp;[counter_keypair])?;
+    
+    println!("Counter initialized successfully");
+    Ok(())
+}
+
+// Add similar functions for other operations...</code></pre></pre>
+<h2 id="step-7-comprehensive-testing"><a class="header" href="#step-7-comprehensive-testing">Step 7: Comprehensive Testing</a></h2>
+<p>Create extensive tests for your program:</p>
+<p><strong>tests/integration_tests.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use my_counter_program::*;
+use arch_test_sdk::*;
+
+#[tokio::test]
+async fn test_counter_full_workflow() {
+    let (client, _boot_info) = initialize_client();
+    
+    // Deploy program
+    let program_id = deploy_counter_program(&amp;client).await;
+    
+    // Create test account
+    let user_keypair = Keypair::new();
+    fund_account(&amp;client, &amp;user_keypair.pubkey(), 1000).await;
+    
+    // Test initialization
+    let counter_account = test_initialize(&amp;client, &amp;program_id, &amp;user_keypair).await;
+    verify_counter_state(&amp;client, &amp;counter_account, 0, false).await;
+    
+    // Test increment
+    test_increment(&amp;client, &amp;program_id, &amp;counter_account, &amp;user_keypair, 10).await;
+    verify_counter_state(&amp;client, &amp;counter_account, 10, false).await;
+    
+    // Test decrement
+    test_decrement(&amp;client, &amp;program_id, &amp;counter_account, &amp;user_keypair, 3).await;
+    verify_counter_state(&amp;client, &amp;counter_account, 7, false).await;
+    
+    // Test freeze
+    test_freeze(&amp;client, &amp;program_id, &amp;counter_account, &amp;user_keypair).await;
+    verify_counter_state(&amp;client, &amp;counter_account, 7, true).await;
+    
+    // Test operations while frozen (should fail)
+    let result = test_increment(&amp;client, &amp;program_id, &amp;counter_account, &amp;user_keypair, 1).await;
+    assert!(result.is_err(), "Increment should fail when counter is frozen");
+    
+    // Test unfreeze
+    test_unfreeze(&amp;client, &amp;program_id, &amp;counter_account, &amp;user_keypair).await;
+    verify_counter_state(&amp;client, &amp;counter_account, 7, false).await;
+    
+    // Test reset
+    test_reset(&amp;client, &amp;program_id, &amp;counter_account, &amp;user_keypair).await;
+    verify_counter_state(&amp;client, &amp;counter_account, 0, false).await;
+}
+
+#[tokio::test]
+async fn test_error_conditions() {
+    // Test overflow protection
+    // Test underflow protection
+    // Test unauthorized access
+    // Test invalid instructions
+    // TODO: Implement comprehensive error testing
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="step-8-best-practices-implementation"><a class="header" href="#step-8-best-practices-implementation">Step 8: Best Practices Implementation</a></h2>
+<h3 id="security-considerations"><a class="header" href="#security-considerations">Security Considerations</a></h3>
 <ol>
-<li>Build your program:</li>
+<li><strong>Input Validation</strong>: Always validate all inputs</li>
+<li><strong>Overflow Protection</strong>: Use checked arithmetic operations</li>
+<li><strong>Access Control</strong>: Verify account ownership and permissions</li>
+<li><strong>State Validation</strong>: Ensure account state is valid before operations</li>
 </ol>
-<pre><code class="language-bash">cargo build-sbf
-</code></pre>
-<p>This will create a compiled program at <code>target/deploy/my_counter_program.so</code></p>
-<h2 id="deploying-the-program"><a class="header" href="#deploying-the-program">Deploying the Program</a></h2>
+<h3 id="performance-optimization"><a class="header" href="#performance-optimization">Performance Optimization</a></h3>
 <ol>
-<li>Deploy your program using the CLI:</li>
+<li><strong>Efficient Serialization</strong>: Use Borsh for optimal performance</li>
+<li><strong>Minimal Account Size</strong>: Keep state structures compact</li>
+<li><strong>Transaction Batching</strong>: Group related operations when possible</li>
 </ol>
-<pre><code class="language-bash">cli deploy target/deploy/my_counter_program.so
-</code></pre>
-<p>Save the Program ID output - you’ll need it to interact with your program.</p>
-<h2 id="creating-a-counter-account"><a class="header" href="#creating-a-counter-account">Creating a Counter Account</a></h2>
-<p>Before we can use our counter, we need to create an account to store its state:</p>
-<pre><code class="language-bash">cli create-account &lt;PROGRAM_ID&gt; 8
-</code></pre>
-<p>Save the account address - you’ll need it to interact with your counter.</p>
-<h2 id="testing-your-program"><a class="header" href="#testing-your-program">Testing Your Program</a></h2>
-<p>You can now interact with your program using the CLI:</p>
+<h3 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h3>
 <ol>
-<li>Increment the counter:</li>
+<li><strong>Custom Error Types</strong>: Define specific errors for better debugging</li>
+<li><strong>Comprehensive Logging</strong>: Use <code>msg!</code> for important state changes</li>
+<li><strong>Graceful Failures</strong>: Handle edge cases appropriately</li>
 </ol>
-<pre><code class="language-bash">cli invoke &lt;PROGRAM_ID&gt; &lt;ACCOUNT_ADDRESS&gt; --data 00
-</code></pre>
-<ol start="2">
-<li>Decrement the counter:</li>
+<h2 id="next-steps-2"><a class="header" href="#next-steps-2">Next Steps</a></h2>
+<p>Now that you’ve built your first program:</p>
+<ol>
+<li><strong>Enhance the Counter</strong>: Add features like access control lists, multiple counters per account, or counter metadata</li>
+<li><strong>Explore Advanced Patterns</strong>: Learn about <a href="guides/../program/accounts.html">Program Derived Addresses</a> and <a href="guides/../program/instructions-and-messages.html">Cross-Program Invocation</a></li>
+<li><strong>Build Complex Programs</strong>: Try the <a href="guides/./how-to-create-a-fungible-token.html">Token Program</a> or <a href="guides/./how-to-write-oracle-program.html">Oracle Program</a> guides</li>
+<li><strong>Deploy to Mainnet</strong>: When ready, deploy your programs to mainnet (when available)</li>
 </ol>
-<pre><code class="language-bash">cli invoke &lt;PROGRAM_ID&gt; &lt;ACCOUNT_ADDRESS&gt; --data 01
-</code></pre>
-<ol start="3">
-<li>Reset the counter:</li>
-</ol>
-<pre><code class="language-bash">cli invoke &lt;PROGRAM_ID&gt; &lt;ACCOUNT_ADDRESS&gt; --data 02
-</code></pre>
-<h2 id="next-steps-1"><a class="header" href="#next-steps-1">Next Steps</a></h2>
-<p>Now that you’ve created your first program, you can:</p>
+<h2 id="additional-resources-2"><a class="header" href="#additional-resources-2">Additional Resources</a></h2>
 <ul>
-<li>Add more features to the counter program</li>
-<li>Learn about <a href="guides/../program/program.html">cross-program invocation</a></li>
-<li>Explore more complex <a href="guides/./guides.html">Program Examples</a></li>
-<li>Study the <a href="guides/./understanding-arch-programs.html">Understanding Arch Programs</a> guide for deeper insights</li>
+<li><a href="guides/./understanding-arch-programs.html">Understanding Arch Programs</a> - Deep dive into program architecture</li>
+<li><a href="guides/./testing-guide.html">Testing Guide</a> - Comprehensive testing strategies</li>
+<li><a href="https://github.com/Arch-Network/arch-examples">Program Examples</a> - More example programs</li>
+<li><a href="guides/../rpc/http-methods.html">API Reference</a> - Complete RPC documentation</li>
 </ul>
-<!-- Internal -->
+<p><strong>Congratulations!</strong> You’ve successfully built, deployed, and tested your first Arch Network program. You now have the foundation to build more complex applications on the Arch Network.</p>
 <pre><code class="language-bash"># Start the Arch Network validator
 cli validator-start
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="testing-your-arch-network-program"><a class="header" href="#testing-your-arch-network-program">Testing Your Arch Network Program</a></h1>
-<p>This guide covers best practices and approaches for testing your Arch Network programs, ensuring they are reliable and secure before deployment.</p>
-<h2 id="types-of-tests"><a class="header" href="#types-of-tests">Types of Tests</a></h2>
-<h3 id="unit-tests"><a class="header" href="#unit-tests">Unit Tests</a></h3>
-<p>Unit tests verify individual components of your program in isolation. In Rust, you can write unit tests within your program’s source files:</p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_initialize() {
-        // Test initialization logic
-    }
-}
-<span class="boring">}</span></code></pre></pre>
-<h3 id="integration-tests"><a class="header" href="#integration-tests">Integration Tests</a></h3>
-<p>Integration tests verify that different parts of your program work together correctly. Create these in the <code>tests</code> directory:</p>
-<pre><code class="language-rust ignore">use your_program::*;
-use arch_sdk::test_utils::*;
-
-#[test]
-fn test_full_workflow() {
-    let (mut banks_client, payer, recent_blockhash) = setup_test_context();
-    // Test your program's workflow
-}</code></pre>
-<h2 id="test-environment-setup"><a class="header" href="#test-environment-setup">Test Environment Setup</a></h2>
-<h3 id="local-test-validator"><a class="header" href="#local-test-validator">Local Test Validator</a></h3>
-<pre><code class="language-bash"># Start a local test validator
-cli validator-start --test
-
-# Deploy your program
-cli deploy ./target/deploy/your_program.so
+<div style="break-before: page; page-break-before: always;"></div><h1 id="comprehensive-testing-guide-for-arch-network-programs"><a class="header" href="#comprehensive-testing-guide-for-arch-network-programs">Comprehensive Testing Guide for Arch Network Programs</a></h1>
+<p>This guide provides complete coverage of testing strategies, tools, and best practices for building robust and reliable Arch Network programs. Proper testing is essential for ensuring your programs work correctly and securely before deployment.</p>
+<h2 id="overview-1"><a class="header" href="#overview-1">Overview</a></h2>
+<p>Testing Arch programs involves multiple layers:</p>
+<ul>
+<li><strong>Unit Tests</strong>: Individual function and logic testing</li>
+<li><strong>Integration Tests</strong>: Cross-component functionality testing</li>
+<li><strong>End-to-End Tests</strong>: Full program workflow testing</li>
+<li><strong>Security Tests</strong>: Vulnerability and attack vector testing</li>
+<li><strong>Performance Tests</strong>: Load and efficiency testing</li>
+</ul>
+<h2 id="project-setup-for-testing"><a class="header" href="#project-setup-for-testing">Project Setup for Testing</a></h2>
+<h3 id="test-directory-structure"><a class="header" href="#test-directory-structure">Test Directory Structure</a></h3>
+<pre><code>my-program/
+├── program/
+│   ├── src/
+│   │   └── lib.rs
+│   └── Cargo.toml
+├── tests/
+│   ├── integration.rs
+│   ├── security.rs
+│   └── common/
+│       └── mod.rs
+└── Cargo.toml (workspace)
 </code></pre>
-<h3 id="test-utilities"><a class="header" href="#test-utilities">Test Utilities</a></h3>
-<p>The Arch SDK provides test utilities to simulate the blockchain environment:</p>
-<pre><code class="language-rust ignore">use arch_sdk::{
-    account::Account,
-    pubkey::Pubkey,
-    test_utils::{setup_test_context, TestContext},
-};</code></pre>
-<h2 id="testing-best-practices"><a class="header" href="#testing-best-practices">Testing Best Practices</a></h2>
-<ol>
-<li>
-<p><strong>State Validation</strong></p>
-<ul>
-<li>Test initial state</li>
-<li>Verify state transitions</li>
-<li>Check final state</li>
-</ul>
-</li>
-<li>
-<p><strong>Error Handling</strong></p>
-<ul>
-<li>Test invalid inputs</li>
-<li>Verify error messages</li>
-<li>Check permission controls</li>
-</ul>
-</li>
-<li>
-<p><strong>Edge Cases</strong></p>
-<ul>
-<li>Test boundary conditions</li>
-<li>Verify numeric overflow handling</li>
-<li>Check resource limits</li>
-</ul>
-</li>
-</ol>
-<h2 id="example-test-suite"><a class="header" href="#example-test-suite">Example Test Suite</a></h2>
+<h3 id="test-dependencies-configuration"><a class="header" href="#test-dependencies-configuration">Test Dependencies Configuration</a></h3>
+<p><strong>Cargo.toml (workspace root)</strong></p>
+<pre><code class="language-toml">[workspace]
+members = ["program", "tests"]
+
+[workspace.dependencies]
+arch_program = "0.5.2"
+arch_sdk = "0.5.2"
+borsh = { version = "1.5.1", features = ["derive"] }
+tokio = { version = "1.0", features = ["full"] }
+</code></pre>
+<p><strong>tests/Cargo.toml</strong></p>
+<pre><code class="language-toml">[package]
+name = "program-tests"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+arch_program = { workspace = true }
+arch_sdk = { workspace = true }
+borsh = { workspace = true }
+tokio = { workspace = true }
+
+# Test utilities
+proptest = "1.0"
+rstest = "0.18"
+serial_test = "3.0"
+
+# Your program dependency
+my_program = { path = "../program" }
+
+[[bin]]
+name = "test-runner"
+path = "src/main.rs"
+</code></pre>
+<h2 id="unit-testing"><a class="header" href="#unit-testing">Unit Testing</a></h2>
+<h3 id="basic-unit-tests"><a class="header" href="#basic-unit-tests">Basic Unit Tests</a></h3>
+<p>Unit tests go directly in your program’s <code>src/lib.rs</code>:</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>#[cfg(test)]
 mod tests {
     use super::*;
-    use arch_sdk::test_utils::*;
+    use arch_program::{
+        account::AccountInfo,
+        program_error::ProgramError,
+        pubkey::Pubkey,
+    };
 
     #[test]
-    fn test_create_account() {
-        let (mut context, payer, _) = setup_test_context();
-
-        // Create test account
-        let account = Account::new();
-        let create_ix = create_account(
-            &amp;payer.pubkey(),
-            &amp;account.pubkey(),
-            minimum_balance(),
-        );
-
-        // Execute instruction
-        let result = process_instruction(&amp;mut context, create_ix);
-
-        // Verify result
-        assert!(result.is_ok());
-        let account_data = context.get_account(&amp;account.pubkey()).unwrap();
-        assert_eq!(account_data.lamports, minimum_balance());
+    fn test_counter_account_serialization() {
+        let counter = CounterAccount::new(Pubkey::new_unique(), 100);
+        
+        // Test serialization
+        let serialized = borsh::to_vec(&amp;counter).unwrap();
+        let deserialized: CounterAccount = borsh::from_slice(&amp;serialized).unwrap();
+        
+        assert_eq!(counter, deserialized);
     }
 
     #[test]
-    fn test_invalid_instruction() {
-        let (mut context, _, _) = setup_test_context();
-
-        // Test with invalid data
-        let invalid_ix = Instruction::new_with_bytes(
-            program_id(),
-            &amp;[0xFF],
-            vec![],
-        );
-
-        // Verify error handling
-        let result = process_instruction(&amp;mut context, invalid_ix);
-        assert_eq!(
-            result.unwrap_err(),
-            ProgramError::InvalidInstructionData
-        );
-    }
-}
-<span class="boring">}</span></code></pre></pre>
-<h2 id="common-testing-patterns"><a class="header" href="#common-testing-patterns">Common Testing Patterns</a></h2>
-<h3 id="1-program-test-framework"><a class="header" href="#1-program-test-framework">1. Program Test Framework</a></h3>
-<pre><code class="language-rust ignore">struct ProgramTest {
-    context: TestContext,
-    admin: Keypair,
-    users: Vec&lt;Keypair&gt;,
-}
-
-impl ProgramTest {
-    fn new() -&gt; Self {
-        let (context, admin, _) = setup_test_context();
-        ProgramTest {
-            context,
-            admin,
-            users: vec![],
+    fn test_instruction_parsing() {
+        let instruction = CounterInstruction::Increment { amount: 5 };
+        let params = CounterParams {
+            instruction,
+            tx_hex: vec![0x01, 0x02, 0x03],
+        };
+        
+        let serialized = borsh::to_vec(&amp;params).unwrap();
+        let parsed: CounterParams = borsh::from_slice(&amp;serialized).unwrap();
+        
+        match parsed.instruction {
+            CounterInstruction::Increment { amount } =&gt; assert_eq!(amount, 5),
+            _ =&gt; panic!("Wrong instruction type"),
         }
     }
 
-    fn add_user(&amp;mut self) -&gt; Keypair {
-        let user = Keypair::new();
-        self.users.push(user.clone());
-        user
+    #[test]
+    fn test_error_codes() {
+        let error: ProgramError = CounterError::CounterFrozen.into();
+        assert_eq!(error, ProgramError::Custom(1001));
     }
-}</code></pre>
-<h3 id="2-test-data-helpers"><a class="header" href="#2-test-data-helpers">2. Test Data Helpers</a></h3>
-<pre><code class="language-rust ignore">fn create_test_state() -&gt; State {
-    State {
-        is_initialized: true,
-        owner: Pubkey::new_unique(),
-        balance: 1000,
+
+    #[test]
+    fn test_overflow_protection() {
+        let mut counter = CounterAccount::new(Pubkey::new_unique(), 100);
+        counter.count = i64::MAX;
+        
+        // This should detect overflow
+        let result = counter.count.checked_add(1);
+        assert!(result.is_none());
     }
-}</code></pre>
-<h2 id="debugging-tests"><a class="header" href="#debugging-tests">Debugging Tests</a></h2>
-<ol>
-<li>
-<p>Use the <code>arch_sdk::msg!</code> macro for logging:</p>
-<pre><code class="language-rust ignore">msg!("Processing instruction: {:?}", instruction);</code></pre>
-</li>
-<li>
-<p>Enable debug output:</p>
-<pre><code class="language-bash">RUST_LOG=debug cargo test-sbf
-</code></pre>
-</li>
-</ol>
-<h2 id="security-testing"><a class="header" href="#security-testing">Security Testing</a></h2>
-<ol>
-<li>
-<p><strong>Privilege Escalation Tests</strong></p>
-<ul>
-<li>Verify admin-only functions</li>
-<li>Test unauthorized access</li>
-</ul>
-</li>
-<li>
-<p><strong>Resource Exhaustion Tests</strong></p>
-<ul>
-<li>Test memory limits</li>
-<li>Verify computation limits</li>
-</ul>
-</li>
-<li>
-<p><strong>Input Validation Tests</strong></p>
-<ul>
-<li>Test buffer overflows</li>
-<li>Verify numeric boundaries</li>
-</ul>
-</li>
-</ol>
-<p>Remember to run your test suite frequently during development and before deploying any updates to your program.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="program-examples"><a class="header" href="#program-examples">Program Examples</a></h1>
-<p>In this section, we’ll provide a few guides that can step through constructing an Arch <a href="guides/../program/program.html">program</a>, as well as deploying and interacting with your program.</p>
-<p>Table of Contents:</p>
-<ul>
-<li><a href="guides/./how-to-create-a-fungible-token.html">Fungible Token</a></li>
-<li><a href="guides/./how-to-write-oracle-program.html">Oracle Program</a></li>
-<li><a href="guides/./how-to-build-runes-swap.html">Runes Swap</a></li>
-<li><a href="guides/./how-to-build-lending-protocol.html">Lending Protocol</a></li>
-</ul>
-<hr />
-<!-- Internal -->
-<div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-create-a-fungible-token"><a class="header" href="#how-to-create-a-fungible-token">How to create a fungible token</a></h1>
-<p>This guide walks through how to implement the Fungible Token Standard program, part of the Arch Program Library, or APL.</p>
-<p>Table of Contents:</p>
-<ul>
-<li><a href="guides/how-to-create-a-fungible-token.html#description">Description</a></li>
-<li><a href="guides/how-to-create-a-fungible-token.html#logic">Logic</a></li>
-<li><a href="guides/how-to-create-a-fungible-token.html#implementation">Implementation</a></li>
-</ul>
-<hr />
-<h3 id="description"><a class="header" href="#description">Description</a></h3>
-<p>The Fungible Token Standard program provides a consistent interface for implementing fungible tokens on Arch. As with all programs within the APL, this program is predeployed and is tested against the Arch runtime.</p>
-<p>The source code can be found within the <a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/fungible-token-standard">arch-examples</a> repo.</p>
-<h3 id="logic"><a class="header" href="#logic">Logic</a></h3>
-<p>If you haven’t already read <a href="guides/./writing-your-first-program.html">How to write an Arch program</a>, we recommend starting there to get a basic understanding of the program anatomy before going further.</p>
-<h3 id="implementation"><a class="header" href="#implementation">Implementation</a></h3>
-<ul>
-<li><a href="guides/how-to-create-a-fungible-token.html#deploy">Deploy</a></li>
-<li><a href="guides/how-to-create-a-fungible-token.html#mint">Mint</a></li>
-<li><a href="guides/how-to-create-a-fungible-token.html#transfer">Transfer</a></li>
-<li><a href="guides/how-to-create-a-fungible-token.html#balance-check">Balance check</a></li>
-</ul>
-<h4 id="deploy"><a class="header" href="#deploy">Deploy</a></h4>
-<p>Although the Fungible Token Standard program is part of the APL, and is there predeployed by the validators, for local testing, we can deploy it ourselves. Move to <a href="guides/how-to-create-a-fungible-token.html#mint">Mint</a> if you’d like to skip this step.</p>
-<p>To demonstrate a deploy, we’ll reference: <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/deploy.rs">deploy.rs</a></p>
-<p>We make use of <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_deployment.rs#L1"><code>try_deploy_program</code></a>, a helper function from the <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter">ebpf-counter</a> example to deploy our program.</p>
-<pre><code class="language-rust ignore">pub const ELF_PATH: &amp;str = "./program/target/sbf-solana-solana/release/fungible-token-standard-program.so";
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="advanced-unit-testing"><a class="header" href="#advanced-unit-testing">Advanced Unit Testing</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod advanced_tests {
+    use super::*;
+    use proptest::prelude::*;
 
-fn deploy_standard_program() {
-    let program_pubkey =
-        try_deploy_program(ELF_PATH, PROGRAM_FILE_PATH, "Fungible-Token-Standard").unwrap();
+    // Property-based testing
+    proptest! {
+        #[test]
+        fn test_counter_operations_never_panic(
+            initial_value in i32::MIN..i32::MAX,
+            operation_value in 1u32..1000u32
+        ) {
+            let mut counter = CounterAccount::new(Pubkey::new_unique(), 100);
+            counter.count = initial_value as i64;
 
-    println!(
-        "Deployed Fungible token standard program account id {:?}!",
-        program_pubkey.serialize()
+            // These operations should never panic
+            let _ = counter.count.checked_add(operation_value as i64);
+            let _ = counter.count.checked_sub(operation_value as i64);
+        }
+    }
+
+    // Parameterized tests
+    use rstest::rstest;
+
+    #[rstest]
+    #[case(CounterInstruction::Increment { amount: 1 })]
+    #[case(CounterInstruction::Decrement { amount: 1 })]
+    #[case(CounterInstruction::Reset)]
+    #[case(CounterInstruction::Freeze)]
+    #[case(CounterInstruction::Unfreeze)]
+    fn test_instruction_serialization(#[case] instruction: CounterInstruction) {
+        let params = CounterParams {
+            instruction: instruction.clone(),
+            tx_hex: vec![],
+        };
+        
+        let serialized = borsh::to_vec(&amp;params).unwrap();
+        let deserialized: CounterParams = borsh::from_slice(&amp;serialized).unwrap();
+        
+        assert_eq!(params.instruction, deserialized.instruction);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="integration-testing"><a class="header" href="#integration-testing">Integration Testing</a></h2>
+<h3 id="test-environment-setup"><a class="header" href="#test-environment-setup">Test Environment Setup</a></h3>
+<p><strong>tests/common/mod.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_sdk::{
+    client::ArchClient,
+    instruction::Instruction,
+    pubkey::Pubkey,
+    signer::Keypair,
+    transaction::Transaction,
+};
+use std::sync::Once;
+
+static INIT: Once = Once::new();
+
+pub struct TestEnvironment {
+    pub client: ArchClient,
+    pub payer: Keypair,
+    pub program_id: Pubkey,
+}
+
+impl TestEnvironment {
+    pub async fn new() -&gt; Self {
+        INIT.call_once(|| {
+            env_logger::init();
+        });
+
+        let client = ArchClient::new("http://localhost:9001").unwrap();
+        let payer = Keypair::new();
+        
+        // Fund the payer
+        let airdrop_signature = client
+            .request_airdrop(&amp;payer.pubkey(), 10_000_000)
+            .await
+            .unwrap();
+        
+        client.confirm_transaction(&amp;airdrop_signature).await.unwrap();
+
+        // Deploy program
+        let program_id = deploy_test_program(&amp;client, &amp;payer).await;
+
+        TestEnvironment {
+            client,
+            payer,
+            program_id,
+        }
+    }
+
+    pub async fn create_funded_account(&amp;self) -&gt; Keypair {
+        let account = Keypair::new();
+        let signature = self.client
+            .request_airdrop(&amp;account.pubkey(), 1_000_000)
+            .await
+            .unwrap();
+        
+        self.client.confirm_transaction(&amp;signature).await.unwrap();
+        account
+    }
+}
+
+async fn deploy_test_program(client: &amp;ArchClient, payer: &amp;Keypair) -&gt; Pubkey {
+    let program_data = include_bytes!("../../program/target/deploy/my_counter_program.so");
+    
+    let program_id = client
+        .deploy_program(payer, program_data)
+        .await
+        .unwrap();
+    
+    program_id
+}
+
+// Helper functions for test data
+pub fn create_counter_initialize_instruction(
+    program_id: &amp;Pubkey,
+    counter_account: &amp;Pubkey,
+    authority: &amp;Pubkey,
+) -&gt; Instruction {
+    use my_program::{CounterInstruction, CounterParams};
+    
+    let params = CounterParams {
+        instruction: CounterInstruction::Initialize,
+        tx_hex: create_test_fee_transaction(),
+    };
+    
+    Instruction {
+        program_id: *program_id,
+        accounts: vec![
+            AccountMeta::new(*counter_account, true),
+            AccountMeta::new_readonly(*authority, true),
+        ],
+        data: borsh::to_vec(&amp;params).unwrap(),
+    }
+}
+
+pub fn create_test_fee_transaction() -&gt; Vec&lt;u8&gt; {
+    // Return a minimal valid Bitcoin transaction for testing
+    vec![
+        0x02, 0x00, 0x00, 0x00, // version
+        0x01, // input count
+        // ... simplified test transaction data
+    ]
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="complete-integration-tests"><a class="header" href="#complete-integration-tests">Complete Integration Tests</a></h3>
+<p><strong>tests/integration.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_sdk::prelude::*;
+use my_program::*;
+use serial_test::serial;
+
+mod common;
+use common::*;
+
+#[tokio::test]
+#[serial]
+async fn test_complete_counter_workflow() {
+    let env = TestEnvironment::new().await;
+    
+    // Create counter account
+    let counter_keypair = Keypair::new();
+    let user = env.create_funded_account().await;
+    
+    // Test 1: Initialize counter
+    let init_ix = create_counter_initialize_instruction(
+        &amp;env.program_id,
+        &amp;counter_keypair.pubkey(),
+        &amp;user.pubkey(),
     );
-...
-}</code></pre>
-<h4 id="mint"><a class="header" href="#mint">Mint</a></h4>
-<p>To mint tokens, we must supply a few pieces of information:</p>
+    
+    let tx = Transaction::new_signed_with_payer(
+        &amp;[init_ix],
+        Some(&amp;env.payer.pubkey()),
+        &amp;[&amp;env.payer, &amp;counter_keypair, &amp;user],
+        env.client.get_latest_blockhash().await.unwrap(),
+    );
+    
+    let result = env.client.send_and_confirm_transaction(&amp;tx).await;
+    assert!(result.is_ok(), "Initialize should succeed");
+    
+    // Verify initial state
+    let account_data = env.client
+        .get_account(&amp;counter_keypair.pubkey())
+        .await
+        .unwrap()
+        .unwrap();
+    
+    let counter_state: CounterAccount = borsh::from_slice(&amp;account_data.data).unwrap();
+    assert_eq!(counter_state.count, 0);
+    assert_eq!(counter_state.authority, user.pubkey());
+    assert!(!counter_state.is_frozen);
+    
+    // Test 2: Increment counter
+    let increment_ix = create_counter_increment_instruction(
+        &amp;env.program_id,
+        &amp;counter_keypair.pubkey(),
+        &amp;user.pubkey(),
+        10,
+    );
+    
+    let tx = Transaction::new_signed_with_payer(
+        &amp;[increment_ix],
+        Some(&amp;env.payer.pubkey()),
+        &amp;[&amp;env.payer, &amp;user],
+        env.client.get_latest_blockhash().await.unwrap(),
+    );
+    
+    let result = env.client.send_and_confirm_transaction(&amp;tx).await;
+    assert!(result.is_ok(), "Increment should succeed");
+    
+    // Verify incremented state
+    let account_data = env.client
+        .get_account(&amp;counter_keypair.pubkey())
+        .await
+        .unwrap()
+        .unwrap();
+    
+    let counter_state: CounterAccount = borsh::from_slice(&amp;account_data.data).unwrap();
+    assert_eq!(counter_state.count, 10);
+    assert_eq!(counter_state.operation_count, 1);
+    
+    // Test 3: Freeze counter
+    let freeze_ix = create_counter_freeze_instruction(
+        &amp;env.program_id,
+        &amp;counter_keypair.pubkey(),
+        &amp;user.pubkey(),
+    );
+    
+    let tx = Transaction::new_signed_with_payer(
+        &amp;[freeze_ix],
+        Some(&amp;env.payer.pubkey()),
+        &amp;[&amp;env.payer, &amp;user],
+        env.client.get_latest_blockhash().await.unwrap(),
+    );
+    
+    let result = env.client.send_and_confirm_transaction(&amp;tx).await;
+    assert!(result.is_ok(), "Freeze should succeed");
+    
+    // Test 4: Try to increment frozen counter (should fail)
+    let increment_ix = create_counter_increment_instruction(
+        &amp;env.program_id,
+        &amp;counter_keypair.pubkey(),
+        &amp;user.pubkey(),
+        5,
+    );
+    
+    let tx = Transaction::new_signed_with_payer(
+        &amp;[increment_ix],
+        Some(&amp;env.payer.pubkey()),
+        &amp;[&amp;env.payer, &amp;user],
+        env.client.get_latest_blockhash().await.unwrap(),
+    );
+    
+    let result = env.client.send_and_confirm_transaction(&amp;tx).await;
+    assert!(result.is_err(), "Increment should fail when frozen");
+    
+    // Test 5: Unfreeze and increment
+    let unfreeze_ix = create_counter_unfreeze_instruction(
+        &amp;env.program_id,
+        &amp;counter_keypair.pubkey(),
+        &amp;user.pubkey(),
+    );
+    
+    let increment_ix = create_counter_increment_instruction(
+        &amp;env.program_id,
+        &amp;counter_keypair.pubkey(),
+        &amp;user.pubkey(),
+        5,
+    );
+    
+    let tx = Transaction::new_signed_with_payer(
+        &amp;[unfreeze_ix, increment_ix],
+        Some(&amp;env.payer.pubkey()),
+        &amp;[&amp;env.payer, &amp;user],
+        env.client.get_latest_blockhash().await.unwrap(),
+    );
+    
+    let result = env.client.send_and_confirm_transaction(&amp;tx).await;
+    assert!(result.is_ok(), "Unfreeze and increment should succeed");
+    
+    // Final verification
+    let account_data = env.client
+        .get_account(&amp;counter_keypair.pubkey())
+        .await
+        .unwrap()
+        .unwrap();
+    
+    let counter_state: CounterAccount = borsh::from_slice(&amp;account_data.data).unwrap();
+    assert_eq!(counter_state.count, 15);
+    assert!(!counter_state.is_frozen);
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="security-testing"><a class="header" href="#security-testing">Security Testing</a></h2>
+<p><strong>tests/security.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_sdk::prelude::*;
+use my_program::*;
+use serial_test::serial;
+
+mod common;
+use common::*;
+
+#[tokio::test]
+#[serial]
+async fn test_unauthorized_access() {
+    let env = TestEnvironment::new().await;
+    
+    // Create counter with user1 as authority
+    let counter_keypair = Keypair::new();
+    let user1 = env.create_funded_account().await;
+    let user2 = env.create_funded_account().await;
+    
+    // Initialize counter with user1 as authority
+    let init_ix = create_counter_initialize_instruction(
+        &amp;env.program_id,
+        &amp;counter_keypair.pubkey(),
+        &amp;user1.pubkey(),
+    );
+    
+    let tx = Transaction::new_signed_with_payer(
+        &amp;[init_ix],
+        Some(&amp;env.payer.pubkey()),
+        &amp;[&amp;env.payer, &amp;counter_keypair, &amp;user1],
+        env.client.get_latest_blockhash().await.unwrap(),
+    );
+    
+    env.client.send_and_confirm_transaction(&amp;tx).await.unwrap();
+    
+    // Try to reset counter with user2 (should fail)
+    let reset_ix = create_counter_reset_instruction(
+        &amp;env.program_id,
+        &amp;counter_keypair.pubkey(),
+        &amp;user2.pubkey(), // Wrong authority
+    );
+    
+    let tx = Transaction::new_signed_with_payer(
+        &amp;[reset_ix],
+        Some(&amp;env.payer.pubkey()),
+        &amp;[&amp;env.payer, &amp;user2],
+        env.client.get_latest_blockhash().await.unwrap(),
+    );
+    
+    let result = env.client.send_and_confirm_transaction(&amp;tx).await;
+    assert!(result.is_err(), "Reset should fail with wrong authority");
+}
+
+#[tokio::test]
+#[serial]
+async fn test_overflow_protection() {
+    let env = TestEnvironment::new().await;
+    
+    let counter_keypair = Keypair::new();
+    let user = env.create_funded_account().await;
+    
+    // Initialize counter
+    let init_ix = create_counter_initialize_instruction(
+        &amp;env.program_id,
+        &amp;counter_keypair.pubkey(),
+        &amp;user.pubkey(),
+    );
+    
+    let tx = Transaction::new_signed_with_payer(
+        &amp;[init_ix],
+        Some(&amp;env.payer.pubkey()),
+        &amp;[&amp;env.payer, &amp;counter_keypair, &amp;user],
+        env.client.get_latest_blockhash().await.unwrap(),
+    );
+    
+    env.client.send_and_confirm_transaction(&amp;tx).await.unwrap();
+    
+    // Try to increment by maximum value (should fail due to overflow protection)
+    let increment_ix = create_counter_increment_instruction(
+        &amp;env.program_id,
+        &amp;counter_keypair.pubkey(),
+        &amp;user.pubkey(),
+        u32::MAX, // This should cause overflow
+    );
+    
+    let tx = Transaction::new_signed_with_payer(
+        &amp;[increment_ix],
+        Some(&amp;env.payer.pubkey()),
+        &amp;[&amp;env.payer, &amp;user],
+        env.client.get_latest_blockhash().await.unwrap(),
+    );
+    
+    let result = env.client.send_and_confirm_transaction(&amp;tx).await;
+    assert!(result.is_err(), "Large increment should fail due to overflow protection");
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="performance-testing"><a class="header" href="#performance-testing">Performance Testing</a></h2>
+<p><strong>tests/performance.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_sdk::prelude::*;
+use my_program::*;
+use std::time::Instant;
+use tokio::time::{sleep, Duration};
+
+mod common;
+use common::*;
+
+#[tokio::test]
+async fn test_transaction_throughput() {
+    let env = TestEnvironment::new().await;
+    
+    let counter_keypair = Keypair::new();
+    let user = env.create_funded_account().await;
+    
+    // Initialize counter
+    let init_ix = create_counter_initialize_instruction(
+        &amp;env.program_id,
+        &amp;counter_keypair.pubkey(),
+        &amp;user.pubkey(),
+    );
+    
+    let tx = Transaction::new_signed_with_payer(
+        &amp;[init_ix],
+        Some(&amp;env.payer.pubkey()),
+        &amp;[&amp;env.payer, &amp;counter_keypair, &amp;user],
+        env.client.get_latest_blockhash().await.unwrap(),
+    );
+    
+    env.client.send_and_confirm_transaction(&amp;tx).await.unwrap();
+    
+    // Benchmark multiple increments
+    let start_time = Instant::now();
+    let num_operations = 100;
+    
+    for i in 0..num_operations {
+        let increment_ix = create_counter_increment_instruction(
+            &amp;env.program_id,
+            &amp;counter_keypair.pubkey(),
+            &amp;user.pubkey(),
+            1,
+        );
+        
+        let tx = Transaction::new_signed_with_payer(
+            &amp;[increment_ix],
+            Some(&amp;env.payer.pubkey()),
+            &amp;[&amp;env.payer, &amp;user],
+            env.client.get_latest_blockhash().await.unwrap(),
+        );
+        
+        env.client.send_and_confirm_transaction(&amp;tx).await.unwrap();
+        
+        if i % 10 == 0 {
+            println!("Completed {} operations", i + 1);
+        }
+        
+        // Small delay to avoid overwhelming the network
+        sleep(Duration::from_millis(10)).await;
+    }
+    
+    let elapsed = start_time.elapsed();
+    let ops_per_second = num_operations as f64 / elapsed.as_secs_f64();
+    
+    println!("Completed {} operations in {:?}", num_operations, elapsed);
+    println!("Throughput: {:.2} operations/second", ops_per_second);
+    
+    // Verify final state
+    let account_data = env.client
+        .get_account(&amp;counter_keypair.pubkey())
+        .await
+        .unwrap()
+        .unwrap();
+    
+    let counter_state: CounterAccount = borsh::from_slice(&amp;account_data.data).unwrap();
+    assert_eq!(counter_state.count, num_operations);
+    assert_eq!(counter_state.operation_count, num_operations as u64);
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="test-execution"><a class="header" href="#test-execution">Test Execution</a></h2>
+<h3 id="running-tests"><a class="header" href="#running-tests">Running Tests</a></h3>
+<pre><code class="language-bash"># Run all tests
+cargo test
+
+# Run specific test categories
+cargo test --test integration
+cargo test --test security
+cargo test --test performance
+
+# Run with logs
+RUST_LOG=debug cargo test
+
+# Run tests in sequence (for tests that modify shared state)
+cargo test -- --test-threads=1
+</code></pre>
+<h3 id="continuous-integration"><a class="header" href="#continuous-integration">Continuous Integration</a></h3>
+<p><strong>.github/workflows/test.yml</strong></p>
+<pre><code class="language-yaml">name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      bitcoind:
+        image: ruimarinho/bitcoin-core:22
+        options: &gt;-
+          --health-cmd "bitcoin-cli -regtest getblockchaininfo"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 18443:18443
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        
+    - name: Install Solana CLI
+      run: |
+        sh -c "$(curl -sSfL https://release.solana.com/v1.16.27/install)"
+        echo "$HOME/.local/share/solana/install/active_release/bin" &gt;&gt; $GITHUB_PATH
+        
+    - name: Start local validator
+      run: |
+        solana-test-validator --detach
+        
+    - name: Build program
+      run: |
+        cargo build-sbf
+        
+    - name: Run tests
+      run: |
+        cargo test
+        
+    - name: Run integration tests
+      run: |
+        cargo test --test integration
+</code></pre>
+<h2 id="best-practices-1"><a class="header" href="#best-practices-1">Best Practices</a></h2>
+<h3 id="1-test-organization"><a class="header" href="#1-test-organization">1. Test Organization</a></h3>
 <ul>
-<li>Owner</li>
-<li>Supply</li>
-<li>Ticker</li>
-<li>Decimals</li>
+<li>Separate unit, integration, and security tests</li>
+<li>Use common test utilities to reduce duplication</li>
+<li>Group related tests into modules</li>
 </ul>
-<p>This data gets stored in the <code>InitializeMintInput</code> struct, which will be used to generate a new instance of the Fungible Token Standard.</p>
-<pre><code class="language-rust ignore">#[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
-pub struct InitializeMintInput {
-    owner: [u8; 32],
-    supply: u64, // in lowest denomination
-    ticker: String,
-    decimals: u8,
-}</code></pre>
-<p>To demonstrate a mint, we’ll reference: <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/tests_mint.rs">tests_mint.rs</a></p>
-<p>We initialize a new instance of <code>InitializeMintInput</code> and pass in the necessary data. In the below case, our owner account will create the token “SPONK,” with a total supply of 1,000,000, which will have only a single decimal, meaning it is divisible by 1.</p>
-<pre><code class="language-rust ignore">// deploy.rs
-let mint_input = InitializeMintInput::new(
-    mint_account_pubkey.serialize(),
-    1000000,
-    "SPONK".to_string(),
-    1,
-);</code></pre>
-<p>We then serialize <code>mint_input</code> so that we can pass it as <code>instruction_data</code> within an <a href="guides/../program/instructions-and-messages.html#instructions">Instruction</a> which then gets submitted to the deployed Fungible Token Standard program.</p>
-<pre><code class="language-rust ignore">let mut instruction_data = vec![0u8];
-
-mint_input
-    .serialize(&amp;mut instruction_data)
-    .expect("Couldnt serialize mint input");
-
-let initialize_mint_instruction = Instruction {
-    program_id: program_pubkey.clone(),
-    accounts: vec![AccountMeta {
-        pubkey: mint_account_pubkey,
-        is_signer: true,
-        is_writable: true,
-    }],
-    data: instruction_data,
-};</code></pre>
-<p>Next, we build a transaction using <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_instructions.rs#L163"><code>build_transaction</code></a> and then submit the transaction with <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_instructions.rs#L196"><code>build_and_send_block</code></a>, both helper function from the <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter">ebpf-counter</a> example.</p>
-<pre><code class="language-rust ignore">let transaction = build_transaction(
-    vec![mint_account_keypair],
-    vec![initialize_mint_instruction],
-);
-
-let block_transactions = build_and_send_block(vec![transaction]);</code></pre>
-<p>We fetch the result of the transaction with <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_instructions.rs#L207"><code>fetch_processed_transactions</code></a> helper function (<a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter">ebpf-counter</a>) and then obtain the mint details by passing the <a href="guides/../program/pubkey.html">Pubkey</a> of the token owner.</p>
-<pre><code class="language-rust ignore">let processed_transactions = fetch_processed_transactions(block_transactions).unwrap();
-
-assert!(matches!(
-    processed_transactions[0].status,
-    Status::Processed
-));
-
-let mint_details = get_mint_info(&amp;mint_account_pubkey).expect("Couldnt deserialize mint info");
-
-println!("Mint account {:?}", mint_account_pubkey.serialize());</code></pre>
-<h4 id="transfer"><a class="header" href="#transfer">Transfer</a></h4>
-<p>To demonstrate a transfer, we’ll reference: <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/tests_transfer.rs">tests_transfer.rs</a></p>
-<p>We obtain a <code>mint_account_pubkey</code>, made possible by using the <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/helpers.rs#L38"><code>try_create_mint_account</code></a> helper function. We pass <code>true</code> as this is a one-time mint event and this will generate a new keypair and <a href="guides/../program/pubkey.html">Pubkey</a>.</p>
-<p>This step will actually create a new token with the following details:</p>
+<h3 id="2-test-data-management"><a class="header" href="#2-test-data-management">2. Test Data Management</a></h3>
 <ul>
-<li>Supply: 1,000,000</li>
-<li>Ticker: “ARCH”</li>
-<li>Decimals: 2</li>
-<li>Mint Price: 1000 sats</li>
+<li>Use deterministic test data when possible</li>
+<li>Clean up test accounts and state</li>
+<li>Use property-based testing for edge cases</li>
 </ul>
-<pre><code class="language-rust ignore">let mint_account_pubkey = try_create_mint_account(true).unwrap();</code></pre>
-<p>We then fetch the token mint details with <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/helpers.rs#L173"><code>get_mint_info</code></a>.</p>
-<pre><code class="language-rust ignore">let previous_mint_details = get_mint_info(&amp;mint_account_pubkey).unwrap();</code></pre>
-<p>Now, let’s provision our two accounts: the sender and the receiver.</p>
-<pre><code class="language-rust ignore">// sending account
-let (first_account_owner_key_pair, first_account_owner_pubkey, _first_account_owner_address) =
-        generate_new_keypair();
+<h3 id="3-error-testing"><a class="header" href="#3-error-testing">3. Error Testing</a></h3>
+<ul>
+<li>Test all error conditions explicitly</li>
+<li>Verify correct error codes are returned</li>
+<li>Test permission and access control</li>
+</ul>
+<h3 id="4-performance-considerations"><a class="header" href="#4-performance-considerations">4. Performance Considerations</a></h3>
+<ul>
+<li>Monitor transaction costs in tests</li>
+<li>Test with realistic data sizes</li>
+<li>Benchmark critical operations</li>
+</ul>
+<h3 id="5-security-focus"><a class="header" href="#5-security-focus">5. Security Focus</a></h3>
+<ul>
+<li>Test privilege escalation attempts</li>
+<li>Verify input validation</li>
+<li>Test resource exhaustion scenarios</li>
+</ul>
+<h2 id="debugging-tests"><a class="header" href="#debugging-tests">Debugging Tests</a></h2>
+<h3 id="logging-and-diagnostics"><a class="header" href="#logging-and-diagnostics">Logging and Diagnostics</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod debug_tests {
+    use super::*;
+    use arch_program::msg;
+    
+    #[test]
+    fn test_with_logging() {
+        env_logger::init();
+        
+        // Your test code with msg! calls will now show logs
+        msg!("Debug: Testing counter initialization");
+        
+        // ... test code ...
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="test-helpers-for-debugging"><a class="header" href="#test-helpers-for-debugging">Test Helpers for Debugging</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn debug_account_state(client: &amp;ArchClient, account: &amp;Pubkey) -&gt; CounterAccount {
+    let account_data = client.get_account(account).unwrap().unwrap();
+    let state: CounterAccount = borsh::from_slice(&amp;account_data.data).unwrap();
+    
+    println!("Account: {}", account);
+    println!("Count: {}", state.count);
+    println!("Authority: {}", state.authority);
+    println!("Frozen: {}", state.is_frozen);
+    println!("Operations: {}", state.operation_count);
+    
+    state
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
+<p>Comprehensive testing is crucial for Arch Network program development. This guide provides:</p>
+<ul>
+<li><strong>Complete test setup</strong> with proper dependencies and project structure</li>
+<li><strong>Multi-layer testing strategy</strong> covering unit, integration, security, and performance</li>
+<li><strong>Real working examples</strong> that you can adapt for your programs</li>
+<li><strong>Best practices</strong> for maintainable and effective test suites</li>
+<li><strong>CI/CD integration</strong> for automated testing</li>
+</ul>
+<p>Remember to test early, test often, and test thoroughly. Your users depend on your programs being secure and reliable!</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="arch-network-development-guides"><a class="header" href="#arch-network-development-guides">Arch Network Development Guides</a></h1>
+<p>This section provides comprehensive guides for building, testing, and deploying Arch Network programs. Whether you’re just starting out or building complex applications, these guides will help you develop robust and efficient programs.</p>
+<h2 id="getting-started-guides"><a class="header" href="#getting-started-guides">Getting Started Guides</a></h2>
+<h3 id="understanding-arch-programs-1"><a class="header" href="#understanding-arch-programs-1"><a href="guides/./understanding-arch-programs.html">Understanding Arch Programs</a></a></h3>
+<p>Learn the fundamental concepts, architecture, and development patterns for Arch Network programs. This guide covers the complete foundation you need before building your first program.</p>
+<p><strong>Covers:</strong> Program structure, Bitcoin integration, state management, error handling, and development best practices.</p>
+<h3 id="writing-your-first-program"><a class="header" href="#writing-your-first-program"><a href="guides/./writing-your-first-program.html">Writing Your First Program</a></a></h3>
+<p>A comprehensive step-by-step tutorial for creating, deploying, and testing a complete counter program with advanced features.</p>
+<p><strong>Covers:</strong> Project setup, program logic, Bitcoin transactions, security patterns, and comprehensive testing.</p>
+<h3 id="comprehensive-testing-guide"><a class="header" href="#comprehensive-testing-guide"><a href="guides/./testing-guide.html">Comprehensive Testing Guide</a></a></h3>
+<p>Master testing strategies for Arch Network programs with unit tests, integration tests, security tests, and performance testing.</p>
+<p><strong>Covers:</strong> Test environment setup, multi-layer testing, security testing, CI/CD integration, and debugging techniques.</p>
+<h2 id="configuration--setup"><a class="header" href="#configuration--setup">Configuration &amp; Setup</a></h2>
+<h3 id="local-validator-with-bitcoin-testnet4"><a class="header" href="#local-validator-with-bitcoin-testnet4"><a href="guides/./how-to-configure-local-validator-bitcoin-testnet4.html">Local Validator with Bitcoin Testnet4</a></a></h3>
+<p>Configure your development environment to work with Bitcoin testnet4 for testing ordinals, runes, and advanced Bitcoin features.</p>
+<p><strong>Covers:</strong> Testnet4 setup, validator configuration, ordinals support, runes protocol, and production considerations.</p>
+<h2 id="program-examples--tutorials"><a class="header" href="#program-examples--tutorials">Program Examples &amp; Tutorials</a></h2>
+<h3 id="fungible-token-program"><a class="header" href="#fungible-token-program"><a href="guides/./how-to-create-a-fungible-token.html">Fungible Token Program</a></a></h3>
+<p>Build a complete fungible token implementation compatible with standard token interfaces.</p>
+<p><strong>What you’ll build:</strong> Token minting, transfers, allowances, and metadata management.</p>
+<h3 id="oracle-program"><a class="header" href="#oracle-program"><a href="guides/./how-to-write-oracle-program.html">Oracle Program</a></a></h3>
+<p>Create a price oracle program that fetches and stores external data on-chain.</p>
+<p><strong>What you’ll build:</strong> Price feeds, data validation, timestamp management, and trusted data sources.</p>
+<h3 id="runes-swap-program"><a class="header" href="#runes-swap-program"><a href="guides/./how-to-build-runes-swap.html">Runes Swap Program</a></a></h3>
+<p>Implement a decentralized exchange for trading Bitcoin runes and ordinals.</p>
+<p><strong>What you’ll build:</strong> AMM functionality, liquidity pools, runes integration, and swap mechanisms.</p>
+<h3 id="lending-protocol"><a class="header" href="#lending-protocol"><a href="guides/./how-to-build-lending-protocol.html">Lending Protocol</a></a></h3>
+<p>Build a complete DeFi lending platform with collateralized loans and interest rates.</p>
+<p><strong>What you’ll build:</strong> Collateral management, loan origination, interest calculations, and liquidation mechanisms.</p>
+<h2 id="recommended-learning-path"><a class="header" href="#recommended-learning-path">Recommended Learning Path</a></h2>
+<h3 id="for-beginners"><a class="header" href="#for-beginners">For Beginners</a></h3>
+<ol>
+<li><strong><a href="guides/./understanding-arch-programs.html">Understanding Arch Programs</a></strong> - Learn the fundamentals</li>
+<li><strong><a href="guides/./writing-your-first-program.html">Writing Your First Program</a></strong> - Build your first complete program</li>
+<li><strong><a href="guides/./testing-guide.html">Testing Guide</a></strong> - Learn to test thoroughly</li>
+<li><strong><a href="guides/./how-to-create-a-fungible-token.html">Fungible Token</a></strong> - Build a practical program</li>
+</ol>
+<h3 id="for-intermediate-developers"><a class="header" href="#for-intermediate-developers">For Intermediate Developers</a></h3>
+<ol>
+<li><strong><a href="guides/./how-to-write-oracle-program.html">Oracle Program</a></strong> - External data integration</li>
+<li><strong><a href="guides/./how-to-configure-local-validator-bitcoin-testnet4.html">Local Validator Setup</a></strong> - Advanced testing environments</li>
+<li><strong><a href="guides/./how-to-build-runes-swap.html">Runes Swap</a></strong> - Bitcoin-native features</li>
+</ol>
+<h3 id="for-advanced-developers"><a class="header" href="#for-advanced-developers">For Advanced Developers</a></h3>
+<ol>
+<li><strong><a href="guides/./how-to-build-lending-protocol.html">Lending Protocol</a></strong> - Complex DeFi mechanics</li>
+<li><strong>All testing guides</strong> - Production-ready development practices</li>
+</ol>
+<h2 id="quick-reference"><a class="header" href="#quick-reference">Quick Reference</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Guide</th><th>Difficulty</th><th>Time</th><th>Key Concepts</th></tr></thead><tbody>
+<tr><td>Understanding Arch Programs</td><td>Beginner</td><td>30 min</td><td>Architecture, concepts</td></tr>
+<tr><td>Writing Your First Program</td><td>Beginner</td><td>2-3 hours</td><td>Complete development cycle</td></tr>
+<tr><td>Testing Guide</td><td>Intermediate</td><td>1-2 hours</td><td>Testing strategies</td></tr>
+<tr><td>Testnet4 Setup</td><td>Intermediate</td><td>30 min</td><td>Advanced configuration</td></tr>
+<tr><td>Fungible Token</td><td>Intermediate</td><td>3-4 hours</td><td>Token standards</td></tr>
+<tr><td>Oracle Program</td><td>Intermediate</td><td>2-3 hours</td><td>External data</td></tr>
+<tr><td>Runes Swap</td><td>Advanced</td><td>4-6 hours</td><td>DEX mechanics</td></tr>
+<tr><td>Lending Protocol</td><td>Advanced</td><td>6-8 hours</td><td>DeFi protocols</td></tr>
+</tbody></table>
+</div>
+<h2 id="development-tips"><a class="header" href="#development-tips">Development Tips</a></h2>
+<h3 id="before-you-start"><a class="header" href="#before-you-start">Before You Start</a></h3>
+<ul>
+<li><strong>Set up your environment</strong> following the <a href="guides/../getting-started/quick-start.html">Quick Start Guide</a></li>
+<li><strong>Understand Bitcoin basics</strong> if you’re new to Bitcoin development</li>
+<li><strong>Review Rust fundamentals</strong> if you’re not familiar with Rust</li>
+</ul>
+<h3 id="best-practices-2"><a class="header" href="#best-practices-2">Best Practices</a></h3>
+<ul>
+<li><strong>Start simple</strong> - Begin with basic programs before building complex systems</li>
+<li><strong>Test thoroughly</strong> - Use the comprehensive testing strategies from our guides</li>
+<li><strong>Follow security patterns</strong> - Always validate inputs and handle errors gracefully</li>
+<li><strong>Document your code</strong> - Future you (and your team) will thank you</li>
+</ul>
+<h3 id="getting-help"><a class="header" href="#getting-help">Getting Help</a></h3>
+<ul>
+<li><strong>Join our <a href="https://discord.gg/archnetwork">Discord</a></strong> for real-time support</li>
+<li><strong>Check the <a href="guides/../rpc/http-methods.html">API Reference</a></strong> for detailed documentation</li>
+<li><strong>Review <a href="guides/../concepts/architecture.html">Core Concepts</a></strong> for architectural guidance</li>
+<li><strong>File issues</strong> on <a href="https://github.com/Arch-Network/arch-node/issues">GitHub</a> for bugs</li>
+</ul>
+<h2 id="contributing"><a class="header" href="#contributing">Contributing</a></h2>
+<p>Found an issue or want to improve these guides? We welcome contributions!</p>
+<ul>
+<li><strong>Report bugs</strong> or unclear instructions</li>
+<li><strong>Suggest improvements</strong> to existing guides</li>
+<li><strong>Propose new guides</strong> for topics we haven’t covered</li>
+<li><strong>Share your programs</strong> as examples for the community</li>
+</ul>
+<h2 id="whats-next"><a class="header" href="#whats-next">What’s Next?</a></h2>
+<p>Choose your path based on your experience level and goals:</p>
+<ul>
+<li><strong>New to Arch?</strong> Start with <a href="guides/./understanding-arch-programs.html">Understanding Arch Programs</a></li>
+<li><strong>Ready to code?</strong> Jump into <a href="guides/./writing-your-first-program.html">Writing Your First Program</a></li>
+<li><strong>Building tokens?</strong> Check out the <a href="guides/./how-to-create-a-fungible-token.html">Fungible Token</a> guide</li>
+<li><strong>Interested in DeFi?</strong> Try the <a href="guides/./how-to-build-lending-protocol.html">Lending Protocol</a> guide</li>
+</ul>
+<p>Happy building! 🚀</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="using-apl-tokens-on-arch-network"><a class="header" href="#using-apl-tokens-on-arch-network">Using APL Tokens on Arch Network</a></h1>
+<p>This guide shows you how to work with fungible tokens on Arch Network using the built-in <strong>APL (Arch Program Library) Token Program</strong>. APL tokens are based on Solana’s SPL token standard and provide a robust foundation for creating and managing tokens on Arch Network.</p>
+<h2 id="what-youll-learn-1"><a class="header" href="#what-youll-learn-1">What You’ll Learn</a></h2>
+<p>By the end of this guide, you’ll understand how to:</p>
+<ul>
+<li><strong>Create token mints</strong> using the APL token program</li>
+<li><strong>Initialize token accounts</strong> for holding tokens</li>
+<li><strong>Mint tokens</strong> to accounts</li>
+<li><strong>Transfer tokens</strong> between accounts</li>
+<li><strong>Approve delegations</strong> for spending tokens</li>
+<li><strong>Burn tokens</strong> and manage token lifecycle</li>
+</ul>
+<h2 id="overview-2"><a class="header" href="#overview-2">Overview</a></h2>
+<p>The APL Token Program is Arch Network’s native token standard, providing:</p>
+<ul>
+<li><strong>SPL Token Compatibility</strong>: Based on Solana’s proven token standard</li>
+<li><strong>Bitcoin Integration</strong>: All operations are recorded on Bitcoin</li>
+<li><strong>Comprehensive Features</strong>: Minting, transferring, burning, delegation, freezing</li>
+<li><strong>Multisig Support</strong>: Multiple signature authorities for enhanced security</li>
+</ul>
+<h2 id="prerequisites-6"><a class="header" href="#prerequisites-6">Prerequisites</a></h2>
+<p>Before starting, ensure you have:</p>
+<ul>
+<li><strong>Rust 1.70+</strong> and Cargo installed (<a href="https://rustup.rs/">Install Rust</a>)</li>
+<li><strong>Solana CLI 1.16+</strong> (DO NOT upgrade to 2.x) - <a href="https://docs.solana.com/cli/install-solana-cli-tools">Install Guide</a></li>
+<li><strong>Arch Network CLI</strong> - <a href="https://github.com/Arch-Network/arch-node/releases/latest">Download Latest</a></li>
+<li><strong>Running validator</strong> (see <a href="guides/./how-to-configure-local-validator-bitcoin-testnet4.html">Validator Setup Guide</a>)</li>
+<li><strong>Basic familiarity</strong> with Arch Network program development</li>
+</ul>
+<h2 id="apl-token-program-id"><a class="header" href="#apl-token-program-id">APL Token Program ID</a></h2>
+<p>The APL Token Program has a fixed program ID:</p>
+<pre><code class="language-text">apl-token00000000000000000000000
+</code></pre>
+<h2 id="step-1-project-setup-1"><a class="header" href="#step-1-project-setup-1">Step 1: Project Setup</a></h2>
+<h3 id="11-create-project-structure-1"><a class="header" href="#11-create-project-structure-1">1.1 Create Project Structure</a></h3>
+<pre><code class="language-bash"># Create project directory
+mkdir arch-token-example
+cd arch-token-example
 
-let first_balance_account_pubkey = create_balance_account(
-        &amp;first_account_owner_pubkey,
-        first_account_owner_key_pair,
-        &amp;mint_account_pubkey,
-        &amp;program_pubkey,
-)
-.unwrap();
+# Initialize Rust project
+cargo init --bin
+</code></pre>
+<h3 id="12-configure-dependencies-1"><a class="header" href="#12-configure-dependencies-1">1.2 Configure Dependencies</a></h3>
+<p><strong>Cargo.toml</strong></p>
+<pre><code class="language-toml">[package]
+name = "arch_token_example"
+version = "0.1.0"
+edition = "2021"
 
-// receiving account
-let (second_account_owner_key_pair, second_account_owner_pubkey, _second_account_owner_address) =
-    generate_new_keypair();
+[dependencies]
+arch_sdk = "0.5.2"
+arch_program = "0.5.2"
+arch_test_sdk = "0.5.2"
+apl-token = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
+apl-associated-token-account = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
+borsh = { version = "1.5.1", features = ["derive"] }
+bitcoincore-rpc = "0.18.0"
+bitcoin = { version = "0.32.3", features = ["serde", "rand"] }
+hex = "0.4.3"
+log = "0.4"
+env_logger = "0.10"
 
-let second_balance_account_pubkey = create_balance_account(
-    &amp;second_account_owner_pubkey,
-    second_account_owner_key_pair,
-    &amp;mint_account_pubkey,
-    &amp;program_pubkey,
-)
-.unwrap();</code></pre>
-<p>We then procure funds for the sending account. In this case, we’ll mint 10 tokens.</p>
-<pre><code class="language-rust ignore">let mint_amount = 10u64;
+[dev-dependencies]
+serial_test = "3.1.1"
+</code></pre>
+<h2 id="step-2-basic-token-operations"><a class="header" href="#step-2-basic-token-operations">Step 2: Basic Token Operations</a></h2>
+<h3 id="21-initialize-a-token-mint"><a class="header" href="#21-initialize-a-token-mint">2.1 Initialize a Token Mint</a></h3>
+<p>First, let’s create a new token mint:</p>
+<p><strong>src/main.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::Mint;
+use arch_program::{program_pack::Pack, sanitized::ArchMessage};
+use arch_sdk::{build_and_sign_transaction, generate_new_keypair, ArchRpcClient, Status};
+use arch_test_sdk::{
+    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
+    helper::{create_and_fund_account_with_faucet, send_transactions_and_wait},
+};
 
-let mint_instruction = mint_request_instruction(
-    &amp;mint_account_pubkey,
-    &amp;program_pubkey,
-    &amp;first_balance_account_pubkey,
-    &amp;first_account_owner_pubkey,
-    mint_amount,
-)
-.unwrap();</code></pre>
-<p>We utilize the <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/fungible-token-standard/src/instruction.rs#L116"><code>transfer_request_instruction</code></a> helper function to generate a transfer <a href="guides/../program/instructions-and-messages.html#instructions">Instruction</a>.</p>
-<pre><code class="language-rust ignore">let transfer_instruction = transfer_request_instruction(
-    &amp;mint_account_pubkey,
-    &amp;program_pubkey,
-    &amp;first_balance_account_pubkey,
-    &amp;first_account_owner_pubkey,
-    &amp;second_balance_account_pubkey,
-    mint_amount,
-)
-.unwrap();</code></pre>
-<p>We build the transaction by passing in the newly created transfer <a href="guides/../program/instructions-and-messages.html#instructions">Instruction</a> as well as the keypair of the sending account, necessary for authorizing the fund transfer.</p>
-<pre><code class="language-rust ignore">let transfer_transaction = build_transaction(
-    vec![first_account_owner_key_pair],
-    vec![transfer_instruction],
-);</code></pre>
-<p>Next, we then submit the transaction with <a href="https://github.com/Arch-Network/arch-examples/blob/main/examples/ebpf-counter/src/counter_instructions.rs#L196"><code>build_and_send_block</code></a> and then fetch the processed transaction to get the result.</p>
-<pre><code class="language-rust ignore">let block_transactions = build_and_send_block(vec![transfer_transaction]);
+fn main() {
+    env_logger::init();
+    
+    let client = ArchRpcClient::new(NODE1_ADDRESS);
 
-let processed_transactions = fetch_processed_transactions(block_transactions).unwrap();
+    // Create authority keypair (this will be the mint authority)
+    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
+    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
 
-assert!(matches!(
-    processed_transactions[0].status,
-    Status::Processed
-));</code></pre>
-<h4 id="balance-check"><a class="header" href="#balance-check">Balance check</a></h4>
-<p>In order to check the token balance of an account, we’ll make use of the <code>get_balance_account</code> function and pass in the account we are looking to query the balance of; in the below example, we’ll fetch the balances of both the sending and receiving accounts.</p>
-<pre><code class="language-rust ignore">let resulting_sender_balance = get_balance_account(&amp;first_balance_account_pubkey).unwrap();
+    // Create mint account
+    let (token_mint_keypair, token_mint_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
 
-let resulting_receiver_balance = get_balance_account(&amp;second_balance_account_pubkey).unwrap();
+    // Create the mint account
+    let create_account_instruction = arch_program::system_instruction::create_account(
+        &amp;authority_pubkey,
+        &amp;token_mint_pubkey,
+        arch_program::account::MIN_ACCOUNT_LAMPORTS,
+        Mint::LEN as u64,
+        &amp;apl_token::id(),
+    );
 
-assert_eq!(resulting_receiver_balance.current_balance, mint_amount);
+    // Initialize the mint
+    let initialize_mint_instruction = apl_token::instruction::initialize_mint(
+        &amp;apl_token::id(),
+        &amp;token_mint_pubkey,
+        &amp;authority_pubkey,
+        None, // No freeze authority
+        9,    // 9 decimals (like USDC)
+    ).unwrap();
 
-assert_eq!(resulting_sender_balance.current_balance, 0);</code></pre>
-<!-- Internal -->
-<!-- External -->
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[create_account_instruction, initialize_mint_instruction],
+            Some(authority_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![authority_keypair, token_mint_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+
+    println!("Token mint created: {}", token_mint_pubkey);
+}</code></pre></pre>
+<h3 id="22-create-token-accounts"><a class="header" href="#22-create-token-accounts">2.2 Create Token Accounts</a></h3>
+<p>Token accounts hold tokens for specific owners:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn initialize_token_account(
+    client: &amp;ArchRpcClient,
+    token_mint_pubkey: arch_program::pubkey::Pubkey,
+    owner_keypair: bitcoin::key::Keypair,
+) -&gt; (bitcoin::key::Keypair, arch_program::pubkey::Pubkey) {
+    let owner_pubkey = arch_program::pubkey::Pubkey::from_slice(
+        &amp;owner_keypair.x_only_public_key().0.serialize()
+    );
+
+    let (token_account_keypair, token_account_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
+
+    // Create the account
+    let create_account_instruction = arch_program::system_instruction::create_account(
+        &amp;owner_pubkey,
+        &amp;token_account_pubkey,
+        arch_program::account::MIN_ACCOUNT_LAMPORTS,
+        apl_token::state::Account::LEN as u64,
+        &amp;apl_token::id(),
+    );
+
+    // Initialize the token account
+    let initialize_account_instruction = apl_token::instruction::initialize_account(
+        &amp;apl_token::id(),
+        &amp;token_account_pubkey,
+        &amp;token_mint_pubkey,
+        &amp;owner_pubkey,
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[create_account_instruction, initialize_account_instruction],
+            Some(owner_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![owner_keypair, token_account_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+
+    (token_account_keypair, token_account_pubkey)
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="23-mint-tokens"><a class="header" href="#23-mint-tokens">2.3 Mint Tokens</a></h3>
+<p>Mint new tokens to a token account:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn mint_tokens(
+    client: &amp;ArchRpcClient,
+    mint_pubkey: &amp;arch_program::pubkey::Pubkey,
+    account_pubkey: &amp;arch_program::pubkey::Pubkey,
+    authority_pubkey: &amp;arch_program::pubkey::Pubkey,
+    authority_keypair: bitcoin::key::Keypair,
+    amount: u64,
+) {
+    let mint_instruction = apl_token::instruction::mint_to(
+        &amp;apl_token::id(),
+        mint_pubkey,
+        account_pubkey,
+        authority_pubkey,
+        &amp;[], // No additional signers for single authority
+        amount,
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[mint_instruction],
+            Some(*authority_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![authority_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+    
+    println!("Minted {} tokens", amount);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="24-transfer-tokens"><a class="header" href="#24-transfer-tokens">2.4 Transfer Tokens</a></h3>
+<p>Transfer tokens between accounts:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn transfer_tokens(
+    client: &amp;ArchRpcClient,
+    source_account: &amp;arch_program::pubkey::Pubkey,
+    destination_account: &amp;arch_program::pubkey::Pubkey,
+    owner_pubkey: &amp;arch_program::pubkey::Pubkey,
+    owner_keypair: bitcoin::key::Keypair,
+    amount: u64,
+) {
+    let transfer_instruction = apl_token::instruction::transfer(
+        &amp;apl_token::id(),
+        source_account,
+        destination_account,
+        owner_pubkey,
+        &amp;[owner_pubkey], // Owner must sign
+        amount,
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[transfer_instruction],
+            Some(*owner_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![owner_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+    
+    println!("Transferred {} tokens", amount);
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="step-3-advanced-token-operations"><a class="header" href="#step-3-advanced-token-operations">Step 3: Advanced Token Operations</a></h2>
+<h3 id="31-approve-delegations"><a class="header" href="#31-approve-delegations">3.1 Approve Delegations</a></h3>
+<p>Allow another account to spend tokens on your behalf:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn approve_delegate(
+    client: &amp;ArchRpcClient,
+    source_account: &amp;arch_program::pubkey::Pubkey,
+    delegate_account: &amp;arch_program::pubkey::Pubkey,
+    owner_pubkey: &amp;arch_program::pubkey::Pubkey,
+    owner_keypair: bitcoin::key::Keypair,
+    amount: u64,
+) {
+    let approve_instruction = apl_token::instruction::approve(
+        &amp;apl_token::id(),
+        source_account,
+        delegate_account,
+        owner_pubkey,
+        &amp;[owner_pubkey],
+        amount,
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[approve_instruction],
+            Some(*owner_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![owner_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+    
+    println!("Approved {} tokens for delegation", amount);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="32-burn-tokens"><a class="header" href="#32-burn-tokens">3.2 Burn Tokens</a></h3>
+<p>Remove tokens from circulation:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn burn_tokens(
+    client: &amp;ArchRpcClient,
+    account_pubkey: &amp;arch_program::pubkey::Pubkey,
+    mint_pubkey: &amp;arch_program::pubkey::Pubkey,
+    owner_pubkey: &amp;arch_program::pubkey::Pubkey,
+    owner_keypair: bitcoin::key::Keypair,
+    amount: u64,
+) {
+    let burn_instruction = apl_token::instruction::burn(
+        &amp;apl_token::id(),
+        account_pubkey,
+        mint_pubkey,
+        owner_pubkey,
+        &amp;[owner_pubkey],
+        amount,
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[burn_instruction],
+            Some(*owner_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![owner_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+    
+    println!("Burned {} tokens", amount);
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="33-freeze-and-thaw-accounts"><a class="header" href="#33-freeze-and-thaw-accounts">3.3 Freeze and Thaw Accounts</a></h3>
+<p>If you set a freeze authority when creating the mint, you can freeze/thaw accounts:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn freeze_account(
+    client: &amp;ArchRpcClient,
+    account_pubkey: &amp;arch_program::pubkey::Pubkey,
+    mint_pubkey: &amp;arch_program::pubkey::Pubkey,
+    freeze_authority_pubkey: &amp;arch_program::pubkey::Pubkey,
+    freeze_authority_keypair: bitcoin::key::Keypair,
+) {
+    let freeze_instruction = apl_token::instruction::freeze_account(
+        &amp;apl_token::id(),
+        account_pubkey,
+        mint_pubkey,
+        freeze_authority_pubkey,
+        &amp;[freeze_authority_pubkey],
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[freeze_instruction],
+            Some(*freeze_authority_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![freeze_authority_keypair],
+        BITCOIN_NETWORK,
+    );
+
+    let processed_transactions = send_transactions_and_wait(vec![transaction]);
+    assert_eq!(processed_transactions[0].status, Status::Processed);
+    
+    println!("Account frozen");
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="step-4-complete-example"><a class="header" href="#step-4-complete-example">Step 4: Complete Example</a></h2>
+<p>Here’s a complete example that demonstrates the full token lifecycle:</p>
+<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::{Mint, Account, AccountState};
+use arch_program::{program_pack::Pack, sanitized::ArchMessage};
+use arch_sdk::{build_and_sign_transaction, generate_new_keypair, ArchRpcClient, Status};
+use arch_test_sdk::{
+    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
+    helper::{create_and_fund_account_with_faucet, read_account_info, send_transactions_and_wait},
+};
+
+fn main() {
+    env_logger::init();
+    
+    let client = ArchRpcClient::new(NODE1_ADDRESS);
+
+    // 1. Create authority and mint
+    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
+    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
+
+    let (_, token_mint_pubkey) = create_token_mint(&amp;client, authority_pubkey, authority_keypair);
+    
+    // 2. Create token accounts for two users
+    let (user1_keypair, user1_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
+    create_and_fund_account_with_faucet(&amp;user1_keypair, BITCOIN_NETWORK);
+    
+    let (user2_keypair, user2_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
+    create_and_fund_account_with_faucet(&amp;user2_keypair, BITCOIN_NETWORK);
+
+    let (_, user1_token_account) = create_token_account(&amp;client, token_mint_pubkey, user1_keypair);
+    let (_, user2_token_account) = create_token_account(&amp;client, token_mint_pubkey, user2_keypair);
+
+    // 3. Mint tokens to user1
+    mint_tokens(&amp;client, &amp;token_mint_pubkey, &amp;user1_token_account, &amp;authority_pubkey, authority_keypair, 1000);
+
+    // 4. Check balance
+    let account_info = read_account_info(user1_token_account);
+    let account_data = Account::unpack(&amp;account_info.data).unwrap();
+    println!("User1 balance: {}", account_data.amount);
+
+    // 5. Transfer tokens from user1 to user2
+    transfer_tokens(&amp;client, &amp;user1_token_account, &amp;user2_token_account, &amp;user1_pubkey, user1_keypair, 500);
+
+    // 6. Check both balances
+    let user1_info = read_account_info(user1_token_account);
+    let user1_data = Account::unpack(&amp;user1_info.data).unwrap();
+    println!("User1 balance after transfer: {}", user1_data.amount);
+
+    let user2_info = read_account_info(user2_token_account);
+    let user2_data = Account::unpack(&amp;user2_info.data).unwrap();
+    println!("User2 balance after transfer: {}", user2_data.amount);
+
+    println!("Token operations completed successfully!");
+}</code></pre></pre>
+<h2 id="running-the-example"><a class="header" href="#running-the-example">Running the Example</a></h2>
+<pre><code class="language-bash"># First, ensure your validator is running
+cli orchestrate validator-status
+
+# Then run the example code
+cargo run
+</code></pre>
+<h2 id="key-concepts"><a class="header" href="#key-concepts">Key Concepts</a></h2>
+<h3 id="account-types"><a class="header" href="#account-types">Account Types</a></h3>
+<ol>
+<li><strong>Mint Account</strong>: Stores token metadata and authorities</li>
+<li><strong>Token Account</strong>: Holds token balances for specific owners</li>
+<li><strong>Multisig Account</strong>: Enables shared authority over operations</li>
+</ol>
+<h3 id="authority-types"><a class="header" href="#authority-types">Authority Types</a></h3>
+<ul>
+<li><strong>Mint Authority</strong>: Can mint new tokens</li>
+<li><strong>Freeze Authority</strong>: Can freeze/thaw token accounts</li>
+<li><strong>Owner</strong>: Controls token account operations</li>
+<li><strong>Delegate</strong>: Can spend approved amounts on behalf of owner</li>
+</ul>
+<h3 id="state-management"><a class="header" href="#state-management">State Management</a></h3>
+<p>All token operations are recorded on Bitcoin, providing:</p>
+<ul>
+<li><strong>Immutable History</strong>: All transfers are permanently recorded</li>
+<li><strong>Transparency</strong>: Public verification of all operations</li>
+<li><strong>Security</strong>: Bitcoin’s security model protects token state</li>
+</ul>
+<h2 id="testing"><a class="header" href="#testing">Testing</a></h2>
+<p>Create comprehensive tests for your token operations:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod tests {
+    use super::*;
+    use serial_test::serial;
+
+    #[test]
+    #[serial]
+    fn test_complete_token_lifecycle() {
+        // Test mint creation, token accounts, minting, transfers, etc.
+        // See examples/token/src/lib.rs for comprehensive test examples
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="next-steps-3"><a class="header" href="#next-steps-3">Next Steps</a></h2>
+<ul>
+<li>Explore <strong>Associated Token Accounts</strong> for simplified account management</li>
+<li>Implement <strong>Multisig authorities</strong> for enhanced security</li>
+<li>Study the complete examples in <code>examples/token/src/lib.rs</code></li>
+<li>Review the <strong>APL Token Program documentation</strong> for advanced features</li>
+</ul>
+<p>The APL Token Program provides a robust, battle-tested foundation for tokenization on Arch Network, leveraging the security and transparency of Bitcoin while maintaining compatibility with proven SPL token patterns.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-write-an-oracle-program"><a class="header" href="#how-to-write-an-oracle-program">How to write an oracle program</a></h1>
 <p>This guide walks through the innerworkings of an oracle program as well as details how oracle data can be utilized by other programs on Arch Network.</p>
 <p>Table of Contents:</p>
@@ -2546,7 +4490,7 @@ assert_eq!(resulting_sender_balance.current_balance, 0);</code></pre>
 <li><a href="guides/how-to-write-oracle-program.html#implementation">Implementation</a></li>
 </ul>
 <hr />
-<h3 id="description-1"><a class="header" href="#description-1">Description</a></h3>
+<h3 id="description"><a class="header" href="#description">Description</a></h3>
 <p>Two important aspects of understanding how this oracle example is implemented within Arch:</p>
 <ol>
 <li>The oracle is a program that updates an account which holds the data</li>
@@ -2561,7 +4505,7 @@ assert_eq!(resulting_sender_balance.current_balance, 0);</code></pre>
 <li>Programs include oracle state account alongside their program instructions in order to use this referenced data stored in the oracle state account within their program</li>
 <li>Projects submit instructions to oracle program periodically to update oracle state account with fresh data</li>
 </ul>
-<h3 id="logic-1"><a class="header" href="#logic-1">Logic</a></h3>
+<h3 id="logic"><a class="header" href="#logic">Logic</a></h3>
 <p>If you haven’t already read <a href="guides/./writing-your-first-program.html">How to write an Arch program</a>, we recommend starting there to get a basic understanding of the program anatomy before going further.</p>
 <p>We’ll look closely at the logic block contained within the <code>update_data</code> <a href="guides/how-to-write-oracle-program.html#logic">handler</a>.</p>
 <pre><code class="language-rust ignore">pub fn update_data(
@@ -2594,7 +4538,7 @@ msg!("updated");
 
 Ok(())</code></pre>
 <p>Lastly, we store the new data that is passed into the program via the instruction to the state account for management, thus marking the end of the oracle update process.</p>
-<h3 id="implementation-1"><a class="header" href="#implementation-1">Implementation</a></h3>
+<h3 id="implementation"><a class="header" href="#implementation">Implementation</a></h3>
 <p>Let’s look at an example implementation of this oracle program. This includes:</p>
 <ul>
 <li><a href="guides/how-to-write-oracle-program.html#create-oracle-project">Create oracle project</a></li>
@@ -2994,7 +4938,7 @@ cli validator-start
 <li>Implement proper error handling</li>
 <li>Add detailed documentation</li>
 </ul>
-<h2 id="next-steps-2"><a class="header" href="#next-steps-2">Next Steps</a></h2>
+<h2 id="next-steps-4"><a class="header" href="#next-steps-4">Next Steps</a></h2>
 <p>To further improve your program, consider adding:</p>
 <ol>
 <li>A UI for interacting with the swap program</li>
@@ -3230,7 +5174,7 @@ fn verify_rune_ownership(
 </ol>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-build-a-bitcoin-lending-protocol"><a class="header" href="#how-to-build-a-bitcoin-lending-protocol">How to Build a Bitcoin Lending Protocol</a></h1>
 <p>This guide walks through building a lending protocol for Bitcoin-based assets (BTC, Runes, Ordinals) on Arch Network. We’ll create a decentralized lending platform similar to Aave, but specifically designed for Bitcoin-based assets.</p>
-<h2 id="prerequisites-5"><a class="header" href="#prerequisites-5">Prerequisites</a></h2>
+<h2 id="prerequisites-7"><a class="header" href="#prerequisites-7">Prerequisites</a></h2>
 <p>Before starting, ensure you have:</p>
 <ul>
 <li>Completed the <a href="guides/../getting-started/environment-setup.html">environment setup</a></li>
@@ -3888,7 +5832,7 @@ pub fn update_pool_metrics(
     
     Ok(())
 }</code></pre>
-<h2 id="testing"><a class="header" href="#testing">Testing</a></h2>
+<h2 id="testing-1"><a class="header" href="#testing-1">Testing</a></h2>
 <p>Create comprehensive tests for your lending protocol:</p>
 <pre><code class="language-rust ignore">#[cfg(test)]
 mod tests {
@@ -3914,7 +5858,7 @@ mod tests {
         // Test liquidation scenarios
     }
 }</code></pre>
-<h2 id="security-considerations"><a class="header" href="#security-considerations">Security Considerations</a></h2>
+<h2 id="security-considerations-1"><a class="header" href="#security-considerations-1">Security Considerations</a></h2>
 <ol>
 <li><strong>Collateral Safety</strong>: Implement strict collateral requirements and regular position health checks</li>
 <li><strong>Price Oracle Security</strong>: Use reliable price feeds and implement safeguards against price manipulation</li>
@@ -3922,7 +5866,7 @@ mod tests {
 <li><strong>Access Control</strong>: Implement proper permission checks for all sensitive operations</li>
 <li><strong>Liquidation Thresholds</strong>: Set appropriate thresholds to maintain protocol solvency</li>
 </ol>
-<h2 id="next-steps-3"><a class="header" href="#next-steps-3">Next Steps</a></h2>
+<h2 id="next-steps-5"><a class="header" href="#next-steps-5">Next Steps</a></h2>
 <ol>
 <li>
 <p>Implement additional features:</p>
@@ -4214,7 +6158,7 @@ fn select_utxos_for_withdrawal(
 <li>Check out the example implementations</li>
 <li>Use the testing utilities to validate your integration</li>
 </ol>
-<h2 id="contributing"><a class="header" href="#contributing">Contributing</a></h2>
+<h2 id="contributing-1"><a class="header" href="#contributing-1">Contributing</a></h2>
 <p>The APL is an open-source project and welcomes contributions from the community. To contribute:</p>
 <ol>
 <li>Review the contribution guidelines</li>
@@ -4242,7 +6186,7 @@ fn select_utxos_for_withdrawal(
 <p>Stay connected with the community to learn about new developments and opportunities to contribute to the ecosystem.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="token-program-1"><a class="header" href="#token-program-1">Token Program</a></h1>
 <p>The APL Token Program is the foundation for creating and managing fungible tokens on the Arch Network. This documentation provides a comprehensive guide for developers implementing token functionality in their applications.</p>
-<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<h2 id="overview-3"><a class="header" href="#overview-3">Overview</a></h2>
 <p>The Token Program enables:</p>
 <ul>
 <li>Creation and management of fungible tokens (mints)</li>
@@ -4254,7 +6198,7 @@ fn select_utxos_for_withdrawal(
 <h2 id="program-id"><a class="header" href="#program-id">Program ID</a></h2>
 <pre><code class="language-text">apl-token00000000000000000000000
 </code></pre>
-<h2 id="account-types"><a class="header" href="#account-types">Account Types</a></h2>
+<h2 id="account-types-1"><a class="header" href="#account-types-1">Account Types</a></h2>
 <h3 id="mint-account"><a class="header" href="#mint-account">Mint Account</a></h3>
 <p>The central record for a token type, containing:</p>
 <div class="table-wrapper"><table><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -4374,7 +6318,7 @@ let instruction = mint_to(
     &amp;mint_authority.pubkey(),
     amount,
 )?;</code></pre>
-<h4 id="transfer-1"><a class="header" href="#transfer-1">Transfer</a></h4>
+<h4 id="transfer"><a class="header" href="#transfer">Transfer</a></h4>
 <p>Moves tokens between accounts.</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -4489,7 +6433,7 @@ let instruction = approve(
     &amp;destination.pubkey(),
     &amp;owner.pubkey(),
 )?;</code></pre>
-<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<h2 id="error-handling-1"><a class="header" href="#error-handling-1">Error Handling</a></h2>
 <p>The program defines specific error types for common failure cases:</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -4515,8 +6459,8 @@ let instruction = approve(
     // ... other errors
 }
 <span class="boring">}</span></code></pre></pre>
-<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
-<h3 id="security-1"><a class="header" href="#security-1">Security</a></h3>
+<h2 id="best-practices-3"><a class="header" href="#best-practices-3">Best Practices</a></h2>
+<h3 id="security-2"><a class="header" href="#security-2">Security</a></h3>
 <ol>
 <li>
 <p><strong>Account Validation</strong></p>
@@ -4543,7 +6487,7 @@ let instruction = approve(
 </ul>
 </li>
 </ol>
-<h3 id="performance"><a class="header" href="#performance">Performance</a></h3>
+<h3 id="performance-1"><a class="header" href="#performance-1">Performance</a></h3>
 <ol>
 <li>
 <p><strong>Transaction Optimization</strong></p>
@@ -4635,7 +6579,7 @@ let transaction = Transaction::new_signed_with_payer(
     &amp;[&amp;payer, &amp;source_owner],
     recent_blockhash,
 );</code></pre>
-<h2 id="testing-1"><a class="header" href="#testing-1">Testing</a></h2>
+<h2 id="testing-2"><a class="header" href="#testing-2">Testing</a></h2>
 <p>The Token Program includes comprehensive tests. When implementing token functionality, you should test:</p>
 <ol>
 <li>
@@ -4697,7 +6641,7 @@ mod tests {
 <span class="boring">}</span></code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="associated-token-account-program-1"><a class="header" href="#associated-token-account-program-1">Associated Token Account Program</a></h1>
 <p>The Associated Token Account (ATA) Program is a utility program in the Arch Program Library (APL) that standardizes the creation and management of token accounts. It provides a deterministic way to find and create token accounts for any wallet address and token mint combination.</p>
-<h2 id="overview-1"><a class="header" href="#overview-1">Overview</a></h2>
+<h2 id="overview-4"><a class="header" href="#overview-4">Overview</a></h2>
 <p>The Associated Token Account Program enables:</p>
 <ul>
 <li>Deterministic derivation of token account addresses</li>
@@ -4746,7 +6690,7 @@ let create_ata_instruction = create_associated_token_account(
     &amp;wallet_address,      // Wallet address
     &amp;token_mint,         // Token mint
 );</code></pre>
-<h2 id="best-practices-1"><a class="header" href="#best-practices-1">Best Practices</a></h2>
+<h2 id="best-practices-4"><a class="header" href="#best-practices-4">Best Practices</a></h2>
 <h3 id="account-management-1"><a class="header" href="#account-management-1">Account Management</a></h3>
 <ol>
 <li>
@@ -4766,7 +6710,7 @@ let create_ata_instruction = create_associated_token_account(
 </ul>
 </li>
 </ol>
-<h3 id="security-considerations-1"><a class="header" href="#security-considerations-1">Security Considerations</a></h3>
+<h3 id="security-considerations-2"><a class="header" href="#security-considerations-2">Security Considerations</a></h3>
 <ol>
 <li>
 <p><strong>Address Derivation</strong></p>
@@ -4842,7 +6786,7 @@ let transfer_instruction = transfer(
 <li>Create accounts on-demand when users acquire new tokens</li>
 <li>Display token balances from associated accounts</li>
 </ol>
-<h2 id="error-handling-1"><a class="header" href="#error-handling-1">Error Handling</a></h2>
+<h2 id="error-handling-2"><a class="header" href="#error-handling-2">Error Handling</a></h2>
 <p>Common error cases to handle:</p>
 <ul>
 <li>Account already exists</li>
@@ -4890,7 +6834,7 @@ let transfer_instruction = transfer(
 <li>🎯 Ensures deterministic computation</li>
 <li>🔗 Provides syscalls for Bitcoin UTXO operations</li>
 </ul>
-<h3 id="bitcoin-integration"><a class="header" href="#bitcoin-integration">Bitcoin Integration</a></h3>
+<h3 id="bitcoin-integration-1"><a class="header" href="#bitcoin-integration-1">Bitcoin Integration</a></h3>
 <p>Arch Network interacts directly with Bitcoin through:</p>
 <ul>
 <li>💼 Native UTXO management</li>
@@ -5282,7 +7226,7 @@ pub struct ValidatorSet {
 <li><code>/peers</code> - Connected peers</li>
 <li><code>/status</code> - Network status</li>
 </ul>
-<h2 id="best-practices-2"><a class="header" href="#best-practices-2">Best Practices</a></h2>
+<h2 id="best-practices-5"><a class="header" href="#best-practices-5">Best Practices</a></h2>
 <h3 id="1-node-operation"><a class="header" href="#1-node-operation">1. Node Operation</a></h3>
 <ul>
 <li>Secure key management</li>
@@ -5305,7 +7249,7 @@ pub struct ValidatorSet {
 <li>Implement proper error handling</li>
 </ul>
 <!-- Internal -->
-<div style="break-before: page; page-break-before: always;"></div><h1 id="bitcoin-integration-1"><a class="header" href="#bitcoin-integration-1">Bitcoin Integration</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="bitcoin-integration-2"><a class="header" href="#bitcoin-integration-2">Bitcoin Integration</a></h1>
 <p>Arch Network provides direct integration with Bitcoin, enabling programs to interact with Bitcoin’s UTXO model while maintaining Bitcoin’s security guarantees. This document details how Arch Network integrates with Bitcoin.</p>
 <h2 id="architecture-overview-2"><a class="header" href="#architecture-overview-2">Architecture Overview</a></h2>
 <pre class="mermaid">flowchart TB
@@ -5488,7 +7432,7 @@ pub struct SecurityParams {
 <li>Bitcoin-based finality</li>
 <li>Cross-validator consistency</li>
 </ul>
-<h2 id="error-handling-2"><a class="header" href="#error-handling-2">Error Handling</a></h2>
+<h2 id="error-handling-3"><a class="header" href="#error-handling-3">Error Handling</a></h2>
 <h3 id="1-bitcoin-errors"><a class="header" href="#1-bitcoin-errors">1. Bitcoin Errors</a></h3>
 <pre><code class="language-rust ignore">pub enum BitcoinError {
     ConnectionFailed(String),
@@ -5505,7 +7449,7 @@ pub struct SecurityParams {
     InvalidSignature(Signature),
     InvalidState(Hash),
 }</code></pre>
-<h2 id="best-practices-3"><a class="header" href="#best-practices-3">Best Practices</a></h2>
+<h2 id="best-practices-6"><a class="header" href="#best-practices-6">Best Practices</a></h2>
 <h3 id="1-utxo-management-1"><a class="header" href="#1-utxo-management-1">1. UTXO Management</a></h3>
 <ul>
 <li>Always verify UTXO ownership</li>
@@ -6039,7 +7983,7 @@ pub enum UtxoStatus {
 <li><strong>Resource Usage</strong>: Efficient use of network and computational resources</li>
 <li><strong>Scalability</strong>: Linear scaling with validator count for most operations</li>
 </ul>
-<h2 id="security-considerations-2"><a class="header" href="#security-considerations-2">Security Considerations</a></h2>
+<h2 id="security-considerations-3"><a class="header" href="#security-considerations-3">Security Considerations</a></h2>
 <h3 id="threat-model"><a class="header" href="#threat-model">Threat Model</a></h3>
 <ul>
 <li><strong>Byzantine Validators</strong>: System remains secure with up to f Byzantine validators (where f &lt; n/3)</li>
@@ -6298,7 +8242,7 @@ pub enum UtxoStatus {
     Spent,      // UTXO has been consumed
     Invalid,    // UTXO was invalidated (e.g., by reorg)
 }</code></pre>
-<h2 id="error-handling-3"><a class="header" href="#error-handling-3">Error Handling</a></h2>
+<h2 id="error-handling-4"><a class="header" href="#error-handling-4">Error Handling</a></h2>
 <p>Common UTXO-related errors to handle:</p>
 <pre><code class="language-rust ignore">pub enum UtxoError {
     NotFound,                    // UTXO doesn't exist
@@ -6592,7 +8536,7 @@ pub fn process_instruction(
     
     Ok(())
 }</code></pre>
-<h2 id="security-considerations-3"><a class="header" href="#security-considerations-3">Security Considerations</a></h2>
+<h2 id="security-considerations-4"><a class="header" href="#security-considerations-4">Security Considerations</a></h2>
 <h3 id="1-access-control"><a class="header" href="#1-access-control">1. Access Control</a></h3>
 <pre><code class="language-rust ignore">fn verify_account_access(
     account: &amp;AccountInfo,
@@ -6624,7 +8568,7 @@ pub fn process_instruction(
     }
     Ok(())
 }</code></pre>
-<h2 id="best-practices-4"><a class="header" href="#best-practices-4">Best Practices</a></h2>
+<h2 id="best-practices-7"><a class="header" href="#best-practices-7">Best Practices</a></h2>
 <h3 id="1-account-management"><a class="header" href="#1-account-management">1. Account Management</a></h3>
 <ul>
 <li>Always validate account ownership before modifications</li>
@@ -6653,7 +8597,7 @@ pub fn process_instruction(
 <li>Use flexible data structures</li>
 <li>Document state changes</li>
 </ul>
-<h2 id="common-patterns"><a class="header" href="#common-patterns">Common Patterns</a></h2>
+<h2 id="common-patterns-1"><a class="header" href="#common-patterns-1">Common Patterns</a></h2>
 <h3 id="1-account-initialization"><a class="header" href="#1-account-initialization">1. Account Initialization</a></h3>
 <pre><code class="language-rust ignore">pub fn initialize_account&lt;T: AccountState&gt;(
     program_id: &amp;Pubkey,
@@ -6804,7 +8748,7 @@ pub fn process_instruction(
 </ul>
 </li>
 </ol>
-<h3 id="best-practices-5"><a class="header" href="#best-practices-5">Best Practices:</a></h3>
+<h3 id="best-practices-8"><a class="header" href="#best-practices-8">Best Practices:</a></h3>
 <ol>
 <li>
 <p><strong>Account Validation</strong></p>
@@ -6833,7 +8777,7 @@ pub fn process_instruction(
 </ul>
 </li>
 </ol>
-<h3 id="cross-program-invocation-cpi"><a class="header" href="#cross-program-invocation-cpi">Cross-Program Invocation (CPI)</a></h3>
+<h3 id="cross-program-invocation-cpi-1"><a class="header" href="#cross-program-invocation-cpi-1">Cross-Program Invocation (CPI)</a></h3>
 <p>Instructions can invoke other <a href="program/./program.html">programs</a> through CPI, enabling composability:</p>
 <ol>
 <li>
@@ -6869,7 +8813,7 @@ pub fn process_instruction(
 </ul>
 </li>
 </ol>
-<h3 id="security-considerations-4"><a class="header" href="#security-considerations-4">Security Considerations:</a></h3>
+<h3 id="security-considerations-5"><a class="header" href="#security-considerations-5">Security Considerations:</a></h3>
 <ol>
 <li>
 <p><strong>Account Verification</strong></p>
@@ -6899,7 +8843,7 @@ pub fn process_instruction(
 </ul>
 </li>
 </ol>
-<h3 id="common-patterns-1"><a class="header" href="#common-patterns-1">Common Patterns:</a></h3>
+<h3 id="common-patterns-2"><a class="header" href="#common-patterns-2">Common Patterns:</a></h3>
 <ol>
 <li>
 <p><strong>Initialization</strong></p>
@@ -7121,9 +9065,9 @@ let instruction = Instruction {
 );</code></pre>
 <!-- Internal -->
 <!-- External -->
-<div style="break-before: page; page-break-before: always;"></div><h1 id="troubleshooting-2"><a class="header" href="#troubleshooting-2">Troubleshooting</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="troubleshooting-3"><a class="header" href="#troubleshooting-3">Troubleshooting</a></h1>
 <p>This guide helps you diagnose and resolve common issues you might encounter while developing on the Arch Network.</p>
-<h2 id="common-issues-1"><a class="header" href="#common-issues-1">Common Issues</a></h2>
+<h2 id="common-issues-2"><a class="header" href="#common-issues-2">Common Issues</a></h2>
 <h3 id="build-errors"><a class="header" href="#build-errors">Build Errors</a></h3>
 <h4 id="1-cargo-build-failures"><a class="header" href="#1-cargo-build-failures">1. Cargo Build Failures</a></h4>
 <pre><code class="language-bash">error: failed to run custom build command for `arch-sdk v0.1.0`
@@ -7271,7 +9215,7 @@ cargo build
 <p>View account data:</p>
 <pre><code class="language-bash">cli account &lt;ACCOUNT_ADDRESS&gt;
 </code></pre>
-<h2 id="best-practices-6"><a class="header" href="#best-practices-6">Best Practices</a></h2>
+<h2 id="best-practices-9"><a class="header" href="#best-practices-9">Best Practices</a></h2>
 <ol>
 <li>
 <p><strong>Development Workflow</strong></p>
@@ -7298,7 +9242,7 @@ cargo build
 </ul>
 </li>
 </ol>
-<h2 id="getting-help"><a class="header" href="#getting-help">Getting Help</a></h2>
+<h2 id="getting-help-1"><a class="header" href="#getting-help-1">Getting Help</a></h2>
 <p>If you’re still experiencing issues:</p>
 <ol>
 <li>Check the <a href="https://github.com/arch-network/arch-node/issues">GitHub Issues</a></li>

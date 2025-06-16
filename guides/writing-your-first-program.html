@@ -183,167 +183,775 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="writing-your-first-arch-program"><a class="header" href="#writing-your-first-arch-program">Writing Your First Arch Program</a></h1>
-<p>This guide will walk you through creating your first Arch program from scratch. We’ll build a simple counter program that demonstrates the core concepts of Arch development while providing hands-on experience with the development workflow.</p>
+<p>This comprehensive guide walks you through creating your first Arch program from scratch. We’ll build a feature-rich counter program that demonstrates the complete development workflow and all essential concepts you need for building production-ready Arch Network applications.</p>
+<h2 id="what-youll-build"><a class="header" href="#what-youll-build">What You’ll Build</a></h2>
+<p>By the end of this guide, you’ll have created a complete counter program that:</p>
+<ul>
+<li>Manages state in program accounts</li>
+<li>Handles multiple instruction types</li>
+<li>Integrates with Bitcoin transactions</li>
+<li>Includes comprehensive error handling</li>
+<li>Provides extensive testing coverage</li>
+<li>Follows security best practices</li>
+</ul>
 <h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
 <p>Before starting, ensure you have:</p>
 <ul>
-<li>Rust and Cargo installed</li>
-<li><a href="../getting-started/quick-start.html">CLI</a> installed and configured (see <a href="../getting-started/quick-start.html">Quick Start Guide</a>)</li>
-<li>A running validator node</li>
-<li>Basic understanding of <a href="../concepts/architecture.html">Arch concepts</a></li>
+<li><strong>Rust 1.70+</strong> and Cargo installed (<a href="https://rustup.rs/">Install Rust</a>)</li>
+<li><strong>Solana CLI 1.16+</strong> (DO NOT upgrade to 2.x) - <a href="https://docs.solana.com/cli/install-solana-cli-tools">Install Guide</a></li>
+<li><strong>Arch Network CLI</strong> - <a href="https://github.com/Arch-Network/arch-node/releases/latest">Download Latest</a></li>
+<li><strong>Running validator</strong> (see <a href="../getting-started/bitcoin-and-titan-setup.html">Validator Setup Guide</a>)</li>
+<li><strong>Basic Rust knowledge</strong> and understanding of <a href="../concepts/architecture.html">Arch concepts</a></li>
 </ul>
-<h2 id="project-setup"><a class="header" href="#project-setup">Project Setup</a></h2>
-<ol>
-<li>Create a new project directory:</li>
-</ol>
-<pre><code class="language-bash">mkdir my-counter-program
+<h2 id="step-1-project-setup"><a class="header" href="#step-1-project-setup">Step 1: Project Setup</a></h2>
+<h3 id="11-create-project-structure"><a class="header" href="#11-create-project-structure">1.1 Create Project Structure</a></h3>
+<pre><code class="language-bash"># Create project directory
+mkdir my-counter-program
 cd my-counter-program
+
+# Create program directory
+mkdir program
+cd program
+
+# Initialize Rust library
+cargo init --lib
 </code></pre>
-<ol start="2">
-<li>Initialize a new Rust project:</li>
-</ol>
-<pre><code class="language-bash">cargo init --lib
-</code></pre>
-<ol start="3">
-<li>Add necessary dependencies to <code>Cargo.toml</code>:</li>
-</ol>
+<h3 id="12-configure-dependencies"><a class="header" href="#12-configure-dependencies">1.2 Configure Dependencies</a></h3>
+<p>Create a proper <code>Cargo.toml</code>:</p>
+<p><strong>program/Cargo.toml</strong></p>
 <pre><code class="language-toml">[package]
-name = "my-counter-program"
+name = "my_counter_program"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-arch-program = { git = "https://github.com/Arch-Network/arch-program" }
-borsh = "0.10.3"
+arch_program = "0.5.2"
+borsh = { version = "1.5.1", features = ["derive"] }
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "lib"]
+
+[workspace]
 </code></pre>
-<h2 id="writing-the-program"><a class="header" href="#writing-the-program">Writing the Program</a></h2>
-<p>Let’s create a simple program that:</p>
-<ul>
-<li>Stores a counter in an account</li>
-<li>Can increment the counter</li>
-<li>Can decrement the counter</li>
-<li>Can reset the counter</li>
-</ul>
-<ol>
-<li>Define our program’s state structure in <code>src/lib.rs</code>:</li>
-</ol>
-<pre><code class="language-rust ignore">use arch_program::{
+<h3 id="13-project-structure"><a class="header" href="#13-project-structure">1.3 Project Structure</a></h3>
+<p>Your project should look like this:</p>
+<pre><code>my-counter-program/
+├── program/
+│   ├── src/
+│   │   └── lib.rs
+│   └── Cargo.toml
+├── client/          # We'll add this later
+└── tests/           # We'll add this later
+</code></pre>
+<h2 id="step-2-define-program-data-structures"><a class="header" href="#step-2-define-program-data-structures">Step 2: Define Program Data Structures</a></h2>
+<p>Create comprehensive data structures for your program:</p>
+<p><strong>program/src/lib.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_program::{
     account::AccountInfo,
+    bitcoin::{self, absolute::LockTime, transaction::Version, Transaction},
     entrypoint,
+    helper::add_state_transition,
+    input_to_sign::InputToSign,
     msg,
+    program::{next_account_info, set_transaction_to_sign},
     program_error::ProgramError,
     pubkey::Pubkey,
+    transaction_to_sign::TransactionToSign,
 };
 use borsh::{BorshDeserialize, BorshSerialize};
 
-#[derive(BorshSerialize, BorshDeserialize, Debug)]
+/// Counter program state stored in accounts
+#[derive(BorshSerialize, BorshDeserialize, Debug, Clone, PartialEq)]
 pub struct CounterAccount {
-    pub count: u64,
+    /// Current counter value
+    pub count: i64,
+    /// Who created this counter
+    pub authority: Pubkey,
+    /// When this counter was created (block height)
+    pub created_at: u64,
+    /// When this counter was last updated
+    pub updated_at: u64,
+    /// Total number of operations performed
+    pub operation_count: u64,
+    /// Whether the counter is frozen
+    pub is_frozen: bool,
 }
 
-#[derive(BorshSerialize, BorshDeserialize, Debug)]
-pub enum CounterInstruction {
-    Increment,
-    Decrement,
-    Reset,
-}</code></pre>
-<ol start="2">
-<li>Implement the program logic:</li>
-</ol>
-<pre><code class="language-rust ignore">entrypoint!(process_instruction);
+impl CounterAccount {
+    pub const SIZE: usize = 8 + 32 + 8 + 8 + 8 + 1; // i64 + Pubkey + u64 + u64 + u64 + bool
+    
+    pub fn new(authority: Pubkey, block_height: u64) -&gt; Self {
+        Self {
+            count: 0,
+            authority,
+            created_at: block_height,
+            updated_at: block_height,
+            operation_count: 0,
+            is_frozen: false,
+        }
+    }
+}
 
+/// Instructions that can be performed on the counter
+#[derive(BorshSerialize, BorshDeserialize, Debug, Clone, PartialEq)]
+pub enum CounterInstruction {
+    /// Initialize a new counter
+    /// Accounts:
+    /// 0. [writable, signer] Counter account to initialize
+    Initialize,
+    
+    /// Increment the counter by a specified amount
+    /// Accounts:
+    /// 0. [writable] Counter account to increment
+    /// 1. [signer] Authority or allowed user
+    Increment { amount: u32 },
+    
+    /// Decrement the counter by a specified amount
+    /// Accounts:
+    /// 0. [writable] Counter account to decrement
+    /// 1. [signer] Authority or allowed user
+    Decrement { amount: u32 },
+    
+    /// Reset the counter to zero
+    /// Accounts:
+    /// 0. [writable] Counter account to reset
+    /// 1. [signer] Authority only
+    Reset,
+    
+    /// Freeze the counter to prevent modifications
+    /// Accounts:
+    /// 0. [writable] Counter account to freeze
+    /// 1. [signer] Authority only
+    Freeze,
+    
+    /// Unfreeze the counter to allow modifications
+    /// Accounts:
+    /// 0. [writable] Counter account to unfreeze
+    /// 1. [signer] Authority only
+    Unfreeze,
+}
+
+/// Parameters for counter operations that require Bitcoin transactions
+#[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
+pub struct CounterParams {
+    /// The instruction to execute
+    pub instruction: CounterInstruction,
+    /// Bitcoin transaction for fees
+    pub tx_hex: Vec&lt;u8&gt;,
+}
+
+/// Custom errors for the counter program
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum CounterError {
+    /// Counter is frozen and cannot be modified
+    CounterFrozen,
+    /// Only the authority can perform this operation
+    UnauthorizedAccess,
+    /// Counter overflow occurred
+    Overflow,
+    /// Counter underflow occurred
+    Underflow,
+    /// Invalid instruction data
+    InvalidInstruction,
+    /// Counter account not initialized
+    UninitializedAccount,
+    /// Invalid account provided
+    InvalidAccount,
+    /// Insufficient fees provided
+    InsufficientFees,
+}
+
+impl From&lt;CounterError&gt; for ProgramError {
+    fn from(e: CounterError) -&gt; Self {
+        ProgramError::Custom(match e {
+            CounterError::CounterFrozen =&gt; 1001,
+            CounterError::UnauthorizedAccess =&gt; 1002,
+            CounterError::Overflow =&gt; 1003,
+            CounterError::Underflow =&gt; 1004,
+            CounterError::InvalidInstruction =&gt; 1005,
+            CounterError::UninitializedAccount =&gt; 1006,
+            CounterError::InvalidAccount =&gt; 1007,
+            CounterError::InsufficientFees =&gt; 1008,
+        })
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="step-3-implement-program-logic"><a class="header" href="#step-3-implement-program-logic">Step 3: Implement Program Logic</a></h2>
+<p>Add the complete program implementation:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Register program entrypoint
+entrypoint!(process_instruction);
+
+/// Main program entrypoint
 pub fn process_instruction(
     _program_id: &amp;Pubkey,
     accounts: &amp;[AccountInfo],
     instruction_data: &amp;[u8],
 ) -&gt; Result&lt;(), ProgramError&gt; {
-    // Get the account to store counter data
+    msg!("Counter program invoked");
+
+    // Parse instruction data
+    let params: CounterParams = borsh::from_slice(instruction_data)
+        .map_err(|_| CounterError::InvalidInstruction)?;
+
+    msg!("Processing instruction: {:?}", params.instruction);
+
+    // Dispatch to appropriate handler
+    match params.instruction {
+        CounterInstruction::Initialize =&gt; {
+            process_initialize(accounts, &amp;params.tx_hex)
+        }
+        CounterInstruction::Increment { amount } =&gt; {
+            process_increment(accounts, amount, &amp;params.tx_hex)
+        }
+        CounterInstruction::Decrement { amount } =&gt; {
+            process_decrement(accounts, amount, &amp;params.tx_hex)
+        }
+        CounterInstruction::Reset =&gt; {
+            process_reset(accounts, &amp;params.tx_hex)
+        }
+        CounterInstruction::Freeze =&gt; {
+            process_freeze(accounts, &amp;params.tx_hex)
+        }
+        CounterInstruction::Unfreeze =&gt; {
+            process_unfreeze(accounts, &amp;params.tx_hex)
+        }
+    }
+}
+
+/// Initialize a new counter account
+fn process_initialize(
+    accounts: &amp;[AccountInfo],
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
     let account_iter = &amp;mut accounts.iter();
     let counter_account = next_account_info(account_iter)?;
 
-    // Verify account is writable
+    // Verify account permissions
     if !counter_account.is_writable {
-        return Err(ProgramError::InvalidAccountData);
+        return Err(CounterError::InvalidAccount.into());
     }
 
-    // Deserialize the instruction
-    let instruction = CounterInstruction::try_from_slice(instruction_data)?;
+    if !counter_account.is_signer {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
 
-    // Get current counter value
-    let mut counter = match CounterAccount::try_from_slice(&amp;counter_account.data.borrow()) {
-        Ok(data) =&gt; data,
-        Err(_) =&gt; CounterAccount { count: 0 },
-    };
-
-    // Process the instruction
-    match instruction {
-        CounterInstruction::Increment =&gt; {
-            counter.count = counter.count.checked_add(1).ok_or(ProgramError::Custom(1))?;
-            msg!("Counter incremented to {}", counter.count);
-        }
-        CounterInstruction::Decrement =&gt; {
-            counter.count = counter.count.checked_sub(1).ok_or(ProgramError::Custom(2))?;
-            msg!("Counter decremented to {}", counter.count);
-        }
-        CounterInstruction::Reset =&gt; {
-            counter.count = 0;
-            msg!("Counter reset to 0");
+    // Check if account is already initialized
+    if counter_account.data.borrow().len() &gt;= CounterAccount::SIZE {
+        let existing_data = CounterAccount::try_from_slice(&amp;counter_account.data.borrow());
+        if existing_data.is_ok() {
+            msg!("Counter account already initialized");
+            return Err(CounterError::InvalidAccount.into());
         }
     }
 
-    // Serialize and save the counter
-    counter.serialize(&amp;mut &amp;mut counter_account.data.borrow_mut()[..])?;
+    // Initialize counter account
+    let counter_data = CounterAccount::new(*counter_account.key, 0); // TODO: Get actual block height
+    
+    // Ensure account has enough space
+    if counter_account.data.borrow().len() &lt; CounterAccount::SIZE {
+        counter_account.realloc(CounterAccount::SIZE, true)?;
+    }
+
+    // Serialize and store data
+    let serialized_data = borsh::to_vec(&amp;counter_data)
+        .map_err(|_| ProgramError::InvalidAccountData)?;
+    
+    counter_account.data.borrow_mut()[..serialized_data.len()]
+        .copy_from_slice(&amp;serialized_data);
+
+    msg!("Counter initialized with authority: {}", counter_account.key);
+
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(counter_account, tx_hex)?;
 
     Ok(())
-}</code></pre>
-<h2 id="building-the-program"><a class="header" href="#building-the-program">Building the Program</a></h2>
+}
+
+/// Increment the counter
+fn process_increment(
+    accounts: &amp;[AccountInfo],
+    amount: u32,
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let account_iter = &amp;mut accounts.iter();
+    let counter_account = next_account_info(account_iter)?;
+    let authority_account = next_account_info(account_iter).unwrap_or(counter_account);
+
+    // Verify account permissions
+    if !counter_account.is_writable {
+        return Err(CounterError::InvalidAccount.into());
+    }
+
+    if !authority_account.is_signer {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Load and validate counter data
+    let mut counter_data = CounterAccount::try_from_slice(&amp;counter_account.data.borrow())
+        .map_err(|_| CounterError::UninitializedAccount)?;
+
+    // Check if counter is frozen
+    if counter_data.is_frozen {
+        return Err(CounterError::CounterFrozen.into());
+    }
+
+    // Perform increment with overflow protection
+    let new_count = counter_data.count
+        .checked_add(amount as i64)
+        .ok_or(CounterError::Overflow)?;
+
+    // Update counter data
+    counter_data.count = new_count;
+    counter_data.updated_at = 0; // TODO: Get actual block height
+    counter_data.operation_count += 1;
+
+    // Save updated data
+    save_counter_data(counter_account, &amp;counter_data)?;
+
+    msg!("Counter incremented by {} to {}", amount, new_count);
+
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(counter_account, tx_hex)?;
+
+    Ok(())
+}
+
+/// Decrement the counter
+fn process_decrement(
+    accounts: &amp;[AccountInfo],
+    amount: u32,
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let account_iter = &amp;mut accounts.iter();
+    let counter_account = next_account_info(account_iter)?;
+    let authority_account = next_account_info(account_iter).unwrap_or(counter_account);
+
+    // Verify account permissions
+    if !counter_account.is_writable {
+        return Err(CounterError::InvalidAccount.into());
+    }
+
+    if !authority_account.is_signer {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Load and validate counter data
+    let mut counter_data = CounterAccount::try_from_slice(&amp;counter_account.data.borrow())
+        .map_err(|_| CounterError::UninitializedAccount)?;
+
+    // Check if counter is frozen
+    if counter_data.is_frozen {
+        return Err(CounterError::CounterFrozen.into());
+    }
+
+    // Perform decrement with underflow protection
+    let new_count = counter_data.count
+        .checked_sub(amount as i64)
+        .ok_or(CounterError::Underflow)?;
+
+    // Update counter data
+    counter_data.count = new_count;
+    counter_data.updated_at = 0; // TODO: Get actual block height
+    counter_data.operation_count += 1;
+
+    // Save updated data
+    save_counter_data(counter_account, &amp;counter_data)?;
+
+    msg!("Counter decremented by {} to {}", amount, new_count);
+
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(counter_account, tx_hex)?;
+
+    Ok(())
+}
+
+/// Reset the counter to zero
+fn process_reset(
+    accounts: &amp;[AccountInfo],
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let account_iter = &amp;mut accounts.iter();
+    let counter_account = next_account_info(account_iter)?;
+    let authority_account = next_account_info(account_iter)?;
+
+    // Verify account permissions
+    if !counter_account.is_writable {
+        return Err(CounterError::InvalidAccount.into());
+    }
+
+    if !authority_account.is_signer {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Load and validate counter data
+    let mut counter_data = CounterAccount::try_from_slice(&amp;counter_account.data.borrow())
+        .map_err(|_| CounterError::UninitializedAccount)?;
+
+    // Check authority
+    if counter_data.authority != *authority_account.key {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Check if counter is frozen
+    if counter_data.is_frozen {
+        return Err(CounterError::CounterFrozen.into());
+    }
+
+    // Reset counter
+    counter_data.count = 0;
+    counter_data.updated_at = 0; // TODO: Get actual block height
+    counter_data.operation_count += 1;
+
+    // Save updated data
+    save_counter_data(counter_account, &amp;counter_data)?;
+
+    msg!("Counter reset to 0");
+
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(counter_account, tx_hex)?;
+
+    Ok(())
+}
+
+/// Freeze the counter
+fn process_freeze(
+    accounts: &amp;[AccountInfo],
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let account_iter = &amp;mut accounts.iter();
+    let counter_account = next_account_info(account_iter)?;
+    let authority_account = next_account_info(account_iter)?;
+
+    // Verify account permissions
+    if !counter_account.is_writable {
+        return Err(CounterError::InvalidAccount.into());
+    }
+
+    if !authority_account.is_signer {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Load and validate counter data
+    let mut counter_data = CounterAccount::try_from_slice(&amp;counter_account.data.borrow())
+        .map_err(|_| CounterError::UninitializedAccount)?;
+
+    // Check authority
+    if counter_data.authority != *authority_account.key {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Freeze counter
+    counter_data.is_frozen = true;
+    counter_data.updated_at = 0; // TODO: Get actual block height
+    counter_data.operation_count += 1;
+
+    // Save updated data
+    save_counter_data(counter_account, &amp;counter_data)?;
+
+    msg!("Counter frozen");
+
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(counter_account, tx_hex)?;
+
+    Ok(())
+}
+
+/// Unfreeze the counter
+fn process_unfreeze(
+    accounts: &amp;[AccountInfo],
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let account_iter = &amp;mut accounts.iter();
+    let counter_account = next_account_info(account_iter)?;
+    let authority_account = next_account_info(account_iter)?;
+
+    // Verify account permissions
+    if !counter_account.is_writable {
+        return Err(CounterError::InvalidAccount.into());
+    }
+
+    if !authority_account.is_signer {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Load and validate counter data
+    let mut counter_data = CounterAccount::try_from_slice(&amp;counter_account.data.borrow())
+        .map_err(|_| CounterError::UninitializedAccount)?;
+
+    // Check authority
+    if counter_data.authority != *authority_account.key {
+        return Err(CounterError::UnauthorizedAccess.into());
+    }
+
+    // Unfreeze counter
+    counter_data.is_frozen = false;
+    counter_data.updated_at = 0; // TODO: Get actual block height
+    counter_data.operation_count += 1;
+
+    // Save updated data
+    save_counter_data(counter_account, &amp;counter_data)?;
+
+    msg!("Counter unfrozen");
+
+    // Handle Bitcoin transaction
+    handle_bitcoin_transaction(counter_account, tx_hex)?;
+
+    Ok(())
+}
+
+/// Helper function to save counter data
+fn save_counter_data(
+    counter_account: &amp;AccountInfo,
+    counter_data: &amp;CounterAccount,
+) -&gt; Result&lt;(), ProgramError&gt; {
+    let serialized_data = borsh::to_vec(counter_data)
+        .map_err(|_| ProgramError::InvalidAccountData)?;
+    
+    counter_account.data.borrow_mut()[..serialized_data.len()]
+        .copy_from_slice(&amp;serialized_data);
+    
+    Ok(())
+}
+
+/// Handle Bitcoin transaction for state changes
+fn handle_bitcoin_transaction(
+    account: &amp;AccountInfo,
+    tx_hex: &amp;[u8],
+) -&gt; Result&lt;(), ProgramError&gt; {
+    if tx_hex.is_empty() {
+        return Err(CounterError::InsufficientFees.into());
+    }
+
+    // Deserialize the fee transaction
+    let fees_tx: Transaction = bitcoin::consensus::deserialize(tx_hex)
+        .map_err(|_| CounterError::InsufficientFees)?;
+
+    msg!("Processing Bitcoin transaction with {} inputs", fees_tx.input.len());
+
+    // Create state transition transaction
+    let mut tx = Transaction {
+        version: Version::TWO,
+        lock_time: LockTime::ZERO,
+        input: vec![],
+        output: vec![],
+    };
+
+    // Add state transition for our account
+    add_state_transition(&amp;mut tx, account);
+    
+    // Add fee input
+    if !fees_tx.input.is_empty() {
+        tx.input.push(fees_tx.input[0].clone());
+    }
+
+    // Prepare transaction for signing
+    let tx_to_sign = TransactionToSign {
+        tx_bytes: &amp;bitcoin::consensus::serialize(&amp;tx),
+        inputs_to_sign: &amp;[InputToSign {
+            index: 0,
+            signer: account.key.clone(),
+        }],
+    };
+
+    msg!("Submitting transaction for signing");
+    set_transaction_to_sign(&amp;[account.clone()], tx_to_sign)?;
+
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="step-4-build-your-program"><a class="header" href="#step-4-build-your-program">Step 4: Build Your Program</a></h2>
+<p>Build your program using the Solana toolchain:</p>
+<pre><code class="language-bash">cd program
+
+# Build the program
+cargo build-sbf
+
+# Verify the build output
+ls target/deploy/
+</code></pre>
+<p>You should see <code>my_counter_program.so</code> in the <code>target/deploy/</code> directory.</p>
+<h2 id="step-5-deploy-your-program"><a class="header" href="#step-5-deploy-your-program">Step 5: Deploy Your Program</a></h2>
+<p>Deploy your program to the Arch Network:</p>
+<pre><code class="language-bash"># Deploy to testnet (recommended for testing)
+cli deploy ./target/deploy/ --network-mode testnet
+
+# Or deploy to local network for development
+cli deploy ./target/deploy/ --network-mode regtest
+</code></pre>
+<p><strong>Save the Program ID</strong> from the output - you’ll need it for testing!</p>
+<h2 id="step-6-create-a-client-for-testing"><a class="header" href="#step-6-create-a-client-for-testing">Step 6: Create a Client for Testing</a></h2>
+<p>Create a client to interact with your program:</p>
+<p><strong>client/Cargo.toml</strong></p>
+<pre><code class="language-toml">[package]
+name = "counter_client"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+arch_sdk = "0.5.2"
+my_counter_program = { path = "../program" }
+borsh = "1.5.1"
+tokio = { version = "1.0", features = ["full"] }
+</code></pre>
+<p><strong>client/src/main.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021">use arch_sdk::{
+    instruction::Instruction,
+    message::ArchMessage,
+    pubkey::Pubkey,
+    signer::{create_account, Keypair},
+    transaction::Transaction,
+};
+use my_counter_program::{CounterInstruction, CounterParams, CounterAccount};
+
+fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    // Your program ID (replace with actual deployed program ID)
+    let program_id = Pubkey::from_str("YOUR_PROGRAM_ID_HERE")?;
+    
+    // Create a new account for the counter
+    let counter_keypair = Keypair::new();
+    
+    // Create fee transaction (simplified)
+    let fee_tx = create_fee_transaction();
+    
+    // Test initialize instruction
+    test_initialize(&amp;program_id, &amp;counter_keypair, &amp;fee_tx)?;
+    
+    // Test increment instruction
+    test_increment(&amp;program_id, &amp;counter_keypair, &amp;fee_tx, 5)?;
+    
+    // Test decrement instruction
+    test_decrement(&amp;program_id, &amp;counter_keypair, &amp;fee_tx, 2)?;
+    
+    // Test reset instruction
+    test_reset(&amp;program_id, &amp;counter_keypair, &amp;fee_tx)?;
+    
+    println!("All tests completed successfully!");
+    Ok(())
+}
+
+fn test_initialize(
+    program_id: &amp;Pubkey,
+    counter_keypair: &amp;Keypair,
+    fee_tx: &amp;[u8],
+) -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let params = CounterParams {
+        instruction: CounterInstruction::Initialize,
+        tx_hex: fee_tx.to_vec(),
+    };
+    
+    let instruction = Instruction {
+        program_id: *program_id,
+        accounts: vec![
+            AccountMeta::new(counter_keypair.pubkey(), true),
+        ],
+        data: borsh::to_vec(&amp;params)?,
+    };
+    
+    // Send transaction (implementation depends on your client setup)
+    send_transaction(&amp;instruction, &amp;[counter_keypair])?;
+    
+    println!("Counter initialized successfully");
+    Ok(())
+}
+
+// Add similar functions for other operations...</code></pre></pre>
+<h2 id="step-7-comprehensive-testing"><a class="header" href="#step-7-comprehensive-testing">Step 7: Comprehensive Testing</a></h2>
+<p>Create extensive tests for your program:</p>
+<p><strong>tests/integration_tests.rs</strong></p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use my_counter_program::*;
+use arch_test_sdk::*;
+
+#[tokio::test]
+async fn test_counter_full_workflow() {
+    let (client, _boot_info) = initialize_client();
+    
+    // Deploy program
+    let program_id = deploy_counter_program(&amp;client).await;
+    
+    // Create test account
+    let user_keypair = Keypair::new();
+    fund_account(&amp;client, &amp;user_keypair.pubkey(), 1000).await;
+    
+    // Test initialization
+    let counter_account = test_initialize(&amp;client, &amp;program_id, &amp;user_keypair).await;
+    verify_counter_state(&amp;client, &amp;counter_account, 0, false).await;
+    
+    // Test increment
+    test_increment(&amp;client, &amp;program_id, &amp;counter_account, &amp;user_keypair, 10).await;
+    verify_counter_state(&amp;client, &amp;counter_account, 10, false).await;
+    
+    // Test decrement
+    test_decrement(&amp;client, &amp;program_id, &amp;counter_account, &amp;user_keypair, 3).await;
+    verify_counter_state(&amp;client, &amp;counter_account, 7, false).await;
+    
+    // Test freeze
+    test_freeze(&amp;client, &amp;program_id, &amp;counter_account, &amp;user_keypair).await;
+    verify_counter_state(&amp;client, &amp;counter_account, 7, true).await;
+    
+    // Test operations while frozen (should fail)
+    let result = test_increment(&amp;client, &amp;program_id, &amp;counter_account, &amp;user_keypair, 1).await;
+    assert!(result.is_err(), "Increment should fail when counter is frozen");
+    
+    // Test unfreeze
+    test_unfreeze(&amp;client, &amp;program_id, &amp;counter_account, &amp;user_keypair).await;
+    verify_counter_state(&amp;client, &amp;counter_account, 7, false).await;
+    
+    // Test reset
+    test_reset(&amp;client, &amp;program_id, &amp;counter_account, &amp;user_keypair).await;
+    verify_counter_state(&amp;client, &amp;counter_account, 0, false).await;
+}
+
+#[tokio::test]
+async fn test_error_conditions() {
+    // Test overflow protection
+    // Test underflow protection
+    // Test unauthorized access
+    // Test invalid instructions
+    // TODO: Implement comprehensive error testing
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="step-8-best-practices-implementation"><a class="header" href="#step-8-best-practices-implementation">Step 8: Best Practices Implementation</a></h2>
+<h3 id="security-considerations"><a class="header" href="#security-considerations">Security Considerations</a></h3>
 <ol>
-<li>Build your program:</li>
+<li><strong>Input Validation</strong>: Always validate all inputs</li>
+<li><strong>Overflow Protection</strong>: Use checked arithmetic operations</li>
+<li><strong>Access Control</strong>: Verify account ownership and permissions</li>
+<li><strong>State Validation</strong>: Ensure account state is valid before operations</li>
 </ol>
-<pre><code class="language-bash">cargo build-sbf
-</code></pre>
-<p>This will create a compiled program at <code>target/deploy/my_counter_program.so</code></p>
-<h2 id="deploying-the-program"><a class="header" href="#deploying-the-program">Deploying the Program</a></h2>
+<h3 id="performance-optimization"><a class="header" href="#performance-optimization">Performance Optimization</a></h3>
 <ol>
-<li>Deploy your program using the CLI:</li>
+<li><strong>Efficient Serialization</strong>: Use Borsh for optimal performance</li>
+<li><strong>Minimal Account Size</strong>: Keep state structures compact</li>
+<li><strong>Transaction Batching</strong>: Group related operations when possible</li>
 </ol>
-<pre><code class="language-bash">cli deploy target/deploy/my_counter_program.so
-</code></pre>
-<p>Save the Program ID output - you’ll need it to interact with your program.</p>
-<h2 id="creating-a-counter-account"><a class="header" href="#creating-a-counter-account">Creating a Counter Account</a></h2>
-<p>Before we can use our counter, we need to create an account to store its state:</p>
-<pre><code class="language-bash">cli create-account &lt;PROGRAM_ID&gt; 8
-</code></pre>
-<p>Save the account address - you’ll need it to interact with your counter.</p>
-<h2 id="testing-your-program"><a class="header" href="#testing-your-program">Testing Your Program</a></h2>
-<p>You can now interact with your program using the CLI:</p>
+<h3 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h3>
 <ol>
-<li>Increment the counter:</li>
+<li><strong>Custom Error Types</strong>: Define specific errors for better debugging</li>
+<li><strong>Comprehensive Logging</strong>: Use <code>msg!</code> for important state changes</li>
+<li><strong>Graceful Failures</strong>: Handle edge cases appropriately</li>
 </ol>
-<pre><code class="language-bash">cli invoke &lt;PROGRAM_ID&gt; &lt;ACCOUNT_ADDRESS&gt; --data 00
-</code></pre>
-<ol start="2">
-<li>Decrement the counter:</li>
-</ol>
-<pre><code class="language-bash">cli invoke &lt;PROGRAM_ID&gt; &lt;ACCOUNT_ADDRESS&gt; --data 01
-</code></pre>
-<ol start="3">
-<li>Reset the counter:</li>
-</ol>
-<pre><code class="language-bash">cli invoke &lt;PROGRAM_ID&gt; &lt;ACCOUNT_ADDRESS&gt; --data 02
-</code></pre>
 <h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
-<p>Now that you’ve created your first program, you can:</p>
+<p>Now that you’ve built your first program:</p>
+<ol>
+<li><strong>Enhance the Counter</strong>: Add features like access control lists, multiple counters per account, or counter metadata</li>
+<li><strong>Explore Advanced Patterns</strong>: Learn about <a href="../program/accounts.html">Program Derived Addresses</a> and <a href="../program/instructions-and-messages.html">Cross-Program Invocation</a></li>
+<li><strong>Build Complex Programs</strong>: Try the <a href="./how-to-create-a-fungible-token.html">Token Program</a> or <a href="./how-to-write-oracle-program.html">Oracle Program</a> guides</li>
+<li><strong>Deploy to Mainnet</strong>: When ready, deploy your programs to mainnet (when available)</li>
+</ol>
+<h2 id="additional-resources"><a class="header" href="#additional-resources">Additional Resources</a></h2>
 <ul>
-<li>Add more features to the counter program</li>
-<li>Learn about <a href="../program/program.html">cross-program invocation</a></li>
-<li>Explore more complex <a href="./guides.html">Program Examples</a></li>
-<li>Study the <a href="./understanding-arch-programs.html">Understanding Arch Programs</a> guide for deeper insights</li>
+<li><a href="./understanding-arch-programs.html">Understanding Arch Programs</a> - Deep dive into program architecture</li>
+<li><a href="./testing-guide.html">Testing Guide</a> - Comprehensive testing strategies</li>
+<li><a href="https://github.com/Arch-Network/arch-examples">Program Examples</a> - More example programs</li>
+<li><a href="../rpc/http-methods.html">API Reference</a> - Complete RPC documentation</li>
 </ul>
-<!-- Internal -->
+<p><strong>Congratulations!</strong> You’ve successfully built, deployed, and tested your first Arch Network program. You now have the foundation to build more complex applications on the Arch Network.</p>
 <pre><code class="language-bash"># Start the Arch Network validator
 cli validator-start
 </code></pre>

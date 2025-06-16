@@ -182,17 +182,104 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="program-examples"><a class="header" href="#program-examples">Program Examples</a></h1>
-<p>In this section, we’ll provide a few guides that can step through constructing an Arch <a href="../program/program.html">program</a>, as well as deploying and interacting with your program.</p>
-<p>Table of Contents:</p>
+                        <h1 id="arch-network-development-guides"><a class="header" href="#arch-network-development-guides">Arch Network Development Guides</a></h1>
+<p>This section provides comprehensive guides for building, testing, and deploying Arch Network programs. Whether you’re just starting out or building complex applications, these guides will help you develop robust and efficient programs.</p>
+<h2 id="getting-started-guides"><a class="header" href="#getting-started-guides">Getting Started Guides</a></h2>
+<h3 id="understanding-arch-programs"><a class="header" href="#understanding-arch-programs"><a href="./understanding-arch-programs.html">Understanding Arch Programs</a></a></h3>
+<p>Learn the fundamental concepts, architecture, and development patterns for Arch Network programs. This guide covers the complete foundation you need before building your first program.</p>
+<p><strong>Covers:</strong> Program structure, Bitcoin integration, state management, error handling, and development best practices.</p>
+<h3 id="writing-your-first-program"><a class="header" href="#writing-your-first-program"><a href="./writing-your-first-program.html">Writing Your First Program</a></a></h3>
+<p>A comprehensive step-by-step tutorial for creating, deploying, and testing a complete counter program with advanced features.</p>
+<p><strong>Covers:</strong> Project setup, program logic, Bitcoin transactions, security patterns, and comprehensive testing.</p>
+<h3 id="comprehensive-testing-guide"><a class="header" href="#comprehensive-testing-guide"><a href="./testing-guide.html">Comprehensive Testing Guide</a></a></h3>
+<p>Master testing strategies for Arch Network programs with unit tests, integration tests, security tests, and performance testing.</p>
+<p><strong>Covers:</strong> Test environment setup, multi-layer testing, security testing, CI/CD integration, and debugging techniques.</p>
+<h2 id="configuration--setup"><a class="header" href="#configuration--setup">Configuration &amp; Setup</a></h2>
+<h3 id="local-validator-with-bitcoin-testnet4"><a class="header" href="#local-validator-with-bitcoin-testnet4"><a href="./how-to-configure-local-validator-bitcoin-testnet4.html">Local Validator with Bitcoin Testnet4</a></a></h3>
+<p>Configure your development environment to work with Bitcoin testnet4 for testing ordinals, runes, and advanced Bitcoin features.</p>
+<p><strong>Covers:</strong> Testnet4 setup, validator configuration, ordinals support, runes protocol, and production considerations.</p>
+<h2 id="program-examples--tutorials"><a class="header" href="#program-examples--tutorials">Program Examples &amp; Tutorials</a></h2>
+<h3 id="fungible-token-program"><a class="header" href="#fungible-token-program"><a href="./how-to-create-a-fungible-token.html">Fungible Token Program</a></a></h3>
+<p>Build a complete fungible token implementation compatible with standard token interfaces.</p>
+<p><strong>What you’ll build:</strong> Token minting, transfers, allowances, and metadata management.</p>
+<h3 id="oracle-program"><a class="header" href="#oracle-program"><a href="./how-to-write-oracle-program.html">Oracle Program</a></a></h3>
+<p>Create a price oracle program that fetches and stores external data on-chain.</p>
+<p><strong>What you’ll build:</strong> Price feeds, data validation, timestamp management, and trusted data sources.</p>
+<h3 id="runes-swap-program"><a class="header" href="#runes-swap-program"><a href="./how-to-build-runes-swap.html">Runes Swap Program</a></a></h3>
+<p>Implement a decentralized exchange for trading Bitcoin runes and ordinals.</p>
+<p><strong>What you’ll build:</strong> AMM functionality, liquidity pools, runes integration, and swap mechanisms.</p>
+<h3 id="lending-protocol"><a class="header" href="#lending-protocol"><a href="./how-to-build-lending-protocol.html">Lending Protocol</a></a></h3>
+<p>Build a complete DeFi lending platform with collateralized loans and interest rates.</p>
+<p><strong>What you’ll build:</strong> Collateral management, loan origination, interest calculations, and liquidation mechanisms.</p>
+<h2 id="recommended-learning-path"><a class="header" href="#recommended-learning-path">Recommended Learning Path</a></h2>
+<h3 id="for-beginners"><a class="header" href="#for-beginners">For Beginners</a></h3>
+<ol>
+<li><strong><a href="./understanding-arch-programs.html">Understanding Arch Programs</a></strong> - Learn the fundamentals</li>
+<li><strong><a href="./writing-your-first-program.html">Writing Your First Program</a></strong> - Build your first complete program</li>
+<li><strong><a href="./testing-guide.html">Testing Guide</a></strong> - Learn to test thoroughly</li>
+<li><strong><a href="./how-to-create-a-fungible-token.html">Fungible Token</a></strong> - Build a practical program</li>
+</ol>
+<h3 id="for-intermediate-developers"><a class="header" href="#for-intermediate-developers">For Intermediate Developers</a></h3>
+<ol>
+<li><strong><a href="./how-to-write-oracle-program.html">Oracle Program</a></strong> - External data integration</li>
+<li><strong><a href="./how-to-configure-local-validator-bitcoin-testnet4.html">Local Validator Setup</a></strong> - Advanced testing environments</li>
+<li><strong><a href="./how-to-build-runes-swap.html">Runes Swap</a></strong> - Bitcoin-native features</li>
+</ol>
+<h3 id="for-advanced-developers"><a class="header" href="#for-advanced-developers">For Advanced Developers</a></h3>
+<ol>
+<li><strong><a href="./how-to-build-lending-protocol.html">Lending Protocol</a></strong> - Complex DeFi mechanics</li>
+<li><strong>All testing guides</strong> - Production-ready development practices</li>
+</ol>
+<h2 id="quick-reference"><a class="header" href="#quick-reference">Quick Reference</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Guide</th><th>Difficulty</th><th>Time</th><th>Key Concepts</th></tr></thead><tbody>
+<tr><td>Understanding Arch Programs</td><td>Beginner</td><td>30 min</td><td>Architecture, concepts</td></tr>
+<tr><td>Writing Your First Program</td><td>Beginner</td><td>2-3 hours</td><td>Complete development cycle</td></tr>
+<tr><td>Testing Guide</td><td>Intermediate</td><td>1-2 hours</td><td>Testing strategies</td></tr>
+<tr><td>Testnet4 Setup</td><td>Intermediate</td><td>30 min</td><td>Advanced configuration</td></tr>
+<tr><td>Fungible Token</td><td>Intermediate</td><td>3-4 hours</td><td>Token standards</td></tr>
+<tr><td>Oracle Program</td><td>Intermediate</td><td>2-3 hours</td><td>External data</td></tr>
+<tr><td>Runes Swap</td><td>Advanced</td><td>4-6 hours</td><td>DEX mechanics</td></tr>
+<tr><td>Lending Protocol</td><td>Advanced</td><td>6-8 hours</td><td>DeFi protocols</td></tr>
+</tbody></table>
+</div>
+<h2 id="development-tips"><a class="header" href="#development-tips">Development Tips</a></h2>
+<h3 id="before-you-start"><a class="header" href="#before-you-start">Before You Start</a></h3>
 <ul>
-<li><a href="./how-to-create-a-fungible-token.html">Fungible Token</a></li>
-<li><a href="./how-to-write-oracle-program.html">Oracle Program</a></li>
-<li><a href="./how-to-build-runes-swap.html">Runes Swap</a></li>
-<li><a href="./how-to-build-lending-protocol.html">Lending Protocol</a></li>
+<li><strong>Set up your environment</strong> following the <a href="../getting-started/quick-start.html">Quick Start Guide</a></li>
+<li><strong>Understand Bitcoin basics</strong> if you’re new to Bitcoin development</li>
+<li><strong>Review Rust fundamentals</strong> if you’re not familiar with Rust</li>
 </ul>
-<hr />
-<!-- Internal -->
+<h3 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h3>
+<ul>
+<li><strong>Start simple</strong> - Begin with basic programs before building complex systems</li>
+<li><strong>Test thoroughly</strong> - Use the comprehensive testing strategies from our guides</li>
+<li><strong>Follow security patterns</strong> - Always validate inputs and handle errors gracefully</li>
+<li><strong>Document your code</strong> - Future you (and your team) will thank you</li>
+</ul>
+<h3 id="getting-help"><a class="header" href="#getting-help">Getting Help</a></h3>
+<ul>
+<li><strong>Join our <a href="https://discord.gg/archnetwork">Discord</a></strong> for real-time support</li>
+<li><strong>Check the <a href="../rpc/http-methods.html">API Reference</a></strong> for detailed documentation</li>
+<li><strong>Review <a href="../concepts/architecture.html">Core Concepts</a></strong> for architectural guidance</li>
+<li><strong>File issues</strong> on <a href="https://github.com/Arch-Network/arch-node/issues">GitHub</a> for bugs</li>
+</ul>
+<h2 id="contributing"><a class="header" href="#contributing">Contributing</a></h2>
+<p>Found an issue or want to improve these guides? We welcome contributions!</p>
+<ul>
+<li><strong>Report bugs</strong> or unclear instructions</li>
+<li><strong>Suggest improvements</strong> to existing guides</li>
+<li><strong>Propose new guides</strong> for topics we haven’t covered</li>
+<li><strong>Share your programs</strong> as examples for the community</li>
+</ul>
+<h2 id="whats-next"><a class="header" href="#whats-next">What’s Next?</a></h2>
+<p>Choose your path based on your experience level and goals:</p>
+<ul>
+<li><strong>New to Arch?</strong> Start with <a href="./understanding-arch-programs.html">Understanding Arch Programs</a></li>
+<li><strong>Ready to code?</strong> Jump into <a href="./writing-your-first-program.html">Writing Your First Program</a></li>
+<li><strong>Building tokens?</strong> Check out the <a href="./how-to-create-a-fungible-token.html">Fungible Token</a> guide</li>
+<li><strong>Interested in DeFi?</strong> Try the <a href="./how-to-build-lending-protocol.html">Lending Protocol</a> guide</li>
+</ul>
+<p>Happy building! 🚀</p>
 
                     </main>
 
