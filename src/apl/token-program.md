@@ -77,7 +77,8 @@ let mint = Keypair::new();
 let mint_authority = Keypair::new();
 let decimals = 9;
 
-let instruction = initialize_mint(
+let instruction = apl_token::instruction::initialize_mint(
+    &apl_token::id(),
     &mint.pubkey(),
     &mint_authority.pubkey(),
     None, // No freeze authority
@@ -98,7 +99,8 @@ Example:
 let account = Keypair::new();
 let owner = Keypair::new();
 
-let instruction = initialize_account(
+let instruction = apl_token::instruction::initialize_account(
+    &apl_token::id(),
     &account.pubkey(),
     &mint.pubkey(),
     &owner.pubkey(),
@@ -121,10 +123,11 @@ Required accounts:
 Example:
 ```rust,ignore
 let multisig = Keypair::new();
-let signers = vec![signer1.pubkey(), signer2.pubkey(), signer3.pubkey()];
+let signers = vec![&signer1.pubkey(), &signer2.pubkey(), &signer3.pubkey()];
 let min_signers = 2;
 
-let instruction = initialize_multisig(
+let instruction = apl_token::instruction::initialize_multisig(
+    &apl_token::id(),
     &multisig.pubkey(),
     &signers,
     min_signers,
@@ -151,10 +154,12 @@ Example:
 ```rust,ignore
 let amount = 1_000_000_000; // 1 token with 9 decimals
 
-let instruction = mint_to(
+let instruction = apl_token::instruction::mint_to(
+    &apl_token::id(),
     &mint.pubkey(),
     &destination.pubkey(),
     &mint_authority.pubkey(),
+    &[],
     amount,
 )?;
 ```
@@ -177,10 +182,12 @@ Example:
 ```rust,ignore
 let amount = 50_000_000; // 0.05 tokens with 9 decimals
 
-let instruction = transfer(
+let instruction = apl_token::instruction::transfer(
+    &apl_token::id(),
     &source.pubkey(),
     &destination.pubkey(),
     &owner.pubkey(),
+    &[],
     amount,
 )?;
 ```
@@ -203,10 +210,12 @@ Example:
 ```rust,ignore
 let amount = 1_000_000_000; // 1 token with 9 decimals
 
-let instruction = burn(
+let instruction = apl_token::instruction::burn(
+    &apl_token::id(),
     &account.pubkey(),
     &mint.pubkey(),
     &owner.pubkey(),
+    &[],
     amount,
 )?;
 ```
@@ -231,10 +240,12 @@ Example:
 ```rust,ignore
 let amount = 5_000_000_000; // 5 tokens with 9 decimals
 
-let instruction = approve(
+let instruction = apl_token::instruction::approve(
+    &apl_token::id(),
     &source.pubkey(),
     &delegate.pubkey(),
     &owner.pubkey(),
+    &[],
     amount,
 )?;
 ```
@@ -248,9 +259,11 @@ Required accounts:
 
 Example:
 ```rust,ignore
-let instruction = revoke(
+let instruction = apl_token::instruction::revoke(
+    &apl_token::id(),
     &source.pubkey(),
     &owner.pubkey(),
+    &[],
 )?;
 ```
 
@@ -272,11 +285,13 @@ Required accounts:
 
 Example:
 ```rust,ignore
-let instruction = set_authority(
+let instruction = apl_token::instruction::set_authority(
+    &apl_token::id(),
     &mint.pubkey(),
-    &current_authority.pubkey(),
     Some(&new_authority.pubkey()),
-    AuthorityType::MintTokens,
+    apl_token::instruction::AuthorityType::MintTokens,
+    &current_authority.pubkey(),
+    &[],
 )?;
 ```
 
@@ -290,10 +305,12 @@ Required accounts:
 
 Example:
 ```rust,ignore
-let instruction = close_account(
+let instruction = apl_token::instruction::close_account(
+    &apl_token::id(),
     &account.pubkey(),
     &destination.pubkey(),
     &owner.pubkey(),
+    &[],
 )?;
 ```
 
@@ -361,18 +378,19 @@ pub enum TokenError {
 ```rust,ignore
 // 1. Create mint account
 let mint = Keypair::new();
-let mint_rent = get_minimum_balance_for_rent_exemption(Mint::LEN)?;
+let mint_rent = arch_program::account::MIN_ACCOUNT_LAMPORTS;
 
-let create_mint_account = system_instruction::create_account(
+let create_mint_account = arch_program::system_instruction::create_account(
     &payer.pubkey(),
     &mint.pubkey(),
     mint_rent,
-    Mint::LEN as u64,
-    &token_program_id,
+    apl_token::state::Mint::LEN as u64,
+    &apl_token::id(),
 );
 
 // 2. Initialize mint
-let init_mint = initialize_mint(
+let init_mint = apl_token::instruction::initialize_mint(
+    &apl_token::id(),
     &mint.pubkey(),
     &mint_authority.pubkey(),
     Some(&freeze_authority.pubkey()),
@@ -381,58 +399,67 @@ let init_mint = initialize_mint(
 
 // 3. Create token account
 let account = Keypair::new();
-let account_rent = get_minimum_balance_for_rent_exemption(Account::LEN)?;
+let account_rent = arch_program::account::MIN_ACCOUNT_LAMPORTS;
 
-let create_account = system_instruction::create_account(
+let create_account = arch_program::system_instruction::create_account(
     &payer.pubkey(),
     &account.pubkey(),
     account_rent,
-    Account::LEN as u64,
-    &token_program_id,
+    apl_token::state::Account::LEN as u64,
+    &apl_token::id(),
 );
 
 // 4. Initialize token account
-let init_account = initialize_account(
+let init_account = apl_token::instruction::initialize_account(
+    &apl_token::id(),
     &account.pubkey(),
     &mint.pubkey(),
     &owner.pubkey(),
 )?;
 
-// 5. Combine into a single transaction
-let transaction = Transaction::new_signed_with_payer(
-    &[
-        create_mint_account,
-        init_mint,
-        create_account,
-        init_account,
-    ],
-    Some(&payer.pubkey()),
-    &[&payer, &mint, &account],
-    recent_blockhash,
+// 5. Send instructions using Arch SDK
+let transaction = arch_sdk::build_and_sign_transaction(
+    arch_program::sanitized::ArchMessage::new(
+        &[
+            create_mint_account,
+            init_mint,
+            create_account,
+            init_account,
+        ],
+        Some(payer_pubkey),
+        client.get_best_block_hash().unwrap(),
+    ),
+    vec![payer_keypair, mint, account],
+    BITCOIN_NETWORK,
 );
 ```
 
 ### Implementing a Token Transfer
 
 ```rust,ignore
-// 1. Get token accounts
-let source = get_associated_token_address(&source_owner, &mint);
-let destination = get_associated_token_address(&destination_owner, &mint);
+// 1. Get token accounts (these would be created beforehand)
+// let source = source_token_account_pubkey;
+// let destination = destination_token_account_pubkey;
 
 // 2. Create transfer instruction
-let transfer = transfer(
+let transfer = apl_token::instruction::transfer(
+    &apl_token::id(),
     &source,
     &destination,
     &source_owner,
+    &[],
     amount,
 )?;
 
-// 3. Send transaction
-let transaction = Transaction::new_signed_with_payer(
-    &[transfer],
-    Some(&payer.pubkey()),
-    &[&payer, &source_owner],
-    recent_blockhash,
+// 3. Send transaction using Arch SDK
+let transaction = arch_sdk::build_and_sign_transaction(
+    arch_program::sanitized::ArchMessage::new(
+        &[transfer],
+        Some(source_owner_pubkey),
+        client.get_best_block_hash().unwrap(),
+    ),
+    vec![source_owner_keypair],
+    BITCOIN_NETWORK,
 );
 ```
 
@@ -462,7 +489,6 @@ Example test:
 mod tests {
     #[test]
     fn test_transfer() {
-        let program_id = token_program_id();
         let mint = Keypair::new();
         let source = Keypair::new();
         let destination = Keypair::new();
@@ -473,10 +499,12 @@ mod tests {
 
         // Test transfer
         let amount = 100;
-        let result = transfer(
+        let result = apl_token::instruction::transfer(
+            &apl_token::id(),
             &source.pubkey(),
             &destination.pubkey(),
             &owner.pubkey(),
+            &[],
             amount,
         );
 
