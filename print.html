@@ -6095,7 +6095,7 @@ fn select_utxos_for_withdrawal(
     Ok(selected)
 }</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="introduction-to-the-arch-program-library-apl"><a class="header" href="#introduction-to-the-arch-program-library-apl">Introduction to the Arch Program Library (APL)</a></h1>
-<p>The Arch Program Library (APL) is a collection of on-chain programs targeting the Arch Network blockchain. These programs serve as fundamental building blocks for developing decentralized applications (dApps) on Arch Network. The APL programs are thoroughly tested, audited, and deployed to the mainnet, providing developers with reliable and secure components for their applications.</p>
+<p>The Arch Program Library (APL) is a collection of on-chain programs targeting the Arch Network blockchain. These programs serve as fundamental building blocks for developing decentralized applications (dApps) on Arch Network. The APL programs are thoroughly tested and provide developers with reliable and secure components for their applications.</p>
 <h2 id="available-programs"><a class="header" href="#available-programs">Available Programs</a></h2>
 <p>The APL currently includes the following core programs:</p>
 <h3 id="token-program"><a class="header" href="#token-program">Token Program</a></h3>
@@ -6680,6 +6680,8 @@ mod tests {
 <h2 id="program-id-1"><a class="header" href="#program-id-1">Program ID</a></h2>
 <pre><code class="language-text">associated-token-account00000000
 </code></pre>
+<p>You can get the program ID in code:</p>
+<pre><code class="language-rust ignore">let program_id = apl_associated_token_account::id();</code></pre>
 <h2 id="core-concepts"><a class="header" href="#core-concepts">Core Concepts</a></h2>
 <h3 id="associated-token-accounts"><a class="header" href="#associated-token-accounts">Associated Token Accounts</a></h3>
 <p>An Associated Token Account is a Program Derived Address (PDA) that is deterministically derived from:</p>
@@ -6695,6 +6697,21 @@ mod tests {
 </ol>
 <h3 id="account-structure"><a class="header" href="#account-structure">Account Structure</a></h3>
 <p>The Associated Token Account follows the standard Token Account structure but with additional guarantees about its address derivation and ownership.</p>
+<h3 id="how-it-works"><a class="header" href="#how-it-works">How It Works</a></h3>
+<ol>
+<li><strong>Address Derivation</strong>: Given a wallet and token mint, the ATA address is derived deterministically</li>
+<li><strong>Account Creation</strong>: If the account doesn’t exist, it can be created by calling the ATA program</li>
+<li><strong>Token Operations</strong>: Once created, the ATA works like any other token account for transfers, approvals, etc.</li>
+</ol>
+<p>The key advantage is that applications can always find a user’s token account for any mint without needing to store addresses.</p>
+<h3 id="key-functions"><a class="header" href="#key-functions">Key Functions</a></h3>
+<p>The main function for working with Associated Token Accounts:</p>
+<pre><code class="language-rust ignore">// Derive address and bump seed
+let (address, bump_seed) = apl_associated_token_account::get_associated_token_address_and_bump_seed(
+    &amp;wallet_pubkey,
+    &amp;token_mint_pubkey,
+    &amp;apl_associated_token_account::id(),
+);</code></pre>
 <h2 id="instructions-1"><a class="header" href="#instructions-1">Instructions</a></h2>
 <h3 id="create-associated-token-account"><a class="header" href="#create-associated-token-account">Create Associated Token Account</a></h3>
 <p>Creates a new associated token account for a wallet and token mint combination.</p>
@@ -6708,16 +6725,27 @@ mod tests {
 <li><code>[]</code> Token program</li>
 </ul>
 <p>Example:</p>
-<pre><code class="language-rust ignore">let associated_token_address = get_associated_token_address(
-    &amp;wallet_address,
-    &amp;token_mint
-);
+<pre><code class="language-rust ignore">// Derive the associated token account address
+let (associated_token_address, _bump_seed) = 
+    apl_associated_token_account::get_associated_token_address_and_bump_seed(
+        &amp;wallet_address,
+        &amp;token_mint,
+        &amp;apl_associated_token_account::id(),
+    );
 
-let create_ata_instruction = create_associated_token_account(
-    &amp;payer.pubkey(),      // Funding account
-    &amp;wallet_address,      // Wallet address
-    &amp;token_mint,         // Token mint
-);</code></pre>
+// Create instruction to create the associated token account
+let instruction = arch_program::instruction::Instruction {
+    program_id: apl_associated_token_account::id(),
+    accounts: vec![
+        arch_program::account::AccountMeta::new(payer_pubkey, true),
+        arch_program::account::AccountMeta::new(associated_token_address, false),
+        arch_program::account::AccountMeta::new(wallet_address, false),
+        arch_program::account::AccountMeta::new_readonly(token_mint, false),
+        arch_program::account::AccountMeta::new_readonly(arch_program::system_program::id(), false),
+        arch_program::account::AccountMeta::new_readonly(apl_token::id(), false),
+    ],
+    data: utxo_data, // UTXO data for account creation
+};</code></pre>
 <h2 id="best-practices-4"><a class="header" href="#best-practices-4">Best Practices</a></h2>
 <h3 id="account-management-1"><a class="header" href="#account-management-1">Account Management</a></h3>
 <ol>
@@ -6759,46 +6787,69 @@ let create_ata_instruction = create_associated_token_account(
 </ol>
 <h2 id="integration-examples"><a class="header" href="#integration-examples">Integration Examples</a></h2>
 <h3 id="creating-an-associated-token-account"><a class="header" href="#creating-an-associated-token-account">Creating an Associated Token Account</a></h3>
-<pre><code class="language-rust ignore">// Derive the associated token account address
-let associated_token_address = get_associated_token_address(
-    &amp;wallet_address,
-    &amp;token_mint
-);
+<pre><code class="language-rust ignore">use arch_sdk::{build_and_sign_transaction, ArchRpcClient};
+use arch_program::sanitized::ArchMessage;
 
-// Create the account if it doesn't exist
-if get_account_info(&amp;associated_token_address).is_none() {
-    let create_ata_instruction = create_associated_token_account(
-        &amp;payer.pubkey(),
+// Derive the associated token account address
+let (associated_token_address, _bump_seed) = 
+    apl_associated_token_account::get_associated_token_address_and_bump_seed(
         &amp;wallet_address,
-        &amp;token_mint
+        &amp;token_mint,
+        &amp;apl_associated_token_account::id(),
     );
 
-    let transaction = Transaction::new_signed_with_payer(
-        &amp;[create_ata_instruction],
-        Some(&amp;payer.pubkey()),
-        &amp;[&amp;payer],
-        recent_blockhash
+// Check if account already exists
+let client = ArchRpcClient::new("http://localhost:9001");
+let account_info = client.get_account_info(associated_token_address);
+
+if account_info.is_err() {
+    // Account doesn't exist, create it
+    let instruction = arch_program::instruction::Instruction {
+        program_id: apl_associated_token_account::id(),
+        accounts: vec![
+            arch_program::account::AccountMeta::new(payer_pubkey, true),
+            arch_program::account::AccountMeta::new(associated_token_address, false),
+            arch_program::account::AccountMeta::new(wallet_address, false),
+            arch_program::account::AccountMeta::new_readonly(token_mint, false),
+            arch_program::account::AccountMeta::new_readonly(arch_program::system_program::id(), false),
+            arch_program::account::AccountMeta::new_readonly(apl_token::id(), false),
+        ],
+        data: utxo_data, // UTXO data for account creation
+    };
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[instruction],
+            Some(payer_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![payer_keypair],
+        BITCOIN_NETWORK,
     );
 }</code></pre>
 <h3 id="using-associated-token-accounts-in-transfers"><a class="header" href="#using-associated-token-accounts-in-transfers">Using Associated Token Accounts in Transfers</a></h3>
 <pre><code class="language-rust ignore">// Get associated token accounts for source and destination
-let source_ata = get_associated_token_address(
+let (source_ata, _) = apl_associated_token_account::get_associated_token_address_and_bump_seed(
     &amp;source_wallet,
-    &amp;token_mint
+    &amp;token_mint,
+    &amp;apl_associated_token_account::id(),
 );
 
-let destination_ata = get_associated_token_address(
+let (destination_ata, _) = apl_associated_token_account::get_associated_token_address_and_bump_seed(
     &amp;destination_wallet,
-    &amp;token_mint
+    &amp;token_mint,
+    &amp;apl_associated_token_account::id(),
 );
 
 // Create transfer instruction using ATAs
-let transfer_instruction = transfer(
+let transfer_instruction = apl_token::instruction::transfer(
+    &amp;apl_token::id(),
     &amp;source_ata,
     &amp;destination_ata,
     &amp;source_wallet,
-    amount
-);</code></pre>
+    &amp;[],
+    amount,
+)?;</code></pre>
 <h2 id="common-scenarios-1"><a class="header" href="#common-scenarios-1">Common Scenarios</a></h2>
 <h3 id="token-distribution"><a class="header" href="#token-distribution">Token Distribution</a></h3>
 <p>When airdropping or distributing tokens:</p>
