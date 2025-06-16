@@ -185,31 +185,25 @@
                         <h1 id="-quick-start-guide"><a class="header" href="#-quick-start-guide">🚀 Quick Start Guide</a></h1>
 <p>Welcome to Arch Network! Let’s get your first program running in under 15 minutes.</p>
 <h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
-<p>Before starting, ensure you have all required tools and dependencies installed. See the <a href="requirements.html">System Requirements</a> page for detailed installation instructions.</p>
-<p>Quick checklist:</p>
+<p>Before starting, ensure you have the following tools installed:</p>
 <ul>
-<li><input disabled="" type="checkbox"/>
-Git (v2.0 or later)</li>
-<li><input disabled="" type="checkbox"/>
-Rust (v1.70 or later)</li>
-<li><input disabled="" type="checkbox"/>
-Solana CLI tools (v1.16 or later)</li>
-<li><input disabled="" type="checkbox"/>
-Arch Network CLI (latest version)</li>
+<li><strong>Git</strong> (v2.0 or later)</li>
+<li><strong>Rust</strong> (v1.70 or later) - <a href="https://rustup.rs/">Install Rust</a></li>
+<li><strong>Solana CLI</strong> (v1.16 or later, <strong>DO NOT upgrade to 2.x</strong>) - <a href="https://docs.solana.com/cli/install-solana-cli-tools">Install Solana</a></li>
+<li><strong>Arch Network CLI</strong> - Download from <a href="https://github.com/Arch-Network/arch-node/releases/latest">Arch Network Releases</a></li>
 </ul>
+<blockquote>
+<p>⚠️ <strong>Important</strong>: Do not upgrade to Solana CLI 2.x as it contains breaking changes that are incompatible with Arch Network. Stick with version 1.16+ but stay below 2.0.</p>
+</blockquote>
 <p>Verify your installation:</p>
-<pre><code class="language-bash"># Verify installations
-git --version
+<pre><code class="language-bash">git --version
 rustc --version
-solana --version
+solana --version  # Should show 1.x.x, not 2.x.x
 cli --version
 </code></pre>
-<h2 id="-time-estimate"><a class="header" href="#-time-estimate">⏱️ Time Estimate</a></h2>
-<ul>
-<li>Total time: ~15 minutes</li>
-<li>Active time: ~10 minutes</li>
-<li>Waiting time: ~5 minutes</li>
-</ul>
+<blockquote>
+<p>💡 Note: If you encounter any issues during installation, join our <a href="https://discord.gg/archnetwork">Discord</a> for support.</p>
+</blockquote>
 <h2 id="-quick-start-project"><a class="header" href="#-quick-start-project">🚀 Quick Start Project</a></h2>
 <h3 id="1-clone-example-project"><a class="header" href="#1-clone-example-project">1. Clone Example Project</a></h3>
 <pre><code class="language-bash"># Get the starter example
@@ -217,169 +211,272 @@ git clone https://github.com/Arch-Network/arch-examples
 cd arch-examples/examples/helloworld
 </code></pre>
 <h3 id="2-start-local-validator"><a class="header" href="#2-start-local-validator">2. Start Local Validator</a></h3>
-<div class="network-mode-container">
-<div class="network-mode-header">
-    <h4 id="network-mode-title"><a class="header" href="#network-mode-title">Development Network (Default)</a></h4>
-</div>
-<div class="network-mode-content">
-<div id="dev-network-command">
-<pre><code class="language-bash"># Start a local validator
+<p>Choose one of the following network modes:</p>
+<h4 id="option-a-testnet-recommended-for-testing"><a class="header" href="#option-a-testnet-recommended-for-testing">Option A: Testnet (Recommended for Testing)</a></h4>
+<pre><code class="language-bash">cli validator-start \
+    --network-mode testnet \
+    --data-dir ./.arch_data \
+    --rpc-bind-ip 127.0.0.1 \
+    --rpc-bind-port 9002 \
+    --titan-endpoint https://titan-public-http.test.arch.network \
+    --titan-socket-endpoint titan-public-tcp.test.arch.network:3030
+</code></pre>
+<h4 id="option-b-local-development-regtest"><a class="header" href="#option-b-local-development-regtest">Option B: Local Development (Regtest)</a></h4>
+<pre><code class="language-bash"># Use the orchestrate command for full local devnet
+cli orchestrate start
+</code></pre>
+<p>This starts a complete local development environment with:</p>
+<ul>
+<li>Bitcoin Core (regtest mode)</li>
+<li>Titan indexer</li>
+<li>Local validator</li>
+</ul>
+<h4 id="option-c-devnet-full-local-stack"><a class="header" href="#option-c-devnet-full-local-stack">Option C: Devnet (Full Local Stack)</a></h4>
+<p>For devnet, you’ll need to run your own Bitcoin regtest node and Titan indexer:</p>
+<pre><code class="language-bash"># 1. Start Bitcoin Core in regtest mode
+bitcoind -regtest -port=18444 -rpcport=18443 \
+    -rpcuser=bitcoin -rpcpassword=bitcoinpass \
+    -fallbackfee=0.001
+
+# 2. First-time setup (only needed once)
+# Create a wallet called "testwallet"
+bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoinpass createwallet testwallet
+
+# Generate an address and mine the first 100 blocks to it
+ADDRESS=$(bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoinpass getnewaddress)
+bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoinpass generatetoaddress 100 $ADDRESS
+
+# 3. Clone and build Titan indexer (if not already done)
+git clone https://github.com/saturnbtc/Titan.git
+cd Titan
+
+# 4. Start Titan indexer pointing to your Bitcoin node
+cargo run --bin titan -- \
+    --bitcoin-rpc-url http://127.0.0.1:18443 \
+    --bitcoin-rpc-username bitcoin \
+    --bitcoin-rpc-password bitcoinpass \
+    --chain regtest \
+    --index-addresses \
+    --index-bitcoin-transactions \
+    --enable-tcp-subscriptions \
+    --main-loop-interval 0 \
+    --http-listen 127.0.0.1:3030
+
+# 5. Start validator pointing to your local Titan (in a new terminal)
 cli validator-start \
     --network-mode devnet \
     --data-dir ./.arch_data \
     --rpc-bind-ip 127.0.0.1 \
     --rpc-bind-port 9002 \
-    --titan-endpoint titan-node.dev.aws.archnetwork.xyz \
-    --titan-socket-endpoint titan-node.dev.aws.archnetwork.xyz:18443
+    --titan-endpoint http://127.0.0.1:3030 \
+    --titan-socket-endpoint 127.0.0.1:3030
 </code></pre>
-</div>
-<div id="test-network-command" style="display: none;">
-<pre><code class="language-bash"># Start a local validator
-cli validator-start \
-    --network-mode testnet \
-    --data-dir ./.arch_data \
-    --rpc-bind-ip 127.0.0.1 \
-    --rpc-bind-port 9002 \
-    --titan-endpoint https://titan-public-http.test.arch.network:443 \
-    --titan-socket-endpoint titan-public-tcp.test.arch.network:3030
-</code></pre>
-</div>
-</div>
-<div class="network-mode-buttons">
-    <button class="network-mode-button active" onclick="switchNetwork('dev')">Development Network</button>
-    <button class="network-mode-button" onclick="switchNetwork('test')">Test Network</button>
-</div>
-</div>
-<style>
-.network-mode-container {
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 1rem;
-    margin: 1rem 0;
-}
-
-.network-mode-header h4 {
-    margin: 0;
-    padding: 0.5rem 0;
-    color: #ff4757;
-}
-
-.network-mode-buttons {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.network-mode-button {
-    padding: 0.5rem 1rem;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    background: #fff;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
-
-.network-mode-button.active {
-    background: #007bff;
-    color: white;
-    border-color: #0056b3;
-}
-
-.network-mode-button:hover:not(.active) {
-    background: #f1f3f5;
-}
-</style>
-<script>
-function switchNetwork(mode) {
-    // Update buttons
-    document.querySelectorAll('.network-mode-button').forEach(btn => {
-        btn.classList.remove('active');
-        if ((mode === 'dev' && btn.textContent.includes('Development')) ||
-            (mode === 'test' && btn.textContent.includes('Test'))) {
-            btn.classList.add('active');
-        }
-    });
-
-    // Update title
-    const title = document.getElementById('network-mode-title');
-    title.textContent = mode === 'dev' ? 'Development Network (Default)' : 'Test Network';
-
-    // Show/hide appropriate command
-    document.getElementById('dev-network-command').style.display = mode === 'dev' ? 'block' : 'none';
-    document.getElementById('test-network-command').style.display = mode === 'test' ? 'block' : 'none';
-}
-</script>
-<h2 id="building-and-deploying-your-program"><a class="header" href="#building-and-deploying-your-program">Building and Deploying Your Program</a></h2>
 <blockquote>
-<p>💡 For a more detailed guide on program development and deployment, see <a href="setting-up-a-project.html#project-setup">Setting Up a Project</a>.</p>
+<p>💡 <strong>Note</strong>: This option requires you to build and run Bitcoin Core and Titan yourself. For easier local development, use Option B (orchestrate start) instead.</p>
 </blockquote>
-<pre><code class="language-bash"># Build the program using Solana's BPF compiler
+<blockquote>
+<p>⚠️ <strong>First-time setup</strong>: The wallet creation and block generation steps are only needed the first time you start bitcoind in regtest mode.</p>
+</blockquote>
+<h3 id="3-create-and-fund-account"><a class="header" href="#3-create-and-fund-account">3. Create and Fund Account</a></h3>
+<p>Create a new account with the faucet:</p>
+<pre><code class="language-bash"># Create account and fund with 1 ARCH (1 billion lamports)
+cli account create --keypair-path ./my-account.json --airdrop 1000000000
+
+# Or create account first, then fund separately
+cli account create --keypair-path ./my-account.json
+cli account airdrop --keypair-path ./my-account.json --amount 1000000000
+</code></pre>
+<h3 id="4-build-and-deploy-your-program"><a class="header" href="#4-build-and-deploy-your-program">4. Build and Deploy Your Program</a></h3>
+<pre><code class="language-bash"># Navigate to the program directory
+cd program
+
+# Build the program using Solana's BPF compiler
 cargo build-sbf
 
-# Deploy to local validator using Arch Network CLI
-cli deploy ./target/deploy/helloworldprogram.so
+# Deploy to the validator
+cli deploy ./target/deploy/&lt;program_name&gt;.so --generate-if-missing --fund-authority
 
 # Note: Save your program ID for later use
 export PROGRAM_ID=&lt;DEPLOYED_PROGRAM_ADDRESS&gt;
 </code></pre>
-<h2 id="testing-your-deployment"><a class="header" href="#testing-your-deployment">Testing Your Deployment</a></h2>
-<blockquote>
-<p>💡 For troubleshooting deployment issues, refer to our <a href="../reference/troubleshooting.html">Troubleshooting Guide</a>.</p>
-</blockquote>
-<h2 id="-test-your-deployment"><a class="header" href="#-test-your-deployment">🎮 Test Your Deployment</a></h2>
-<blockquote>
-<p>💡 For detailed testing strategies and examples, see our <a href="../guides/testing-guide.html">Testing Guide</a>.</p>
-</blockquote>
+<h3 id="5-test-your-deployment"><a class="header" href="#5-test-your-deployment">5. Test Your Deployment</a></h3>
 <pre><code class="language-bash"># Verify program deployment
 cli show $PROGRAM_ID
 
-# Get program logs
-cli get-logs $PROGRAM_ID
+# Check transaction status
+cli tx confirm &lt;TX_ID&gt;
 
-# Get block information
+# Get current block height
+cli get-block-height
+
+# Get latest block information
 cli get-block &lt;BLOCK_HASH&gt;
 </code></pre>
-<h3 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h3>
-<p>Congratulations! You’ve successfully deployed your first program. Here’s what you can explore next:</p>
-<ul>
-<li><a href="../development/overview.html">Program Development Guide</a> - Learn about program architecture and best practices</li>
-<li><a href="../clients/overview.html">Client Integration</a> - Build client applications that interact with your program</li>
-<li><a href="../advanced/overview.html">Advanced Topics</a> - Explore advanced concepts and optimizations</li>
-</ul>
-<h2 id="-ready-for-testnet"><a class="header" href="#-ready-for-testnet">🌐 Ready for Testnet?</a></h2>
-<p>When you’re ready to deploy to testnet:</p>
-<pre><code class="language-bash"># Start validator in testnet mode
-cli validator-start \
-    --network-mode testnet \
-    --data-dir ./.arch_data \
-    --rpc-bind-ip 127.0.0.1 \
-    --rpc-bind-port 9002 \
-    --titan-endpoint titan-node.test.aws.archnetwork.xyz \
-    --titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
+<h2 id="-available-cli-commands"><a class="header" href="#-available-cli-commands">🔧 Available CLI Commands</a></h2>
+<h3 id="validator-management"><a class="header" href="#validator-management">Validator Management</a></h3>
+<pre><code class="language-bash"># Start local validator
+cli validator-start [OPTIONS]
 
-# Deploy program to testnet
-cli deploy ./target/deploy/helloworldprogram.so --network-mode testnet
-
-# Verify deployment
-cli show &lt;PROGRAM_ADDRESS&gt; --network-mode testnet
+# Orchestrate full local devnet
+cli orchestrate start     # Start bitcoind + titan + validator
+cli orchestrate stop      # Stop all services
+cli orchestrate reset     # Reset entire environment
 </code></pre>
-<blockquote>
-<p>💡 Note: Testnet deployments require additional setup and configuration. See our <a href="../guides/testnet-deployment.html">Testnet Guide</a> for details.</p>
-</blockquote>
-<h2 id="-next-steps"><a class="header" href="#-next-steps">📚 Next Steps</a></h2>
+<h3 id="account-operations"><a class="header" href="#account-operations">Account Operations</a></h3>
+<pre><code class="language-bash"># Create new account
+cli account create --keypair-path &lt;PATH&gt; [--airdrop &lt;AMOUNT&gt;]
+
+# Fund existing account
+cli account airdrop --keypair-path &lt;PATH&gt; --amount &lt;LAMPORTS&gt;
+
+# Change account owner
+cli account change-owner &lt;ACCOUNT&gt; &lt;NEW_OWNER&gt; &lt;PAYER_KEYPAIR&gt;
+
+# Assign UTXO to account
+cli account assign-utxo &lt;ACCOUNT_PUBKEY&gt;
+</code></pre>
+<h3 id="program-deployment"><a class="header" href="#program-deployment">Program Deployment</a></h3>
+<pre><code class="language-bash"># Deploy program
+cli deploy &lt;ELF_PATH&gt; [--generate-if-missing] [--fund-authority]
+
+# Show account/program info
+cli show &lt;ADDRESS&gt;
+</code></pre>
+<h3 id="transaction-operations"><a class="header" href="#transaction-operations">Transaction Operations</a></h3>
+<pre><code class="language-bash"># Confirm transaction status
+cli tx confirm &lt;TX_ID&gt;
+
+# Get transaction details
+cli tx get &lt;TX_ID&gt;
+
+# View program logs from transaction
+cli tx log-program-messages &lt;TX_ID&gt;
+</code></pre>
+<h3 id="block-and-network-info"><a class="header" href="#block-and-network-info">Block and Network Info</a></h3>
+<pre><code class="language-bash"># Get block by hash
+cli get-block &lt;BLOCK_HASH&gt;
+
+# Get current block height
+cli get-block-height
+
+# Get group key
+cli get-group-key &lt;PUBKEY&gt;
+</code></pre>
+<h3 id="configuration-profiles"><a class="header" href="#configuration-profiles">Configuration Profiles</a></h3>
+<pre><code class="language-bash"># Create configuration profile
+cli config create-profile &lt;NAME&gt; \
+    --bitcoin-node-endpoint &lt;URL&gt; \
+    --bitcoin-node-username &lt;USER&gt; \
+    --bitcoin-node-password &lt;PASS&gt; \
+    --bitcoin-network &lt;mainnet|testnet|regtest&gt; \
+    --arch-node-url &lt;URL&gt;
+
+# List profiles
+cli config list-profiles
+
+# Update profile
+cli config update-profile &lt;NAME&gt; [OPTIONS]
+
+# Delete profile
+cli config delete-profile &lt;NAME&gt;
+</code></pre>
+<h2 id="-network-modes"><a class="header" href="#-network-modes">🌐 Network Modes</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Network Mode</th><th>Description</th><th>Use Case</th></tr></thead><tbody>
+<tr><td><code>localnet</code></td><td>Local development with regtest Bitcoin</td><td>Local development and testing</td></tr>
+<tr><td><code>devnet</code></td><td>Development network</td><td>Development and integration testing</td></tr>
+<tr><td><code>testnet</code></td><td>Test network with Bitcoin testnet</td><td>Pre-production testing</td></tr>
+<tr><td><code>mainnet</code></td><td>Main production network</td><td>Production use (use with caution)</td></tr>
+</tbody></table>
+</div>
+<h2 id="-validator-configuration"><a class="header" href="#-validator-configuration">⚙️ Validator Configuration</a></h2>
+<h3 id="key-parameters"><a class="header" href="#key-parameters">Key Parameters</a></h3>
+<pre><code class="language-bash"># Basic configuration
+--data-dir ./.arch_data                    # Data directory
+--network-mode testnet                     # Network mode
+--rpc-bind-ip 127.0.0.1                   # RPC bind IP
+--rpc-bind-port 9002                      # RPC port
+
+# Titan integration (for testnet/mainnet)
+--titan-endpoint &lt;URL&gt;                     # Titan HTTP endpoint
+--titan-socket-endpoint &lt;HOST:PORT&gt;        # Titan TCP endpoint
+
+# Performance tuning
+--max-tx-pool-size 10000                  # Transaction pool size
+--full-snapshot-reccurence 100            # Snapshot frequency
+--max-snapshots 5                         # Max snapshots to keep
+
+# Security
+--private-key-password &lt;PASSWORD&gt;         # Key encryption password
+</code></pre>
+<h3 id="environment-variables"><a class="header" href="#environment-variables">Environment Variables</a></h3>
+<p>You can also use environment variables instead of command-line flags:</p>
+<pre><code class="language-bash">export ARCH_NETWORK_MODE=testnet
+export ARCH_RPC_BIND_PORT=9002
+export ARCH_DATA_DIR=./.arch_data
+export ARCH_TITAN_ENDPOINT=https://titan-public-http.test.arch.network
+</code></pre>
+<h2 id="-next-steps"><a class="header" href="#-next-steps">🎮 Next Steps</a></h2>
+<p>Congratulations! You’ve successfully deployed your first program. Here’s what you can explore next:</p>
+<h3 id="development"><a class="header" href="#development">Development</a></h3>
 <ul>
-<li><a href="../guides/writing-your-first-program.html">Modify the Hello World program</a></li>
-<li><a href="../guides/how-to-create-a-fungible-token.html">Create a fungible token</a></li>
-<li><a href="../guides/how-to-build-runes-swap.html">Build a Runes swap application</a></li>
-<li><a href="bitcoin-and-titan-setup.html">Set up a full validator node</a></li>
+<li><strong><a href="../guides/understanding-arch-programs.html">Program Development Guide</a></strong> - Learn about program architecture</li>
+<li><strong><a href="../guides/writing-your-first-program.html">Writing Your First Program</a></strong> - Detailed program development</li>
+<li><strong><a href="../guides/testing-guide.html">Testing Guide</a></strong> - Testing strategies and tools</li>
+</ul>
+<h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
+<ul>
+<li><strong><a href="../guides/how-to-create-a-fungible-token.html">Fungible Token</a></strong> - Create your own token</li>
+<li><strong><a href="../guides/how-to-write-oracle-program.html">Oracle Program</a></strong> - Build price oracles</li>
+<li><strong><a href="../guides/how-to-build-runes-swap.html">Runes Swap</a></strong> - Create a DEX for Bitcoin Runes</li>
+</ul>
+<h3 id="production"><a class="header" href="#production">Production</a></h3>
+<ul>
+<li><strong><a href="bitcoin-and-titan-setup.html">Validator Setup</a></strong> - Run a production validator</li>
+<li><strong><a href="../concepts/network-architecture.html">Network Configuration</a></strong> - Understanding network topology</li>
+<li><strong><a href="../concepts/bitcoin-integration.html#security-model">Security Best Practices</a></strong> - Production security</li>
 </ul>
 <h2 id="-need-help"><a class="header" href="#-need-help">🆘 Need Help?</a></h2>
 <ul>
-<li>Join our <a href="https://discord.gg/archnetwork">Discord</a> for real-time support</li>
-<li>Check the <a href="troubleshooting.html">Troubleshooting Guide</a></li>
-<li>Browse the <a href="faq.html">FAQ</a></li>
+<li><strong><a href="https://discord.gg/archnetwork">Discord Community</a></strong> - Real-time support and discussion</li>
+<li><strong><a href="../reference/troubleshooting.html">Troubleshooting Guide</a></strong> - Common issues and solutions</li>
+<li><strong><a href="faq.html">FAQ</a></strong> - Frequently asked questions</li>
+<li><strong><a href="../rpc/rpc.html">API Reference</a></strong> - Complete RPC documentation</li>
 </ul>
+<h2 id="-system-requirements"><a class="header" href="#-system-requirements">📊 System Requirements</a></h2>
+<h3 id="minimum-requirements"><a class="header" href="#minimum-requirements">Minimum Requirements</a></h3>
+<ul>
+<li><strong>CPU</strong>: 4+ cores</li>
+<li><strong>RAM</strong>: 8GB</li>
+<li><strong>Storage</strong>: 100GB SSD</li>
+<li><strong>Network</strong>: 100 Mbps</li>
+</ul>
+<h3 id="recommended-for-production"><a class="header" href="#recommended-for-production">Recommended for Production</a></h3>
+<ul>
+<li><strong>CPU</strong>: 8+ cores</li>
+<li><strong>RAM</strong>: 16GB+</li>
+<li><strong>Storage</strong>: 500GB+ NVMe SSD</li>
+<li><strong>Network</strong>: 1 Gbps</li>
+</ul>
+<h2 id="-common-commands-quick-reference"><a class="header" href="#-common-commands-quick-reference">🔍 Common Commands Quick Reference</a></h2>
+<pre><code class="language-bash"># Full local development setup
+cli orchestrate start
+
+# Deploy and test a program
+cli deploy ./target/deploy/program.so --generate-if-missing
+cli show &lt;PROGRAM_ADDRESS&gt;
+cli tx confirm &lt;TX_ID&gt;
+
+# Account management
+cli account create --keypair-path ./account.json --airdrop 1000000000
+cli show &lt;ACCOUNT_ADDRESS&gt;
+
+# Network information
+cli get-block-height
+cli get-block &lt;BLOCK_HASH&gt;
+
+# Stop local environment
+cli orchestrate stop
+</code></pre>
 
                     </main>
 
