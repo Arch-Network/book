@@ -1,4 +1,4 @@
-# 🏗️ Running an Arch Network Validator
+# 🏗️ Validator Setup
 
 Welcome to the validator setup guide! This guide will walk you through setting up a full Arch Network validator node. You can choose between an automated setup or manual configuration depending on your needs.
 

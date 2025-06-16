@@ -1,6 +1,10 @@
-# Validator Staking Guide
+# Running Your Node
 
-This guide will walk you through the process of staking ARCH tokens to become a validator on the Arch Network. As a validator, you'll be an integral part of the network's security and computation infrastructure.
+> ⚠️ **Mainnet Status**: Arch Network mainnet has not launched yet. This guide currently covers testnet operations. ARCH token staking and mainnet validator operations will be available when mainnet launches. More details coming soon.
+> 
+> 🔒 **Validator Pool Status**: The staking validator pool is currently closed membership. When mainnet launches, the validator pool will initially be limited to approved participants and will be opened to the public at some point in the future.
+
+This guide will walk you through the process of operating an Arch Network validator node on testnet, including future staking mechanisms and network participation. When mainnet launches, validator operators will be an integral part of the network's security and computation infrastructure.
 
 <div class="toc">
 <h2>Contents</h2>
@@ -56,13 +60,16 @@ This guide will walk you through the process of staking ARCH tokens to become a 
 </div>
 
 <div class="requirement-card">
-<h3>🔑 ARCH Tokens</h3>
-<p>Contact the Arch Network team for current staking requirements, including:</p>
+<h3>🔑 ARCH Tokens (Future Mainnet)</h3>
+<p><strong>⚠️ Not yet available:</strong> ARCH token staking will be available for approved validators when mainnet launches. The staking validator pool is currently closed membership.</p>
 <ul>
-<li>Minimum stake amounts</li>
-<li>Lockup periods</li>
-<li>Commission rates</li>
+<li>Minimum stake amounts (TBD)</li>
+<li>Lockup periods (TBD)</li>
+<li>Commission rates (TBD)</li>
+<li>Application process for validator pool membership (TBD)</li>
 </ul>
+<p><strong>Current Testnet:</strong> No ARCH tokens required - use the faucet for test tokens.</p>
+<p>More details about mainnet staking and validator pool access will be announced closer to mainnet launch.</p>
 </div>
 </div>
 
@@ -212,14 +219,23 @@ For advanced users who want full control. See our [Bitcoin Node Setup Guide](bit
 
 ### 3. Start Your Validator
 
+> ⚠️ **Current Status**: Mainnet is not yet available. Use testnet for current operations.
+
+**For Testnet (Currently Available):**
 ```bash
-cli validator start \
+cli validator-start \
+  --network-mode testnet \
+  --titan-endpoint titan-node.test.aws.archnetwork.xyz \
+  --titan-socket-endpoint titan-node.test.aws.archnetwork.xyz:49332
+```
+
+**For Mainnet (Future):**
+```bash
+# Mainnet configuration will be available when mainnet launches
+cli validator-start \
   --network-mode mainnet \
-  --titan-rpc-endpoint your_endpoint \
-  --titan-rpc-port your_port \
-  --titan-rpc-username your_username \
-  --titan-rpc-password your_password \
-  --titan-rpc-wallet your_wallet
+  --titan-endpoint <mainnet-endpoint-tbd> \
+  --titan-socket-endpoint <mainnet-socket-tbd>
 ```
 
 ## Monitoring & Maintenance
@@ -250,12 +266,14 @@ cli validator resync
 </div>
 </div>
 
-## Understanding Staking in Arch Network
+## Understanding Staking in Arch Network (Future)
+
+> ⚠️ **Note**: The staking mechanisms described below are planned for mainnet launch and are not currently available. Current testnet operations do not require ARCH token staking.
 
 <div class="staking-explanation">
-<h3>🔐 What is Staking?</h3>
+<h3>🔐 What will Staking be?</h3>
 
-Staking in Arch Network is fundamentally different from traditional Proof of Stake systems. Instead of using staking for consensus, Arch Network uses staked validators to participate in the ROAST protocol for secure Bitcoin transaction signing.
+Staking in Arch Network will be fundamentally different from traditional Proof of Stake systems. Instead of using staking for consensus, Arch Network will use staked validators to participate in the ROAST protocol for secure Bitcoin transaction signing.
 
 ```mermaid
 flowchart TB
@@ -352,32 +370,44 @@ If you're an experienced Solana validator operator, here's what you need to know
 </div>
 
 <div class="transition-card">
-<h4>🛣️ Onboarding Process</h4>
+<h4>🛣️ Onboarding Process (Future Mainnet)</h4>
 <ul>
-<li><b>Registration:</b> Complete validator registration through the network portal</li>
-<li><b>Stake Deposit:</b> Transfer ARCH tokens to the validator staking contract</li>
+<li><b>Application:</b> Apply for validator pool membership (initially closed membership)</li>
+<li><b>Approval:</b> Await approval for validator participation</li>
+<li><b>Registration:</b> Complete validator registration through the network portal (TBD)</li>
+<li><b>Stake Deposit:</b> Transfer ARCH tokens to the validator staking contract (TBD)</li>
 <li><b>Configuration:</b> Set up your validator with proper Bitcoin node access</li>
 <li><b>Key Generation:</b> Participate in distributed key generation ceremony</li>
 <li><b>Activation:</b> Begin participation after stake activation period</li>
 </ul>
+<p><strong>Note:</strong> The validator pool will initially be limited to approved participants and will open to the public in the future.</p>
+
+<h4>🧪 Current Testnet Onboarding</h4>
+<ul>
+<li><b>No Registration Required:</b> Simply start a testnet validator</li>
+<li><b>No Stake Required:</b> Testnet operation is free</li>
+<li><b>Configuration:</b> Set up your validator with testnet endpoints</li>
+<li><b>Testing:</b> Deploy programs and test functionality</li>
+<li><b>Immediate Participation:</b> Begin testing immediately</li>
+</ul>
 </div>
 </div>
 
-<h3>📊 Staking Economics</h3>
+<h3>📊 Staking Economics (Future Mainnet)</h3>
 
 <div class="economics-grid">
 <div class="economics-card">
-<h4>Validator Requirements</h4>
+<h4>Validator Requirements (Planned)</h4>
 <ul>
-<li><b>Minimum Stake:</b> Contact Arch Network team for current requirements</li>
-<li><b>Lockup Period:</b> Network-defined based on security requirements</li>
+<li><b>Minimum Stake:</b> TBD - Details will be announced before mainnet launch</li>
+<li><b>Lockup Period:</b> Network-defined based on security requirements (TBD)</li>
 <li><b>Uptime Requirement:</b> High availability expected for signing participation</li>
-<li><b>Performance Bonding:</b> Stake acts as bond for correct behavior</li>
+<li><b>Performance Bonding:</b> Stake will act as bond for correct behavior</li>
 </ul>
 </div>
 
 <div class="economics-card">
-<h4>Reward Structure</h4>
+<h4>Reward Structure (Planned)</h4>
 <ul>
 <li><b>Base Rewards:</b> From transaction fees distributed proportionally to stake</li>
 <li><b>Signing Rewards:</b> Additional rewards for participating in threshold signing</li>
@@ -385,6 +415,36 @@ If you're an experienced Solana validator operator, here's what you need to know
 <li><b>Distribution Frequency:</b> Continuous as transactions are processed</li>
 </ul>
 </div>
+</div>
+
+<div class="economics-card">
+<h4>Current Testnet Operations</h4>
+<ul>
+<li><b>Open Access:</b> Anyone can run a testnet validator</li>
+<li><b>No Staking Required:</b> Testnet validators operate without ARCH token requirements</li>
+<li><b>Test Tokens:</b> Use the faucet to get test tokens for transactions</li>
+<li><b>No Rewards:</b> Testnet operation is for testing and development only</li>
+<li><b>Free Operation:</b> No costs beyond infrastructure for testnet participation</li>
+</ul>
+</div>
+
+<div class="economics-card">
+<h4>Validator Types Comparison</h4>
+<table>
+<tr><th>Validator Type</th><th>Access</th><th>Staking</th><th>Rewards</th></tr>
+<tr>
+  <td><b>Testnet Validators</b></td>
+  <td>Open to all</td>
+  <td>No staking required</td>
+  <td>No rewards (testing only)</td>
+</tr>
+<tr>
+  <td><b>Mainnet Staking Validators</b></td>
+  <td>Closed membership initially</td>
+  <td>ARCH tokens required (TBD)</td>
+  <td>Transaction fees + signing rewards</td>
+</tr>
+</table>
 </div>
 
 <h3>🔄 ROAST Protocol Integration</h3>

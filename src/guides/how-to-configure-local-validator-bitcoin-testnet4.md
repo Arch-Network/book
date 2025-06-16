@@ -1,6 +1,6 @@
-# How to configure the local validator with Bitcoin Testnet4
+# Setup Options
 
-This guide is intended for those wishing to view logs from their programs while benefitting from being connected to Bitcoin testnet4 and therefore gaining access to ordinals/runes helper tools.
+This guide covers different configuration options for your Arch Network validator, including connecting to various networks like testnet4 for access to ordinals/runes helper tools.
 
 Table of Contents:
 - [Config]
