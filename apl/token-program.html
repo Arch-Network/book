@@ -246,7 +246,8 @@
 let mint_authority = Keypair::new();
 let decimals = 9;
 
-let instruction = initialize_mint(
+let instruction = apl_token::instruction::initialize_mint(
+    &amp;apl_token::id(),
     &amp;mint.pubkey(),
     &amp;mint_authority.pubkey(),
     None, // No freeze authority
@@ -264,7 +265,8 @@ let instruction = initialize_mint(
 <pre><code class="language-rust ignore">let account = Keypair::new();
 let owner = Keypair::new();
 
-let instruction = initialize_account(
+let instruction = apl_token::instruction::initialize_account(
+    &amp;apl_token::id(),
     &amp;account.pubkey(),
     &amp;mint.pubkey(),
     &amp;owner.pubkey(),
@@ -284,10 +286,11 @@ let instruction = initialize_account(
 </ul>
 <p>Example:</p>
 <pre><code class="language-rust ignore">let multisig = Keypair::new();
-let signers = vec![signer1.pubkey(), signer2.pubkey(), signer3.pubkey()];
+let signers = vec![&amp;signer1.pubkey(), &amp;signer2.pubkey(), &amp;signer3.pubkey()];
 let min_signers = 2;
 
-let instruction = initialize_multisig(
+let instruction = apl_token::instruction::initialize_multisig(
+    &amp;apl_token::id(),
     &amp;multisig.pubkey(),
     &amp;signers,
     min_signers,
@@ -310,10 +313,12 @@ let instruction = initialize_multisig(
 <p>Example:</p>
 <pre><code class="language-rust ignore">let amount = 1_000_000_000; // 1 token with 9 decimals
 
-let instruction = mint_to(
+let instruction = apl_token::instruction::mint_to(
+    &amp;apl_token::id(),
     &amp;mint.pubkey(),
     &amp;destination.pubkey(),
     &amp;mint_authority.pubkey(),
+    &amp;[],
     amount,
 )?;</code></pre>
 <h4 id="transfer"><a class="header" href="#transfer">Transfer</a></h4>
@@ -333,10 +338,12 @@ let instruction = mint_to(
 <p>Example:</p>
 <pre><code class="language-rust ignore">let amount = 50_000_000; // 0.05 tokens with 9 decimals
 
-let instruction = transfer(
+let instruction = apl_token::instruction::transfer(
+    &amp;apl_token::id(),
     &amp;source.pubkey(),
     &amp;destination.pubkey(),
     &amp;owner.pubkey(),
+    &amp;[],
     amount,
 )?;</code></pre>
 <h4 id="burn"><a class="header" href="#burn">Burn</a></h4>
@@ -356,10 +363,12 @@ let instruction = transfer(
 <p>Example:</p>
 <pre><code class="language-rust ignore">let amount = 1_000_000_000; // 1 token with 9 decimals
 
-let instruction = burn(
+let instruction = apl_token::instruction::burn(
+    &amp;apl_token::id(),
     &amp;account.pubkey(),
     &amp;mint.pubkey(),
     &amp;owner.pubkey(),
+    &amp;[],
     amount,
 )?;</code></pre>
 <h3 id="delegation"><a class="header" href="#delegation">Delegation</a></h3>
@@ -380,10 +389,12 @@ let instruction = burn(
 <p>Example:</p>
 <pre><code class="language-rust ignore">let amount = 5_000_000_000; // 5 tokens with 9 decimals
 
-let instruction = approve(
+let instruction = apl_token::instruction::approve(
+    &amp;apl_token::id(),
     &amp;source.pubkey(),
     &amp;delegate.pubkey(),
     &amp;owner.pubkey(),
+    &amp;[],
     amount,
 )?;</code></pre>
 <h4 id="revoke"><a class="header" href="#revoke">Revoke</a></h4>
@@ -394,9 +405,11 @@ let instruction = approve(
 <li><code>[signer]</code> Source account owner</li>
 </ul>
 <p>Example:</p>
-<pre><code class="language-rust ignore">let instruction = revoke(
+<pre><code class="language-rust ignore">let instruction = apl_token::instruction::revoke(
+    &amp;apl_token::id(),
     &amp;source.pubkey(),
     &amp;owner.pubkey(),
+    &amp;[],
 )?;</code></pre>
 <h3 id="account-management"><a class="header" href="#account-management">Account Management</a></h3>
 <h4 id="setauthority"><a class="header" href="#setauthority">SetAuthority</a></h4>
@@ -411,11 +424,13 @@ let instruction = approve(
 <li><code>[signer]</code> Current authority</li>
 </ul>
 <p>Example:</p>
-<pre><code class="language-rust ignore">let instruction = set_authority(
+<pre><code class="language-rust ignore">let instruction = apl_token::instruction::set_authority(
+    &amp;apl_token::id(),
     &amp;mint.pubkey(),
-    &amp;current_authority.pubkey(),
     Some(&amp;new_authority.pubkey()),
-    AuthorityType::MintTokens,
+    apl_token::instruction::AuthorityType::MintTokens,
+    &amp;current_authority.pubkey(),
+    &amp;[],
 )?;</code></pre>
 <h4 id="closeaccount"><a class="header" href="#closeaccount">CloseAccount</a></h4>
 <p>Closes a token account with zero balance.</p>
@@ -426,10 +441,12 @@ let instruction = approve(
 <li><code>[signer]</code> Account owner</li>
 </ul>
 <p>Example:</p>
-<pre><code class="language-rust ignore">let instruction = close_account(
+<pre><code class="language-rust ignore">let instruction = apl_token::instruction::close_account(
+    &amp;apl_token::id(),
     &amp;account.pubkey(),
     &amp;destination.pubkey(),
     &amp;owner.pubkey(),
+    &amp;[],
 )?;</code></pre>
 <h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
 <p>The program defines specific error types for common failure cases:</p>
@@ -508,18 +525,19 @@ let instruction = approve(
 <h3 id="creating-a-new-token"><a class="header" href="#creating-a-new-token">Creating a New Token</a></h3>
 <pre><code class="language-rust ignore">// 1. Create mint account
 let mint = Keypair::new();
-let mint_rent = get_minimum_balance_for_rent_exemption(Mint::LEN)?;
+let mint_rent = arch_program::account::MIN_ACCOUNT_LAMPORTS;
 
-let create_mint_account = system_instruction::create_account(
+let create_mint_account = arch_program::system_instruction::create_account(
     &amp;payer.pubkey(),
     &amp;mint.pubkey(),
     mint_rent,
-    Mint::LEN as u64,
-    &amp;token_program_id,
+    apl_token::state::Mint::LEN as u64,
+    &amp;apl_token::id(),
 );
 
 // 2. Initialize mint
-let init_mint = initialize_mint(
+let init_mint = apl_token::instruction::initialize_mint(
+    &amp;apl_token::id(),
     &amp;mint.pubkey(),
     &amp;mint_authority.pubkey(),
     Some(&amp;freeze_authority.pubkey()),
@@ -528,54 +546,63 @@ let init_mint = initialize_mint(
 
 // 3. Create token account
 let account = Keypair::new();
-let account_rent = get_minimum_balance_for_rent_exemption(Account::LEN)?;
+let account_rent = arch_program::account::MIN_ACCOUNT_LAMPORTS;
 
-let create_account = system_instruction::create_account(
+let create_account = arch_program::system_instruction::create_account(
     &amp;payer.pubkey(),
     &amp;account.pubkey(),
     account_rent,
-    Account::LEN as u64,
-    &amp;token_program_id,
+    apl_token::state::Account::LEN as u64,
+    &amp;apl_token::id(),
 );
 
 // 4. Initialize token account
-let init_account = initialize_account(
+let init_account = apl_token::instruction::initialize_account(
+    &amp;apl_token::id(),
     &amp;account.pubkey(),
     &amp;mint.pubkey(),
     &amp;owner.pubkey(),
 )?;
 
-// 5. Combine into a single transaction
-let transaction = Transaction::new_signed_with_payer(
-    &amp;[
-        create_mint_account,
-        init_mint,
-        create_account,
-        init_account,
-    ],
-    Some(&amp;payer.pubkey()),
-    &amp;[&amp;payer, &amp;mint, &amp;account],
-    recent_blockhash,
+// 5. Send instructions using Arch SDK
+let transaction = arch_sdk::build_and_sign_transaction(
+    arch_program::sanitized::ArchMessage::new(
+        &amp;[
+            create_mint_account,
+            init_mint,
+            create_account,
+            init_account,
+        ],
+        Some(payer_pubkey),
+        client.get_best_block_hash().unwrap(),
+    ),
+    vec![payer_keypair, mint, account],
+    BITCOIN_NETWORK,
 );</code></pre>
 <h3 id="implementing-a-token-transfer"><a class="header" href="#implementing-a-token-transfer">Implementing a Token Transfer</a></h3>
-<pre><code class="language-rust ignore">// 1. Get token accounts
-let source = get_associated_token_address(&amp;source_owner, &amp;mint);
-let destination = get_associated_token_address(&amp;destination_owner, &amp;mint);
+<pre><code class="language-rust ignore">// 1. Get token accounts (these would be created beforehand)
+// let source = source_token_account_pubkey;
+// let destination = destination_token_account_pubkey;
 
 // 2. Create transfer instruction
-let transfer = transfer(
+let transfer = apl_token::instruction::transfer(
+    &amp;apl_token::id(),
     &amp;source,
     &amp;destination,
     &amp;source_owner,
+    &amp;[],
     amount,
 )?;
 
-// 3. Send transaction
-let transaction = Transaction::new_signed_with_payer(
-    &amp;[transfer],
-    Some(&amp;payer.pubkey()),
-    &amp;[&amp;payer, &amp;source_owner],
-    recent_blockhash,
+// 3. Send transaction using Arch SDK
+let transaction = arch_sdk::build_and_sign_transaction(
+    arch_program::sanitized::ArchMessage::new(
+        &amp;[transfer],
+        Some(source_owner_pubkey),
+        client.get_best_block_hash().unwrap(),
+    ),
+    vec![source_owner_keypair],
+    BITCOIN_NETWORK,
 );</code></pre>
 <h2 id="testing"><a class="header" href="#testing">Testing</a></h2>
 <p>The Token Program includes comprehensive tests. When implementing token functionality, you should test:</p>
@@ -613,7 +640,6 @@ let transaction = Transaction::new_signed_with_payer(
 mod tests {
     #[test]
     fn test_transfer() {
-        let program_id = token_program_id();
         let mint = Keypair::new();
         let source = Keypair::new();
         let destination = Keypair::new();
@@ -624,10 +650,12 @@ mod tests {
 
         // Test transfer
         let amount = 100;
-        let result = transfer(
+        let result = apl_token::instruction::transfer(
+            &amp;apl_token::id(),
             &amp;source.pubkey(),
             &amp;destination.pubkey(),
             &amp;owner.pubkey(),
+            &amp;[],
             amount,
         );
 
