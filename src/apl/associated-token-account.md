@@ -16,6 +16,11 @@ The Associated Token Account Program enables:
 associated-token-account00000000
 ```
 
+You can get the program ID in code:
+```rust,ignore
+let program_id = apl_associated_token_account::id();
+```
+
 ## Core Concepts
 
 ### Associated Token Accounts
@@ -30,6 +35,26 @@ This ensures that:
 
 ### Account Structure
 The Associated Token Account follows the standard Token Account structure but with additional guarantees about its address derivation and ownership.
+
+### How It Works
+1. **Address Derivation**: Given a wallet and token mint, the ATA address is derived deterministically
+2. **Account Creation**: If the account doesn't exist, it can be created by calling the ATA program
+3. **Token Operations**: Once created, the ATA works like any other token account for transfers, approvals, etc.
+
+The key advantage is that applications can always find a user's token account for any mint without needing to store addresses.
+
+### Key Functions
+
+The main function for working with Associated Token Accounts:
+
+```rust,ignore
+// Derive address and bump seed
+let (address, bump_seed) = apl_associated_token_account::get_associated_token_address_and_bump_seed(
+    &wallet_pubkey,
+    &token_mint_pubkey,
+    &apl_associated_token_account::id(),
+);
+```
 
 ## Instructions
 
@@ -46,16 +71,27 @@ Required accounts:
 
 Example:
 ```rust,ignore
-let associated_token_address = get_associated_token_address(
-    &wallet_address,
-    &token_mint
-);
+// Derive the associated token account address
+let (associated_token_address, _bump_seed) = 
+    apl_associated_token_account::get_associated_token_address_and_bump_seed(
+        &wallet_address,
+        &token_mint,
+        &apl_associated_token_account::id(),
+    );
 
-let create_ata_instruction = create_associated_token_account(
-    &payer.pubkey(),      // Funding account
-    &wallet_address,      // Wallet address
-    &token_mint,         // Token mint
-);
+// Create instruction to create the associated token account
+let instruction = arch_program::instruction::Instruction {
+    program_id: apl_associated_token_account::id(),
+    accounts: vec![
+        arch_program::account::AccountMeta::new(payer_pubkey, true),
+        arch_program::account::AccountMeta::new(associated_token_address, false),
+        arch_program::account::AccountMeta::new(wallet_address, false),
+        arch_program::account::AccountMeta::new_readonly(token_mint, false),
+        arch_program::account::AccountMeta::new_readonly(arch_program::system_program::id(), false),
+        arch_program::account::AccountMeta::new_readonly(apl_token::id(), false),
+    ],
+    data: utxo_data, // UTXO data for account creation
+};
 ```
 
 ## Best Practices
@@ -87,25 +123,44 @@ let create_ata_instruction = create_associated_token_account(
 ### Creating an Associated Token Account
 
 ```rust,ignore
-// Derive the associated token account address
-let associated_token_address = get_associated_token_address(
-    &wallet_address,
-    &token_mint
-);
+use arch_sdk::{build_and_sign_transaction, ArchRpcClient};
+use arch_program::sanitized::ArchMessage;
 
-// Create the account if it doesn't exist
-if get_account_info(&associated_token_address).is_none() {
-    let create_ata_instruction = create_associated_token_account(
-        &payer.pubkey(),
+// Derive the associated token account address
+let (associated_token_address, _bump_seed) = 
+    apl_associated_token_account::get_associated_token_address_and_bump_seed(
         &wallet_address,
-        &token_mint
+        &token_mint,
+        &apl_associated_token_account::id(),
     );
 
-    let transaction = Transaction::new_signed_with_payer(
-        &[create_ata_instruction],
-        Some(&payer.pubkey()),
-        &[&payer],
-        recent_blockhash
+// Check if account already exists
+let client = ArchRpcClient::new("http://localhost:9001");
+let account_info = client.get_account_info(associated_token_address);
+
+if account_info.is_err() {
+    // Account doesn't exist, create it
+    let instruction = arch_program::instruction::Instruction {
+        program_id: apl_associated_token_account::id(),
+        accounts: vec![
+            arch_program::account::AccountMeta::new(payer_pubkey, true),
+            arch_program::account::AccountMeta::new(associated_token_address, false),
+            arch_program::account::AccountMeta::new(wallet_address, false),
+            arch_program::account::AccountMeta::new_readonly(token_mint, false),
+            arch_program::account::AccountMeta::new_readonly(arch_program::system_program::id(), false),
+            arch_program::account::AccountMeta::new_readonly(apl_token::id(), false),
+        ],
+        data: utxo_data, // UTXO data for account creation
+    };
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &[instruction],
+            Some(payer_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![payer_keypair],
+        BITCOIN_NETWORK,
     );
 }
 ```
@@ -114,23 +169,27 @@ if get_account_info(&associated_token_address).is_none() {
 
 ```rust,ignore
 // Get associated token accounts for source and destination
-let source_ata = get_associated_token_address(
+let (source_ata, _) = apl_associated_token_account::get_associated_token_address_and_bump_seed(
     &source_wallet,
-    &token_mint
+    &token_mint,
+    &apl_associated_token_account::id(),
 );
 
-let destination_ata = get_associated_token_address(
+let (destination_ata, _) = apl_associated_token_account::get_associated_token_address_and_bump_seed(
     &destination_wallet,
-    &token_mint
+    &token_mint,
+    &apl_associated_token_account::id(),
 );
 
 // Create transfer instruction using ATAs
-let transfer_instruction = transfer(
+let transfer_instruction = apl_token::instruction::transfer(
+    &apl_token::id(),
     &source_ata,
     &destination_ata,
     &source_wallet,
-    amount
-);
+    &[],
+    amount,
+)?;
 ```
 
 ## Common Scenarios

@@ -1,6 +1,6 @@
 # Introduction to the Arch Program Library (APL)
 
-The Arch Program Library (APL) is a collection of on-chain programs targeting the Arch Network blockchain. These programs serve as fundamental building blocks for developing decentralized applications (dApps) on Arch Network. The APL programs are thoroughly tested, audited, and deployed to the mainnet, providing developers with reliable and secure components for their applications.
+The Arch Program Library (APL) is a collection of on-chain programs targeting the Arch Network blockchain. These programs serve as fundamental building blocks for developing decentralized applications (dApps) on Arch Network. The APL programs are thoroughly tested and provide developers with reliable and secure components for their applications.
 
 ## Available Programs
 
