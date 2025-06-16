@@ -96,17 +96,14 @@ This automatically starts:
 
 **Management Commands:**
 ```bash
-# Check status
-cli orchestrate status
-
 # Stop all services
 cli orchestrate stop
 
-# View logs
-cli orchestrate logs
+# Check validator status specifically
+cli orchestrate validator-status
 
-# Clean up (removes all data)
-cli orchestrate clean
+# Reset all data (removes all data)
+cli orchestrate reset
 ```
 
 ### Option B: Manual Setup (Advanced)
@@ -167,7 +164,7 @@ cargo run --bin titan -- \
 **Start Validator:**
 ```bash
 # Using the CLI (recommended)
-cli validator start --network regtest --titan-endpoint http://127.0.0.1:3030
+cli validator-start
 
 # OR using the binary directly
 ./local_validator \
@@ -228,7 +225,7 @@ sudo systemctl start bitcoind
 
 **Automated Setup:**
 ```bash
-cli orchestrate status
+cli orchestrate validator-status
 ```
 
 **Manual Setup:**
@@ -237,11 +234,11 @@ cli orchestrate status
 bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoinpass getblockchaininfo
 
 # Check Titan
-curl http://127.0.0.1:3030/health
+curl http://127.0.0.1:3030/status
 
 # Check Validator
 curl -X POST -H 'Content-Type: application/json' \
-    -d '{"jsonrpc":"2.0","id":1,"method":"get_health"}' \
+    -d '{"jsonrpc":"2.0","id":1,"method":"is_node_ready"}' \
     http://127.0.0.1:9002
 ```
 
@@ -249,10 +246,13 @@ curl -X POST -H 'Content-Type: application/json' \
 
 ```bash
 # Deploy a simple program using the CLI
-cli program deploy --program-path ./examples/hello-world --network regtest
+cli deploy ./target/deploy/
 
-# Send a transaction
-cli transaction send --program-id <PROGRAM_ID> --network regtest
+# Check transaction status
+cli tx confirm <TX_ID>
+
+# Get transaction details
+cli tx get <TX_ID>
 ```
 
 ## 🔍 Troubleshooting
@@ -264,12 +264,12 @@ cli transaction send --program-id <PROGRAM_ID> --network regtest
 # Check Docker is running
 docker ps
 
-# Check orchestrate logs
-cli orchestrate logs
+# Check validator status
+cli orchestrate validator-status
 
 # Reset everything
 cli orchestrate stop
-cli orchestrate clean
+cli orchestrate reset
 cli orchestrate start
 ```
 
