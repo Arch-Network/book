@@ -59,9 +59,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-arch_sdk = "0.5.2"
-arch_program = "0.5.2"
-arch_test_sdk = "0.5.2"
+arch_sdk = "0.5.4"
+arch_program = "0.5.4"
+arch_test_sdk = "0.5.4"
 apl-token = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
 apl-associated-token-account = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
 borsh = { version = "1.5.1", features = ["derive"] }
@@ -445,7 +445,7 @@ fn main() {
 
 ```bash
 # First, ensure your validator is running
-cli orchestrate validator-status
+arch-cli orchestrate validator-status
 
 # Then run the example code
 cargo run

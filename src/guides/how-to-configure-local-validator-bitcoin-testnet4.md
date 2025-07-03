@@ -29,7 +29,7 @@ The easiest way to run a local validator with testnet4 connectivity:
 
 ```bash
 # Start validator connected to hosted testnet4 infrastructure
-cli validator-start --network-mode testnet
+arch-cli validator-start --network-mode testnet
 ```
 
 This connects to Arch's hosted testnet4 infrastructure including:
@@ -42,7 +42,7 @@ This connects to Arch's hosted testnet4 infrastructure including:
 ### Basic Testnet4 Configuration
 
 ```bash
-cli validator-start \
+arch-cli validator-start \
   --network-mode testnet \
   --data-dir ./.arch_data \
   --rpc-bind-ip 127.0.0.1 \
@@ -69,7 +69,7 @@ bitcoind \
   -zmqpubrawtx=tcp://0.0.0.0:28333
 
 # Start validator with custom Bitcoin node
-cli validator-start \
+arch-cli validator-start \
   --network-mode testnet \
   --bitcoin-rpc-endpoint http://localhost:48332 \
   --bitcoin-rpc-username bitcoin \
@@ -173,16 +173,16 @@ Test program deployment to verify everything works:
 
 ```bash
 # Using CLI (automatic endpoint detection)
-cli deploy --network-mode testnet
+arch-cli deploy --network-mode testnet
 
 # Using CLI with explicit endpoint
-cli deploy --network-mode testnet --rpc-url http://localhost:9002
+arch-cli deploy --network-mode testnet --rpc-url http://localhost:9002
 ```
 
 ### Check Validator Status
 
 ```bash
-cli validator-status --rpc-url http://localhost:9002
+arch-cli validator-status --rpc-url http://localhost:9002
 ```
 
 ## Troubleshooting
@@ -203,7 +203,7 @@ curl -X POST http://localhost:9002/ \
 rm -rf .arch_data
 
 # Restart validator
-cli validator-start --network-mode testnet
+arch-cli validator-start --network-mode testnet
 ```
 
 #### 3. View Logs
@@ -242,25 +242,25 @@ wscat -c wss://titan-node.test.aws.archnetwork.xyz:49332
 ### 1. Development Cycle
 ```bash
 # Start validator
-cli validator-start --network-mode testnet
+arch-cli validator-start --network-mode testnet
 
 # Build your program
 cd your-program
 cargo build-sbf
 
 # Deploy and test
-cli deploy --network-mode testnet
-cli invoke [program-id] [account] --data [instruction-data]
+arch-cli deploy --network-mode testnet
+arch-cli invoke [program-id] [account] --data [instruction-data]
 ```
 
 ### 2. Reset Between Tests
 ```bash
 # Quick reset
-cli orchestrate reset
+arch-cli orchestrate reset
 
 # Full reset (if needed)
 rm -rf .arch_data
-cli validator-start --network-mode testnet
+arch-cli validator-start --network-mode testnet
 ```
 
 ### 3. Working with Testnet4 Features

@@ -337,28 +337,28 @@ Many RPC methods are available through the Arch Network CLI:
 
 ```bash
 # Start local validator
-cli validator-start
+arch-cli validator-start
 
 # Deploy a program  
-cli deploy <ELF_PATH>
+arch-cli deploy <ELF_PATH>
 
 # Show program information
-cli show <PROGRAM_ADDRESS>
+arch-cli show <PROGRAM_ADDRESS>
 
 # Check transaction status
-cli confirm <TX_ID>
+arch-cli confirm <TX_ID>
 
 # Get block information
-cli get-block <BLOCK_HASH>
+arch-cli get-block <BLOCK_HASH>
 
 # Get current block height
-cli get-block-height
+arch-cli get-block-height
 
 # Get program messages from transaction
-cli log-program-messages <TX_ID>
+arch-cli log-program-messages <TX_ID>
 
 # Change account owner
-cli change-owner <ACCOUNT_ADDRESS> <NEW_OWNER>
+arch-cli change-owner <ACCOUNT_ADDRESS> <NEW_OWNER>
 ```
 
 For CLI installation and usage, see the [Quick Start Guide](../getting-started/quick-start.md).

@@ -77,13 +77,13 @@ Most RPC operations can also be performed using the [Arch Network CLI](../gettin
 
 ```bash
 # Deploy a program
-cli deploy <ELF_PATH>
+arch-cli deploy <ELF_PATH>
 
 # Check transaction status  
-cli confirm <TX_ID>
+arch-cli confirm <TX_ID>
 
 # Get account information
-cli account <ACCOUNT_ADDRESS>
+arch-cli account <ACCOUNT_ADDRESS>
 ```
 
 For detailed examples and parameter specifications, see the [HTTP Methods](http-methods.md) reference.

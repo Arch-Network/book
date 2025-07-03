@@ -18,7 +18,7 @@ Verify your installation:
 git --version
 rustc --version
 solana --version  # Should show 1.x.x, not 2.x.x
-cli --version
+arch-cli --version
 ```
 
 > 💡 Note: If you encounter any issues during installation, join our [Discord](https://discord.gg/archnetwork) for support.
@@ -38,7 +38,7 @@ Choose one of the following network modes:
 
 #### Option A: Testnet (Recommended for Testing)
 ```bash
-cli validator-start \
+arch-cli validator-start \
     --network-mode testnet \
     --data-dir ./.arch_data \
     --rpc-bind-ip 127.0.0.1 \
@@ -56,7 +56,7 @@ cli validator-start \
 
 ```bash
 # Use the orchestrate command for full local devnet
-cli orchestrate start
+arch-cli orchestrate start
 ```
 
 This starts a complete local development environment with:
@@ -98,7 +98,7 @@ cargo run --bin titan -- \
     --http-listen 127.0.0.1:3030
 
 # 5. Start validator pointing to your local Titan (in a new terminal)
-cli validator-start \
+arch-cli validator-start \
     --network-mode devnet \
     --data-dir ./.arch_data \
     --rpc-bind-ip 127.0.0.1 \
@@ -116,11 +116,11 @@ cli validator-start \
 Create a new account with the faucet:
 ```bash
 # Create account and fund with 1 ARCH (1 billion lamports)
-cli account create --keypair-path ./my-account.json --airdrop 1000000000
+arch-cli account create --keypair-path ./my-account.json --airdrop 1000000000
 
 # Or create account first, then fund separately
-cli account create --keypair-path ./my-account.json
-cli account airdrop --keypair-path ./my-account.json --amount 1000000000
+arch-cli account create --keypair-path ./my-account.json
+arch-cli account airdrop --keypair-path ./my-account.json --amount 1000000000
 ```
 
 ### 4. Build and Deploy Your Program
@@ -133,7 +133,7 @@ cd program
 cargo build-sbf
 
 # Deploy to the validator
-cli deploy ./target/deploy/<program_name>.so --generate-if-missing --fund-authority
+arch-cli deploy ./target/deploy/<program_name>.so --generate-if-missing --fund-authority
 
 # Note: Save your program ID for later use
 export PROGRAM_ID=<DEPLOYED_PROGRAM_ADDRESS>
@@ -143,16 +143,16 @@ export PROGRAM_ID=<DEPLOYED_PROGRAM_ADDRESS>
 
 ```bash
 # Verify program deployment
-cli show $PROGRAM_ID
+arch-cli show $PROGRAM_ID
 
 # Check transaction status
-cli tx confirm <TX_ID>
+arch-cli tx confirm <TX_ID>
 
 # Get current block height
-cli get-block-height
+arch-cli get-block-height
 
 # Get latest block information
-cli get-block <BLOCK_HASH>
+arch-cli get-block <BLOCK_HASH>
 ```
 
 ## 🔧 Available CLI Commands
@@ -160,66 +160,66 @@ cli get-block <BLOCK_HASH>
 ### Validator Management
 ```bash
 # Start local validator
-cli validator-start [OPTIONS]
+arch-cli validator-start [OPTIONS]
 
 # Orchestrate full local devnet
-cli orchestrate start     # Start bitcoind + titan + validator
-cli orchestrate stop      # Stop all services
-cli orchestrate reset     # Reset entire environment
+arch-cli orchestrate start     # Start bitcoind + titan + validator
+arch-cli orchestrate stop      # Stop all services
+arch-cli orchestrate reset     # Reset entire environment
 ```
 
 ### Account Operations
 ```bash
 # Create new account
-cli account create --keypair-path <PATH> [--airdrop <AMOUNT>]
+arch-cli account create --keypair-path <PATH> [--airdrop <AMOUNT>]
 
 # Fund existing account
-cli account airdrop --keypair-path <PATH> --amount <LAMPORTS>
+arch-cli account airdrop --keypair-path <PATH> --amount <LAMPORTS>
 
 # Change account owner
-cli account change-owner <ACCOUNT> <NEW_OWNER> <PAYER_KEYPAIR>
+arch-cli account change-owner <ACCOUNT> <NEW_OWNER> <PAYER_KEYPAIR>
 
 # Assign UTXO to account
-cli account assign-utxo <ACCOUNT_PUBKEY>
+arch-cli account assign-utxo <ACCOUNT_PUBKEY>
 ```
 
 ### Program Deployment
 ```bash
 # Deploy program
-cli deploy <ELF_PATH> [--generate-if-missing] [--fund-authority]
+arch-cli deploy <ELF_PATH> [--generate-if-missing] [--fund-authority]
 
 # Show account/program info
-cli show <ADDRESS>
+arch-cli show <ADDRESS>
 ```
 
 ### Transaction Operations
 ```bash
 # Confirm transaction status
-cli tx confirm <TX_ID>
+arch-cli tx confirm <TX_ID>
 
 # Get transaction details
-cli tx get <TX_ID>
+arch-cli tx get <TX_ID>
 
 # View program logs from transaction
-cli tx log-program-messages <TX_ID>
+arch-cli tx log-program-messages <TX_ID>
 ```
 
 ### Block and Network Info
 ```bash
 # Get block by hash
-cli get-block <BLOCK_HASH>
+arch-cli get-block <BLOCK_HASH>
 
 # Get current block height
-cli get-block-height
+arch-cli get-block-height
 
 # Get group key
-cli get-group-key <PUBKEY>
+arch-cli get-group-key <PUBKEY>
 ```
 
 ### Configuration Profiles
 ```bash
 # Create configuration profile
-cli config create-profile <NAME> \
+arch-cli config create-profile <NAME> \
     --bitcoin-node-endpoint <URL> \
     --bitcoin-node-username <USER> \
     --bitcoin-node-password <PASS> \
@@ -227,13 +227,13 @@ cli config create-profile <NAME> \
     --arch-node-url <URL>
 
 # List profiles
-cli config list-profiles
+arch-cli config list-profiles
 
 # Update profile
-cli config update-profile <NAME> [OPTIONS]
+arch-cli config update-profile <NAME> [OPTIONS]
 
 # Delete profile
-cli config delete-profile <NAME>
+arch-cli config delete-profile <NAME>
 ```
 
 ## 🌐 Network Modes
@@ -321,21 +321,21 @@ Congratulations! You've successfully deployed your first program. Here's what yo
 
 ```bash
 # Full local development setup
-cli orchestrate start
+arch-cli orchestrate start
 
 # Deploy and test a program
-cli deploy ./target/deploy/program.so --generate-if-missing
-cli show <PROGRAM_ADDRESS>
-cli tx confirm <TX_ID>
+arch-cli deploy ./target/deploy/program.so --generate-if-missing
+arch-cli show <PROGRAM_ADDRESS>
+arch-cli tx confirm <TX_ID>
 
 # Account management
-cli account create --keypair-path ./account.json --airdrop 1000000000
-cli show <ACCOUNT_ADDRESS>
+arch-cli account create --keypair-path ./account.json --airdrop 1000000000
+arch-cli show <ACCOUNT_ADDRESS>
 
 # Network information
-cli get-block-height
-cli get-block <BLOCK_HASH>
+arch-cli get-block-height
+arch-cli get-block <BLOCK_HASH>
 
 # Stop local environment
-cli orchestrate stop
+arch-cli orchestrate stop
 ```

@@ -37,8 +37,8 @@ my-program/
 members = ["program", "tests"]
 
 [workspace.dependencies]
-arch_program = "0.5.2"
-arch_sdk = "0.5.2"
+arch_program = "0.5.4"
+arch_sdk = "0.5.4"
 borsh = { version = "1.5.1", features = ["derive"] }
 tokio = { version = "1.0", features = ["full"] }
 ```

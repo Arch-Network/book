@@ -80,7 +80,7 @@ The easiest way to get started using the CLI orchestrate command.
 # (Download the appropriate binary for your platform from the releases page)
 
 # 2. Start the complete validator stack
-cli orchestrate start
+arch-cli orchestrate start
 ```
 
 This automatically starts:
@@ -97,13 +97,13 @@ This automatically starts:
 **Management Commands:**
 ```bash
 # Stop all services
-cli orchestrate stop
+arch-cli orchestrate stop
 
 # Check validator status specifically
-cli orchestrate validator-status
+arch-cli orchestrate validator-status
 
 # Reset all data (removes all data)
-cli orchestrate reset
+arch-cli orchestrate reset
 ```
 
 ### Option B: Manual Setup (Advanced)
@@ -164,7 +164,7 @@ cargo run --bin titan -- \
 **Start Validator:**
 ```bash
 # Using the CLI (recommended)
-cli validator-start
+arch-cli validator-start
 
 # OR using the binary directly
 ./local_validator \
@@ -225,7 +225,7 @@ sudo systemctl start bitcoind
 
 **Automated Setup:**
 ```bash
-cli orchestrate validator-status
+arch-cli orchestrate validator-status
 ```
 
 **Manual Setup:**
@@ -246,13 +246,13 @@ curl -X POST -H 'Content-Type: application/json' \
 
 ```bash
 # Deploy a simple program using the CLI
-cli deploy ./target/deploy/
+arch-cli deploy ./target/deploy/
 
 # Check transaction status
-cli tx confirm <TX_ID>
+arch-cli tx confirm <TX_ID>
 
 # Get transaction details
-cli tx get <TX_ID>
+arch-cli tx get <TX_ID>
 ```
 
 ## 🔍 Troubleshooting
@@ -265,12 +265,12 @@ cli tx get <TX_ID>
 docker ps
 
 # Check validator status
-cli orchestrate validator-status
+arch-cli orchestrate validator-status
 
 # Reset everything
-cli orchestrate stop
-cli orchestrate reset
-cli orchestrate start
+arch-cli orchestrate stop
+arch-cli orchestrate reset
+arch-cli orchestrate start
 ```
 
 **Manual Setup Issues:**
@@ -301,14 +301,14 @@ tail -f ~/.bitcoin/regtest/debug.log  # Bitcoin Core logs
 ### Testnet (Testing)
 ```bash
 # For testnet, modify your configuration:
-cli orchestrate start --network testnet
+arch-cli orchestrate start --network testnet
 # OR manually configure with testnet parameters
 ```
 
 ### Mainnet (Production)
 ```bash
 # For mainnet (when available):
-cli orchestrate start --network mainnet
+arch-cli orchestrate start --network mainnet
 # Requires significant storage and bandwidth
 ```
 

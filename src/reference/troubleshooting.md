@@ -48,7 +48,7 @@ Error: Program deployment failed: Transaction simulation failed
 - Verify the program binary size is within limits
 - Ensure you're connected to the correct network:
   ```bash
-  cli config get
+  arch-cli config get
   ```
 
 #### 2. Transaction Errors
@@ -74,7 +74,7 @@ Error: Failed to create account: insufficient funds
 - Verify account balance
 - Check rent-exempt minimum:
   ```bash
-  cli rent minimum-balance <size>
+  arch-cli rent minimum-balance <size>
   ```
 - Ensure correct account size calculation
 
@@ -104,7 +104,7 @@ Error: Unable to connect to RPC endpoint
 - Check network status
 - Verify endpoint configuration:
   ```bash
-  cli config get
+  arch-cli config get
   ```
 - Try alternate RPC endpoints
 
@@ -171,21 +171,21 @@ error: linker `cc` not found
 
 Enable detailed logging:
 ```bash
-RUST_LOG=debug cli program-logs <PROGRAM_ID>
+RUST_LOG=debug arch-cli program-logs <PROGRAM_ID>
 ```
 
 ### 2. Transaction Inspection
 
 Analyze transaction details:
 ```bash
-cli transaction-info <TX_SIGNATURE>
+arch-cli transaction-info <TX_SIGNATURE>
 ```
 
 ### 3. Account Inspection
 
 View account data:
 ```bash
-cli account <ACCOUNT_ADDRESS>
+arch-cli account <ACCOUNT_ADDRESS>
 ```
 
 ## Best Practices

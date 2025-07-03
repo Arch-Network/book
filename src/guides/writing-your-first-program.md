@@ -50,7 +50,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-arch_program = "0.5.2"
+arch_program = "0.5.4"
 borsh = { version = "1.5.1", features = ["derive"] }
 
 [lib]
@@ -618,10 +618,10 @@ Deploy your program to the Arch Network:
 
 ```bash
 # Deploy to testnet (recommended for testing)
-cli deploy ./target/deploy/ --network-mode testnet
+arch-cli deploy ./target/deploy/ --network-mode testnet
 
 # Or deploy to local network for development
-cli deploy ./target/deploy/ --network-mode regtest
+arch-cli deploy ./target/deploy/ --network-mode regtest
 ```
 
 **Save the Program ID** from the output - you'll need it for testing!
@@ -638,7 +638,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-arch_sdk = "0.5.2"
+arch_sdk = "0.5.4"
 my_counter_program = { path = "../program" }
 borsh = "1.5.1"
 tokio = { version = "1.0", features = ["full"] }
@@ -809,5 +809,5 @@ Now that you've built your first program:
 
 ```bash
 # Start the Arch Network validator
-cli validator-start
+arch-cli validator-start
 ```

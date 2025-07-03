@@ -62,7 +62,7 @@ Start a local validator for testing:
 
 ```bash
 # Start the Arch Network validator
-cli validator-start
+arch-cli validator-start
 ```
 
 > Important: Ensure Bitcoin Core and Titan are properly configured and running before starting the validator. See the setup guide for details.
@@ -73,7 +73,7 @@ Deploy your compiled program to the local Arch Network:
 
 ```bash
 # Deploy the program
-cli deploy ./target/deploy/
+arch-cli deploy ./target/deploy/
 ```
 
 
@@ -95,16 +95,16 @@ For more advanced operations, the Arch Network CLI provides additional commands:
 
 ```bash
 # Show program information
-cli show <PROGRAM_ADDRESS>
+arch-cli show <PROGRAM_ADDRESS>
 
 # Confirm transaction status
-cli confirm <TX_ID>
+arch-cli confirm <TX_ID>
 
 # Get block information
-cli get-block <BLOCK_HASH>
+arch-cli get-block <BLOCK_HASH>
 
 # Get block height
-cli get-block-height
+arch-cli get-block-height
 ```
 
 For a complete list of available commands, refer to the [Arch Network CLI documentation](https://github.com/Arch-Network/arch-node/releases/latest).

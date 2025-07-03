@@ -43,7 +43,7 @@ bitcoin-cli -regtest getblockchaininfo
 curl http://localhost:3002/blocks/tip/height
 
 # Check Arch Network CLI
-cli --version
+arch-cli --version
 ```
 
 ## 🎮 Quick Test
@@ -54,7 +54,7 @@ ADDR=$(bitcoin-cli -regtest getnewaddress)
 bitcoin-cli -regtest generatetoaddress 101 $ADDR
 
 # Start the local validator
-cli validator start
+arch-cli validator start
 ```
 
 ## 🔧 Manual Configuration

@@ -246,10 +246,10 @@ cli validator-start \
 
 ```bash
 # Node status
-cli validator status
+arch-cli validator status
 
 # Performance metrics
-cli validator metrics
+arch-cli validator metrics
 ```
 </div>
 
@@ -258,10 +258,10 @@ cli validator metrics
 
 ```bash
 # Check sync status
-cli validator sync-status
+arch-cli validator sync-status
 
 # Force resync if needed
-cli validator resync
+arch-cli validator resync
 ```
 </div>
 </div>

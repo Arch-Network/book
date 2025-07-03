@@ -301,14 +301,14 @@ After you've written and tested your program, it's time to deploy it to the Arch
 cargo build-sbf
 
 # Deploy the program to the Arch Network
-cli deploy target/deploy/runes_swap.so
+arch-cli deploy target/deploy/runes_swap.so
 ```
 
 Make sure you have a validator node running before deployment:
 
 ```bash
 # Start a local validator
-cli validator-start
+arch-cli validator-start
 ```
 
 ## Conclusion

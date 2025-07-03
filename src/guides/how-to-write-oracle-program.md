@@ -108,7 +108,7 @@ After the project is created, the program is written and the `Cargo.toml` is set
 cargo build-sbf
 
 # Deploy the program
-cli deploy target/deploy/oracle.so
+arch-cli deploy target/deploy/oracle.so
 ```
 
 During the deployment, a new account is created for the deployed program logic and set to be executable, marking it as a [Program] rather than a data [Account].
