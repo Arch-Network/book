@@ -199,7 +199,7 @@
 <pre><code class="language-bash">git --version
 rustc --version
 solana --version  # Should show 1.x.x, not 2.x.x
-cli --version
+arch-cli --version
 </code></pre>
 <blockquote>
 <p>💡 Note: If you encounter any issues during installation, join our <a href="https://discord.gg/archnetwork">Discord</a> for support.</p>
@@ -213,7 +213,7 @@ cd arch-examples/examples/helloworld
 <h3 id="2-start-local-validator"><a class="header" href="#2-start-local-validator">2. Start Local Validator</a></h3>
 <p>Choose one of the following network modes:</p>
 <h4 id="option-a-testnet-recommended-for-testing"><a class="header" href="#option-a-testnet-recommended-for-testing">Option A: Testnet (Recommended for Testing)</a></h4>
-<pre><code class="language-bash">cli validator-start \
+<pre><code class="language-bash">arch-cli validator-start \
     --network-mode testnet \
     --data-dir ./.arch_data \
     --rpc-bind-ip 127.0.0.1 \
@@ -233,7 +233,7 @@ cd arch-examples/examples/helloworld
 </li>
 </ul>
 <pre><code class="language-bash"># Use the orchestrate command for full local devnet
-cli orchestrate start
+arch-cli orchestrate start
 </code></pre>
 <p>This starts a complete local development environment with:</p>
 <ul>
@@ -273,7 +273,7 @@ cargo run --bin titan -- \
     --http-listen 127.0.0.1:3030
 
 # 5. Start validator pointing to your local Titan (in a new terminal)
-cli validator-start \
+arch-cli validator-start \
     --network-mode devnet \
     --data-dir ./.arch_data \
     --rpc-bind-ip 127.0.0.1 \
@@ -290,11 +290,11 @@ cli validator-start \
 <h3 id="3-create-and-fund-account"><a class="header" href="#3-create-and-fund-account">3. Create and Fund Account</a></h3>
 <p>Create a new account with the faucet:</p>
 <pre><code class="language-bash"># Create account and fund with 1 ARCH (1 billion lamports)
-cli account create --keypair-path ./my-account.json --airdrop 1000000000
+arch-cli account create --keypair-path ./my-account.json --airdrop 1000000000
 
 # Or create account first, then fund separately
-cli account create --keypair-path ./my-account.json
-cli account airdrop --keypair-path ./my-account.json --amount 1000000000
+arch-cli account create --keypair-path ./my-account.json
+arch-cli account airdrop --keypair-path ./my-account.json --amount 1000000000
 </code></pre>
 <h3 id="4-build-and-deploy-your-program"><a class="header" href="#4-build-and-deploy-your-program">4. Build and Deploy Your Program</a></h3>
 <pre><code class="language-bash"># Navigate to the program directory
@@ -304,77 +304,77 @@ cd program
 cargo build-sbf
 
 # Deploy to the validator
-cli deploy ./target/deploy/&lt;program_name&gt;.so --generate-if-missing --fund-authority
+arch-cli deploy ./target/deploy/&lt;program_name&gt;.so --generate-if-missing --fund-authority
 
 # Note: Save your program ID for later use
 export PROGRAM_ID=&lt;DEPLOYED_PROGRAM_ADDRESS&gt;
 </code></pre>
 <h3 id="5-test-your-deployment"><a class="header" href="#5-test-your-deployment">5. Test Your Deployment</a></h3>
 <pre><code class="language-bash"># Verify program deployment
-cli show $PROGRAM_ID
+arch-cli show $PROGRAM_ID
 
 # Check transaction status
-cli tx confirm &lt;TX_ID&gt;
+arch-cli tx confirm &lt;TX_ID&gt;
 
 # Get current block height
-cli get-block-height
+arch-cli get-block-height
 
 # Get latest block information
-cli get-block &lt;BLOCK_HASH&gt;
+arch-cli get-block &lt;BLOCK_HASH&gt;
 </code></pre>
 <h2 id="-available-cli-commands"><a class="header" href="#-available-cli-commands">🔧 Available CLI Commands</a></h2>
 <h3 id="validator-management"><a class="header" href="#validator-management">Validator Management</a></h3>
 <pre><code class="language-bash"># Start local validator
-cli validator-start [OPTIONS]
+arch-cli validator-start [OPTIONS]
 
 # Orchestrate full local devnet
-cli orchestrate start     # Start bitcoind + titan + validator
-cli orchestrate stop      # Stop all services
-cli orchestrate reset     # Reset entire environment
+arch-cli orchestrate start     # Start bitcoind + titan + validator
+arch-cli orchestrate stop      # Stop all services
+arch-cli orchestrate reset     # Reset entire environment
 </code></pre>
 <h3 id="account-operations"><a class="header" href="#account-operations">Account Operations</a></h3>
 <pre><code class="language-bash"># Create new account
-cli account create --keypair-path &lt;PATH&gt; [--airdrop &lt;AMOUNT&gt;]
+arch-cli account create --keypair-path &lt;PATH&gt; [--airdrop &lt;AMOUNT&gt;]
 
 # Fund existing account
-cli account airdrop --keypair-path &lt;PATH&gt; --amount &lt;LAMPORTS&gt;
+arch-cli account airdrop --keypair-path &lt;PATH&gt; --amount &lt;LAMPORTS&gt;
 
 # Change account owner
-cli account change-owner &lt;ACCOUNT&gt; &lt;NEW_OWNER&gt; &lt;PAYER_KEYPAIR&gt;
+arch-cli account change-owner &lt;ACCOUNT&gt; &lt;NEW_OWNER&gt; &lt;PAYER_KEYPAIR&gt;
 
 # Assign UTXO to account
-cli account assign-utxo &lt;ACCOUNT_PUBKEY&gt;
+arch-cli account assign-utxo &lt;ACCOUNT_PUBKEY&gt;
 </code></pre>
 <h3 id="program-deployment"><a class="header" href="#program-deployment">Program Deployment</a></h3>
 <pre><code class="language-bash"># Deploy program
-cli deploy &lt;ELF_PATH&gt; [--generate-if-missing] [--fund-authority]
+arch-cli deploy &lt;ELF_PATH&gt; [--generate-if-missing] [--fund-authority]
 
 # Show account/program info
-cli show &lt;ADDRESS&gt;
+arch-cli show &lt;ADDRESS&gt;
 </code></pre>
 <h3 id="transaction-operations"><a class="header" href="#transaction-operations">Transaction Operations</a></h3>
 <pre><code class="language-bash"># Confirm transaction status
-cli tx confirm &lt;TX_ID&gt;
+arch-cli tx confirm &lt;TX_ID&gt;
 
 # Get transaction details
-cli tx get &lt;TX_ID&gt;
+arch-cli tx get &lt;TX_ID&gt;
 
 # View program logs from transaction
-cli tx log-program-messages &lt;TX_ID&gt;
+arch-cli tx log-program-messages &lt;TX_ID&gt;
 </code></pre>
 <h3 id="block-and-network-info"><a class="header" href="#block-and-network-info">Block and Network Info</a></h3>
 <pre><code class="language-bash"># Get block by hash
-cli get-block &lt;BLOCK_HASH&gt;
+arch-cli get-block &lt;BLOCK_HASH&gt;
 
 # Get current block height
-cli get-block-height
+arch-cli get-block-height
 
 # Get group key
-cli get-group-key &lt;PUBKEY&gt;
+arch-cli get-group-key &lt;PUBKEY&gt;
 </code></pre>
 <h3 id="configuration-profiles"><a class="header" href="#configuration-profiles">Configuration Profiles</a></h3>
 <pre><code class="language-bash"># Create configuration profile
-cli config create-profile &lt;NAME&gt; \
+arch-cli config create-profile &lt;NAME&gt; \
     --bitcoin-node-endpoint &lt;URL&gt; \
     --bitcoin-node-username &lt;USER&gt; \
     --bitcoin-node-password &lt;PASS&gt; \
@@ -382,13 +382,13 @@ cli config create-profile &lt;NAME&gt; \
     --arch-node-url &lt;URL&gt;
 
 # List profiles
-cli config list-profiles
+arch-cli config list-profiles
 
 # Update profile
-cli config update-profile &lt;NAME&gt; [OPTIONS]
+arch-cli config update-profile &lt;NAME&gt; [OPTIONS]
 
 # Delete profile
-cli config delete-profile &lt;NAME&gt;
+arch-cli config delete-profile &lt;NAME&gt;
 </code></pre>
 <h2 id="-network-modes"><a class="header" href="#-network-modes">🌐 Network Modes</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Network Mode</th><th>Description</th><th>Use Case</th></tr></thead><tbody>
@@ -469,23 +469,23 @@ export ARCH_TITAN_ENDPOINT=https://titan-public-http.test.arch.network
 </ul>
 <h2 id="-common-commands-quick-reference"><a class="header" href="#-common-commands-quick-reference">🔍 Common Commands Quick Reference</a></h2>
 <pre><code class="language-bash"># Full local development setup
-cli orchestrate start
+arch-cli orchestrate start
 
 # Deploy and test a program
-cli deploy ./target/deploy/program.so --generate-if-missing
-cli show &lt;PROGRAM_ADDRESS&gt;
-cli tx confirm &lt;TX_ID&gt;
+arch-cli deploy ./target/deploy/program.so --generate-if-missing
+arch-cli show &lt;PROGRAM_ADDRESS&gt;
+arch-cli tx confirm &lt;TX_ID&gt;
 
 # Account management
-cli account create --keypair-path ./account.json --airdrop 1000000000
-cli show &lt;ACCOUNT_ADDRESS&gt;
+arch-cli account create --keypair-path ./account.json --airdrop 1000000000
+arch-cli show &lt;ACCOUNT_ADDRESS&gt;
 
 # Network information
-cli get-block-height
-cli get-block &lt;BLOCK_HASH&gt;
+arch-cli get-block-height
+arch-cli get-block &lt;BLOCK_HASH&gt;
 
 # Stop local environment
-cli orchestrate stop
+arch-cli orchestrate stop
 </code></pre>
 
                     </main>

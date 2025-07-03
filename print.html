@@ -365,7 +365,7 @@ Technical documentation:
 <pre><code class="language-bash">git --version
 rustc --version
 solana --version  # Should show 1.x.x, not 2.x.x
-cli --version
+arch-cli --version
 </code></pre>
 <blockquote>
 <p>💡 Note: If you encounter any issues during installation, join our <a href="https://discord.gg/archnetwork">Discord</a> for support.</p>
@@ -379,7 +379,7 @@ cd arch-examples/examples/helloworld
 <h3 id="2-start-local-validator"><a class="header" href="#2-start-local-validator">2. Start Local Validator</a></h3>
 <p>Choose one of the following network modes:</p>
 <h4 id="option-a-testnet-recommended-for-testing"><a class="header" href="#option-a-testnet-recommended-for-testing">Option A: Testnet (Recommended for Testing)</a></h4>
-<pre><code class="language-bash">cli validator-start \
+<pre><code class="language-bash">arch-cli validator-start \
     --network-mode testnet \
     --data-dir ./.arch_data \
     --rpc-bind-ip 127.0.0.1 \
@@ -399,7 +399,7 @@ cd arch-examples/examples/helloworld
 </li>
 </ul>
 <pre><code class="language-bash"># Use the orchestrate command for full local devnet
-cli orchestrate start
+arch-cli orchestrate start
 </code></pre>
 <p>This starts a complete local development environment with:</p>
 <ul>
@@ -439,7 +439,7 @@ cargo run --bin titan -- \
     --http-listen 127.0.0.1:3030
 
 # 5. Start validator pointing to your local Titan (in a new terminal)
-cli validator-start \
+arch-cli validator-start \
     --network-mode devnet \
     --data-dir ./.arch_data \
     --rpc-bind-ip 127.0.0.1 \
@@ -456,11 +456,11 @@ cli validator-start \
 <h3 id="3-create-and-fund-account"><a class="header" href="#3-create-and-fund-account">3. Create and Fund Account</a></h3>
 <p>Create a new account with the faucet:</p>
 <pre><code class="language-bash"># Create account and fund with 1 ARCH (1 billion lamports)
-cli account create --keypair-path ./my-account.json --airdrop 1000000000
+arch-cli account create --keypair-path ./my-account.json --airdrop 1000000000
 
 # Or create account first, then fund separately
-cli account create --keypair-path ./my-account.json
-cli account airdrop --keypair-path ./my-account.json --amount 1000000000
+arch-cli account create --keypair-path ./my-account.json
+arch-cli account airdrop --keypair-path ./my-account.json --amount 1000000000
 </code></pre>
 <h3 id="4-build-and-deploy-your-program"><a class="header" href="#4-build-and-deploy-your-program">4. Build and Deploy Your Program</a></h3>
 <pre><code class="language-bash"># Navigate to the program directory
@@ -470,77 +470,77 @@ cd program
 cargo build-sbf
 
 # Deploy to the validator
-cli deploy ./target/deploy/&lt;program_name&gt;.so --generate-if-missing --fund-authority
+arch-cli deploy ./target/deploy/&lt;program_name&gt;.so --generate-if-missing --fund-authority
 
 # Note: Save your program ID for later use
 export PROGRAM_ID=&lt;DEPLOYED_PROGRAM_ADDRESS&gt;
 </code></pre>
 <h3 id="5-test-your-deployment"><a class="header" href="#5-test-your-deployment">5. Test Your Deployment</a></h3>
 <pre><code class="language-bash"># Verify program deployment
-cli show $PROGRAM_ID
+arch-cli show $PROGRAM_ID
 
 # Check transaction status
-cli tx confirm &lt;TX_ID&gt;
+arch-cli tx confirm &lt;TX_ID&gt;
 
 # Get current block height
-cli get-block-height
+arch-cli get-block-height
 
 # Get latest block information
-cli get-block &lt;BLOCK_HASH&gt;
+arch-cli get-block &lt;BLOCK_HASH&gt;
 </code></pre>
 <h2 id="-available-cli-commands"><a class="header" href="#-available-cli-commands">🔧 Available CLI Commands</a></h2>
 <h3 id="validator-management"><a class="header" href="#validator-management">Validator Management</a></h3>
 <pre><code class="language-bash"># Start local validator
-cli validator-start [OPTIONS]
+arch-cli validator-start [OPTIONS]
 
 # Orchestrate full local devnet
-cli orchestrate start     # Start bitcoind + titan + validator
-cli orchestrate stop      # Stop all services
-cli orchestrate reset     # Reset entire environment
+arch-cli orchestrate start     # Start bitcoind + titan + validator
+arch-cli orchestrate stop      # Stop all services
+arch-cli orchestrate reset     # Reset entire environment
 </code></pre>
 <h3 id="account-operations"><a class="header" href="#account-operations">Account Operations</a></h3>
 <pre><code class="language-bash"># Create new account
-cli account create --keypair-path &lt;PATH&gt; [--airdrop &lt;AMOUNT&gt;]
+arch-cli account create --keypair-path &lt;PATH&gt; [--airdrop &lt;AMOUNT&gt;]
 
 # Fund existing account
-cli account airdrop --keypair-path &lt;PATH&gt; --amount &lt;LAMPORTS&gt;
+arch-cli account airdrop --keypair-path &lt;PATH&gt; --amount &lt;LAMPORTS&gt;
 
 # Change account owner
-cli account change-owner &lt;ACCOUNT&gt; &lt;NEW_OWNER&gt; &lt;PAYER_KEYPAIR&gt;
+arch-cli account change-owner &lt;ACCOUNT&gt; &lt;NEW_OWNER&gt; &lt;PAYER_KEYPAIR&gt;
 
 # Assign UTXO to account
-cli account assign-utxo &lt;ACCOUNT_PUBKEY&gt;
+arch-cli account assign-utxo &lt;ACCOUNT_PUBKEY&gt;
 </code></pre>
 <h3 id="program-deployment"><a class="header" href="#program-deployment">Program Deployment</a></h3>
 <pre><code class="language-bash"># Deploy program
-cli deploy &lt;ELF_PATH&gt; [--generate-if-missing] [--fund-authority]
+arch-cli deploy &lt;ELF_PATH&gt; [--generate-if-missing] [--fund-authority]
 
 # Show account/program info
-cli show &lt;ADDRESS&gt;
+arch-cli show &lt;ADDRESS&gt;
 </code></pre>
 <h3 id="transaction-operations"><a class="header" href="#transaction-operations">Transaction Operations</a></h3>
 <pre><code class="language-bash"># Confirm transaction status
-cli tx confirm &lt;TX_ID&gt;
+arch-cli tx confirm &lt;TX_ID&gt;
 
 # Get transaction details
-cli tx get &lt;TX_ID&gt;
+arch-cli tx get &lt;TX_ID&gt;
 
 # View program logs from transaction
-cli tx log-program-messages &lt;TX_ID&gt;
+arch-cli tx log-program-messages &lt;TX_ID&gt;
 </code></pre>
 <h3 id="block-and-network-info"><a class="header" href="#block-and-network-info">Block and Network Info</a></h3>
 <pre><code class="language-bash"># Get block by hash
-cli get-block &lt;BLOCK_HASH&gt;
+arch-cli get-block &lt;BLOCK_HASH&gt;
 
 # Get current block height
-cli get-block-height
+arch-cli get-block-height
 
 # Get group key
-cli get-group-key &lt;PUBKEY&gt;
+arch-cli get-group-key &lt;PUBKEY&gt;
 </code></pre>
 <h3 id="configuration-profiles"><a class="header" href="#configuration-profiles">Configuration Profiles</a></h3>
 <pre><code class="language-bash"># Create configuration profile
-cli config create-profile &lt;NAME&gt; \
+arch-cli config create-profile &lt;NAME&gt; \
     --bitcoin-node-endpoint &lt;URL&gt; \
     --bitcoin-node-username &lt;USER&gt; \
     --bitcoin-node-password &lt;PASS&gt; \
@@ -548,13 +548,13 @@ cli config create-profile &lt;NAME&gt; \
     --arch-node-url &lt;URL&gt;
 
 # List profiles
-cli config list-profiles
+arch-cli config list-profiles
 
 # Update profile
-cli config update-profile &lt;NAME&gt; [OPTIONS]
+arch-cli config update-profile &lt;NAME&gt; [OPTIONS]
 
 # Delete profile
-cli config delete-profile &lt;NAME&gt;
+arch-cli config delete-profile &lt;NAME&gt;
 </code></pre>
 <h2 id="-network-modes"><a class="header" href="#-network-modes">🌐 Network Modes</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Network Mode</th><th>Description</th><th>Use Case</th></tr></thead><tbody>
@@ -635,23 +635,23 @@ export ARCH_TITAN_ENDPOINT=https://titan-public-http.test.arch.network
 </ul>
 <h2 id="-common-commands-quick-reference"><a class="header" href="#-common-commands-quick-reference">🔍 Common Commands Quick Reference</a></h2>
 <pre><code class="language-bash"># Full local development setup
-cli orchestrate start
+arch-cli orchestrate start
 
 # Deploy and test a program
-cli deploy ./target/deploy/program.so --generate-if-missing
-cli show &lt;PROGRAM_ADDRESS&gt;
-cli tx confirm &lt;TX_ID&gt;
+arch-cli deploy ./target/deploy/program.so --generate-if-missing
+arch-cli show &lt;PROGRAM_ADDRESS&gt;
+arch-cli tx confirm &lt;TX_ID&gt;
 
 # Account management
-cli account create --keypair-path ./account.json --airdrop 1000000000
-cli show &lt;ACCOUNT_ADDRESS&gt;
+arch-cli account create --keypair-path ./account.json --airdrop 1000000000
+arch-cli show &lt;ACCOUNT_ADDRESS&gt;
 
 # Network information
-cli get-block-height
-cli get-block &lt;BLOCK_HASH&gt;
+arch-cli get-block-height
+arch-cli get-block &lt;BLOCK_HASH&gt;
 
 # Stop local environment
-cli orchestrate stop
+arch-cli orchestrate stop
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="-validator-setup"><a class="header" href="#-validator-setup">🏗️ Validator Setup</a></h1>
 <p>Welcome to the validator setup guide! This guide will walk you through setting up a full Arch Network validator node. You can choose between an automated setup or manual configuration depending on your needs.</p>
@@ -726,7 +726,7 @@ cli orchestrate stop
 # (Download the appropriate binary for your platform from the releases page)
 
 # 2. Start the complete validator stack
-cli orchestrate start
+arch-cli orchestrate start
 </code></pre>
 <p>This automatically starts:</p>
 <ul>
@@ -743,13 +743,13 @@ cli orchestrate start
 </ul>
 <p><strong>Management Commands:</strong></p>
 <pre><code class="language-bash"># Stop all services
-cli orchestrate stop
+arch-cli orchestrate stop
 
 # Check validator status specifically
-cli orchestrate validator-status
+arch-cli orchestrate validator-status
 
 # Reset all data (removes all data)
-cli orchestrate reset
+arch-cli orchestrate reset
 </code></pre>
 <h3 id="option-b-manual-setup-advanced"><a class="header" href="#option-b-manual-setup-advanced">Option B: Manual Setup (Advanced)</a></h3>
 <p>For developers who want full control over their environment.</p>
@@ -797,7 +797,7 @@ cargo run --bin titan -- \
 <h4 id="step-3-validator-setup"><a class="header" href="#step-3-validator-setup">Step 3: Validator Setup</a></h4>
 <p><strong>Start Validator:</strong></p>
 <pre><code class="language-bash"># Using the CLI (recommended)
-cli validator-start
+arch-cli validator-start
 
 # OR using the binary directly
 ./local_validator \
@@ -847,7 +847,7 @@ sudo systemctl start bitcoind
 <h2 id="-verification"><a class="header" href="#-verification">✅ Verification</a></h2>
 <h3 id="check-service-status"><a class="header" href="#check-service-status">Check Service Status</a></h3>
 <p><strong>Automated Setup:</strong></p>
-<pre><code class="language-bash">cli orchestrate validator-status
+<pre><code class="language-bash">arch-cli orchestrate validator-status
 </code></pre>
 <p><strong>Manual Setup:</strong></p>
 <pre><code class="language-bash"># Check Bitcoin Core
@@ -863,13 +863,13 @@ curl -X POST -H 'Content-Type: application/json' \
 </code></pre>
 <h3 id="test-transaction-flow"><a class="header" href="#test-transaction-flow">Test Transaction Flow</a></h3>
 <pre><code class="language-bash"># Deploy a simple program using the CLI
-cli deploy ./target/deploy/
+arch-cli deploy ./target/deploy/
 
 # Check transaction status
-cli tx confirm &lt;TX_ID&gt;
+arch-cli tx confirm &lt;TX_ID&gt;
 
 # Get transaction details
-cli tx get &lt;TX_ID&gt;
+arch-cli tx get &lt;TX_ID&gt;
 </code></pre>
 <h2 id="-troubleshooting"><a class="header" href="#-troubleshooting">🔍 Troubleshooting</a></h2>
 <h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
@@ -878,12 +878,12 @@ cli tx get &lt;TX_ID&gt;
 docker ps
 
 # Check validator status
-cli orchestrate validator-status
+arch-cli orchestrate validator-status
 
 # Reset everything
-cli orchestrate stop
-cli orchestrate reset
-cli orchestrate start
+arch-cli orchestrate stop
+arch-cli orchestrate reset
+arch-cli orchestrate start
 </code></pre>
 <p><strong>Manual Setup Issues:</strong></p>
 <pre><code class="language-bash"># Check if ports are in use
@@ -911,12 +911,12 @@ tail -f ~/.bitcoin/regtest/debug.log  # Bitcoin Core logs
 </ul>
 <h3 id="testnet-testing"><a class="header" href="#testnet-testing">Testnet (Testing)</a></h3>
 <pre><code class="language-bash"># For testnet, modify your configuration:
-cli orchestrate start --network testnet
+arch-cli orchestrate start --network testnet
 # OR manually configure with testnet parameters
 </code></pre>
 <h3 id="mainnet-production"><a class="header" href="#mainnet-production">Mainnet (Production)</a></h3>
 <pre><code class="language-bash"># For mainnet (when available):
-cli orchestrate start --network mainnet
+arch-cli orchestrate start --network mainnet
 # Requires significant storage and bandwidth
 </code></pre>
 <h2 id="-next-steps-1"><a class="header" href="#-next-steps-1">📚 Next Steps</a></h2>
@@ -1065,7 +1065,7 @@ sudo mv cli /usr/local/bin/
 <h2 id="quick-start-recommended"><a class="header" href="#quick-start-recommended">Quick Start (Recommended)</a></h2>
 <p>The easiest way to run a local validator with testnet4 connectivity:</p>
 <pre><code class="language-bash"># Start validator connected to hosted testnet4 infrastructure
-cli validator-start --network-mode testnet
+arch-cli validator-start --network-mode testnet
 </code></pre>
 <p>This connects to Arch’s hosted testnet4 infrastructure including:</p>
 <ul>
@@ -1075,7 +1075,7 @@ cli validator-start --network-mode testnet
 </ul>
 <h2 id="configuration-options"><a class="header" href="#configuration-options">Configuration Options</a></h2>
 <h3 id="basic-testnet4-configuration"><a class="header" href="#basic-testnet4-configuration">Basic Testnet4 Configuration</a></h3>
-<pre><code class="language-bash">cli validator-start \
+<pre><code class="language-bash">arch-cli validator-start \
   --network-mode testnet \
   --data-dir ./.arch_data \
   --rpc-bind-ip 127.0.0.1 \
@@ -1098,7 +1098,7 @@ bitcoind \
   -zmqpubrawtx=tcp://0.0.0.0:28333
 
 # Start validator with custom Bitcoin node
-cli validator-start \
+arch-cli validator-start \
   --network-mode testnet \
   --bitcoin-rpc-endpoint http://localhost:48332 \
   --bitcoin-rpc-username bitcoin \
@@ -1183,13 +1183,13 @@ chmod +x local_validator
 <h3 id="deploy-test-program"><a class="header" href="#deploy-test-program">Deploy Test Program</a></h3>
 <p>Test program deployment to verify everything works:</p>
 <pre><code class="language-bash"># Using CLI (automatic endpoint detection)
-cli deploy --network-mode testnet
+arch-cli deploy --network-mode testnet
 
 # Using CLI with explicit endpoint
-cli deploy --network-mode testnet --rpc-url http://localhost:9002
+arch-cli deploy --network-mode testnet --rpc-url http://localhost:9002
 </code></pre>
 <h3 id="check-validator-status"><a class="header" href="#check-validator-status">Check Validator Status</a></h3>
-<pre><code class="language-bash">cli validator-status --rpc-url http://localhost:9002
+<pre><code class="language-bash">arch-cli validator-status --rpc-url http://localhost:9002
 </code></pre>
 <h2 id="troubleshooting-1"><a class="header" href="#troubleshooting-1">Troubleshooting</a></h2>
 <h3 id="common-issues-1"><a class="header" href="#common-issues-1">Common Issues</a></h3>
@@ -1204,7 +1204,7 @@ curl -X POST http://localhost:9002/ \
 rm -rf .arch_data
 
 # Restart validator
-cli validator-start --network-mode testnet
+arch-cli validator-start --network-mode testnet
 </code></pre>
 <h4 id="3-view-logs"><a class="header" href="#3-view-logs">3. View Logs</a></h4>
 <p><strong>Docker Logs:</strong></p>
@@ -1233,23 +1233,23 @@ wscat -c wss://titan-node.test.aws.archnetwork.xyz:49332
 <h2 id="development-workflow"><a class="header" href="#development-workflow">Development Workflow</a></h2>
 <h3 id="1-development-cycle"><a class="header" href="#1-development-cycle">1. Development Cycle</a></h3>
 <pre><code class="language-bash"># Start validator
-cli validator-start --network-mode testnet
+arch-cli validator-start --network-mode testnet
 
 # Build your program
 cd your-program
 cargo build-sbf
 
 # Deploy and test
-cli deploy --network-mode testnet
-cli invoke [program-id] [account] --data [instruction-data]
+arch-cli deploy --network-mode testnet
+arch-cli invoke [program-id] [account] --data [instruction-data]
 </code></pre>
 <h3 id="2-reset-between-tests"><a class="header" href="#2-reset-between-tests">2. Reset Between Tests</a></h3>
 <pre><code class="language-bash"># Quick reset
-cli orchestrate reset
+arch-cli orchestrate reset
 
 # Full reset (if needed)
 rm -rf .arch_data
-cli validator-start --network-mode testnet
+arch-cli validator-start --network-mode testnet
 </code></pre>
 <h3 id="3-working-with-testnet4-features"><a class="header" href="#3-working-with-testnet4-features">3. Working with Testnet4 Features</a></h3>
 <p><strong>Ordinals Testing:</strong></p>
@@ -1491,19 +1491,19 @@ cli validator-start \
 <div class="monitoring-card">
 <h3 id="-health-checks"><a class="header" href="#-health-checks">📊 Health Checks</a></h3>
 <pre><code class="language-bash"># Node status
-cli validator status
+arch-cli validator status
 
 # Performance metrics
-cli validator metrics
+arch-cli validator metrics
 </code></pre>
 </div>
 <div class="monitoring-card">
 <h3 id="-sync-management"><a class="header" href="#-sync-management">🔄 Sync Management</a></h3>
 <pre><code class="language-bash"># Check sync status
-cli validator sync-status
+arch-cli validator sync-status
 
 # Force resync if needed
-cli validator resync
+arch-cli validator resync
 </code></pre>
 </div>
 </div>
@@ -2365,7 +2365,7 @@ cargo build-sbf
 <h3 id="3-start-the-local-validator"><a class="header" href="#3-start-the-local-validator">3. Start the local validator</a></h3>
 <p>Start a local validator for testing:</p>
 <pre><code class="language-bash"># Start the Arch Network validator
-cli validator-start
+arch-cli validator-start
 </code></pre>
 <blockquote>
 <p>Important: Ensure Bitcoin Core and Titan are properly configured and running before starting the validator. See the setup guide for details.</p>
@@ -2373,7 +2373,7 @@ cli validator-start
 <h3 id="4-deploy-the-program"><a class="header" href="#4-deploy-the-program">4. Deploy the program</a></h3>
 <p>Deploy your compiled program to the local Arch Network:</p>
 <pre><code class="language-bash"># Deploy the program
-cli deploy ./target/deploy/
+arch-cli deploy ./target/deploy/
 </code></pre>
 <h3 id="troubleshooting-2"><a class="header" href="#troubleshooting-2">Troubleshooting</a></h3>
 <p>Common issues and solutions:</p>
@@ -2396,16 +2396,16 @@ cli deploy ./target/deploy/
 <h2 id="additional-cli-commands"><a class="header" href="#additional-cli-commands">Additional CLI Commands</a></h2>
 <p>For more advanced operations, the Arch Network CLI provides additional commands:</p>
 <pre><code class="language-bash"># Show program information
-cli show &lt;PROGRAM_ADDRESS&gt;
+arch-cli show &lt;PROGRAM_ADDRESS&gt;
 
 # Confirm transaction status
-cli confirm &lt;TX_ID&gt;
+arch-cli confirm &lt;TX_ID&gt;
 
 # Get block information
-cli get-block &lt;BLOCK_HASH&gt;
+arch-cli get-block &lt;BLOCK_HASH&gt;
 
 # Get block height
-cli get-block-height
+arch-cli get-block-height
 </code></pre>
 <p>For a complete list of available commands, refer to the <a href="https://github.com/Arch-Network/arch-node/releases/latest">Arch Network CLI documentation</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="writing-your-first-arch-program"><a class="header" href="#writing-your-first-arch-program">Writing Your First Arch Program</a></h1>
@@ -2451,7 +2451,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-arch_program = "0.5.2"
+arch_program = "0.5.4"
 borsh = { version = "1.5.1", features = ["derive"] }
 
 [lib]
@@ -3003,10 +3003,10 @@ ls target/deploy/
 <h2 id="step-5-deploy-your-program"><a class="header" href="#step-5-deploy-your-program">Step 5: Deploy Your Program</a></h2>
 <p>Deploy your program to the Arch Network:</p>
 <pre><code class="language-bash"># Deploy to testnet (recommended for testing)
-cli deploy ./target/deploy/ --network-mode testnet
+arch-cli deploy ./target/deploy/ --network-mode testnet
 
 # Or deploy to local network for development
-cli deploy ./target/deploy/ --network-mode regtest
+arch-cli deploy ./target/deploy/ --network-mode regtest
 </code></pre>
 <p><strong>Save the Program ID</strong> from the output - you’ll need it for testing!</p>
 <h2 id="step-6-create-a-client-for-testing"><a class="header" href="#step-6-create-a-client-for-testing">Step 6: Create a Client for Testing</a></h2>
@@ -3018,7 +3018,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-arch_sdk = "0.5.2"
+arch_sdk = "0.5.4"
 my_counter_program = { path = "../program" }
 borsh = "1.5.1"
 tokio = { version = "1.0", features = ["full"] }
@@ -3179,7 +3179,7 @@ async fn test_error_conditions() {
 </ul>
 <p><strong>Congratulations!</strong> You’ve successfully built, deployed, and tested your first Arch Network program. You now have the foundation to build more complex applications on the Arch Network.</p>
 <pre><code class="language-bash"># Start the Arch Network validator
-cli validator-start
+arch-cli validator-start
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="comprehensive-testing-guide-for-arch-network-programs"><a class="header" href="#comprehensive-testing-guide-for-arch-network-programs">Comprehensive Testing Guide for Arch Network Programs</a></h1>
 <p>This guide provides complete coverage of testing strategies, tools, and best practices for building robust and reliable Arch Network programs. Proper testing is essential for ensuring your programs work correctly and securely before deployment.</p>
@@ -3212,8 +3212,8 @@ cli validator-start
 members = ["program", "tests"]
 
 [workspace.dependencies]
-arch_program = "0.5.2"
-arch_sdk = "0.5.2"
+arch_program = "0.5.4"
+arch_sdk = "0.5.4"
 borsh = { version = "1.5.1", features = ["derive"] }
 tokio = { version = "1.0", features = ["full"] }
 </code></pre>
@@ -4070,9 +4070,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-arch_sdk = "0.5.2"
-arch_program = "0.5.2"
-arch_test_sdk = "0.5.2"
+arch_sdk = "0.5.4"
+arch_program = "0.5.4"
+arch_test_sdk = "0.5.4"
 apl-token = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
 apl-associated-token-account = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
 borsh = { version = "1.5.1", features = ["derive"] }
@@ -4429,7 +4429,7 @@ fn main() {
 }</code></pre></pre>
 <h2 id="running-the-example"><a class="header" href="#running-the-example">Running the Example</a></h2>
 <pre><code class="language-bash"># First, ensure your validator is running
-cli orchestrate validator-status
+arch-cli orchestrate validator-status
 
 # Then run the example code
 cargo run
@@ -4571,7 +4571,7 @@ cargo init --lib
 cargo build-sbf
 
 # Deploy the program
-cli deploy target/deploy/oracle.so
+arch-cli deploy target/deploy/oracle.so
 </code></pre>
 <p>During the deployment, a new account is created for the deployed program logic and set to be executable, marking it as a <a href="guides/../program/program.html">Program</a> rather than a data <a href="guides/../program/account.html">Account</a>.</p>
 <h4 id="create-state-account"><a class="header" href="#create-state-account">Create state account</a></h4>
@@ -4917,11 +4917,11 @@ mod tests {
 cargo build-sbf
 
 # Deploy the program to the Arch Network
-cli deploy target/deploy/runes_swap.so
+arch-cli deploy target/deploy/runes_swap.so
 </code></pre>
 <p>Make sure you have a validator node running before deployment:</p>
 <pre><code class="language-bash"># Start a local validator
-cli validator-start
+arch-cli validator-start
 </code></pre>
 <h2 id="conclusion"><a class="header" href="#conclusion">Conclusion</a></h2>
 <p>Congratulations! You’ve built a complete Runes swap program. This program demonstrates several important blockchain concepts:</p>
@@ -9014,7 +9014,7 @@ The bootnode works similarly to DNS seeds in Bitcoin whereby the server handles 
 <p><a href="https://github.com/Arch-Network/arch-node">Lightweight Validator</a></p>
 <p>This validator is a lightweight server that only serves as an RPC for developers to get up and running quickly with the least amount of overhead. It simulates a single-node blockchain environment that is meant for efficient, rapid development.</p>
 <blockquote>
-<p>Note: the <a href="https://github.com/Arch-Network/arch-node">Lightweight Validator</a> node uses the same image as the <a href="https://github.com/Arch-Network/arch-node">Validator</a> node though operates singularly for maximum efficiency. You can start a lightweight validator using the <code>cli validator start</code> command.</p>
+<p>Note: the <a href="https://github.com/Arch-Network/arch-node">Lightweight Validator</a> node uses the same image as the <a href="https://github.com/Arch-Network/arch-node">Validator</a> node though operates singularly for maximum efficiency. You can start a lightweight validator using the <code>arch-cli validator start</code> command.</p>
 </blockquote>
 <p>More can be read about the Arch Network architecture in our <a href="https://docs.arch.network">docs</a>.</p>
 <!-- External -->
@@ -9092,13 +9092,13 @@ The bootnode works similarly to DNS seeds in Bitcoin whereby the server handles 
 <h2 id="cli-alternative"><a class="header" href="#cli-alternative">CLI Alternative</a></h2>
 <p>Most RPC operations can also be performed using the <a href="rpc/../getting-started/quick-start.html#cli-alternative">Arch Network CLI</a>:</p>
 <pre><code class="language-bash"># Deploy a program
-cli deploy &lt;ELF_PATH&gt;
+arch-cli deploy &lt;ELF_PATH&gt;
 
 # Check transaction status  
-cli confirm &lt;TX_ID&gt;
+arch-cli confirm &lt;TX_ID&gt;
 
 # Get account information
-cli account &lt;ACCOUNT_ADDRESS&gt;
+arch-cli account &lt;ACCOUNT_ADDRESS&gt;
 </code></pre>
 <p>For detailed examples and parameter specifications, see the <a href="rpc/http-methods.html">HTTP Methods</a> reference.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="http-methods"><a class="header" href="#http-methods">HTTP Methods</a></h1>
@@ -9377,28 +9377,28 @@ cli account &lt;ACCOUNT_ADDRESS&gt;
 <h2 id="cli-alternative-1"><a class="header" href="#cli-alternative-1">CLI Alternative</a></h2>
 <p>Many RPC methods are available through the Arch Network CLI:</p>
 <pre><code class="language-bash"># Start local validator
-cli validator-start
+arch-cli validator-start
 
 # Deploy a program  
-cli deploy &lt;ELF_PATH&gt;
+arch-cli deploy &lt;ELF_PATH&gt;
 
 # Show program information
-cli show &lt;PROGRAM_ADDRESS&gt;
+arch-cli show &lt;PROGRAM_ADDRESS&gt;
 
 # Check transaction status
-cli confirm &lt;TX_ID&gt;
+arch-cli confirm &lt;TX_ID&gt;
 
 # Get block information
-cli get-block &lt;BLOCK_HASH&gt;
+arch-cli get-block &lt;BLOCK_HASH&gt;
 
 # Get current block height
-cli get-block-height
+arch-cli get-block-height
 
 # Get program messages from transaction
-cli log-program-messages &lt;TX_ID&gt;
+arch-cli log-program-messages &lt;TX_ID&gt;
 
 # Change account owner
-cli change-owner &lt;ACCOUNT_ADDRESS&gt; &lt;NEW_OWNER&gt;
+arch-cli change-owner &lt;ACCOUNT_ADDRESS&gt; &lt;NEW_OWNER&gt;
 </code></pre>
 <p>For CLI installation and usage, see the <a href="rpc/../getting-started/quick-start.html">Quick Start Guide</a>.</p>
 <h2 id="error-handling-5"><a class="header" href="#error-handling-5">Error Handling</a></h2>
@@ -9709,7 +9709,7 @@ cargo build
 <li>Check your account has sufficient balance</li>
 <li>Verify the program binary size is within limits</li>
 <li>Ensure you’re connected to the correct network:
-<pre><code class="language-bash">cli config get
+<pre><code class="language-bash">arch-cli config get
 </code></pre>
 </li>
 </ul>
@@ -9730,7 +9730,7 @@ cargo build
 <ul>
 <li>Verify account balance</li>
 <li>Check rent-exempt minimum:
-<pre><code class="language-bash">cli rent minimum-balance &lt;size&gt;
+<pre><code class="language-bash">arch-cli rent minimum-balance &lt;size&gt;
 </code></pre>
 </li>
 <li>Ensure correct account size calculation</li>
@@ -9754,7 +9754,7 @@ cargo build
 <ul>
 <li>Check network status</li>
 <li>Verify endpoint configuration:
-<pre><code class="language-bash">cli config get
+<pre><code class="language-bash">arch-cli config get
 </code></pre>
 </li>
 <li>Try alternate RPC endpoints</li>
@@ -9811,15 +9811,15 @@ cargo build
 <h2 id="debugging-tools"><a class="header" href="#debugging-tools">Debugging Tools</a></h2>
 <h3 id="1-program-logs"><a class="header" href="#1-program-logs">1. Program Logs</a></h3>
 <p>Enable detailed logging:</p>
-<pre><code class="language-bash">RUST_LOG=debug cli program-logs &lt;PROGRAM_ID&gt;
+<pre><code class="language-bash">RUST_LOG=debug arch-cli program-logs &lt;PROGRAM_ID&gt;
 </code></pre>
 <h3 id="2-transaction-inspection"><a class="header" href="#2-transaction-inspection">2. Transaction Inspection</a></h3>
 <p>Analyze transaction details:</p>
-<pre><code class="language-bash">cli transaction-info &lt;TX_SIGNATURE&gt;
+<pre><code class="language-bash">arch-cli transaction-info &lt;TX_SIGNATURE&gt;
 </code></pre>
 <h3 id="3-account-inspection"><a class="header" href="#3-account-inspection">3. Account Inspection</a></h3>
 <p>View account data:</p>
-<pre><code class="language-bash">cli account &lt;ACCOUNT_ADDRESS&gt;
+<pre><code class="language-bash">arch-cli account &lt;ACCOUNT_ADDRESS&gt;
 </code></pre>
 <h2 id="best-practices-10"><a class="header" href="#best-practices-10">Best Practices</a></h2>
 <ol>

@@ -225,7 +225,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-arch_program = "0.5.2"
+arch_program = "0.5.4"
 borsh = { version = "1.5.1", features = ["derive"] }
 
 [lib]
@@ -777,10 +777,10 @@ ls target/deploy/
 <h2 id="step-5-deploy-your-program"><a class="header" href="#step-5-deploy-your-program">Step 5: Deploy Your Program</a></h2>
 <p>Deploy your program to the Arch Network:</p>
 <pre><code class="language-bash"># Deploy to testnet (recommended for testing)
-cli deploy ./target/deploy/ --network-mode testnet
+arch-cli deploy ./target/deploy/ --network-mode testnet
 
 # Or deploy to local network for development
-cli deploy ./target/deploy/ --network-mode regtest
+arch-cli deploy ./target/deploy/ --network-mode regtest
 </code></pre>
 <p><strong>Save the Program ID</strong> from the output - you’ll need it for testing!</p>
 <h2 id="step-6-create-a-client-for-testing"><a class="header" href="#step-6-create-a-client-for-testing">Step 6: Create a Client for Testing</a></h2>
@@ -792,7 +792,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-arch_sdk = "0.5.2"
+arch_sdk = "0.5.4"
 my_counter_program = { path = "../program" }
 borsh = "1.5.1"
 tokio = { version = "1.0", features = ["full"] }
@@ -953,7 +953,7 @@ async fn test_error_conditions() {
 </ul>
 <p><strong>Congratulations!</strong> You’ve successfully built, deployed, and tested your first Arch Network program. You now have the foundation to build more complex applications on the Arch Network.</p>
 <pre><code class="language-bash"># Start the Arch Network validator
-cli validator-start
+arch-cli validator-start
 </code></pre>
 
                     </main>

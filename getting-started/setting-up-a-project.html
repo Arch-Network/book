@@ -228,7 +228,7 @@ cargo build-sbf
 <h3 id="3-start-the-local-validator"><a class="header" href="#3-start-the-local-validator">3. Start the local validator</a></h3>
 <p>Start a local validator for testing:</p>
 <pre><code class="language-bash"># Start the Arch Network validator
-cli validator-start
+arch-cli validator-start
 </code></pre>
 <blockquote>
 <p>Important: Ensure Bitcoin Core and Titan are properly configured and running before starting the validator. See the setup guide for details.</p>
@@ -236,7 +236,7 @@ cli validator-start
 <h3 id="4-deploy-the-program"><a class="header" href="#4-deploy-the-program">4. Deploy the program</a></h3>
 <p>Deploy your compiled program to the local Arch Network:</p>
 <pre><code class="language-bash"># Deploy the program
-cli deploy ./target/deploy/
+arch-cli deploy ./target/deploy/
 </code></pre>
 <h3 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h3>
 <p>Common issues and solutions:</p>
@@ -259,16 +259,16 @@ cli deploy ./target/deploy/
 <h2 id="additional-cli-commands"><a class="header" href="#additional-cli-commands">Additional CLI Commands</a></h2>
 <p>For more advanced operations, the Arch Network CLI provides additional commands:</p>
 <pre><code class="language-bash"># Show program information
-cli show &lt;PROGRAM_ADDRESS&gt;
+arch-cli show &lt;PROGRAM_ADDRESS&gt;
 
 # Confirm transaction status
-cli confirm &lt;TX_ID&gt;
+arch-cli confirm &lt;TX_ID&gt;
 
 # Get block information
-cli get-block &lt;BLOCK_HASH&gt;
+arch-cli get-block &lt;BLOCK_HASH&gt;
 
 # Get block height
-cli get-block-height
+arch-cli get-block-height
 </code></pre>
 <p>For a complete list of available commands, refer to the <a href="https://github.com/Arch-Network/arch-node/releases/latest">Arch Network CLI documentation</a>.</p>
 

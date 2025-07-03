@@ -255,7 +255,7 @@
 # (Download the appropriate binary for your platform from the releases page)
 
 # 2. Start the complete validator stack
-cli orchestrate start
+arch-cli orchestrate start
 </code></pre>
 <p>This automatically starts:</p>
 <ul>
@@ -272,13 +272,13 @@ cli orchestrate start
 </ul>
 <p><strong>Management Commands:</strong></p>
 <pre><code class="language-bash"># Stop all services
-cli orchestrate stop
+arch-cli orchestrate stop
 
 # Check validator status specifically
-cli orchestrate validator-status
+arch-cli orchestrate validator-status
 
 # Reset all data (removes all data)
-cli orchestrate reset
+arch-cli orchestrate reset
 </code></pre>
 <h3 id="option-b-manual-setup-advanced"><a class="header" href="#option-b-manual-setup-advanced">Option B: Manual Setup (Advanced)</a></h3>
 <p>For developers who want full control over their environment.</p>
@@ -326,7 +326,7 @@ cargo run --bin titan -- \
 <h4 id="step-3-validator-setup"><a class="header" href="#step-3-validator-setup">Step 3: Validator Setup</a></h4>
 <p><strong>Start Validator:</strong></p>
 <pre><code class="language-bash"># Using the CLI (recommended)
-cli validator-start
+arch-cli validator-start
 
 # OR using the binary directly
 ./local_validator \
@@ -376,7 +376,7 @@ sudo systemctl start bitcoind
 <h2 id="-verification"><a class="header" href="#-verification">✅ Verification</a></h2>
 <h3 id="check-service-status"><a class="header" href="#check-service-status">Check Service Status</a></h3>
 <p><strong>Automated Setup:</strong></p>
-<pre><code class="language-bash">cli orchestrate validator-status
+<pre><code class="language-bash">arch-cli orchestrate validator-status
 </code></pre>
 <p><strong>Manual Setup:</strong></p>
 <pre><code class="language-bash"># Check Bitcoin Core
@@ -392,13 +392,13 @@ curl -X POST -H 'Content-Type: application/json' \
 </code></pre>
 <h3 id="test-transaction-flow"><a class="header" href="#test-transaction-flow">Test Transaction Flow</a></h3>
 <pre><code class="language-bash"># Deploy a simple program using the CLI
-cli deploy ./target/deploy/
+arch-cli deploy ./target/deploy/
 
 # Check transaction status
-cli tx confirm &lt;TX_ID&gt;
+arch-cli tx confirm &lt;TX_ID&gt;
 
 # Get transaction details
-cli tx get &lt;TX_ID&gt;
+arch-cli tx get &lt;TX_ID&gt;
 </code></pre>
 <h2 id="-troubleshooting"><a class="header" href="#-troubleshooting">🔍 Troubleshooting</a></h2>
 <h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
@@ -407,12 +407,12 @@ cli tx get &lt;TX_ID&gt;
 docker ps
 
 # Check validator status
-cli orchestrate validator-status
+arch-cli orchestrate validator-status
 
 # Reset everything
-cli orchestrate stop
-cli orchestrate reset
-cli orchestrate start
+arch-cli orchestrate stop
+arch-cli orchestrate reset
+arch-cli orchestrate start
 </code></pre>
 <p><strong>Manual Setup Issues:</strong></p>
 <pre><code class="language-bash"># Check if ports are in use
@@ -440,12 +440,12 @@ tail -f ~/.bitcoin/regtest/debug.log  # Bitcoin Core logs
 </ul>
 <h3 id="testnet-testing"><a class="header" href="#testnet-testing">Testnet (Testing)</a></h3>
 <pre><code class="language-bash"># For testnet, modify your configuration:
-cli orchestrate start --network testnet
+arch-cli orchestrate start --network testnet
 # OR manually configure with testnet parameters
 </code></pre>
 <h3 id="mainnet-production"><a class="header" href="#mainnet-production">Mainnet (Production)</a></h3>
 <pre><code class="language-bash"># For mainnet (when available):
-cli orchestrate start --network mainnet
+arch-cli orchestrate start --network mainnet
 # Requires significant storage and bandwidth
 </code></pre>
 <h2 id="-next-steps"><a class="header" href="#-next-steps">📚 Next Steps</a></h2>

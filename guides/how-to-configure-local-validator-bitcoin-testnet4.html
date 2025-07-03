@@ -209,7 +209,7 @@
 <h2 id="quick-start-recommended"><a class="header" href="#quick-start-recommended">Quick Start (Recommended)</a></h2>
 <p>The easiest way to run a local validator with testnet4 connectivity:</p>
 <pre><code class="language-bash"># Start validator connected to hosted testnet4 infrastructure
-cli validator-start --network-mode testnet
+arch-cli validator-start --network-mode testnet
 </code></pre>
 <p>This connects to Arch’s hosted testnet4 infrastructure including:</p>
 <ul>
@@ -219,7 +219,7 @@ cli validator-start --network-mode testnet
 </ul>
 <h2 id="configuration-options"><a class="header" href="#configuration-options">Configuration Options</a></h2>
 <h3 id="basic-testnet4-configuration"><a class="header" href="#basic-testnet4-configuration">Basic Testnet4 Configuration</a></h3>
-<pre><code class="language-bash">cli validator-start \
+<pre><code class="language-bash">arch-cli validator-start \
   --network-mode testnet \
   --data-dir ./.arch_data \
   --rpc-bind-ip 127.0.0.1 \
@@ -242,7 +242,7 @@ bitcoind \
   -zmqpubrawtx=tcp://0.0.0.0:28333
 
 # Start validator with custom Bitcoin node
-cli validator-start \
+arch-cli validator-start \
   --network-mode testnet \
   --bitcoin-rpc-endpoint http://localhost:48332 \
   --bitcoin-rpc-username bitcoin \
@@ -327,13 +327,13 @@ chmod +x local_validator
 <h3 id="deploy-test-program"><a class="header" href="#deploy-test-program">Deploy Test Program</a></h3>
 <p>Test program deployment to verify everything works:</p>
 <pre><code class="language-bash"># Using CLI (automatic endpoint detection)
-cli deploy --network-mode testnet
+arch-cli deploy --network-mode testnet
 
 # Using CLI with explicit endpoint
-cli deploy --network-mode testnet --rpc-url http://localhost:9002
+arch-cli deploy --network-mode testnet --rpc-url http://localhost:9002
 </code></pre>
 <h3 id="check-validator-status"><a class="header" href="#check-validator-status">Check Validator Status</a></h3>
-<pre><code class="language-bash">cli validator-status --rpc-url http://localhost:9002
+<pre><code class="language-bash">arch-cli validator-status --rpc-url http://localhost:9002
 </code></pre>
 <h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
 <h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
@@ -348,7 +348,7 @@ curl -X POST http://localhost:9002/ \
 rm -rf .arch_data
 
 # Restart validator
-cli validator-start --network-mode testnet
+arch-cli validator-start --network-mode testnet
 </code></pre>
 <h4 id="3-view-logs"><a class="header" href="#3-view-logs">3. View Logs</a></h4>
 <p><strong>Docker Logs:</strong></p>
@@ -377,23 +377,23 @@ wscat -c wss://titan-node.test.aws.archnetwork.xyz:49332
 <h2 id="development-workflow"><a class="header" href="#development-workflow">Development Workflow</a></h2>
 <h3 id="1-development-cycle"><a class="header" href="#1-development-cycle">1. Development Cycle</a></h3>
 <pre><code class="language-bash"># Start validator
-cli validator-start --network-mode testnet
+arch-cli validator-start --network-mode testnet
 
 # Build your program
 cd your-program
 cargo build-sbf
 
 # Deploy and test
-cli deploy --network-mode testnet
-cli invoke [program-id] [account] --data [instruction-data]
+arch-cli deploy --network-mode testnet
+arch-cli invoke [program-id] [account] --data [instruction-data]
 </code></pre>
 <h3 id="2-reset-between-tests"><a class="header" href="#2-reset-between-tests">2. Reset Between Tests</a></h3>
 <pre><code class="language-bash"># Quick reset
-cli orchestrate reset
+arch-cli orchestrate reset
 
 # Full reset (if needed)
 rm -rf .arch_data
-cli validator-start --network-mode testnet
+arch-cli validator-start --network-mode testnet
 </code></pre>
 <h3 id="3-working-with-testnet4-features"><a class="header" href="#3-working-with-testnet4-features">3. Working with Testnet4 Features</a></h3>
 <p><strong>Ordinals Testing:</strong></p>

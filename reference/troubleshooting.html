@@ -220,7 +220,7 @@ cargo build
 <li>Check your account has sufficient balance</li>
 <li>Verify the program binary size is within limits</li>
 <li>Ensure you’re connected to the correct network:
-<pre><code class="language-bash">cli config get
+<pre><code class="language-bash">arch-cli config get
 </code></pre>
 </li>
 </ul>
@@ -241,7 +241,7 @@ cargo build
 <ul>
 <li>Verify account balance</li>
 <li>Check rent-exempt minimum:
-<pre><code class="language-bash">cli rent minimum-balance &lt;size&gt;
+<pre><code class="language-bash">arch-cli rent minimum-balance &lt;size&gt;
 </code></pre>
 </li>
 <li>Ensure correct account size calculation</li>
@@ -265,7 +265,7 @@ cargo build
 <ul>
 <li>Check network status</li>
 <li>Verify endpoint configuration:
-<pre><code class="language-bash">cli config get
+<pre><code class="language-bash">arch-cli config get
 </code></pre>
 </li>
 <li>Try alternate RPC endpoints</li>
@@ -322,15 +322,15 @@ cargo build
 <h2 id="debugging-tools"><a class="header" href="#debugging-tools">Debugging Tools</a></h2>
 <h3 id="1-program-logs"><a class="header" href="#1-program-logs">1. Program Logs</a></h3>
 <p>Enable detailed logging:</p>
-<pre><code class="language-bash">RUST_LOG=debug cli program-logs &lt;PROGRAM_ID&gt;
+<pre><code class="language-bash">RUST_LOG=debug arch-cli program-logs &lt;PROGRAM_ID&gt;
 </code></pre>
 <h3 id="2-transaction-inspection"><a class="header" href="#2-transaction-inspection">2. Transaction Inspection</a></h3>
 <p>Analyze transaction details:</p>
-<pre><code class="language-bash">cli transaction-info &lt;TX_SIGNATURE&gt;
+<pre><code class="language-bash">arch-cli transaction-info &lt;TX_SIGNATURE&gt;
 </code></pre>
 <h3 id="3-account-inspection"><a class="header" href="#3-account-inspection">3. Account Inspection</a></h3>
 <p>View account data:</p>
-<pre><code class="language-bash">cli account &lt;ACCOUNT_ADDRESS&gt;
+<pre><code class="language-bash">arch-cli account &lt;ACCOUNT_ADDRESS&gt;
 </code></pre>
 <h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
 <ol>

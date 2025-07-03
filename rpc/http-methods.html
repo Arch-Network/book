@@ -458,28 +458,28 @@
 <h2 id="cli-alternative"><a class="header" href="#cli-alternative">CLI Alternative</a></h2>
 <p>Many RPC methods are available through the Arch Network CLI:</p>
 <pre><code class="language-bash"># Start local validator
-cli validator-start
+arch-cli validator-start
 
 # Deploy a program  
-cli deploy &lt;ELF_PATH&gt;
+arch-cli deploy &lt;ELF_PATH&gt;
 
 # Show program information
-cli show &lt;PROGRAM_ADDRESS&gt;
+arch-cli show &lt;PROGRAM_ADDRESS&gt;
 
 # Check transaction status
-cli confirm &lt;TX_ID&gt;
+arch-cli confirm &lt;TX_ID&gt;
 
 # Get block information
-cli get-block &lt;BLOCK_HASH&gt;
+arch-cli get-block &lt;BLOCK_HASH&gt;
 
 # Get current block height
-cli get-block-height
+arch-cli get-block-height
 
 # Get program messages from transaction
-cli log-program-messages &lt;TX_ID&gt;
+arch-cli log-program-messages &lt;TX_ID&gt;
 
 # Change account owner
-cli change-owner &lt;ACCOUNT_ADDRESS&gt; &lt;NEW_OWNER&gt;
+arch-cli change-owner &lt;ACCOUNT_ADDRESS&gt; &lt;NEW_OWNER&gt;
 </code></pre>
 <p>For CLI installation and usage, see the <a href="../getting-started/quick-start.html">Quick Start Guide</a>.</p>
 <h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
