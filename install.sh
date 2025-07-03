@@ -54,8 +54,8 @@ cleanup() {
 trap cleanup EXIT
 
 # Download URL based on OS and architecture
-BINARY_NAME="cli"
-DOWNLOAD_BINARY_NAME="cli"
+BINARY_NAME="arch-cli"
+DOWNLOAD_BINARY_NAME="arch-cli"
 
 # Map uname architecture to our release architecture names
 case "$ARCH" in
@@ -79,12 +79,17 @@ esac
 # Construct and validate download URL
 DOWNLOAD_URL="https://github.com/Arch-Network/arch-node/releases/download/${VERSION}/${DOWNLOAD_BINARY_NAME}-${RELEASE_ARCH}"
 
-echo "Downloading Arch Network CLI version ${VERSION}..."
+echo "Downloading Arch Network CLI (arch-cli) version ${VERSION}..."
 
 # Attempt download with better error handling
 if ! curl -sSfL "$DOWNLOAD_URL" -o "$TMP_DIR/${BINARY_NAME}"; then
-    echo "Error: Failed to download binary from ${DOWNLOAD_URL}"
-    echo "Please check your internet connection and verify the version exists"
+    echo "Error: Failed to download arch-cli binary from ${DOWNLOAD_URL}"
+    echo "Please check:"
+    echo "  - Your internet connection"
+    echo "  - That version ${VERSION} exists in the releases"
+    echo "  - That your architecture (${RELEASE_ARCH}) is supported"
+    echo ""
+    echo "Available releases: https://github.com/Arch-Network/arch-node/releases"
     exit 1
 fi
 
@@ -111,4 +116,14 @@ if ! sudo chmod +x "$INSTALL_DIR/${BINARY_NAME}"; then
     exit 1
 fi
 
-echo "Arch Network CLI ${VERSION} installed successfully to ${INSTALL_DIR}"
+# Verify installation
+echo "Verifying installation..."
+if ! "$INSTALL_DIR/${BINARY_NAME}" --version >/dev/null 2>&1; then
+    echo "Warning: Binary installed but version check failed"
+    echo "You may need to restart your terminal or add ${INSTALL_DIR} to your PATH"
+else
+    echo "Installation verified successfully!"
+fi
+
+echo "Arch Network CLI (arch-cli) ${VERSION} installed successfully to ${INSTALL_DIR}"
+echo "You can now run 'arch-cli --version' to verify the installation"
