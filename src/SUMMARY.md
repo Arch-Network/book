@@ -37,10 +37,14 @@
   - [System Calls](program/syscall.md)
 - [Node Operation](concepts/nodes.md)
 
+# SDK Reference
+- [SDK Overview](sdk/sdk.md)
+  - [Runtime Transaction](sdk/runtime-transaction.md)
+  - [Processed Transaction](sdk/processed-transaction.md)
+  - [Signature](sdk/signature.md)
+
 # Reference
 - [API Reference](rpc/rpc.md)
-  - [HTTP Methods](rpc/http-methods.md)
-  - [Transaction Processing](sdk/processed-transaction.md)
 - [System Program](system-program/system-program.md)
   - [Account Creation](system-program/create-account.md)
   - [Program Deployment](system-program/make-executable.md)

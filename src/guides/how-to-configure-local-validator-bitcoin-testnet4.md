@@ -303,7 +303,7 @@ arch-cli validator-start --network-mode testnet
 
 ## Additional Resources
 
-- [Arch Network CLI Reference](../rpc/http-methods.md)
+- [Arch Network CLI Reference](../rpc/rpc.md)
 - [Bitcoin Testnet4 Faucet](https://mempool.space/testnet4)
 - [Ordinals Documentation](https://docs.ordinals.com/)
 - [Runes Protocol Guide](https://runes.com/)

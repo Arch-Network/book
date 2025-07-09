@@ -494,6 +494,6 @@ Now that you understand the fundamentals:
 - [Program Examples Repository](https://github.com/Arch-Network/arch-examples)
 - [APL Token Implementation](../apl/token-program.md)
 - [Bitcoin Integration Guide](../concepts/bitcoin-integration.md)
-- [RPC API Reference](../rpc/http-methods.md)
+- [RPC API Reference](../rpc/rpc.md)
 
 The complete code for this example is available in the [Hello World example](https://github.com/Arch-Network/arch-examples/tree/main/examples/helloworld).

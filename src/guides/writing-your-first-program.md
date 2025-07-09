@@ -803,7 +803,7 @@ Now that you've built your first program:
 - [Understanding Arch Programs](./understanding-arch-programs.md) - Deep dive into program architecture
 - [Testing Guide](./testing-guide.md) - Comprehensive testing strategies
 - [Program Examples](https://github.com/Arch-Network/arch-examples) - More example programs
-- [API Reference](../rpc/http-methods.md) - Complete RPC documentation
+- [API Reference](../rpc/rpc.md) - Complete RPC documentation
 
 **Congratulations!** You've successfully built, deployed, and tested your first Arch Network program. You now have the foundation to build more complex applications on the Arch Network.
 

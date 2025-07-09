@@ -317,7 +317,7 @@ arch-cli orchestrate start --network mainnet
 Once your validator is running:
 
 1. **Deploy Your First Program**: Follow the [Quick Start Guide](./quick-start.md)
-2. **Explore RPC Methods**: Check the [RPC API Reference](../rpc/http-methods.md)  
+2. **Explore RPC Methods**: Check the [RPC API Reference](../rpc/rpc.md)  
 3. **Build Advanced Programs**: See [Program Development](../guides/understanding-arch-programs.md)
 4. **Join the Community**: Connect on [Discord](https://discord.gg/archnetwork)
 

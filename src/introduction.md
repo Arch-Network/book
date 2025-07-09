@@ -131,7 +131,7 @@ Arch Network consists of three main components:
 Technical documentation:
 
 - [API Reference](rpc/rpc.md)
-  - [HTTP Methods](rpc/http-methods.md)
+  - [RPC API Reference](rpc/rpc.md)
   - [Transaction Processing](sdk/processed-transaction.md)
 - [Program Examples](guides/writing-your-first-program.md)
   - [Oracle Program](guides/how-to-write-oracle-program.md)

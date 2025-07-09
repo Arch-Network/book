@@ -93,7 +93,7 @@ Build a complete DeFi lending platform with collateralized loans and interest ra
 
 ### Getting Help
 - **Join our [Discord](https://discord.gg/archnetwork)** for real-time support
-- **Check the [API Reference](../rpc/http-methods.md)** for detailed documentation
+- **Check the [API Reference](../rpc/rpc.md)** for detailed documentation
 - **Review [Core Concepts](../concepts/architecture.md)** for architectural guidance
 - **File issues** on [GitHub](https://github.com/Arch-Network/arch-node/issues) for bugs
 
