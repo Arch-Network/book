@@ -1,0 +1,599 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Instructions and Messages - The Arch Book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for the Arch Network - A Bitcoin-native computation environment">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item affix "><li class="part-title">Getting Started</li><li class="chapter-item "><a href="../getting-started/quick-start.html">🚀 Quick Start Guide</a></li><li class="chapter-item "><a href="../getting-started/bitcoin-and-titan-setup.html">🏗️ Validator Setup</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../getting-started/requirements.html">System Requirements</a></li><li class="chapter-item "><a href="../guides/how-to-configure-local-validator-bitcoin-testnet4.html">Setup Options</a></li><li class="chapter-item "><a href="../getting-started/validator-staking.html">Running Your Node</a></li></ol></li><li class="chapter-item "><li class="part-title">Program Development</li><li class="chapter-item "><a href="../guides/understanding-arch-programs.html">Understanding Arch Programs</a></li><li class="chapter-item "><a href="../getting-started/setting-up-a-project.html">Setting Up a Project</a></li><li class="chapter-item "><a href="../guides/writing-your-first-program.html">Writing Your First Program</a></li><li class="chapter-item "><a href="../guides/testing-guide.html">Testing Your Program</a></li><li class="chapter-item "><a href="../guides/guides.html">Program Examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../guides/how-to-create-a-fungible-token.html">Fungible Token</a></li><li class="chapter-item "><a href="../guides/how-to-write-oracle-program.html">Oracle Program</a></li><li class="chapter-item "><a href="../guides/how-to-build-runes-swap.html">Runes Swap</a></li><li class="chapter-item "><a href="../guides/how-to-build-lending-protocol.html">Lending Protocol</a></li></ol></li><li class="chapter-item "><li class="part-title">Arch Program Library (APL)</li><li class="chapter-item "><a href="../apl/introduction.html">Introduction</a></li><li class="chapter-item "><a href="../apl/token-program.html">Token Program</a></li><li class="chapter-item "><a href="../apl/associated-token-account.html">Associated Token Account Program</a></li><li class="chapter-item affix "><li class="part-title">Core Concepts</li><li class="chapter-item "><a href="../concepts/architecture.html">Architecture Overview</a></li><li class="chapter-item "><a href="../concepts/network-architecture.html">Network Architecture</a></li><li class="chapter-item "><a href="../concepts/bitcoin-integration.html">Bitcoin Integration</a></li><li class="chapter-item "><a href="../concepts/consensus.html">ROAST and FROST Consensus</a></li><li class="chapter-item "><a href="../program/program.html">Programs</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../program/utxo.html">UTXOs</a></li><li class="chapter-item "><a href="../program/accounts.html">Accounts</a></li><li class="chapter-item "><a href="../program/instructions-and-messages.html">Instructions</a></li><li class="chapter-item "><a href="../program/syscall.html">System Calls</a></li></ol></li><li class="chapter-item "><a href="../concepts/nodes.html">Node Operation</a></li><li class="chapter-item affix "><li class="part-title">SDK Reference</li><li class="chapter-item "><a href="../sdk/sdk.html">SDK Overview</a></li><li class="chapter-item expanded "><a href="../sdk/getting-started.html">Getting Started</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/pubkey.html">Pubkey</a></li><li class="chapter-item "><a href="../sdk/account.html">Account</a></li><li class="chapter-item expanded "><a href="../sdk/instructions-and-messages.html" class="active">Instructions and Messages</a></li><li class="chapter-item "><a href="../sdk/runtime-transaction.html">Runtime Transaction</a></li><li class="chapter-item "><a href="../sdk/processed-transaction.html">Processed Transaction</a></li><li class="chapter-item "><a href="../sdk/signature.html">Signature</a></li></ol></li><li class="chapter-item "><li class="part-title">Reference</li><li class="chapter-item "><a href="../rpc/rpc.html">API Reference</a></li><li class="chapter-item "><a href="../system-program/system-program.html">System Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../system-program/create-account.html">Account Creation</a></li><li class="chapter-item "><a href="../system-program/make-executable.html">Program Deployment</a></li></ol></li><li class="chapter-item "><li class="part-title">Resources</li><li class="chapter-item "><a href="../reference/troubleshooting.html">Troubleshooting</a></li><li class="chapter-item "><a href="../getting-started/faq.html">FAQ</a></li><li class="chapter-item "><a href="../getting-started/resources.html">External Resources</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Arch Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book/edit/main/src/sdk/instructions-and-messages.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="instructions-and-messages"><a class="header" href="#instructions-and-messages">Instructions and Messages</a></h1>
+<p>Instructions and messages are the core building blocks for interacting with programs on the Arch Network. They define what operations to perform and how to execute them atomically.</p>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<ul>
+<li><strong>Instructions</strong> define individual operations to be performed by a program</li>
+<li><strong>Messages</strong> group instructions together for atomic execution</li>
+<li><strong>Transactions</strong> contain messages with signatures for network submission</li>
+</ul>
+<h2 id="instructions"><a class="header" href="#instructions">Instructions</a></h2>
+<p>An instruction specifies a program to call, accounts to use, and data to pass.</p>
+<h3 id="structure"><a class="header" href="#structure">Structure</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct Instruction {
+    pub program_id: Pubkey,        // Program to execute
+    pub accounts: Vec&lt;AccountMeta&gt;, // Required accounts
+    pub data: Vec&lt;u8&gt;,             // Instruction data
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="creating-instructions"><a class="header" href="#creating-instructions">Creating Instructions</a></h3>
+<pre><code class="language-typescript">import { Instruction, AccountMeta } from '@saturnbtcio/arch-sdk';
+
+// Create a basic instruction
+const instruction = new Instruction({
+  programId: myProgramId,
+  accounts: [
+    {
+      pubkey: userAccount,
+      isSigner: true,
+      isWritable: true
+    },
+    {
+      pubkey: dataAccount,
+      isSigner: false,
+      isWritable: true
+    }
+  ],
+  data: Buffer.from([1, 2, 3, 4]) // Serialized instruction data
+});
+</code></pre>
+<h3 id="account-metadata"><a class="header" href="#account-metadata">Account Metadata</a></h3>
+<p>Each instruction must specify how accounts will be used:</p>
+<pre><code class="language-typescript">interface AccountMeta {
+  pubkey: Pubkey;    // Account's public key
+  isSigner: boolean; // Must the account sign the transaction?
+  isWritable: boolean; // Can the account's data be modified?
+}
+</code></pre>
+<h4 id="permission-examples"><a class="header" href="#permission-examples">Permission Examples</a></h4>
+<pre><code class="language-typescript">// Signer and writable (user's main account)
+{
+  pubkey: userPublicKey,
+  isSigner: true,
+  isWritable: true
+}
+
+// Read-only reference (program or config account)
+{
+  pubkey: configAccount,
+  isSigner: false,
+  isWritable: false
+}
+
+// Writable but not signer (data account owned by program)
+{
+  pubkey: dataAccount,
+  isSigner: false,
+  isWritable: true
+}
+</code></pre>
+<h3 id="instruction-data"><a class="header" href="#instruction-data">Instruction Data</a></h3>
+<p>Instruction data is typically serialized using Borsh or similar formats:</p>
+<pre><code class="language-typescript">// Define instruction enum
+enum MyProgramInstruction {
+  Initialize = 0,
+  UpdateValue = 1,
+  Close = 2
+}
+
+// Serialize instruction data
+function createUpdateInstruction(newValue: number): Buffer {
+  const data = Buffer.alloc(9); // 1 byte for instruction + 8 bytes for u64
+  data.writeUInt8(MyProgramInstruction.UpdateValue, 0);
+  data.writeBigUInt64LE(BigInt(newValue), 1);
+  return data;
+}
+
+// Use in instruction
+const instruction = new Instruction({
+  programId: myProgramId,
+  accounts: [/* ... */],
+  data: createUpdateInstruction(42)
+});
+</code></pre>
+<h2 id="messages"><a class="header" href="#messages">Messages</a></h2>
+<p>Messages group instructions for atomic execution and include transaction metadata.</p>
+<h3 id="structure-1"><a class="header" href="#structure-1">Structure</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct Message {
+    pub signers: Vec&lt;Pubkey&gt;,              // Required signers
+    pub instructions: Vec&lt;Instruction&gt;,     // Instructions to execute
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="creating-messages"><a class="header" href="#creating-messages">Creating Messages</a></h3>
+<pre><code class="language-typescript">import { Message, Transaction } from '@saturnbtcio/arch-sdk';
+
+// Create transaction with multiple instructions
+const transaction = new Transaction()
+  .add(instruction1)
+  .add(instruction2)
+  .add(instruction3);
+
+// The transaction internally creates a message
+const message = transaction.compileMessage();
+</code></pre>
+<h3 id="atomic-execution"><a class="header" href="#atomic-execution">Atomic Execution</a></h3>
+<p>All instructions in a message execute atomically - if any instruction fails, the entire transaction fails:</p>
+<pre><code class="language-typescript">// These instructions will all succeed or all fail together
+const transaction = new Transaction()
+  .add(transferInstruction)      // Transfer tokens
+  .add(updateAccountInstruction) // Update account data
+  .add(logInstruction);         // Log the operation
+</code></pre>
+<h2 id="building-transactions"><a class="header" href="#building-transactions">Building Transactions</a></h2>
+<h3 id="simple-transaction"><a class="header" href="#simple-transaction">Simple Transaction</a></h3>
+<pre><code class="language-typescript">// Single instruction transaction
+const transaction = new Transaction()
+  .add(instruction);
+
+// Sign and send
+const signature = await connection.sendAndConfirmTransaction(
+  transaction,
+  [keypair]
+);
+</code></pre>
+<h3 id="multi-instruction-transaction"><a class="header" href="#multi-instruction-transaction">Multi-Instruction Transaction</a></h3>
+<pre><code class="language-typescript">// Complex transaction with multiple operations
+const transaction = new Transaction()
+  .add(createAccountInstruction)
+  .add(initializeAccountInstruction)
+  .add(transferInstruction);
+
+// Sign with multiple keypairs if needed
+const signature = await connection.sendAndConfirmTransaction(
+  transaction,
+  [payer, newAccount, authority]
+);
+</code></pre>
+<h3 id="transaction-limits"><a class="header" href="#transaction-limits">Transaction Limits</a></h3>
+<pre><code class="language-typescript">// Check transaction size before sending
+const messageSize = transaction.compileMessage().serialize().length;
+const maxSize = 1232; // Current limit
+
+if (messageSize &gt; maxSize) {
+  throw new Error(`Transaction too large: ${messageSize} bytes`);
+}
+</code></pre>
+<h2 id="common-patterns"><a class="header" href="#common-patterns">Common Patterns</a></h2>
+<h3 id="system-program-operations"><a class="header" href="#system-program-operations">System Program Operations</a></h3>
+<pre><code class="language-typescript">import { SystemProgram } from '@saturnbtcio/arch-sdk';
+
+// Create account
+const createInstruction = SystemProgram.createAccount({
+  fromPubkey: payer.publicKey,
+  newAccountPubkey: newAccount.publicKey,
+  lamports: 1000000,
+  space: 256,
+  programId: myProgramId
+});
+
+// Transfer lamports
+const transferInstruction = SystemProgram.transfer({
+  fromPubkey: sender.publicKey,
+  toPubkey: recipient.publicKey,
+  lamports: 1000000
+});
+</code></pre>
+<h3 id="program-specific-instructions"><a class="header" href="#program-specific-instructions">Program-Specific Instructions</a></h3>
+<pre><code class="language-typescript">// Create helper functions for your program
+class MyProgram {
+  static initialize(
+    account: Pubkey,
+    authority: Pubkey,
+    initialValue: number
+  ): Instruction {
+    return new Instruction({
+      programId: MY_PROGRAM_ID,
+      accounts: [
+        { pubkey: account, isSigner: false, isWritable: true },
+        { pubkey: authority, isSigner: true, isWritable: false }
+      ],
+      data: Buffer.from([0, ...new BN(initialValue).toArray('le', 8)])
+    });
+  }
+
+  static updateValue(
+    account: Pubkey,
+    authority: Pubkey,
+    newValue: number
+  ): Instruction {
+    return new Instruction({
+      programId: MY_PROGRAM_ID,
+      accounts: [
+        { pubkey: account, isSigner: false, isWritable: true },
+        { pubkey: authority, isSigner: true, isWritable: false }
+      ],
+      data: Buffer.from([1, ...new BN(newValue).toArray('le', 8)])
+    });
+  }
+}
+
+// Use the helper functions
+const initInstruction = MyProgram.initialize(
+  dataAccount.publicKey,
+  authority.publicKey,
+  100
+);
+</code></pre>
+<h2 id="cross-program-invocation-cpi"><a class="header" href="#cross-program-invocation-cpi">Cross-Program Invocation (CPI)</a></h2>
+<p>Programs can call other programs using CPI:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// In your program
+use arch_sdk::{invoke, invoke_signed};
+
+// Invoke another program
+invoke(
+    &amp;instruction,
+    &amp;[account1, account2, program_account]
+)?;
+
+// Invoke with program-derived address
+invoke_signed(
+    &amp;instruction,
+    &amp;[account1, account2, program_account],
+    &amp;[&amp;[b"seed", &amp;[bump]]]
+)?;
+<span class="boring">}</span></code></pre></pre>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<h3 id="client-side-validation"><a class="header" href="#client-side-validation">Client-Side Validation</a></h3>
+<pre><code class="language-typescript">// Validate instruction before sending
+function validateInstruction(instruction: Instruction): void {
+  if (!instruction.programId) {
+    throw new Error('Program ID is required');
+  }
+  
+  if (instruction.accounts.length === 0) {
+    throw new Error('At least one account is required');
+  }
+  
+  // Check for required signers
+  const hasRequiredSigner = instruction.accounts.some(
+    account =&gt; account.isSigner
+  );
+  
+  if (!hasRequiredSigner) {
+    throw new Error('At least one signer is required');
+  }
+}
+</code></pre>
+<h3 id="transaction-errors"><a class="header" href="#transaction-errors">Transaction Errors</a></h3>
+<pre><code class="language-typescript">try {
+  const signature = await connection.sendAndConfirmTransaction(
+    transaction,
+    [keypair]
+  );
+} catch (error) {
+  if (error instanceof TransactionError) {
+    console.error('Transaction failed:', error.message);
+    console.error('Logs:', error.logs);
+  } else {
+    console.error('Unexpected error:', error);
+  }
+}
+</code></pre>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h3 id="security"><a class="header" href="#security">Security</a></h3>
+<ul>
+<li><strong>Validate all accounts</strong>: Ensure accounts have correct permissions</li>
+<li><strong>Check program ownership</strong>: Verify accounts are owned by expected programs</li>
+<li><strong>Sanitize instruction data</strong>: Validate all input parameters</li>
+<li><strong>Use type-safe serialization</strong>: Prefer Borsh or similar libraries</li>
+</ul>
+<h3 id="performance"><a class="header" href="#performance">Performance</a></h3>
+<ul>
+<li><strong>Batch operations</strong>: Group related instructions in single transactions</li>
+<li><strong>Minimize account usage</strong>: Only include necessary accounts</li>
+<li><strong>Cache program IDs</strong>: Store frequently used program IDs as constants</li>
+<li><strong>Optimize instruction data</strong>: Use efficient serialization formats</li>
+</ul>
+<h3 id="development"><a class="header" href="#development">Development</a></h3>
+<ul>
+<li><strong>Create instruction builders</strong>: Build helper functions for common operations</li>
+<li><strong>Document instruction formats</strong>: Clearly document expected data formats</li>
+<li><strong>Test edge cases</strong>: Test with invalid accounts, insufficient funds, etc.</li>
+<li><strong>Use TypeScript</strong>: Take advantage of type safety</li>
+</ul>
+<h2 id="advanced-patterns"><a class="header" href="#advanced-patterns">Advanced Patterns</a></h2>
+<h3 id="conditional-instructions"><a class="header" href="#conditional-instructions">Conditional Instructions</a></h3>
+<pre><code class="language-typescript">// Build instructions based on conditions
+const instructions: Instruction[] = [];
+
+// Always initialize
+instructions.push(initializeInstruction);
+
+// Conditionally add operations
+if (shouldTransfer) {
+  instructions.push(transferInstruction);
+}
+
+if (shouldClose) {
+  instructions.push(closeInstruction);
+}
+
+// Build transaction
+const transaction = new Transaction();
+instructions.forEach(ix =&gt; transaction.add(ix));
+</code></pre>
+<h3 id="instruction-factories"><a class="header" href="#instruction-factories">Instruction Factories</a></h3>
+<pre><code class="language-typescript">// Create reusable instruction factories
+interface TokenTransferParams {
+  source: Pubkey;
+  destination: Pubkey;
+  authority: Pubkey;
+  amount: number;
+}
+
+function createTokenTransferInstruction(
+  params: TokenTransferParams
+): Instruction {
+  return new Instruction({
+    programId: TOKEN_PROGRAM_ID,
+    accounts: [
+      { pubkey: params.source, isSigner: false, isWritable: true },
+      { pubkey: params.destination, isSigner: false, isWritable: true },
+      { pubkey: params.authority, isSigner: true, isWritable: false }
+    ],
+    data: encodeTokenTransferData(params.amount)
+  });
+}
+</code></pre>
+<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
+<p>For complete examples using instructions and messages, see:</p>
+<ul>
+<li><strong><a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/helloworld">Hello World</a></strong> - Basic instruction usage</li>
+<li><strong><a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/counter">Counter</a></strong> - State management instructions</li>
+<li><strong><a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/token">Token Program</a></strong> - Complex instruction patterns</li>
+<li><strong><a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/escrow">Escrow</a></strong> - Multi-party transaction coordination</li>
+</ul>
+<h2 id="source-code"><a class="header" href="#source-code">Source Code</a></h2>
+<p>The instruction and message implementations are available in the <a href="https://github.com/Arch-Network/arch-examples/blob/main/program/src/instruction.rs">Arch Examples Repository</a>.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../sdk/account.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../sdk/runtime-transaction.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../sdk/account.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../sdk/runtime-transaction.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/mermaid.min.js"></script>
+        <script src="../theme/mermaid-init.js"></script>
+        <script src="../theme/custom.js"></script>
+
+
+    </div>
+    </body>
+</html>

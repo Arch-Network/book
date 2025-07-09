@@ -1,0 +1,656 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Getting Started - The Arch Book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for the Arch Network - A Bitcoin-native computation environment">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item affix "><li class="part-title">Getting Started</li><li class="chapter-item "><a href="../getting-started/quick-start.html">🚀 Quick Start Guide</a></li><li class="chapter-item "><a href="../getting-started/bitcoin-and-titan-setup.html">🏗️ Validator Setup</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../getting-started/requirements.html">System Requirements</a></li><li class="chapter-item "><a href="../guides/how-to-configure-local-validator-bitcoin-testnet4.html">Setup Options</a></li><li class="chapter-item "><a href="../getting-started/validator-staking.html">Running Your Node</a></li></ol></li><li class="chapter-item "><li class="part-title">Program Development</li><li class="chapter-item "><a href="../guides/understanding-arch-programs.html">Understanding Arch Programs</a></li><li class="chapter-item "><a href="../getting-started/setting-up-a-project.html">Setting Up a Project</a></li><li class="chapter-item "><a href="../guides/writing-your-first-program.html">Writing Your First Program</a></li><li class="chapter-item "><a href="../guides/testing-guide.html">Testing Your Program</a></li><li class="chapter-item "><a href="../guides/guides.html">Program Examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../guides/how-to-create-a-fungible-token.html">Fungible Token</a></li><li class="chapter-item "><a href="../guides/how-to-write-oracle-program.html">Oracle Program</a></li><li class="chapter-item "><a href="../guides/how-to-build-runes-swap.html">Runes Swap</a></li><li class="chapter-item "><a href="../guides/how-to-build-lending-protocol.html">Lending Protocol</a></li></ol></li><li class="chapter-item "><li class="part-title">Arch Program Library (APL)</li><li class="chapter-item "><a href="../apl/introduction.html">Introduction</a></li><li class="chapter-item "><a href="../apl/token-program.html">Token Program</a></li><li class="chapter-item "><a href="../apl/associated-token-account.html">Associated Token Account Program</a></li><li class="chapter-item affix "><li class="part-title">Core Concepts</li><li class="chapter-item "><a href="../concepts/architecture.html">Architecture Overview</a></li><li class="chapter-item "><a href="../concepts/network-architecture.html">Network Architecture</a></li><li class="chapter-item "><a href="../concepts/bitcoin-integration.html">Bitcoin Integration</a></li><li class="chapter-item "><a href="../concepts/consensus.html">ROAST and FROST Consensus</a></li><li class="chapter-item "><a href="../program/program.html">Programs</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../program/utxo.html">UTXOs</a></li><li class="chapter-item "><a href="../program/accounts.html">Accounts</a></li><li class="chapter-item "><a href="../program/instructions-and-messages.html">Instructions</a></li><li class="chapter-item "><a href="../program/syscall.html">System Calls</a></li></ol></li><li class="chapter-item "><a href="../concepts/nodes.html">Node Operation</a></li><li class="chapter-item affix "><li class="part-title">SDK Reference</li><li class="chapter-item "><a href="../sdk/sdk.html">SDK Overview</a></li><li class="chapter-item expanded "><a href="../sdk/getting-started.html" class="active">Getting Started</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/pubkey.html">Pubkey</a></li><li class="chapter-item "><a href="../sdk/account.html">Account</a></li><li class="chapter-item "><a href="../sdk/instructions-and-messages.html">Instructions and Messages</a></li><li class="chapter-item "><a href="../sdk/runtime-transaction.html">Runtime Transaction</a></li><li class="chapter-item "><a href="../sdk/processed-transaction.html">Processed Transaction</a></li><li class="chapter-item "><a href="../sdk/signature.html">Signature</a></li></ol></li><li class="chapter-item "><li class="part-title">Reference</li><li class="chapter-item "><a href="../rpc/rpc.html">API Reference</a></li><li class="chapter-item "><a href="../system-program/system-program.html">System Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../system-program/create-account.html">Account Creation</a></li><li class="chapter-item "><a href="../system-program/make-executable.html">Program Deployment</a></li></ol></li><li class="chapter-item "><li class="part-title">Resources</li><li class="chapter-item "><a href="../reference/troubleshooting.html">Troubleshooting</a></li><li class="chapter-item "><a href="../getting-started/faq.html">FAQ</a></li><li class="chapter-item "><a href="../getting-started/resources.html">External Resources</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Arch Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book/edit/main/src/sdk/getting-started.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="getting-started-with-the-arch-sdk"><a class="header" href="#getting-started-with-the-arch-sdk">Getting Started with the Arch SDK</a></h1>
+<p>This guide will walk you through setting up and using the Arch SDK to build your first application on the Arch Network.</p>
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<ul>
+<li><strong>Node.js 16+</strong> (for TypeScript/JavaScript)</li>
+<li><strong>Rust 1.70+</strong> (for Rust development)</li>
+<li><strong>Basic understanding</strong> of blockchain concepts</li>
+<li><strong>Arch Network node</strong> running locally or access to a remote node</li>
+</ul>
+<h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
+<h3 id="typescriptjavascript"><a class="header" href="#typescriptjavascript">TypeScript/JavaScript</a></h3>
+<pre><code class="language-bash"># Create a new project
+mkdir my-arch-app
+cd my-arch-app
+npm init -y
+
+# Install the SDK
+npm install @saturnbtcio/arch-sdk
+
+# Install TypeScript (optional but recommended)
+npm install -D typescript @types/node
+npx tsc --init
+</code></pre>
+<h3 id="rust"><a class="header" href="#rust">Rust</a></h3>
+<pre><code class="language-bash"># Create a new Rust project
+cargo new my-arch-app --bin
+cd my-arch-app
+
+# Add the SDK to Cargo.toml
+cat &gt;&gt; Cargo.toml &lt;&lt; EOF
+[dependencies]
+arch_sdk = "0.1.0"
+tokio = { version = "1.0", features = ["full"] }
+EOF
+</code></pre>
+<h2 id="your-first-connection"><a class="header" href="#your-first-connection">Your First Connection</a></h2>
+<h3 id="typescript-example"><a class="header" href="#typescript-example">TypeScript Example</a></h3>
+<pre><code class="language-typescript">import { Connection } from '@saturnbtcio/arch-sdk';
+
+async function main() {
+  // Connect to local validator
+  const connection = new Connection('http://localhost:9002');
+  
+  // Check if node is ready
+  const isReady = await connection.isNodeReady();
+  console.log('Node ready:', isReady);
+  
+  // Get current block count
+  const blockCount = await connection.getBlockCount();
+  console.log('Current block count:', blockCount);
+}
+
+main().catch(console.error);
+</code></pre>
+<h3 id="rust-example"><a class="header" href="#rust-example">Rust Example</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021">use arch_sdk::Connection;
+
+#[tokio::main]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    // Connect to local validator
+    let connection = Connection::new("http://localhost:9002");
+    
+    // Check if node is ready
+    let is_ready = connection.is_node_ready().await?;
+    println!("Node ready: {}", is_ready);
+    
+    // Get current block count
+    let block_count = connection.get_block_count().await?;
+    println!("Current block count: {}", block_count);
+    
+    Ok(())
+}</code></pre></pre>
+<h2 id="creating-your-first-account"><a class="header" href="#creating-your-first-account">Creating Your First Account</a></h2>
+<h3 id="generate-a-keypair"><a class="header" href="#generate-a-keypair">Generate a Keypair</a></h3>
+<pre><code class="language-typescript">import { Keypair } from '@saturnbtcio/arch-sdk';
+
+// Generate a new keypair
+const keypair = Keypair.generate();
+console.log('Public key:', keypair.publicKey.toBase58());
+console.log('Private key:', keypair.secretKey);
+
+// Or from existing secret key
+const existingKeypair = Keypair.fromSecretKey(secretKeyBytes);
+</code></pre>
+<h3 id="fund-your-account-testnetdevnet"><a class="header" href="#fund-your-account-testnetdevnet">Fund Your Account (Testnet/Devnet)</a></h3>
+<pre><code class="language-typescript">// Request airdrop for testing
+const airdropSignature = await connection.requestAirdrop(
+  keypair.publicKey,
+  1000000 // 1 SOL equivalent in lamports
+);
+
+// Wait for confirmation
+await connection.confirmTransaction(airdropSignature);
+
+// Check balance
+const balance = await connection.getBalance(keypair.publicKey);
+console.log('Balance:', balance);
+</code></pre>
+<h2 id="reading-account-information"><a class="header" href="#reading-account-information">Reading Account Information</a></h2>
+<h3 id="basic-account-info"><a class="header" href="#basic-account-info">Basic Account Info</a></h3>
+<pre><code class="language-typescript">import { PublicKey } from '@saturnbtcio/arch-sdk';
+
+const accountPubkey = new PublicKey('YourAccountAddress...');
+const accountInfo = await connection.getAccountInfo(accountPubkey);
+
+if (accountInfo) {
+  console.log('Owner:', accountInfo.owner.toBase58());
+  console.log('Lamports:', accountInfo.lamports);
+  console.log('Data length:', accountInfo.data.length);
+  console.log('Executable:', accountInfo.executable);
+} else {
+  console.log('Account not found');
+}
+</code></pre>
+<h3 id="query-multiple-accounts"><a class="header" href="#query-multiple-accounts">Query Multiple Accounts</a></h3>
+<pre><code class="language-typescript">const accounts = await connection.getMultipleAccountsInfo([
+  keypair1.publicKey,
+  keypair2.publicKey,
+  keypair3.publicKey
+]);
+
+accounts.forEach((account, index) =&gt; {
+  if (account) {
+    console.log(`Account ${index}: ${account.lamports} lamports`);
+  } else {
+    console.log(`Account ${index}: Not found`);
+  }
+});
+</code></pre>
+<h2 id="your-first-transaction"><a class="header" href="#your-first-transaction">Your First Transaction</a></h2>
+<h3 id="simple-transfer"><a class="header" href="#simple-transfer">Simple Transfer</a></h3>
+<pre><code class="language-typescript">import { Transaction, SystemProgram } from '@saturnbtcio/arch-sdk';
+
+async function transferLamports() {
+  const recipient = Keypair.generate();
+  
+  // Create transfer instruction
+  const transferInstruction = SystemProgram.transfer({
+    fromPubkey: sender.publicKey,
+    toPubkey: recipient.publicKey,
+    lamports: 1000000 // 1 SOL equivalent
+  });
+  
+  // Create transaction
+  const transaction = new Transaction()
+    .add(transferInstruction);
+  
+  // Sign and send
+  const signature = await connection.sendAndConfirmTransaction(
+    transaction,
+    [sender] // Signer array
+  );
+  
+  console.log('Transaction signature:', signature);
+}
+</code></pre>
+<h3 id="create-and-initialize-account"><a class="header" href="#create-and-initialize-account">Create and Initialize Account</a></h3>
+<pre><code class="language-typescript">async function createAccount() {
+  const newAccount = Keypair.generate();
+  
+  // Create account instruction
+  const createInstruction = SystemProgram.createAccount({
+    fromPubkey: payer.publicKey,
+    newAccountPubkey: newAccount.publicKey,
+    lamports: 1000000, // Rent-exempt amount
+    space: 256,        // Account data size
+    programId: myProgramId
+  });
+  
+  // Create transaction
+  const transaction = new Transaction()
+    .add(createInstruction);
+  
+  // Sign with both payer and new account
+  const signature = await connection.sendAndConfirmTransaction(
+    transaction,
+    [payer, newAccount]
+  );
+  
+  console.log('Account created:', newAccount.publicKey.toBase58());
+  console.log('Transaction:', signature);
+}
+</code></pre>
+<h2 id="working-with-programs"><a class="header" href="#working-with-programs">Working with Programs</a></h2>
+<h3 id="deploy-a-program"><a class="header" href="#deploy-a-program">Deploy a Program</a></h3>
+<pre><code class="language-typescript">import { BpfLoader } from '@saturnbtcio/arch-sdk';
+import fs from 'fs';
+
+async function deployProgram() {
+  // Load program binary
+  const programBinary = fs.readFileSync('path/to/your/program.so');
+  
+  // Deploy program
+  const programId = await BpfLoader.deploy(
+    connection,
+    payer,
+    programBinary
+  );
+  
+  console.log('Program deployed:', programId.toBase58());
+  return programId;
+}
+</code></pre>
+<h3 id="call-a-program"><a class="header" href="#call-a-program">Call a Program</a></h3>
+<pre><code class="language-typescript">import { Instruction } from '@saturnbtcio/arch-sdk';
+
+async function callProgram() {
+  // Create instruction for your program
+  const instruction = new Instruction({
+    programId: myProgramId,
+    accounts: [
+      { pubkey: userAccount, isSigner: true, isWritable: true },
+      { pubkey: dataAccount, isSigner: false, isWritable: true }
+    ],
+    data: Buffer.from([1, 2, 3, 4]) // Your instruction data
+  });
+  
+  // Create and send transaction
+  const transaction = new Transaction()
+    .add(instruction);
+  
+  const signature = await connection.sendAndConfirmTransaction(
+    transaction,
+    [userKeypair]
+  );
+  
+  console.log('Program called:', signature);
+}
+</code></pre>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<h3 id="robust-error-handling"><a class="header" href="#robust-error-handling">Robust Error Handling</a></h3>
+<pre><code class="language-typescript">import { 
+  TransactionError, 
+  SendTransactionError, 
+  NetworkError 
+} from '@saturnbtcio/arch-sdk';
+
+async function robustTransaction() {
+  try {
+    const signature = await connection.sendAndConfirmTransaction(
+      transaction,
+      [keypair]
+    );
+    console.log('Success:', signature);
+  } catch (error) {
+    if (error instanceof TransactionError) {
+      console.error('Transaction failed:', error.message);
+      console.error('Error logs:', error.logs);
+    } else if (error instanceof SendTransactionError) {
+      console.error('Send failed:', error.message);
+    } else if (error instanceof NetworkError) {
+      console.error('Network error:', error.message);
+    } else {
+      console.error('Unexpected error:', error);
+    }
+  }
+}
+</code></pre>
+<h3 id="retry-logic"><a class="header" href="#retry-logic">Retry Logic</a></h3>
+<pre><code class="language-typescript">async function sendWithRetry(transaction: Transaction, signers: Keypair[]) {
+  const maxRetries = 3;
+  
+  for (let i = 0; i &lt; maxRetries; i++) {
+    try {
+      const signature = await connection.sendAndConfirmTransaction(
+        transaction,
+        signers
+      );
+      return signature;
+    } catch (error) {
+      console.log(`Attempt ${i + 1} failed:`, error.message);
+      
+      if (i === maxRetries - 1) {
+        throw error; // Final attempt failed
+      }
+      
+      // Wait before retry
+      await new Promise(resolve =&gt; setTimeout(resolve, 1000));
+    }
+  }
+}
+</code></pre>
+<h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
+<h3 id="environment-configuration"><a class="header" href="#environment-configuration">Environment Configuration</a></h3>
+<pre><code class="language-typescript">// config.ts
+export const CONFIG = {
+  network: process.env.ARCH_NETWORK || 'localnet',
+  rpcUrl: process.env.ARCH_RPC_URL || 'http://localhost:9002',
+  commitment: 'confirmed' as const,
+};
+
+// Use configuration
+const connection = new Connection(CONFIG.rpcUrl, CONFIG.commitment);
+</code></pre>
+<h3 id="connection-options"><a class="header" href="#connection-options">Connection Options</a></h3>
+<pre><code class="language-typescript">const connection = new Connection('http://localhost:9002', {
+  commitment: 'confirmed',
+  timeout: 30000,
+  retries: 3,
+  retryDelay: 1000,
+  skipPreflight: false
+});
+</code></pre>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h3 id="security"><a class="header" href="#security">Security</a></h3>
+<pre><code class="language-typescript">// 1. Always validate public keys
+function validatePubkey(input: string): boolean {
+  try {
+    new PublicKey(input);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// 2. Use environment variables for sensitive data
+const keypair = Keypair.fromSecretKey(
+  new Uint8Array(JSON.parse(process.env.PRIVATE_KEY!))
+);
+
+// 3. Validate account ownership
+if (!account.owner.equals(expectedProgramId)) {
+  throw new Error('Invalid account owner');
+}
+</code></pre>
+<h3 id="performance"><a class="header" href="#performance">Performance</a></h3>
+<pre><code class="language-typescript">// 1. Batch account queries
+const accounts = await connection.getMultipleAccountsInfo([
+  pubkey1, pubkey2, pubkey3
+]);
+
+// 2. Use appropriate commitment levels
+const recentBlockhash = await connection.getLatestBlockhash('confirmed');
+
+// 3. Cache frequently accessed data
+const programAccountsCache = new Map();
+</code></pre>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<p>Now that you have the basics, explore these advanced topics:</p>
+<ol>
+<li><strong><a href="account.html">Account Management</a></strong> - Deep dive into account creation and management</li>
+<li><strong><a href="instructions-and-messages.html">Instructions and Messages</a></strong> - Building complex transactions</li>
+<li><strong><a href="../program/program.html">Program Development</a></strong> - Writing your own programs</li>
+<li><strong><a href="../apl/token-program.html">Token Operations</a></strong> - Working with tokens</li>
+</ol>
+<h2 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h2>
+<h3 id="connection-issues"><a class="header" href="#connection-issues">Connection Issues</a></h3>
+<pre><code class="language-typescript">// Check if node is accessible
+try {
+  await connection.getVersion();
+} catch (error) {
+  console.error('Cannot connect to node:', error);
+}
+</code></pre>
+<h3 id="transaction-failures"><a class="header" href="#transaction-failures">Transaction Failures</a></h3>
+<pre><code class="language-typescript">// Common causes and solutions
+if (error.message.includes('insufficient funds')) {
+  // Fund the account
+  await connection.requestAirdrop(payer.publicKey, 1000000);
+}
+
+if (error.message.includes('AccountNotFound')) {
+  // Create the account first
+  await createAccount();
+}
+</code></pre>
+<h2 id="complete-example"><a class="header" href="#complete-example">Complete Example</a></h2>
+<p>Here’s a complete example that demonstrates the concepts:</p>
+<pre><code class="language-typescript">import { 
+  Connection, 
+  Keypair, 
+  PublicKey, 
+  Transaction, 
+  SystemProgram 
+} from '@saturnbtcio/arch-sdk';
+
+async function completeExample() {
+  // 1. Setup connection
+  const connection = new Connection('http://localhost:9002');
+  
+  // 2. Create accounts
+  const payer = Keypair.generate();
+  const recipient = Keypair.generate();
+  
+  // 3. Fund payer account
+  await connection.requestAirdrop(payer.publicKey, 2000000);
+  
+  // 4. Create and send transaction
+  const transaction = new Transaction()
+    .add(SystemProgram.transfer({
+      fromPubkey: payer.publicKey,
+      toPubkey: recipient.publicKey,
+      lamports: 1000000
+    }));
+  
+  const signature = await connection.sendAndConfirmTransaction(
+    transaction,
+    [payer]
+  );
+  
+  // 5. Verify the transfer
+  const recipientBalance = await connection.getBalance(recipient.publicKey);
+  console.log('Recipient balance:', recipientBalance);
+  console.log('Transaction signature:', signature);
+}
+
+completeExample().catch(console.error);
+</code></pre>
+<p>This guide covers the essentials of getting started with the Arch SDK. For more advanced topics and examples, explore the other sections of the documentation.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../sdk/sdk.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../sdk/pubkey.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../sdk/sdk.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../sdk/pubkey.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/mermaid.min.js"></script>
+        <script src="../theme/mermaid-init.js"></script>
+        <script src="../theme/custom.js"></script>
+
+
+    </div>
+    </body>
+</html>
