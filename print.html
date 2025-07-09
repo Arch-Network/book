@@ -9188,6 +9188,44 @@ arch-cli account &lt;ACCOUNT_ADDRESS&gt;
 <li><code>pubkeys</code> - Array of account public keys (32-byte arrays)</li>
 </ol>
 <p><strong>Returns:</strong> Array of account information objects.</p>
+<h3 id="request_airdrop"><a class="header" href="#request_airdrop">request_airdrop</a></h3>
+<p>Requests airdrop of lamports to a specified account (development networks only).</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>pubkey</code> - Account public key as a 32-byte array</li>
+</ol>
+<p><strong>Returns:</strong> Transaction ID string of the airdrop transaction</p>
+<p><strong>Note:</strong> Only available on non-mainnet networks (testnet, devnet, regtest).</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"request_airdrop",
+    "params":[
+        [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
+    ]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="create_account_with_faucet"><a class="header" href="#create_account_with_faucet">create_account_with_faucet</a></h3>
+<p>Creates a new account and funds it using the faucet (development networks only).</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>pubkey</code> - Account public key as a 32-byte array</li>
+</ol>
+<p><strong>Returns:</strong> RuntimeTransaction object for the account creation</p>
+<p><strong>Note:</strong> Only available on non-mainnet networks (testnet, devnet, regtest).</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"create_account_with_faucet",
+    "params":[
+        [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
+    ]
+}' http://localhost:9002/
+</code></pre>
 <h2 id="transaction-operations-2"><a class="header" href="#transaction-operations-2">Transaction Operations</a></h2>
 <h3 id="send_transaction"><a class="header" href="#send_transaction">send_transaction</a></h3>
 <p>Submits a single transaction to the network.</p>
@@ -9271,6 +9309,84 @@ arch-cli account &lt;ACCOUNT_ADDRESS&gt;
     ]
 }' http://localhost:9002/
 </code></pre>
+<h3 id="recent_transactions"><a class="header" href="#recent_transactions">recent_transactions</a></h3>
+<p>Retrieves recent transactions with optional filtering.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>params</code> - Object with optional fields:
+<ul>
+<li><code>limit</code> (optional) - Maximum number of transactions to return</li>
+<li><code>offset</code> (optional) - Number of transactions to skip</li>
+<li><code>account</code> (optional) - Filter by account involvement (32-byte array)</li>
+</ul>
+</li>
+</ol>
+<p><strong>Returns:</strong> Array of ProcessedTransaction objects</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"recent_transactions",
+    "params":[{
+        "limit": 10,
+        "offset": 0,
+        "account": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
+    }]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="get_transactions_by_block"><a class="header" href="#get_transactions_by_block">get_transactions_by_block</a></h3>
+<p>Retrieves transactions from a specific block.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>params</code> - Object with required and optional fields:
+<ul>
+<li><code>block_hash</code> - Block hash string</li>
+<li><code>limit</code> (optional) - Maximum number of transactions to return</li>
+<li><code>offset</code> (optional) - Number of transactions to skip</li>
+<li><code>account</code> (optional) - Filter by account involvement (32-byte array)</li>
+</ul>
+</li>
+</ol>
+<p><strong>Returns:</strong> Array of ProcessedTransaction objects</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_transactions_by_block",
+    "params":[{
+        "block_hash": "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
+        "limit": 50,
+        "offset": 0
+    }]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="get_transactions_by_ids"><a class="header" href="#get_transactions_by_ids">get_transactions_by_ids</a></h3>
+<p>Retrieves multiple transactions by their IDs.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>params</code> - Object with required field:
+<ul>
+<li><code>txids</code> - Array of transaction ID strings</li>
+</ul>
+</li>
+</ol>
+<p><strong>Returns:</strong> Array of ProcessedTransaction objects (null for missing transactions)</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_transactions_by_ids",
+    "params":[{
+        "txids": [
+            "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+            "fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"
+        ]
+    }]
+}' http://localhost:9002/
+</code></pre>
 <h2 id="block-operations-1"><a class="header" href="#block-operations-1">Block Operations</a></h2>
 <h3 id="get_block"><a class="header" href="#get_block">get_block</a></h3>
 <p>Retrieves a block by its hash.</p>
@@ -9346,34 +9462,95 @@ arch-cli account &lt;ACCOUNT_ADDRESS&gt;
     "params":[]
 }' http://localhost:9002/
 </code></pre>
-<h3 id="start_dkg"><a class="header" href="#start_dkg">start_dkg</a></h3>
-<p>Initiates the Distributed Key Generation process.</p>
+<h3 id="get_peers"><a class="header" href="#get_peers">get_peers</a></h3>
+<p>Retrieves information about connected network peers.</p>
 <p><strong>Parameters:</strong> None</p>
-<p><strong>Returns:</strong> Success message or error</p>
-<p><strong>Restrictions:</strong></p>
-<ul>
-<li>DKG must not have already occurred</li>
-<li>Node must be in <code>WaitingForDkg</code> state</li>
-</ul>
+<p><strong>Returns:</strong> Array of peer statistics objects</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
 {
     "jsonrpc":"2.0",
     "id":1,
-    "method":"start_dkg",
+    "method":"get_peers",
     "params":[]
 }' http://localhost:9002/
 </code></pre>
-<h3 id="reset_network"><a class="header" href="#reset_network">reset_network</a></h3>
-<p>Resets the network state (leader nodes only).</p>
+<h3 id="get_current_state"><a class="header" href="#get_current_state">get_current_state</a></h3>
+<p>Retrieves the current state of the validator node.</p>
 <p><strong>Parameters:</strong> None</p>
-<p><strong>Returns:</strong> Success message or error</p>
-<p><strong>Restrictions:</strong></p>
-<ul>
-<li>Only network leader can initiate</li>
-<li>Specific validator states required</li>
-<li>20-second timeout for operations</li>
-</ul>
+<p><strong>Returns:</strong> CurrentState object containing validator state information</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_current_state",
+    "params":[]
+}' http://localhost:9002/
+</code></pre>
+<h2 id="local-validator-specific-methods"><a class="header" href="#local-validator-specific-methods">Local Validator Specific Methods</a></h2>
+<p>The following methods are available only when using the local validator (for development):</p>
+<h3 id="get_arch_txid_from_btc_txid"><a class="header" href="#get_arch_txid_from_btc_txid">get_arch_txid_from_btc_txid</a></h3>
+<p>Maps a Bitcoin transaction ID to its corresponding Arch transaction ID.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>btc_txid</code> - Bitcoin transaction ID string</li>
+</ol>
+<p><strong>Returns:</strong> Optional Arch transaction ID string (null if not found)</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_arch_txid_from_btc_txid",
+    "params":["1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="get_transaction_report"><a class="header" href="#get_transaction_report">get_transaction_report</a></h3>
+<p>Retrieves detailed transaction processing report for debugging.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>txid</code> - Transaction ID string</li>
+</ol>
+<p><strong>Returns:</strong> Transaction report string with processing details</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_transaction_report",
+    "params":["1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="get_latest_tx_using_account"><a class="header" href="#get_latest_tx_using_account">get_latest_tx_using_account</a></h3>
+<p>Finds the most recent transaction involving a specific account.</p>
+<p><strong>Parameters:</strong></p>
+<ol>
+<li><code>account_pubkey</code> - Account public key as hex string</li>
+</ol>
+<p><strong>Returns:</strong> Optional transaction ID string (null if not found)</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_latest_tx_using_account",
+    "params":["0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"]
+}' http://localhost:9002/
+</code></pre>
+<h3 id="get_all_accounts"><a class="header" href="#get_all_accounts">get_all_accounts</a></h3>
+<p>Retrieves all account public keys in the database.</p>
+<p><strong>Parameters:</strong> None</p>
+<p><strong>Returns:</strong> Array of account public key hex strings</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_all_accounts",
+    "params":[]
+}' http://localhost:9002/
+</code></pre>
 <h2 id="cli-alternative-1"><a class="header" href="#cli-alternative-1">CLI Alternative</a></h2>
 <p>Many RPC methods are available through the Arch Network CLI:</p>
 <pre><code class="language-bash"># Start local validator
