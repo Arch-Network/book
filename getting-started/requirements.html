@@ -198,7 +198,7 @@
 <tr><td>Operating System</td><td>Ubuntu 20.04+ / macOS 12.0+</td><td>Latest LTS recommended</td></tr>
 <tr><td>Git</td><td>Latest</td><td>Version control</td></tr>
 <tr><td>Rust</td><td>Latest stable</td><td>Core development language</td></tr>
-<tr><td>Solana CLI</td><td>v1.18.18</td><td>Program compilation tools</td></tr>
+<tr><td>Solana CLI</td><td>v2.0+</td><td>Program compilation tools</td></tr>
 <tr><td>Arch Network CLI</td><td>Latest</td><td>Development toolkit</td></tr>
 </tbody></table>
 </div>
@@ -221,9 +221,9 @@ cargo --version
 sudo apt-get install -y build-essential gcc-multilib jq
 </code></pre>
 <h3 id="3-install-solana-cli"><a class="header" href="#3-install-solana-cli">3. Install Solana CLI</a></h3>
-<pre><code class="language-bash">sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
+<pre><code class="language-bash">sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
 
-# Verify installation
+# Verify installation (should show 2.x.x or later)
 solana --version
 </code></pre>
 <h3 id="4-install-arch-network-cli"><a class="header" href="#4-install-arch-network-cli">4. Install Arch Network CLI</a></h3>
@@ -276,7 +276,7 @@ sudo mv cli /usr/local/bin/
 <ol start="3">
 <li>Reinstall Solana:</li>
 </ol>
-<pre><code class="language-bash">sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
+<pre><code class="language-bash">sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
 </code></pre>
 <h2 id="need-help"><a class="header" href="#need-help">Need Help?</a></h2>
 <ul>
