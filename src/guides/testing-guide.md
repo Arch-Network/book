@@ -669,7 +669,7 @@ jobs:
         
     - name: Install Solana CLI
       run: |
-        sh -c "$(curl -sSfL https://release.solana.com/v1.16.27/install)"
+        sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
         echo "$HOME/.local/share/solana/install/active_release/bin" >> $GITHUB_PATH
         
     - name: Start local validator

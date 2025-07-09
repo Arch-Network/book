@@ -8,16 +8,16 @@ Before starting, ensure you have the following tools installed:
 
 - **Git** (v2.0 or later)
 - **Rust** (v1.70 or later) - [Install Rust](https://rustup.rs/)
-- **Solana CLI** (v1.16 or later, **DO NOT upgrade to 2.x**) - [Install Solana](https://docs.solana.com/cli/install-solana-cli-tools)
+- **Solana CLI** (v2.0 or later) - [Install Solana](https://docs.solana.com/cli/install-solana-cli-tools)
 - **Arch Network CLI** - Download from [Arch Network Releases](https://github.com/Arch-Network/arch-node/releases/latest)
 
-> ⚠️ **Important**: Do not upgrade to Solana CLI 2.x as it contains breaking changes that are incompatible with Arch Network. Stick with version 1.16+ but stay below 2.0.
+> ⚠️ **Important**: Arch Network now requires Solana CLI 2.x. Please ensure you have version 2.0 or later installed.
 
 Verify your installation:
 ```bash
 git --version
 rustc --version
-solana --version  # Should show 1.x.x, not 2.x.x
+solana --version  # Should show 2.x.x or later
 arch-cli --version
 ```
 

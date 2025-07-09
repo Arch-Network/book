@@ -18,7 +18,7 @@ Welcome to the Arch Network development guide. This page contains all the requir
 | Operating System | Ubuntu 20.04+ / macOS 12.0+ | Latest LTS recommended |
 | Git | Latest | Version control |
 | Rust | Latest stable | Core development language |
-| Solana CLI | v1.18.18 | Program compilation tools |
+| Solana CLI | v2.0+ | Program compilation tools |
 | Arch Network CLI | Latest | Development toolkit |
 
 ## Installation Guide
@@ -49,9 +49,9 @@ sudo apt-get install -y build-essential gcc-multilib jq
 
 ### 3. Install Solana CLI
 ```bash
-sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
+sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
 
-# Verify installation
+# Verify installation (should show 2.x.x or later)
 solana --version
 ```
 
@@ -122,7 +122,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 3. Reinstall Solana:
 ```bash
-sh -c "$(curl -sSfL https://release.solana.com/v1.18.18/install)"
+sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
 ```
 
 ## Need Help?

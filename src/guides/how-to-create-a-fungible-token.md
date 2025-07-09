@@ -24,7 +24,7 @@ The APL Token Program is Arch Network's native token standard, providing:
 
 Before starting, ensure you have:
 - **Rust 1.70+** and Cargo installed ([Install Rust](https://rustup.rs/))
-- **Solana CLI 1.16+** (DO NOT upgrade to 2.x) - [Install Guide](https://docs.solana.com/cli/install-solana-cli-tools)
+- **Solana CLI 2.0+** - [Install Guide](https://docs.solana.com/cli/install-solana-cli-tools)
 - **Arch Network CLI** - [Download Latest](https://github.com/Arch-Network/arch-node/releases/latest)
 - **Running validator** (see [Validator Setup Guide](./how-to-configure-local-validator-bitcoin-testnet4.md))
 - **Basic familiarity** with Arch Network program development
