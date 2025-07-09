@@ -99,6 +99,54 @@ Retrieves information for multiple accounts in a single request.
 
 **Returns:** Array of account information objects.
 
+### request_airdrop
+
+Requests airdrop of lamports to a specified account (development networks only).
+
+**Parameters:**
+1. `pubkey` - Account public key as a 32-byte array
+
+**Returns:** Transaction ID string of the airdrop transaction
+
+**Note:** Only available on non-mainnet networks (testnet, devnet, regtest).
+
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"request_airdrop",
+    "params":[
+        [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
+    ]
+}' http://localhost:9002/
+```
+
+### create_account_with_faucet
+
+Creates a new account and funds it using the faucet (development networks only).
+
+**Parameters:**
+1. `pubkey` - Account public key as a 32-byte array
+
+**Returns:** RuntimeTransaction object for the account creation
+
+**Note:** Only available on non-mainnet networks (testnet, devnet, regtest).
+
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"create_account_with_faucet",
+    "params":[
+        [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
+    ]
+}' http://localhost:9002/
+```
+
 ## Transaction Operations
 
 ### send_transaction
@@ -189,6 +237,87 @@ curl -X POST -H 'Content-Type: application/json' -d '
     "params":[
         "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
     ]
+}' http://localhost:9002/
+```
+
+### recent_transactions
+
+Retrieves recent transactions with optional filtering.
+
+**Parameters:**
+1. `params` - Object with optional fields:
+   - `limit` (optional) - Maximum number of transactions to return
+   - `offset` (optional) - Number of transactions to skip
+   - `account` (optional) - Filter by account involvement (32-byte array)
+
+**Returns:** Array of ProcessedTransaction objects
+
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"recent_transactions",
+    "params":[{
+        "limit": 10,
+        "offset": 0,
+        "account": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]
+    }]
+}' http://localhost:9002/
+```
+
+### get_transactions_by_block
+
+Retrieves transactions from a specific block.
+
+**Parameters:**
+1. `params` - Object with required and optional fields:
+   - `block_hash` - Block hash string
+   - `limit` (optional) - Maximum number of transactions to return
+   - `offset` (optional) - Number of transactions to skip
+   - `account` (optional) - Filter by account involvement (32-byte array)
+
+**Returns:** Array of ProcessedTransaction objects
+
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_transactions_by_block",
+    "params":[{
+        "block_hash": "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
+        "limit": 50,
+        "offset": 0
+    }]
+}' http://localhost:9002/
+```
+
+### get_transactions_by_ids
+
+Retrieves multiple transactions by their IDs.
+
+**Parameters:**
+1. `params` - Object with required field:
+   - `txids` - Array of transaction ID strings
+
+**Returns:** Array of ProcessedTransaction objects (null for missing transactions)
+
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_transactions_by_ids",
+    "params":[{
+        "txids": [
+            "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+            "fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"
+        ]
+    }]
 }' http://localhost:9002/
 ```
 
@@ -295,17 +424,13 @@ curl -X POST -H 'Content-Type: application/json' -d '
 }' http://localhost:9002/
 ```
 
-### start_dkg
+### get_peers
 
-Initiates the Distributed Key Generation process.
+Retrieves information about connected network peers.
 
 **Parameters:** None
 
-**Returns:** Success message or error
-
-**Restrictions:**
-- DKG must not have already occurred
-- Node must be in `WaitingForDkg` state
+**Returns:** Array of peer statistics objects
 
 **Example:**
 ```bash
@@ -313,23 +438,114 @@ curl -X POST -H 'Content-Type: application/json' -d '
 {
     "jsonrpc":"2.0",
     "id":1,
-    "method":"start_dkg",
+    "method":"get_peers",
     "params":[]
 }' http://localhost:9002/
 ```
 
-### reset_network
+### get_current_state
 
-Resets the network state (leader nodes only).
+Retrieves the current state of the validator node.
 
 **Parameters:** None
 
-**Returns:** Success message or error
+**Returns:** CurrentState object containing validator state information
 
-**Restrictions:**
-- Only network leader can initiate
-- Specific validator states required
-- 20-second timeout for operations
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_current_state",
+    "params":[]
+}' http://localhost:9002/
+```
+
+
+
+## Local Validator Specific Methods
+
+The following methods are available only when using the local validator (for development):
+
+### get_arch_txid_from_btc_txid
+
+Maps a Bitcoin transaction ID to its corresponding Arch transaction ID.
+
+**Parameters:**
+1. `btc_txid` - Bitcoin transaction ID string
+
+**Returns:** Optional Arch transaction ID string (null if not found)
+
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_arch_txid_from_btc_txid",
+    "params":["1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"]
+}' http://localhost:9002/
+```
+
+### get_transaction_report
+
+Retrieves detailed transaction processing report for debugging.
+
+**Parameters:**
+1. `txid` - Transaction ID string
+
+**Returns:** Transaction report string with processing details
+
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_transaction_report",
+    "params":["1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"]
+}' http://localhost:9002/
+```
+
+### get_latest_tx_using_account
+
+Finds the most recent transaction involving a specific account.
+
+**Parameters:**
+1. `account_pubkey` - Account public key as hex string
+
+**Returns:** Optional transaction ID string (null if not found)
+
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_latest_tx_using_account",
+    "params":["0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20"]
+}' http://localhost:9002/
+```
+
+### get_all_accounts
+
+Retrieves all account public keys in the database.
+
+**Parameters:** None
+
+**Returns:** Array of account public key hex strings
+
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_all_accounts",
+    "params":[]
+}' http://localhost:9002/
+```
 
 ## CLI Alternative
 
