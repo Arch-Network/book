@@ -39,6 +39,10 @@
 
 # SDK Reference
 - [SDK Overview](sdk/sdk.md)
+- [Getting Started](sdk/getting-started.md)
+  - [Pubkey](sdk/pubkey.md)
+  - [Account](sdk/account.md)
+  - [Instructions and Messages](sdk/instructions-and-messages.md)
   - [Runtime Transaction](sdk/runtime-transaction.md)
   - [Processed Transaction](sdk/processed-transaction.md)
   - [Signature](sdk/signature.md)
