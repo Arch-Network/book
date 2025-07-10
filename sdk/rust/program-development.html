@@ -1,0 +1,829 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Program Development - The Arch Book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for the Arch Network - A Bitcoin-native computation environment">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/custom.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="../../introduction.html">Introduction</a></li><li class="chapter-item affix "><li class="part-title">Getting Started</li><li class="chapter-item "><a href="../../getting-started/quick-start.html">🚀 Quick Start Guide</a></li><li class="chapter-item "><a href="../../getting-started/bitcoin-and-titan-setup.html">🏗️ Validator Setup</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../getting-started/requirements.html">System Requirements</a></li><li class="chapter-item "><a href="../../guides/how-to-configure-local-validator-bitcoin-testnet4.html">Setup Options</a></li><li class="chapter-item "><a href="../../getting-started/validator-staking.html">Running Your Node</a></li></ol></li><li class="chapter-item "><li class="part-title">Program Development</li><li class="chapter-item "><a href="../../guides/understanding-arch-programs.html">Understanding Arch Programs</a></li><li class="chapter-item "><a href="../../getting-started/setting-up-a-project.html">Setting Up a Project</a></li><li class="chapter-item "><a href="../../guides/writing-your-first-program.html">Writing Your First Program</a></li><li class="chapter-item "><a href="../../guides/testing-guide.html">Testing Your Program</a></li><li class="chapter-item "><a href="../../guides/guides.html">Program Examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../guides/how-to-create-a-fungible-token.html">Fungible Token</a></li><li class="chapter-item "><a href="../../guides/how-to-write-oracle-program.html">Oracle Program</a></li><li class="chapter-item "><a href="../../guides/how-to-build-runes-swap.html">Runes Swap</a></li><li class="chapter-item "><a href="../../guides/how-to-build-lending-protocol.html">Lending Protocol</a></li></ol></li><li class="chapter-item "><li class="part-title">Arch Program Library (APL)</li><li class="chapter-item "><a href="../../apl/introduction.html">Introduction</a></li><li class="chapter-item "><a href="../../apl/token-program.html">Token Program</a></li><li class="chapter-item "><a href="../../apl/associated-token-account.html">Associated Token Account Program</a></li><li class="chapter-item affix "><li class="part-title">Core Concepts</li><li class="chapter-item "><a href="../../concepts/architecture.html">Architecture Overview</a></li><li class="chapter-item "><a href="../../concepts/network-architecture.html">Network Architecture</a></li><li class="chapter-item "><a href="../../concepts/bitcoin-integration.html">Bitcoin Integration</a></li><li class="chapter-item "><a href="../../concepts/consensus.html">ROAST and FROST Consensus</a></li><li class="chapter-item "><a href="../../program/program.html">Programs</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../program/utxo.html">UTXOs</a></li><li class="chapter-item "><a href="../../program/accounts.html">Accounts</a></li><li class="chapter-item "><a href="../../program/instructions-and-messages.html">Instructions</a></li><li class="chapter-item "><a href="../../program/syscall.html">System Calls</a></li></ol></li><li class="chapter-item "><a href="../../concepts/nodes.html">Node Operation</a></li><li class="chapter-item affix "><li class="part-title">SDK Reference</li><li class="chapter-item expanded "><a href="../../sdk/sdk.html">SDK Overview</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../sdk/typescript/getting-started.html">TypeScript SDK (Saturn)</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../sdk/typescript/api-reference.html">TypeScript API Reference</a></li><li class="chapter-item "><a href="../../sdk/typescript/examples.html">TypeScript Examples</a></li><li class="chapter-item "><a href="../../sdk/typescript/web3-integration.html">Web3 Integration</a></li></ol></li><li class="chapter-item expanded "><a href="../../sdk/rust/getting-started.html">Rust SDK</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../sdk/rust/api-reference.html">Rust API Reference</a></li><li class="chapter-item "><a href="../../sdk/rust/examples.html">Rust Examples</a></li><li class="chapter-item expanded "><a href="../../sdk/rust/program-development.html" class="active">Program Development</a></li></ol></li><li class="chapter-item "><a href="../../sdk/sdk.html">Core Types</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../sdk/pubkey.html">Pubkey</a></li><li class="chapter-item "><a href="../../sdk/account.html">Account</a></li><li class="chapter-item "><a href="../../sdk/instructions-and-messages.html">Instructions and Messages</a></li><li class="chapter-item "><a href="../../sdk/runtime-transaction.html">Runtime Transaction</a></li><li class="chapter-item "><a href="../../sdk/processed-transaction.html">Processed Transaction</a></li><li class="chapter-item "><a href="../../sdk/signature.html">Signature</a></li></ol></li></ol></li><li class="chapter-item "><li class="part-title">Reference</li><li class="chapter-item "><a href="../../rpc/rpc.html">API Reference</a></li><li class="chapter-item "><a href="../../system-program/system-program.html">System Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../system-program/create-account.html">Account Creation</a></li><li class="chapter-item "><a href="../../system-program/make-executable.html">Program Deployment</a></li></ol></li><li class="chapter-item "><li class="part-title">Resources</li><li class="chapter-item "><a href="../../reference/troubleshooting.html">Troubleshooting</a></li><li class="chapter-item "><a href="../../getting-started/faq.html">FAQ</a></li><li class="chapter-item "><a href="../../getting-started/resources.html">External Resources</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Arch Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book/edit/main/src/sdk/rust/program-development.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="program-development-guide"><a class="header" href="#program-development-guide">Program Development Guide</a></h1>
+<p>This guide covers developing on-chain programs (smart contracts) for the Arch Network using the Rust SDK.</p>
+<h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
+<p>Arch Network programs are compiled Rust code that runs on the network’s runtime. Programs can:</p>
+<ul>
+<li>Manage account state</li>
+<li>Process transactions</li>
+<li>Interact with other programs</li>
+<li>Interface with Bitcoin UTXOs</li>
+</ul>
+<h2 id="setting-up-your-development-environment"><a class="header" href="#setting-up-your-development-environment">Setting Up Your Development Environment</a></h2>
+<h3 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h3>
+<pre><code class="language-bash"># Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Install Arch CLI tools
+cargo install arch-cli
+
+# Install BPF tools
+arch install
+</code></pre>
+<h3 id="project-structure"><a class="header" href="#project-structure">Project Structure</a></h3>
+<pre><code class="language-bash">my-program/
+├── Cargo.toml
+├── src/
+│   ├── lib.rs         # Program entrypoint
+│   ├── instruction.rs # Instruction definitions
+│   ├── processor.rs   # Processing logic
+│   ├── state.rs      # State structures
+│   └── error.rs      # Custom errors
+├── tests/
+│   └── integration.rs # Integration tests
+└── deploy/
+    └── deploy.ts      # Deployment scripts
+</code></pre>
+<h2 id="your-first-program"><a class="header" href="#your-first-program">Your First Program</a></h2>
+<h3 id="basic-program-structure"><a class="header" href="#basic-program-structure">Basic Program Structure</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// src/lib.rs
+use arch_program::{
+    account_info::{next_account_info, AccountInfo},
+    entrypoint,
+    entrypoint::ProgramResult,
+    msg,
+    pubkey::Pubkey,
+};
+
+// Declare the program's entrypoint
+entrypoint!(process_instruction);
+
+// Program entrypoint implementation
+pub fn process_instruction(
+    program_id: &amp;Pubkey,
+    accounts: &amp;[AccountInfo],
+    instruction_data: &amp;[u8],
+) -&gt; ProgramResult {
+    msg!("Program entrypoint");
+    
+    // Your program logic here
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="cargotoml-configuration"><a class="header" href="#cargotoml-configuration">Cargo.toml Configuration</a></h3>
+<pre><code class="language-toml">[package]
+name = "my_program"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[features]
+no-entrypoint = []
+test-bpf = []
+
+[dependencies]
+arch_program = "0.5.4"
+borsh = "1.5.1"
+thiserror = "1.0"
+
+[dev-dependencies]
+arch_sdk = "0.5.4"
+tokio = { version = "1", features = ["full"] }
+</code></pre>
+<h2 id="instruction-processing"><a class="header" href="#instruction-processing">Instruction Processing</a></h2>
+<h3 id="define-instructions"><a class="header" href="#define-instructions">Define Instructions</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// src/instruction.rs
+use borsh::{BorshDeserialize, BorshSerialize};
+use arch_program::{
+    instruction::{AccountMeta, Instruction},
+    pubkey::Pubkey,
+    system_program,
+};
+
+#[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
+pub enum MyInstruction {
+    /// Initialize a new account
+    /// Accounts:
+    /// 0. `[writable]` The account to initialize
+    /// 1. `[signer]` The account's authority
+    Initialize {
+        seed: u64,
+    },
+    
+    /// Update account data
+    /// Accounts:
+    /// 0. `[writable]` The account to update
+    /// 1. `[signer]` The account's authority
+    Update {
+        data: Vec&lt;u8&gt;,
+    },
+    
+    /// Transfer ownership
+    /// Accounts:
+    /// 0. `[writable]` The account to transfer
+    /// 1. `[signer]` Current authority
+    /// 2. `[]` New authority
+    Transfer,
+}
+
+impl MyInstruction {
+    pub fn unpack(input: &amp;[u8]) -&gt; Result&lt;Self, ProgramError&gt; {
+        MyInstruction::try_from_slice(input)
+            .map_err(|_| ProgramError::InvalidInstructionData)
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="process-instructions"><a class="header" href="#process-instructions">Process Instructions</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// src/processor.rs
+use arch_program::{
+    account_info::{next_account_info, AccountInfo},
+    entrypoint::ProgramResult,
+    msg,
+    program_error::ProgramError,
+    pubkey::Pubkey,
+};
+use crate::{instruction::MyInstruction, state::MyState};
+
+pub struct Processor;
+
+impl Processor {
+    pub fn process(
+        program_id: &amp;Pubkey,
+        accounts: &amp;[AccountInfo],
+        instruction_data: &amp;[u8],
+    ) -&gt; ProgramResult {
+        let instruction = MyInstruction::unpack(instruction_data)?;
+        
+        match instruction {
+            MyInstruction::Initialize { seed } =&gt; {
+                msg!("Instruction: Initialize");
+                Self::process_initialize(accounts, seed, program_id)
+            }
+            MyInstruction::Update { data } =&gt; {
+                msg!("Instruction: Update");
+                Self::process_update(accounts, data, program_id)
+            }
+            MyInstruction::Transfer =&gt; {
+                msg!("Instruction: Transfer");
+                Self::process_transfer(accounts, program_id)
+            }
+        }
+    }
+    
+    fn process_initialize(
+        accounts: &amp;[AccountInfo],
+        seed: u64,
+        program_id: &amp;Pubkey,
+    ) -&gt; ProgramResult {
+        let account_info_iter = &amp;mut accounts.iter();
+        let account = next_account_info(account_info_iter)?;
+        let authority = next_account_info(account_info_iter)?;
+        
+        // Verify account ownership
+        if account.owner != program_id {
+            return Err(ProgramError::IncorrectProgramId);
+        }
+        
+        // Verify authority is signer
+        if !authority.is_signer {
+            return Err(ProgramError::MissingRequiredSignature);
+        }
+        
+        // Initialize state
+        let state = MyState {
+            is_initialized: true,
+            authority: *authority.key,
+            seed,
+            data: vec![],
+        };
+        
+        state.serialize(&amp;mut &amp;mut account.data.borrow_mut()[..])?;
+        msg!("Account initialized successfully");
+        
+        Ok(())
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="state-management"><a class="header" href="#state-management">State Management</a></h2>
+<h3 id="define-state-structures"><a class="header" href="#define-state-structures">Define State Structures</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// src/state.rs
+use borsh::{BorshDeserialize, BorshSerialize};
+use arch_program::{
+    program_error::ProgramError,
+    pubkey::Pubkey,
+};
+
+#[derive(BorshSerialize, BorshDeserialize, Debug, Clone)]
+pub struct MyState {
+    pub is_initialized: bool,
+    pub authority: Pubkey,
+    pub seed: u64,
+    pub data: Vec&lt;u8&gt;,
+}
+
+impl MyState {
+    pub const LEN: usize = 1 + 32 + 8 + 4; // Base size without dynamic data
+    
+    pub fn unpack(input: &amp;[u8]) -&gt; Result&lt;Self, ProgramError&gt; {
+        MyState::try_from_slice(input)
+            .map_err(|_| ProgramError::InvalidAccountData)
+    }
+    
+    pub fn pack(&amp;self, dst: &amp;mut [u8]) -&gt; Result&lt;(), ProgramError&gt; {
+        self.serialize(&amp;mut &amp;mut dst[..])
+            .map_err(|_| ProgramError::InvalidAccountData)
+    }
+}
+
+// Account size calculation helper
+impl MyState {
+    pub fn get_packed_len(data_len: usize) -&gt; usize {
+        Self::LEN + data_len
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="program-derived-addresses-pdas"><a class="header" href="#program-derived-addresses-pdas">Program-Derived Addresses (PDAs)</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_program::{
+    pubkey::Pubkey,
+    program_error::ProgramError,
+};
+
+pub fn find_program_address(
+    seeds: &amp;[&amp;[u8]],
+    program_id: &amp;Pubkey,
+) -&gt; (Pubkey, u8) {
+    Pubkey::find_program_address(seeds, program_id)
+}
+
+// Example: Creating a PDA for user data
+pub fn get_user_pda(
+    user: &amp;Pubkey,
+    program_id: &amp;Pubkey,
+) -&gt; (Pubkey, u8) {
+    find_program_address(
+        &amp;[b"user", user.as_ref()],
+        program_id,
+    )
+}
+
+// Using PDAs in instructions
+fn process_create_pda(
+    accounts: &amp;[AccountInfo],
+    program_id: &amp;Pubkey,
+) -&gt; ProgramResult {
+    let account_info_iter = &amp;mut accounts.iter();
+    let user = next_account_info(account_info_iter)?;
+    let pda_account = next_account_info(account_info_iter)?;
+    let system_program = next_account_info(account_info_iter)?;
+    
+    let (pda, bump) = get_user_pda(user.key, program_id);
+    
+    if pda != *pda_account.key {
+        return Err(ProgramError::InvalidSeeds);
+    }
+    
+    // Create PDA account
+    let rent = Rent::get()?;
+    let space = MyState::LEN;
+    let lamports = rent.minimum_balance(space);
+    
+    invoke_signed(
+        &amp;system_instruction::create_account(
+            user.key,
+            &amp;pda,
+            lamports,
+            space as u64,
+            program_id,
+        ),
+        &amp;[user.clone(), pda_account.clone(), system_program.clone()],
+        &amp;[&amp;[b"user", user.key.as_ref(), &amp;[bump]]],
+    )?;
+    
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="cross-program-invocation-cpi"><a class="header" href="#cross-program-invocation-cpi">Cross-Program Invocation (CPI)</a></h2>
+<h3 id="making-cpi-calls"><a class="header" href="#making-cpi-calls">Making CPI Calls</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_program::{
+    account_info::AccountInfo,
+    instruction::{AccountMeta, Instruction},
+    program::{invoke, invoke_signed},
+    pubkey::Pubkey,
+};
+
+// Simple CPI
+pub fn transfer_tokens_cpi(
+    token_program_id: &amp;Pubkey,
+    source: &amp;AccountInfo,
+    destination: &amp;AccountInfo,
+    authority: &amp;AccountInfo,
+    amount: u64,
+) -&gt; ProgramResult {
+    let accounts = vec![
+        AccountMeta::new(*source.key, false),
+        AccountMeta::new(*destination.key, false),
+        AccountMeta::new_readonly(*authority.key, true),
+    ];
+    
+    let instruction = Instruction::new_with_bytes(
+        *token_program_id,
+        &amp;[3, amount.to_le_bytes()].concat(), // Transfer instruction
+        accounts,
+    );
+    
+    invoke(
+        &amp;instruction,
+        &amp;[source.clone(), destination.clone(), authority.clone()],
+    )
+}
+
+// CPI with PDA signer
+pub fn transfer_from_pda(
+    source_pda: &amp;AccountInfo,
+    destination: &amp;AccountInfo,
+    amount: u64,
+    pda_seeds: &amp;[&amp;[u8]],
+    program_id: &amp;Pubkey,
+) -&gt; ProgramResult {
+    let instruction = system_instruction::transfer(
+        source_pda.key,
+        destination.key,
+        amount,
+    );
+    
+    invoke_signed(
+        &amp;instruction,
+        &amp;[source_pda.clone(), destination.clone()],
+        &amp;[pda_seeds],
+    )
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<h3 id="custom-errors"><a class="header" href="#custom-errors">Custom Errors</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// src/error.rs
+use thiserror::Error;
+use arch_program::program_error::ProgramError;
+
+#[derive(Error, Debug, Copy, Clone)]
+pub enum MyError {
+    #[error("Invalid instruction")]
+    InvalidInstruction,
+    
+    #[error("Account not initialized")]
+    NotInitialized,
+    
+    #[error("Unauthorized")]
+    Unauthorized,
+    
+    #[error("Arithmetic overflow")]
+    Overflow,
+    
+    #[error("Invalid seed value")]
+    InvalidSeed,
+}
+
+impl From&lt;MyError&gt; for ProgramError {
+    fn from(e: MyError) -&gt; Self {
+        ProgramError::Custom(e as u32)
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="security-best-practices"><a class="header" href="#security-best-practices">Security Best Practices</a></h2>
+<h3 id="account-validation"><a class="header" href="#account-validation">Account Validation</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn check_account_owner(
+    account: &amp;AccountInfo,
+    expected_owner: &amp;Pubkey,
+) -&gt; ProgramResult {
+    if account.owner != expected_owner {
+        msg!("Account owner mismatch");
+        return Err(ProgramError::IncorrectProgramId);
+    }
+    Ok(())
+}
+
+pub fn check_signer(account: &amp;AccountInfo) -&gt; ProgramResult {
+    if !account.is_signer {
+        msg!("Missing required signature");
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+    Ok(())
+}
+
+pub fn check_writable(account: &amp;AccountInfo) -&gt; ProgramResult {
+    if !account.is_writable {
+        msg!("Account is not writable");
+        return Err(ProgramError::InvalidAccountData);
+    }
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="arithmetic-safety"><a class="header" href="#arithmetic-safety">Arithmetic Safety</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub fn safe_add(a: u64, b: u64) -&gt; Result&lt;u64, ProgramError&gt; {
+    a.checked_add(b)
+        .ok_or_else(|| MyError::Overflow.into())
+}
+
+pub fn safe_sub(a: u64, b: u64) -&gt; Result&lt;u64, ProgramError&gt; {
+    a.checked_sub(b)
+        .ok_or_else(|| MyError::Overflow.into())
+}
+
+pub fn safe_mul(a: u64, b: u64) -&gt; Result&lt;u64, ProgramError&gt; {
+    a.checked_mul(b)
+        .ok_or_else(|| MyError::Overflow.into())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="testing-your-program"><a class="header" href="#testing-your-program">Testing Your Program</a></h2>
+<h3 id="unit-tests"><a class="header" href="#unit-tests">Unit Tests</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod tests {
+    use super::*;
+    use arch_program::clock::Epoch;
+    
+    #[test]
+    fn test_state_packing() {
+        let state = MyState {
+            is_initialized: true,
+            authority: Pubkey::new_unique(),
+            seed: 42,
+            data: vec![1, 2, 3, 4],
+        };
+        
+        let mut packed = vec![0; state.get_packed_len(4)];
+        state.pack(&amp;mut packed).unwrap();
+        
+        let unpacked = MyState::unpack(&amp;packed).unwrap();
+        assert_eq!(state.is_initialized, unpacked.is_initialized);
+        assert_eq!(state.authority, unpacked.authority);
+        assert_eq!(state.seed, unpacked.seed);
+        assert_eq!(state.data, unpacked.data);
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="integration-tests"><a class="header" href="#integration-tests">Integration Tests</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// tests/integration.rs
+use arch_sdk::{
+    signature::{Keypair, Signer},
+    transaction::Transaction,
+};
+use arch_program_test::*;
+
+#[tokio::test]
+async fn test_initialize() {
+    let program_id = Pubkey::new_unique();
+    let mut program_test = ProgramTest::new(
+        "my_program",
+        program_id,
+        processor!(process_instruction),
+    );
+    
+    let (mut banks_client, payer, recent_blockhash) = program_test.start().await;
+    
+    let account = Keypair::new();
+    let authority = Keypair::new();
+    
+    let mut transaction = Transaction::new_with_payer(
+        &amp;[
+            // Create account
+            system_instruction::create_account(
+                &amp;payer.pubkey(),
+                &amp;account.pubkey(),
+                1_000_000,
+                MyState::LEN as u64,
+                &amp;program_id,
+            ),
+            // Initialize
+            Instruction::new_with_borsh(
+                program_id,
+                &amp;MyInstruction::Initialize { seed: 42 },
+                vec![
+                    AccountMeta::new(account.pubkey(), false),
+                    AccountMeta::new_readonly(authority.pubkey(), true),
+                ],
+            ),
+        ],
+        Some(&amp;payer.pubkey()),
+    );
+    
+    transaction.sign(&amp;[&amp;payer, &amp;account, &amp;authority], recent_blockhash);
+    banks_client.process_transaction(transaction).await.unwrap();
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="building-and-deploying"><a class="header" href="#building-and-deploying">Building and Deploying</a></h2>
+<h3 id="build-your-program"><a class="header" href="#build-your-program">Build Your Program</a></h3>
+<pre><code class="language-bash"># Build for BPF target
+cargo build-bpf
+
+# Output will be in target/deploy/my_program.so
+</code></pre>
+<h3 id="deploy-to-network"><a class="header" href="#deploy-to-network">Deploy to Network</a></h3>
+<pre><code class="language-bash"># Deploy using Arch CLI
+arch program deploy target/deploy/my_program.so
+
+# Or using custom deployment script
+arch program deploy \
+    --program target/deploy/my_program.so \
+    --keypair ~/.config/arch/id.json \
+    --url http://localhost:9002
+</code></pre>
+<h2 id="advanced-topics"><a class="header" href="#advanced-topics">Advanced Topics</a></h2>
+<h3 id="upgradeable-programs"><a class="header" href="#upgradeable-programs">Upgradeable Programs</a></h3>
+<p>Programs can be made upgradeable by using a proxy pattern:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Proxy program that delegates to implementation
+pub fn process_proxy(
+    program_id: &amp;Pubkey,
+    accounts: &amp;[AccountInfo],
+    instruction_data: &amp;[u8],
+) -&gt; ProgramResult {
+    let account_info_iter = &amp;mut accounts.iter();
+    let program_data = next_account_info(account_info_iter)?;
+    
+    // Load implementation address from program data
+    let impl_program_id = get_implementation_id(program_data)?;
+    
+    // Forward call to implementation
+    invoke(
+        &amp;Instruction::new_with_bytes(
+            impl_program_id,
+            instruction_data,
+            accounts[1..].iter()
+                .map(|acc| AccountMeta {
+                    pubkey: *acc.key,
+                    is_signer: acc.is_signer,
+                    is_writable: acc.is_writable,
+                })
+                .collect(),
+        ),
+        accounts,
+    )
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="resources"><a class="header" href="#resources">Resources</a></h2>
+<ul>
+<li><a href="../../program/program.html">Program Examples</a></li>
+<li><a href="https://docs.rs/arch_program">Arch Program Crate Docs</a></li>
+<li><a href="https://github.com/arch-network/arch-network/tree/main/examples">Example Programs</a></li>
+<li><a href="../../guides/testing-guide.html">Testing Guide</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../sdk/rust/examples.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../sdk/sdk.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../sdk/rust/examples.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../sdk/sdk.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../../ace.js"></script>
+        <script src="../../editor.js"></script>
+        <script src="../../mode-rust.js"></script>
+        <script src="../../theme-dawn.js"></script>
+        <script src="../../theme-tomorrow_night.js"></script>
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/mermaid.min.js"></script>
+        <script src="../../theme/mermaid-init.js"></script>
+        <script src="../../theme/custom.js"></script>
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,764 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Rust Examples - The Arch Book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for the Arch Network - A Bitcoin-native computation environment">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/custom.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="../../introduction.html">Introduction</a></li><li class="chapter-item affix "><li class="part-title">Getting Started</li><li class="chapter-item "><a href="../../getting-started/quick-start.html">🚀 Quick Start Guide</a></li><li class="chapter-item "><a href="../../getting-started/bitcoin-and-titan-setup.html">🏗️ Validator Setup</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../getting-started/requirements.html">System Requirements</a></li><li class="chapter-item "><a href="../../guides/how-to-configure-local-validator-bitcoin-testnet4.html">Setup Options</a></li><li class="chapter-item "><a href="../../getting-started/validator-staking.html">Running Your Node</a></li></ol></li><li class="chapter-item "><li class="part-title">Program Development</li><li class="chapter-item "><a href="../../guides/understanding-arch-programs.html">Understanding Arch Programs</a></li><li class="chapter-item "><a href="../../getting-started/setting-up-a-project.html">Setting Up a Project</a></li><li class="chapter-item "><a href="../../guides/writing-your-first-program.html">Writing Your First Program</a></li><li class="chapter-item "><a href="../../guides/testing-guide.html">Testing Your Program</a></li><li class="chapter-item "><a href="../../guides/guides.html">Program Examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../guides/how-to-create-a-fungible-token.html">Fungible Token</a></li><li class="chapter-item "><a href="../../guides/how-to-write-oracle-program.html">Oracle Program</a></li><li class="chapter-item "><a href="../../guides/how-to-build-runes-swap.html">Runes Swap</a></li><li class="chapter-item "><a href="../../guides/how-to-build-lending-protocol.html">Lending Protocol</a></li></ol></li><li class="chapter-item "><li class="part-title">Arch Program Library (APL)</li><li class="chapter-item "><a href="../../apl/introduction.html">Introduction</a></li><li class="chapter-item "><a href="../../apl/token-program.html">Token Program</a></li><li class="chapter-item "><a href="../../apl/associated-token-account.html">Associated Token Account Program</a></li><li class="chapter-item affix "><li class="part-title">Core Concepts</li><li class="chapter-item "><a href="../../concepts/architecture.html">Architecture Overview</a></li><li class="chapter-item "><a href="../../concepts/network-architecture.html">Network Architecture</a></li><li class="chapter-item "><a href="../../concepts/bitcoin-integration.html">Bitcoin Integration</a></li><li class="chapter-item "><a href="../../concepts/consensus.html">ROAST and FROST Consensus</a></li><li class="chapter-item "><a href="../../program/program.html">Programs</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../program/utxo.html">UTXOs</a></li><li class="chapter-item "><a href="../../program/accounts.html">Accounts</a></li><li class="chapter-item "><a href="../../program/instructions-and-messages.html">Instructions</a></li><li class="chapter-item "><a href="../../program/syscall.html">System Calls</a></li></ol></li><li class="chapter-item "><a href="../../concepts/nodes.html">Node Operation</a></li><li class="chapter-item affix "><li class="part-title">SDK Reference</li><li class="chapter-item expanded "><a href="../../sdk/sdk.html">SDK Overview</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../sdk/typescript/getting-started.html">TypeScript SDK (Saturn)</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../sdk/typescript/api-reference.html">TypeScript API Reference</a></li><li class="chapter-item "><a href="../../sdk/typescript/examples.html">TypeScript Examples</a></li><li class="chapter-item "><a href="../../sdk/typescript/web3-integration.html">Web3 Integration</a></li></ol></li><li class="chapter-item expanded "><a href="../../sdk/rust/getting-started.html">Rust SDK</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../sdk/rust/api-reference.html">Rust API Reference</a></li><li class="chapter-item expanded "><a href="../../sdk/rust/examples.html" class="active">Rust Examples</a></li><li class="chapter-item "><a href="../../sdk/rust/program-development.html">Program Development</a></li></ol></li><li class="chapter-item "><a href="../../sdk/sdk.html">Core Types</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../sdk/pubkey.html">Pubkey</a></li><li class="chapter-item "><a href="../../sdk/account.html">Account</a></li><li class="chapter-item "><a href="../../sdk/instructions-and-messages.html">Instructions and Messages</a></li><li class="chapter-item "><a href="../../sdk/runtime-transaction.html">Runtime Transaction</a></li><li class="chapter-item "><a href="../../sdk/processed-transaction.html">Processed Transaction</a></li><li class="chapter-item "><a href="../../sdk/signature.html">Signature</a></li></ol></li></ol></li><li class="chapter-item "><li class="part-title">Reference</li><li class="chapter-item "><a href="../../rpc/rpc.html">API Reference</a></li><li class="chapter-item "><a href="../../system-program/system-program.html">System Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../system-program/create-account.html">Account Creation</a></li><li class="chapter-item "><a href="../../system-program/make-executable.html">Program Deployment</a></li></ol></li><li class="chapter-item "><li class="part-title">Resources</li><li class="chapter-item "><a href="../../reference/troubleshooting.html">Troubleshooting</a></li><li class="chapter-item "><a href="../../getting-started/faq.html">FAQ</a></li><li class="chapter-item "><a href="../../getting-started/resources.html">External Resources</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Arch Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book/edit/main/src/sdk/rust/examples.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="rust-sdk-examples"><a class="header" href="#rust-sdk-examples">Rust SDK Examples</a></h1>
+<p>This page provides practical examples of using the native Arch Network Rust SDK for building high-performance applications and on-chain programs.</p>
+<h2 id="basic-examples"><a class="header" href="#basic-examples">Basic Examples</a></h2>
+<h3 id="account-management"><a class="header" href="#account-management">Account Management</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021">use arch_sdk::{Connection, Keypair, Account};
+use arch_program::pubkey::Pubkey;
+use anyhow::Result;
+
+#[tokio::main]
+async fn main() -&gt; Result&lt;()&gt; {
+    let connection = Connection::new("http://localhost:9002");
+    
+    // Create new account
+    let new_account = Keypair::new();
+    println!("New account: {}", new_account.pubkey());
+    
+    // Check if account exists
+    match connection.get_account(&amp;new_account.pubkey()).await? {
+        Some(account) =&gt; {
+            println!("Account exists with {} lamports", account.lamports);
+        }
+        None =&gt; {
+            println!("Account does not exist yet");
+        }
+    }
+    
+    // Get multiple accounts efficiently
+    let pubkeys = vec![
+        Pubkey::new_unique(),
+        Pubkey::new_unique(),
+        new_account.pubkey(),
+    ];
+    
+    let accounts = connection.get_multiple_accounts(&amp;pubkeys).await?;
+    for (i, account) in accounts.iter().enumerate() {
+        match account {
+            Some(acc) =&gt; println!("Account {}: {} lamports", i, acc.lamports),
+            None =&gt; println!("Account {}: Not found", i),
+        }
+    }
+    
+    Ok(())
+}</code></pre></pre>
+<h3 id="utxo-operations"><a class="header" href="#utxo-operations">UTXO Operations</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_sdk::{Connection, Utxo};
+use arch_program::pubkey::Pubkey;
+use std::str::FromStr;
+
+async fn utxo_operations() -&gt; Result&lt;()&gt; {
+    let connection = Connection::new("http://localhost:9002");
+    let address = Pubkey::from_str("YourBitcoinAddress...")?;
+    
+    // Get UTXOs for an address
+    let utxos = connection.get_utxos(&amp;address).await?;
+    
+    println!("Found {} UTXOs", utxos.len());
+    
+    // Process UTXOs
+    let total_value: u64 = utxos.iter()
+        .map(|utxo| utxo.value)
+        .sum();
+    
+    println!("Total value: {} satoshis", total_value);
+    
+    // Find spendable UTXOs above threshold
+    let threshold = 10_000; // satoshis
+    let spendable: Vec&lt;&amp;Utxo&gt; = utxos.iter()
+        .filter(|utxo| utxo.value &gt;= threshold)
+        .collect();
+    
+    println!("Spendable UTXOs: {}", spendable.len());
+    
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="transaction-building"><a class="header" href="#transaction-building">Transaction Building</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_sdk::{Connection, Keypair, Transaction};
+use arch_program::{
+    instruction::Instruction,
+    system_instruction,
+    pubkey::Pubkey,
+    message::Message,
+};
+
+async fn build_complex_transaction() -&gt; Result&lt;()&gt; {
+    let connection = Connection::new("http://localhost:9002");
+    let payer = Keypair::new();
+    
+    // Create multiple instructions
+    let mut instructions = vec![];
+    
+    // 1. Create a new account
+    let new_account = Keypair::new();
+    let space = 1024;
+    let rent = connection.get_minimum_balance_for_rent_exemption(space).await?;
+    
+    instructions.push(system_instruction::create_account(
+        &amp;payer.pubkey(),
+        &amp;new_account.pubkey(),
+        rent,
+        space,
+        &amp;my_program_id(),
+    ));
+    
+    // 2. Initialize the account
+    instructions.push(Instruction::new_with_bytes(
+        my_program_id(),
+        &amp;[0], // Initialize instruction
+        vec![
+            AccountMeta::new(new_account.pubkey(), true),
+            AccountMeta::new_readonly(payer.pubkey(), true),
+        ],
+    ));
+    
+    // 3. Transfer some lamports
+    instructions.push(system_instruction::transfer(
+        &amp;payer.pubkey(),
+        &amp;new_account.pubkey(),
+        1_000_000,
+    ));
+    
+    // Build and sign transaction
+    let message = Message::new(&amp;instructions, Some(&amp;payer.pubkey()));
+    let mut transaction = Transaction::new_unsigned(message);
+    
+    let recent_blockhash = connection.get_latest_blockhash().await?;
+    transaction.sign(&amp;[&amp;payer, &amp;new_account], recent_blockhash);
+    
+    // Send transaction
+    let signature = connection.send_and_confirm_transaction(&amp;transaction).await?;
+    println!("Transaction successful: {}", signature);
+    
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="on-chain-program-examples"><a class="header" href="#on-chain-program-examples">On-Chain Program Examples</a></h2>
+<h3 id="state-management-program"><a class="header" href="#state-management-program">State Management Program</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_program::{
+    account_info::{next_account_info, AccountInfo},
+    entrypoint,
+    entrypoint::ProgramResult,
+    msg,
+    program_error::ProgramError,
+    pubkey::Pubkey,
+};
+use borsh::{BorshDeserialize, BorshSerialize};
+
+#[derive(BorshSerialize, BorshDeserialize, Debug)]
+pub struct Counter {
+    pub count: u64,
+    pub authority: Pubkey,
+    pub last_updated: i64,
+}
+
+entrypoint!(process_instruction);
+
+pub fn process_instruction(
+    program_id: &amp;Pubkey,
+    accounts: &amp;[AccountInfo],
+    instruction_data: &amp;[u8],
+) -&gt; ProgramResult {
+    let instruction = CounterInstruction::try_from_slice(instruction_data)?;
+    
+    match instruction {
+        CounterInstruction::Initialize { authority } =&gt; {
+            process_initialize(program_id, accounts, authority)
+        }
+        CounterInstruction::Increment =&gt; {
+            process_increment(program_id, accounts)
+        }
+        CounterInstruction::Reset =&gt; {
+            process_reset(program_id, accounts)
+        }
+    }
+}
+
+fn process_initialize(
+    program_id: &amp;Pubkey,
+    accounts: &amp;[AccountInfo],
+    authority: Pubkey,
+) -&gt; ProgramResult {
+    let accounts_iter = &amp;mut accounts.iter();
+    let counter_account = next_account_info(accounts_iter)?;
+    let payer = next_account_info(accounts_iter)?;
+    
+    // Verify account ownership
+    if counter_account.owner != program_id {
+        return Err(ProgramError::IncorrectProgramId);
+    }
+    
+    // Initialize counter
+    let counter = Counter {
+        count: 0,
+        authority,
+        last_updated: Clock::get()?.unix_timestamp,
+    };
+    
+    counter.serialize(&amp;mut &amp;mut counter_account.data.borrow_mut()[..])?;
+    msg!("Counter initialized with authority: {}", authority);
+    
+    Ok(())
+}
+
+fn process_increment(
+    program_id: &amp;Pubkey,
+    accounts: &amp;[AccountInfo],
+) -&gt; ProgramResult {
+    let accounts_iter = &amp;mut accounts.iter();
+    let counter_account = next_account_info(accounts_iter)?;
+    let authority = next_account_info(accounts_iter)?;
+    
+    // Deserialize counter
+    let mut counter = Counter::try_from_slice(&amp;counter_account.data.borrow())?;
+    
+    // Verify authority
+    if !authority.is_signer || *authority.key != counter.authority {
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+    
+    // Increment counter
+    counter.count = counter.count
+        .checked_add(1)
+        .ok_or(ProgramError::ArithmeticOverflow)?;
+    counter.last_updated = Clock::get()?.unix_timestamp;
+    
+    // Save state
+    counter.serialize(&amp;mut &amp;mut counter_account.data.borrow_mut()[..])?;
+    msg!("Counter incremented to: {}", counter.count);
+    
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="cross-program-invocation-cpi"><a class="header" href="#cross-program-invocation-cpi">Cross-Program Invocation (CPI)</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use arch_program::{
+    account_info::AccountInfo,
+    program::{invoke, invoke_signed},
+    instruction::{AccountMeta, Instruction},
+    pubkey::Pubkey,
+};
+
+pub fn transfer_via_cpi(
+    from: &amp;AccountInfo,
+    to: &amp;AccountInfo,
+    amount: u64,
+    signer_seeds: &amp;[&amp;[&amp;[u8]]],
+) -&gt; ProgramResult {
+    let transfer_instruction = system_instruction::transfer(
+        from.key,
+        to.key,
+        amount,
+    );
+    
+    // If the from account is a PDA, use invoke_signed
+    if signer_seeds.is_empty() {
+        invoke(
+            &amp;transfer_instruction,
+            &amp;[from.clone(), to.clone()],
+        )
+    } else {
+        invoke_signed(
+            &amp;transfer_instruction,
+            &amp;[from.clone(), to.clone()],
+            signer_seeds,
+        )
+    }
+}
+
+// Example: Escrow program using CPI
+pub fn release_escrow(
+    program_id: &amp;Pubkey,
+    accounts: &amp;[AccountInfo],
+) -&gt; ProgramResult {
+    let accounts_iter = &amp;mut accounts.iter();
+    let escrow_account = next_account_info(accounts_iter)?;
+    let recipient = next_account_info(accounts_iter)?;
+    let escrow_pda = next_account_info(accounts_iter)?;
+    
+    // Verify PDA
+    let (pda, bump) = Pubkey::find_program_address(
+        &amp;[b"escrow", escrow_account.key.as_ref()],
+        program_id,
+    );
+    
+    if pda != *escrow_pda.key {
+        return Err(ProgramError::InvalidAccountData);
+    }
+    
+    // Transfer funds from PDA to recipient
+    transfer_via_cpi(
+        escrow_pda,
+        recipient,
+        escrow_pda.lamports(),
+        &amp;[&amp;[b"escrow", escrow_account.key.as_ref(), &amp;[bump]]],
+    )?;
+    
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="advanced-patterns"><a class="header" href="#advanced-patterns">Advanced Patterns</a></h2>
+<h3 id="concurrent-operations"><a class="header" href="#concurrent-operations">Concurrent Operations</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use futures::future::{join_all, try_join_all};
+use std::sync::Arc;
+use tokio::task::JoinHandle;
+
+async fn concurrent_account_processing(
+    connection: Arc&lt;Connection&gt;,
+    pubkeys: Vec&lt;Pubkey&gt;,
+) -&gt; Result&lt;Vec&lt;Option&lt;Account&gt;&gt;&gt; {
+    // Create tasks for concurrent fetching
+    let tasks: Vec&lt;JoinHandle&lt;Result&lt;Option&lt;Account&gt;&gt;&gt;&gt; = pubkeys
+        .into_iter()
+        .map(|pubkey| {
+            let conn = connection.clone();
+            tokio::spawn(async move {
+                conn.get_account(&amp;pubkey).await
+            })
+        })
+        .collect();
+    
+    // Wait for all tasks to complete
+    let results = join_all(tasks).await;
+    
+    // Handle results
+    let mut accounts = Vec::new();
+    for result in results {
+        match result {
+            Ok(Ok(account)) =&gt; accounts.push(account),
+            Ok(Err(e)) =&gt; return Err(e),
+            Err(e) =&gt; return Err(anyhow::anyhow!("Task failed: {}", e)),
+        }
+    }
+    
+    Ok(accounts)
+}
+
+// Batch processing with rate limiting
+use tokio::time::{sleep, Duration};
+
+async fn batch_process_with_rate_limit&lt;T, F, Fut&gt;(
+    items: Vec&lt;T&gt;,
+    batch_size: usize,
+    delay_ms: u64,
+    process_fn: F,
+) -&gt; Result&lt;Vec&lt;Result&lt;(), anyhow::Error&gt;&gt;&gt;
+where
+    F: Fn(T) -&gt; Fut + Clone,
+    Fut: std::future::Future&lt;Output = Result&lt;()&gt;&gt;,
+    T: Send + 'static,
+{
+    let mut results = Vec::new();
+    
+    for chunk in items.chunks(batch_size) {
+        let futures: Vec&lt;_&gt; = chunk
+            .iter()
+            .map(|item| {
+                let f = process_fn.clone();
+                f(item.clone())
+            })
+            .collect();
+        
+        let batch_results = try_join_all(futures).await;
+        results.extend(batch_results);
+        
+        // Rate limit between batches
+        sleep(Duration::from_millis(delay_ms)).await;
+    }
+    
+    Ok(results)
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="custom-error-handling"><a class="header" href="#custom-error-handling">Custom Error Handling</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use thiserror::Error;
+
+#[derive(Error, Debug)]
+pub enum ArchAppError {
+    #[error("Connection error: {0}")]
+    Connection(#[from] arch_sdk::ArchError),
+    
+    #[error("Invalid account: {0}")]
+    InvalidAccount(String),
+    
+    #[error("Insufficient balance: needed {needed}, available {available}")]
+    InsufficientBalance { needed: u64, available: u64 },
+    
+    #[error("Transaction failed: {0}")]
+    TransactionFailed(String),
+}
+
+// Retry logic with exponential backoff
+async fn retry_with_backoff&lt;T, F, Fut&gt;(
+    operation: F,
+    max_retries: u32,
+) -&gt; Result&lt;T, ArchAppError&gt;
+where
+    F: Fn() -&gt; Fut,
+    Fut: std::future::Future&lt;Output = Result&lt;T, ArchAppError&gt;&gt;,
+{
+    let mut delay = Duration::from_millis(100);
+    
+    for attempt in 0..max_retries {
+        match operation().await {
+            Ok(result) =&gt; return Ok(result),
+            Err(e) =&gt; {
+                if attempt == max_retries - 1 {
+                    return Err(e);
+                }
+                
+                println!("Attempt {} failed: {}. Retrying...", attempt + 1, e);
+                sleep(delay).await;
+                delay *= 2; // Exponential backoff
+            }
+        }
+    }
+    
+    unreachable!()
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="testing-patterns"><a class="header" href="#testing-patterns">Testing Patterns</a></h2>
+<h3 id="integration-tests"><a class="header" href="#integration-tests">Integration Tests</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>#[cfg(test)]
+mod tests {
+    use super::*;
+    use arch_sdk::test_utils::{TestValidator, TestValidatorGenesis};
+    
+    #[tokio::test]
+    async fn test_program_deployment() {
+        // Start test validator
+        let mut genesis = TestValidatorGenesis::default();
+        genesis.add_program("my_program", my_program_id());
+        
+        let validator = TestValidator::with_genesis(genesis).await;
+        let connection = validator.connection();
+        
+        // Test program functionality
+        let payer = validator.payer();
+        let account = Keypair::new();
+        
+        // Create and initialize account
+        let ix = create_initialize_instruction(
+            &amp;my_program_id(),
+            &amp;account.pubkey(),
+            &amp;payer.pubkey(),
+        );
+        
+        let mut transaction = Transaction::new_with_payer(
+            &amp;[ix],
+            Some(&amp;payer.pubkey()),
+        );
+        
+        let recent_blockhash = connection.get_latest_blockhash().await.unwrap();
+        transaction.sign(&amp;[&amp;payer, &amp;account], recent_blockhash);
+        
+        let result = connection.send_and_confirm_transaction(&amp;transaction).await;
+        assert!(result.is_ok());
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="performance-optimization"><a class="header" href="#performance-optimization">Performance Optimization</a></h2>
+<h3 id="connection-pooling"><a class="header" href="#connection-pooling">Connection Pooling</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use std::sync::Arc;
+use dashmap::DashMap;
+
+pub struct ConnectionPool {
+    connections: DashMap&lt;String, Arc&lt;Connection&gt;&gt;,
+}
+
+impl ConnectionPool {
+    pub fn new() -&gt; Self {
+        Self {
+            connections: DashMap::new(),
+        }
+    }
+    
+    pub fn get_connection(&amp;self, endpoint: &amp;str) -&gt; Arc&lt;Connection&gt; {
+        self.connections
+            .entry(endpoint.to_string())
+            .or_insert_with(|| Arc::new(Connection::new(endpoint)))
+            .clone()
+    }
+}
+
+// Usage
+lazy_static::lazy_static! {
+    static ref POOL: ConnectionPool = ConnectionPool::new();
+}
+
+async fn use_pooled_connection() -&gt; Result&lt;()&gt; {
+    let connection = POOL.get_connection("http://localhost:9002");
+    let block_count = connection.get_block_count().await?;
+    println!("Block count: {}", block_count);
+    Ok(())
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="resources"><a class="header" href="#resources">Resources</a></h2>
+<p>For more examples and patterns:</p>
+<ul>
+<li><a href="https://github.com/arch-network/arch-network/tree/main/examples">Arch Network Examples</a></li>
+<li><a href="https://docs.rs/arch_sdk">Rust SDK Documentation</a></li>
+<li><a href="../../program/program.html">Program Examples</a></li>
+<li><a href="https://github.com/arch-network/arch-network/tree/main/tests">Integration Test Examples</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../sdk/rust/api-reference.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../sdk/rust/program-development.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../sdk/rust/api-reference.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../sdk/rust/program-development.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../../ace.js"></script>
+        <script src="../../editor.js"></script>
+        <script src="../../mode-rust.js"></script>
+        <script src="../../theme-dawn.js"></script>
+        <script src="../../theme-tomorrow_night.js"></script>
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/mermaid.min.js"></script>
+        <script src="../../theme/mermaid-init.js"></script>
+        <script src="../../theme/custom.js"></script>
+
+
+    </div>
+    </body>
+</html>

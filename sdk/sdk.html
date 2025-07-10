@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>SDK Overview - The Arch Book</title>
+        <title>Core Types - The Arch Book</title>
 
 
         <!-- Custom HTML head -->
@@ -91,7 +91,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item affix "><li class="part-title">Getting Started</li><li class="chapter-item "><a href="../getting-started/quick-start.html">🚀 Quick Start Guide</a></li><li class="chapter-item "><a href="../getting-started/bitcoin-and-titan-setup.html">🏗️ Validator Setup</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../getting-started/requirements.html">System Requirements</a></li><li class="chapter-item "><a href="../guides/how-to-configure-local-validator-bitcoin-testnet4.html">Setup Options</a></li><li class="chapter-item "><a href="../getting-started/validator-staking.html">Running Your Node</a></li></ol></li><li class="chapter-item "><li class="part-title">Program Development</li><li class="chapter-item "><a href="../guides/understanding-arch-programs.html">Understanding Arch Programs</a></li><li class="chapter-item "><a href="../getting-started/setting-up-a-project.html">Setting Up a Project</a></li><li class="chapter-item "><a href="../guides/writing-your-first-program.html">Writing Your First Program</a></li><li class="chapter-item "><a href="../guides/testing-guide.html">Testing Your Program</a></li><li class="chapter-item "><a href="../guides/guides.html">Program Examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../guides/how-to-create-a-fungible-token.html">Fungible Token</a></li><li class="chapter-item "><a href="../guides/how-to-write-oracle-program.html">Oracle Program</a></li><li class="chapter-item "><a href="../guides/how-to-build-runes-swap.html">Runes Swap</a></li><li class="chapter-item "><a href="../guides/how-to-build-lending-protocol.html">Lending Protocol</a></li></ol></li><li class="chapter-item "><li class="part-title">Arch Program Library (APL)</li><li class="chapter-item "><a href="../apl/introduction.html">Introduction</a></li><li class="chapter-item "><a href="../apl/token-program.html">Token Program</a></li><li class="chapter-item "><a href="../apl/associated-token-account.html">Associated Token Account Program</a></li><li class="chapter-item affix "><li class="part-title">Core Concepts</li><li class="chapter-item "><a href="../concepts/architecture.html">Architecture Overview</a></li><li class="chapter-item "><a href="../concepts/network-architecture.html">Network Architecture</a></li><li class="chapter-item "><a href="../concepts/bitcoin-integration.html">Bitcoin Integration</a></li><li class="chapter-item "><a href="../concepts/consensus.html">ROAST and FROST Consensus</a></li><li class="chapter-item "><a href="../program/program.html">Programs</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../program/utxo.html">UTXOs</a></li><li class="chapter-item "><a href="../program/accounts.html">Accounts</a></li><li class="chapter-item "><a href="../program/instructions-and-messages.html">Instructions</a></li><li class="chapter-item "><a href="../program/syscall.html">System Calls</a></li></ol></li><li class="chapter-item "><a href="../concepts/nodes.html">Node Operation</a></li><li class="chapter-item affix "><li class="part-title">SDK Reference</li><li class="chapter-item expanded "><a href="../sdk/sdk.html" class="active">SDK Overview</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/pubkey.html">Pubkey</a></li><li class="chapter-item "><a href="../sdk/account.html">Account</a></li><li class="chapter-item "><a href="../sdk/instructions-and-messages.html">Instructions and Messages</a></li><li class="chapter-item "><a href="../sdk/runtime-transaction.html">Runtime Transaction</a></li><li class="chapter-item "><a href="../sdk/processed-transaction.html">Processed Transaction</a></li><li class="chapter-item "><a href="../sdk/signature.html">Signature</a></li></ol></li><li class="chapter-item "><a href="../sdk/getting-started.html">Getting Started</a></li><li class="chapter-item affix "><li class="part-title">Reference</li><li class="chapter-item "><a href="../rpc/rpc.html">API Reference</a></li><li class="chapter-item "><a href="../system-program/system-program.html">System Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../system-program/create-account.html">Account Creation</a></li><li class="chapter-item "><a href="../system-program/make-executable.html">Program Deployment</a></li></ol></li><li class="chapter-item "><li class="part-title">Resources</li><li class="chapter-item "><a href="../reference/troubleshooting.html">Troubleshooting</a></li><li class="chapter-item "><a href="../getting-started/faq.html">FAQ</a></li><li class="chapter-item "><a href="../getting-started/resources.html">External Resources</a></li></ol>
+                <ol class="chapter"><li class="chapter-item affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item affix "><li class="part-title">Getting Started</li><li class="chapter-item "><a href="../getting-started/quick-start.html">🚀 Quick Start Guide</a></li><li class="chapter-item "><a href="../getting-started/bitcoin-and-titan-setup.html">🏗️ Validator Setup</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../getting-started/requirements.html">System Requirements</a></li><li class="chapter-item "><a href="../guides/how-to-configure-local-validator-bitcoin-testnet4.html">Setup Options</a></li><li class="chapter-item "><a href="../getting-started/validator-staking.html">Running Your Node</a></li></ol></li><li class="chapter-item "><li class="part-title">Program Development</li><li class="chapter-item "><a href="../guides/understanding-arch-programs.html">Understanding Arch Programs</a></li><li class="chapter-item "><a href="../getting-started/setting-up-a-project.html">Setting Up a Project</a></li><li class="chapter-item "><a href="../guides/writing-your-first-program.html">Writing Your First Program</a></li><li class="chapter-item "><a href="../guides/testing-guide.html">Testing Your Program</a></li><li class="chapter-item "><a href="../guides/guides.html">Program Examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../guides/how-to-create-a-fungible-token.html">Fungible Token</a></li><li class="chapter-item "><a href="../guides/how-to-write-oracle-program.html">Oracle Program</a></li><li class="chapter-item "><a href="../guides/how-to-build-runes-swap.html">Runes Swap</a></li><li class="chapter-item "><a href="../guides/how-to-build-lending-protocol.html">Lending Protocol</a></li></ol></li><li class="chapter-item "><li class="part-title">Arch Program Library (APL)</li><li class="chapter-item "><a href="../apl/introduction.html">Introduction</a></li><li class="chapter-item "><a href="../apl/token-program.html">Token Program</a></li><li class="chapter-item "><a href="../apl/associated-token-account.html">Associated Token Account Program</a></li><li class="chapter-item affix "><li class="part-title">Core Concepts</li><li class="chapter-item "><a href="../concepts/architecture.html">Architecture Overview</a></li><li class="chapter-item "><a href="../concepts/network-architecture.html">Network Architecture</a></li><li class="chapter-item "><a href="../concepts/bitcoin-integration.html">Bitcoin Integration</a></li><li class="chapter-item "><a href="../concepts/consensus.html">ROAST and FROST Consensus</a></li><li class="chapter-item "><a href="../program/program.html">Programs</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../program/utxo.html">UTXOs</a></li><li class="chapter-item "><a href="../program/accounts.html">Accounts</a></li><li class="chapter-item "><a href="../program/instructions-and-messages.html">Instructions</a></li><li class="chapter-item "><a href="../program/syscall.html">System Calls</a></li></ol></li><li class="chapter-item "><a href="../concepts/nodes.html">Node Operation</a></li><li class="chapter-item affix "><li class="part-title">SDK Reference</li><li class="chapter-item expanded "><a href="../sdk/sdk.html">SDK Overview</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/typescript/getting-started.html">TypeScript SDK (Saturn)</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/typescript/api-reference.html">TypeScript API Reference</a></li><li class="chapter-item "><a href="../sdk/typescript/examples.html">TypeScript Examples</a></li><li class="chapter-item "><a href="../sdk/typescript/web3-integration.html">Web3 Integration</a></li></ol></li><li class="chapter-item "><a href="../sdk/rust/getting-started.html">Rust SDK</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/rust/api-reference.html">Rust API Reference</a></li><li class="chapter-item "><a href="../sdk/rust/examples.html">Rust Examples</a></li><li class="chapter-item "><a href="../sdk/rust/program-development.html">Program Development</a></li></ol></li><li class="chapter-item expanded "><a href="../sdk/sdk.html" class="active">Core Types</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/pubkey.html">Pubkey</a></li><li class="chapter-item "><a href="../sdk/account.html">Account</a></li><li class="chapter-item "><a href="../sdk/instructions-and-messages.html">Instructions and Messages</a></li><li class="chapter-item "><a href="../sdk/runtime-transaction.html">Runtime Transaction</a></li><li class="chapter-item "><a href="../sdk/processed-transaction.html">Processed Transaction</a></li><li class="chapter-item "><a href="../sdk/signature.html">Signature</a></li></ol></li></ol></li><li class="chapter-item "><li class="part-title">Reference</li><li class="chapter-item "><a href="../rpc/rpc.html">API Reference</a></li><li class="chapter-item "><a href="../system-program/system-program.html">System Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../system-program/create-account.html">Account Creation</a></li><li class="chapter-item "><a href="../system-program/make-executable.html">Program Deployment</a></li></ol></li><li class="chapter-item "><li class="part-title">Resources</li><li class="chapter-item "><a href="../reference/troubleshooting.html">Troubleshooting</a></li><li class="chapter-item "><a href="../getting-started/faq.html">FAQ</a></li><li class="chapter-item "><a href="../getting-started/resources.html">External Resources</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -153,7 +153,7 @@
                         <a href="https://github.com/arch-network/book" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
-                        <a href="https://github.com/arch-network/book/edit/main/src/sdk/sdk.md" title="Suggest an edit" aria-label="Suggest an edit">
+                        <a href="https://github.com/arch-network/book/edit/main/src/sdk/sdk.md#shared-concepts" title="Suggest an edit" aria-label="Suggest an edit">
                             <i id="git-edit-button" class="fa fa-edit"></i>
                         </a>
 
@@ -182,239 +182,13 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="sdk-reference"><a class="header" href="#sdk-reference">SDK Reference</a></h1>
-<p>The Arch Network SDK provides comprehensive tools and type definitions for building applications on the Arch Network. Whether you’re developing programs, building client applications, or integrating with existing systems, this SDK offers everything you need to interact with the network.</p>
-<h2 id="quick-start"><a class="header" href="#quick-start">Quick Start</a></h2>
-<blockquote>
-<p><strong>New to the Arch SDK?</strong> Start with our <a href="getting-started.html">Getting Started Guide</a> for a comprehensive walkthrough.</p>
-</blockquote>
-<h3 id="installation"><a class="header" href="#installation">Installation</a></h3>
-<p><strong>TypeScript/JavaScript</strong></p>
-<pre><code class="language-bash">npm install @saturnbtcio/arch-sdk
-</code></pre>
-<p><strong>Rust</strong></p>
-<pre><code class="language-toml">[dependencies]
-arch_sdk = "0.1.0"
-</code></pre>
-<h3 id="basic-usage"><a class="header" href="#basic-usage">Basic Usage</a></h3>
-<p><strong>TypeScript Example:</strong></p>
-<pre><code class="language-typescript">import { Connection, Keypair, Transaction } from '@saturnbtcio/arch-sdk';
-
-// Connect to a validator
-const connection = new Connection('http://localhost:9002');
-
-// Generate a new keypair
-const keypair = Keypair.generate();
-
-// Check if node is ready
-const isReady = await connection.isNodeReady();
-console.log('Node ready:', isReady);
-</code></pre>
-<p><strong>Rust Example:</strong></p>
-<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>use arch_sdk::{Connection, Keypair, Transaction};
-
-// Connect to a validator
-let connection = Connection::new("http://localhost:9002");
-
-// Generate a new keypair
-let keypair = Keypair::new();
-
-// Check if node is ready
-let is_ready = connection.is_node_ready().await?;
-println!("Node ready: {}", is_ready);
-<span class="boring">}</span></code></pre></pre>
-<h2 id="core-types"><a class="header" href="#core-types">Core Types</a></h2>
-<h3 id="pubkey"><a class="header" href="#pubkey"><a href="pubkey.html">Pubkey</a></a></h3>
-<p>Public key type for identifying accounts, programs, and other entities on the network. Essential for all operations.</p>
-<h3 id="account"><a class="header" href="#account"><a href="account.html">Account</a></a></h3>
-<p>Data structure representing accounts on the network, including their state and metadata. Learn account creation, management, and data handling.</p>
-<h3 id="instructions-and-messages"><a class="header" href="#instructions-and-messages"><a href="instructions-and-messages.html">Instructions and Messages</a></a></h3>
-<p>Core types for building transactions and interacting with programs. Master transaction construction and program interactions.</p>
-<h3 id="runtime-transaction"><a class="header" href="#runtime-transaction"><a href="runtime-transaction.html">Runtime Transaction</a></a></h3>
-<p>The fundamental transaction type that gets processed by the Arch Network runtime. Contains version, signatures, and message data.</p>
-<h3 id="processed-transaction"><a class="header" href="#processed-transaction"><a href="processed-transaction.html">Processed Transaction</a></a></h3>
-<p>A wrapper around Runtime Transaction that includes execution status and associated Bitcoin transaction IDs. What you receive from RPC calls.</p>
-<h3 id="signature"><a class="header" href="#signature"><a href="signature.html">Signature</a></a></h3>
-<p>Digital signature implementation used to authenticate transactions and instructions. 64-byte signature format.</p>
-<h2 id="key-features"><a class="header" href="#key-features">Key Features</a></h2>
-<h3 id="connection-management"><a class="header" href="#connection-management">Connection Management</a></h3>
-<ul>
-<li><strong>Multiple endpoints</strong>: Connect to local validators, testnets, or mainnet</li>
-<li><strong>Automatic retries</strong>: Built-in retry logic for network requests</li>
-<li><strong>Connection pooling</strong>: Efficient management of network connections</li>
-</ul>
-<h3 id="account-management"><a class="header" href="#account-management">Account Management</a></h3>
-<ul>
-<li><strong>Account creation</strong>: Create new accounts with proper initialization</li>
-<li><strong>Balance queries</strong>: Check account balances and state</li>
-<li><strong>Program interactions</strong>: Invoke programs and read program accounts</li>
-</ul>
-<h3 id="transaction-building"><a class="header" href="#transaction-building">Transaction Building</a></h3>
-<ul>
-<li><strong>Transaction construction</strong>: Build complex transactions with multiple instructions</li>
-<li><strong>Automatic signing</strong>: Sign transactions with your keypairs</li>
-<li><strong>Fee calculation</strong>: Automatic fee estimation and payment</li>
-</ul>
-<h3 id="program-development"><a class="header" href="#program-development">Program Development</a></h3>
-<ul>
-<li><strong>Program deployment</strong>: Deploy your programs to the network</li>
-<li><strong>Cross-program invocation</strong>: Call other programs from your programs</li>
-<li><strong>State management</strong>: Manage program state and account data</li>
-</ul>
-<h2 id="common-operations"><a class="header" href="#common-operations">Common Operations</a></h2>
-<h3 id="creating-and-funding-accounts"><a class="header" href="#creating-and-funding-accounts">Creating and Funding Accounts</a></h3>
-<pre><code class="language-typescript">// Create a new account
-const newAccount = Keypair.generate();
-
-// Request airdrop (testnet/devnet only)
-const airdropTx = await connection.requestAirdrop(
-  newAccount.publicKey,
-  1000000 // lamports
-);
-
-// Confirm the transaction
-await connection.confirmTransaction(airdropTx);
-</code></pre>
-<h3 id="reading-account-information"><a class="header" href="#reading-account-information">Reading Account Information</a></h3>
-<pre><code class="language-typescript">// Get account info
-const accountInfo = await connection.getAccountInfo(publicKey);
-
-// Get account balance
-const balance = await connection.getBalance(publicKey);
-
-// Get program accounts
-const programAccounts = await connection.getProgramAccounts(programId);
-</code></pre>
-<h3 id="building-and-sending-transactions"><a class="header" href="#building-and-sending-transactions">Building and Sending Transactions</a></h3>
-<pre><code class="language-typescript">// Create instruction
-const instruction = new Instruction({
-  programId: myProgramId,
-  accounts: [
-    { pubkey: account1, isSigner: true, isWritable: true },
-    { pubkey: account2, isSigner: false, isWritable: false }
-  ],
-  data: instructionData
-});
-
-// Build transaction
-const transaction = new Transaction()
-  .add(instruction);
-
-// Sign and send
-const signature = await connection.sendAndConfirmTransaction(
-  transaction,
-  [keypair]
-);
-</code></pre>
-<h3 id="working-with-programs"><a class="header" href="#working-with-programs">Working with Programs</a></h3>
-<pre><code class="language-typescript">// Deploy a program
-const programId = await connection.deployProgram(
-  programBinary,
-  deployerKeypair
-);
-
-// Call a program function
-const result = await myProgram.methods
-  .myFunction(arg1, arg2)
-  .accounts({
-    account1: account1Pubkey,
-    account2: account2Pubkey
-  })
-  .signers([keypair])
-  .rpc();
-</code></pre>
-<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
-<p>The SDK provides comprehensive error handling:</p>
-<pre><code class="language-typescript">try {
-  const result = await connection.sendTransaction(transaction);
-} catch (error) {
-  if (error instanceof TransactionError) {
-    console.error('Transaction failed:', error.message);
-    console.error('Error code:', error.code);
-  } else if (error instanceof NetworkError) {
-    console.error('Network error:', error.message);
-  } else {
-    console.error('Unexpected error:', error);
-  }
-}
-</code></pre>
-<h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
-<h3 id="network-configuration"><a class="header" href="#network-configuration">Network Configuration</a></h3>
-<pre><code class="language-typescript">// Local validator
-const connection = new Connection('http://localhost:9002');
-
-// Testnet
-const connection = new Connection('https://testnet.arch.network');
-
-// Custom configuration
-const connection = new Connection('http://localhost:9002', {
-  timeout: 30000,
-  retries: 3,
-  retryDelay: 1000
-});
-</code></pre>
-<h3 id="environment-variables"><a class="header" href="#environment-variables">Environment Variables</a></h3>
-<pre><code class="language-bash"># Set default network
-export ARCH_NETWORK=testnet
-
-# Set custom RPC endpoint
-export ARCH_RPC_URL=http://localhost:9002
-
-# Set logging level
-export ARCH_LOG_LEVEL=debug
-</code></pre>
-<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
-<h3 id="security"><a class="header" href="#security">Security</a></h3>
-<ul>
-<li><strong>Never expose private keys</strong>: Use secure key management</li>
-<li><strong>Validate all inputs</strong>: Check all parameters before use</li>
-<li><strong>Use secure connections</strong>: Always use HTTPS in production</li>
-<li><strong>Implement proper error handling</strong>: Don’t ignore errors</li>
-</ul>
-<h3 id="performance"><a class="header" href="#performance">Performance</a></h3>
-<ul>
-<li><strong>Batch operations</strong>: Use batch methods when possible</li>
-<li><strong>Cache frequently accessed data</strong>: Reduce unnecessary network calls</li>
-<li><strong>Use connection pooling</strong>: Reuse connections efficiently</li>
-<li><strong>Monitor resource usage</strong>: Track memory and CPU usage</li>
-</ul>
-<h3 id="development"><a class="header" href="#development">Development</a></h3>
-<ul>
-<li><strong>Test thoroughly</strong>: Test all code paths and edge cases</li>
-<li><strong>Use type safety</strong>: Take advantage of TypeScript/Rust type systems</li>
-<li><strong>Follow conventions</strong>: Use consistent naming and patterns</li>
-<li><strong>Document your code</strong>: Write clear documentation</li>
-</ul>
-<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
-<p>For complete examples, check out the <a href="https://github.com/Arch-Network/arch-examples">Arch Examples Repository</a>:</p>
-<ul>
-<li><strong><a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/helloworld">Hello World</a></strong> - Basic program structure</li>
-<li><strong><a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/counter">Counter</a></strong> - State management</li>
-<li><strong><a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/token">Token Program</a></strong> - Fungible tokens</li>
-<li><strong><a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/escrow">Escrow</a></strong> - Multi-party agreements</li>
-</ul>
-<h2 id="source-code"><a class="header" href="#source-code">Source Code</a></h2>
-<p>The complete SDK source code is available on:</p>
-<ul>
-<li><strong>Main SDK</strong>: <a href="https://github.com/Arch-Network/arch-sdk">GitHub</a></li>
-<li><strong>Examples</strong>: <a href="https://github.com/Arch-Network/arch-examples">GitHub</a></li>
-<li><strong>Documentation</strong>: <a href="https://github.com/Arch-Network/arch-docs">GitHub</a></li>
-</ul>
-<h2 id="getting-help"><a class="header" href="#getting-help">Getting Help</a></h2>
-<ul>
-<li><strong>Documentation</strong>: <a href="https://docs.arch.network">https://docs.arch.network</a></li>
-<li><strong>Discord</strong>: <a href="https://discord.gg/archnetwork">https://discord.gg/archnetwork</a></li>
-<li><strong>GitHub Issues</strong>: <a href="https://github.com/Arch-Network/arch-sdk/issues">https://github.com/Arch-Network/arch-sdk/issues</a></li>
-<li><strong>Stack Overflow</strong>: Use the <code>arch-network</code> tag</li>
-</ul>
+                        <h1 id="core-types"><a class="header" href="#core-types">Core Types</a></h1>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../concepts/nodes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../sdk/rust/program-development.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -428,7 +202,7 @@ export ARCH_LOG_LEVEL=debug
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../concepts/nodes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../sdk/rust/program-development.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 

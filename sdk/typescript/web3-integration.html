@@ -1,0 +1,698 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Web3 Integration - The Arch Book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for the Arch Network - A Bitcoin-native computation environment">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/custom.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="../../introduction.html">Introduction</a></li><li class="chapter-item affix "><li class="part-title">Getting Started</li><li class="chapter-item "><a href="../../getting-started/quick-start.html">🚀 Quick Start Guide</a></li><li class="chapter-item "><a href="../../getting-started/bitcoin-and-titan-setup.html">🏗️ Validator Setup</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../getting-started/requirements.html">System Requirements</a></li><li class="chapter-item "><a href="../../guides/how-to-configure-local-validator-bitcoin-testnet4.html">Setup Options</a></li><li class="chapter-item "><a href="../../getting-started/validator-staking.html">Running Your Node</a></li></ol></li><li class="chapter-item "><li class="part-title">Program Development</li><li class="chapter-item "><a href="../../guides/understanding-arch-programs.html">Understanding Arch Programs</a></li><li class="chapter-item "><a href="../../getting-started/setting-up-a-project.html">Setting Up a Project</a></li><li class="chapter-item "><a href="../../guides/writing-your-first-program.html">Writing Your First Program</a></li><li class="chapter-item "><a href="../../guides/testing-guide.html">Testing Your Program</a></li><li class="chapter-item "><a href="../../guides/guides.html">Program Examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../guides/how-to-create-a-fungible-token.html">Fungible Token</a></li><li class="chapter-item "><a href="../../guides/how-to-write-oracle-program.html">Oracle Program</a></li><li class="chapter-item "><a href="../../guides/how-to-build-runes-swap.html">Runes Swap</a></li><li class="chapter-item "><a href="../../guides/how-to-build-lending-protocol.html">Lending Protocol</a></li></ol></li><li class="chapter-item "><li class="part-title">Arch Program Library (APL)</li><li class="chapter-item "><a href="../../apl/introduction.html">Introduction</a></li><li class="chapter-item "><a href="../../apl/token-program.html">Token Program</a></li><li class="chapter-item "><a href="../../apl/associated-token-account.html">Associated Token Account Program</a></li><li class="chapter-item affix "><li class="part-title">Core Concepts</li><li class="chapter-item "><a href="../../concepts/architecture.html">Architecture Overview</a></li><li class="chapter-item "><a href="../../concepts/network-architecture.html">Network Architecture</a></li><li class="chapter-item "><a href="../../concepts/bitcoin-integration.html">Bitcoin Integration</a></li><li class="chapter-item "><a href="../../concepts/consensus.html">ROAST and FROST Consensus</a></li><li class="chapter-item "><a href="../../program/program.html">Programs</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../program/utxo.html">UTXOs</a></li><li class="chapter-item "><a href="../../program/accounts.html">Accounts</a></li><li class="chapter-item "><a href="../../program/instructions-and-messages.html">Instructions</a></li><li class="chapter-item "><a href="../../program/syscall.html">System Calls</a></li></ol></li><li class="chapter-item "><a href="../../concepts/nodes.html">Node Operation</a></li><li class="chapter-item affix "><li class="part-title">SDK Reference</li><li class="chapter-item expanded "><a href="../../sdk/sdk.html">SDK Overview</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../sdk/typescript/getting-started.html">TypeScript SDK (Saturn)</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../sdk/typescript/api-reference.html">TypeScript API Reference</a></li><li class="chapter-item "><a href="../../sdk/typescript/examples.html">TypeScript Examples</a></li><li class="chapter-item expanded "><a href="../../sdk/typescript/web3-integration.html" class="active">Web3 Integration</a></li></ol></li><li class="chapter-item "><a href="../../sdk/rust/getting-started.html">Rust SDK</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../sdk/rust/api-reference.html">Rust API Reference</a></li><li class="chapter-item "><a href="../../sdk/rust/examples.html">Rust Examples</a></li><li class="chapter-item "><a href="../../sdk/rust/program-development.html">Program Development</a></li></ol></li><li class="chapter-item "><a href="../../sdk/sdk.html">Core Types</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../sdk/pubkey.html">Pubkey</a></li><li class="chapter-item "><a href="../../sdk/account.html">Account</a></li><li class="chapter-item "><a href="../../sdk/instructions-and-messages.html">Instructions and Messages</a></li><li class="chapter-item "><a href="../../sdk/runtime-transaction.html">Runtime Transaction</a></li><li class="chapter-item "><a href="../../sdk/processed-transaction.html">Processed Transaction</a></li><li class="chapter-item "><a href="../../sdk/signature.html">Signature</a></li></ol></li></ol></li><li class="chapter-item "><li class="part-title">Reference</li><li class="chapter-item "><a href="../../rpc/rpc.html">API Reference</a></li><li class="chapter-item "><a href="../../system-program/system-program.html">System Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../system-program/create-account.html">Account Creation</a></li><li class="chapter-item "><a href="../../system-program/make-executable.html">Program Deployment</a></li></ol></li><li class="chapter-item "><li class="part-title">Resources</li><li class="chapter-item "><a href="../../reference/troubleshooting.html">Troubleshooting</a></li><li class="chapter-item "><a href="../../getting-started/faq.html">FAQ</a></li><li class="chapter-item "><a href="../../getting-started/resources.html">External Resources</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Arch Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book/edit/main/src/sdk/typescript/web3-integration.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="web3-integration-guide"><a class="header" href="#web3-integration-guide">Web3 Integration Guide</a></h1>
+<p>This guide covers how to integrate the Arch Network TypeScript SDK (by Saturn) with Web3 applications, wallets, and dApps.</p>
+<h2 id="wallet-integration"><a class="header" href="#wallet-integration">Wallet Integration</a></h2>
+<h3 id="browser-wallet-detection"><a class="header" href="#browser-wallet-detection">Browser Wallet Detection</a></h3>
+<pre><code class="language-typescript">import { Connection, PublicKey } from '@saturnbtcio/arch-sdk';
+
+// Check if Arch wallet is installed
+function isArchWalletInstalled(): boolean {
+  return typeof window !== 'undefined' &amp;&amp; 
+         window.arch !== undefined;
+}
+
+// Connect to wallet
+async function connectWallet() {
+  if (!isArchWalletInstalled()) {
+    throw new Error('Arch wallet not installed');
+  }
+  
+  try {
+    const response = await window.arch.connect();
+    const publicKey = new PublicKey(response.publicKey);
+    console.log('Connected:', publicKey.toBase58());
+    return publicKey;
+  } catch (error) {
+    console.error('Failed to connect:', error);
+    throw error;
+  }
+}
+</code></pre>
+<h3 id="wallet-adapter-pattern"><a class="header" href="#wallet-adapter-pattern">Wallet Adapter Pattern</a></h3>
+<pre><code class="language-typescript">interface WalletAdapter {
+  publicKey: PublicKey | null;
+  connected: boolean;
+  connect(): Promise&lt;void&gt;;
+  disconnect(): Promise&lt;void&gt;;
+  signTransaction(tx: Transaction): Promise&lt;Transaction&gt;;
+  signAllTransactions(txs: Transaction[]): Promise&lt;Transaction[]&gt;;
+}
+
+class ArchWalletAdapter implements WalletAdapter {
+  publicKey: PublicKey | null = null;
+  connected: boolean = false;
+  
+  async connect(): Promise&lt;void&gt; {
+    const response = await window.arch.connect();
+    this.publicKey = new PublicKey(response.publicKey);
+    this.connected = true;
+  }
+  
+  async disconnect(): Promise&lt;void&gt; {
+    await window.arch.disconnect();
+    this.publicKey = null;
+    this.connected = false;
+  }
+  
+  async signTransaction(tx: Transaction): Promise&lt;Transaction&gt; {
+    return window.arch.signTransaction(tx);
+  }
+  
+  async signAllTransactions(txs: Transaction[]): Promise&lt;Transaction[]&gt; {
+    return window.arch.signAllTransactions(txs);
+  }
+}
+</code></pre>
+<h2 id="react-integration"><a class="header" href="#react-integration">React Integration</a></h2>
+<h3 id="context-provider"><a class="header" href="#context-provider">Context Provider</a></h3>
+<pre><code class="language-typescript">import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Connection, PublicKey, Transaction } from '@saturnbtcio/arch-sdk';
+
+interface ArchContextState {
+  connection: Connection;
+  publicKey: PublicKey | null;
+  connected: boolean;
+  connect: () =&gt; Promise&lt;void&gt;;
+  disconnect: () =&gt; Promise&lt;void&gt;;
+  signTransaction: (tx: Transaction) =&gt; Promise&lt;Transaction&gt;;
+}
+
+const ArchContext = createContext&lt;ArchContextState | null&gt;(null);
+
+export function ArchProvider({ children, endpoint }) {
+  const [publicKey, setPublicKey] = useState&lt;PublicKey | null&gt;(null);
+  const [connected, setConnected] = useState(false);
+  const connection = new Connection(endpoint);
+  
+  const connect = async () =&gt; {
+    try {
+      const response = await window.arch.connect();
+      setPublicKey(new PublicKey(response.publicKey));
+      setConnected(true);
+    } catch (error) {
+      console.error('Connection failed:', error);
+      throw error;
+    }
+  };
+  
+  const disconnect = async () =&gt; {
+    await window.arch.disconnect();
+    setPublicKey(null);
+    setConnected(false);
+  };
+  
+  const signTransaction = async (tx: Transaction) =&gt; {
+    if (!connected) throw new Error('Wallet not connected');
+    return window.arch.signTransaction(tx);
+  };
+  
+  const value = {
+    connection,
+    publicKey,
+    connected,
+    connect,
+    disconnect,
+    signTransaction
+  };
+  
+  return (
+    &lt;ArchContext.Provider value={value}&gt;
+      {children}
+    &lt;/ArchContext.Provider&gt;
+  );
+}
+
+export function useArch() {
+  const context = useContext(ArchContext);
+  if (!context) {
+    throw new Error('useArch must be used within ArchProvider');
+  }
+  return context;
+}
+</code></pre>
+<h3 id="react-hooks"><a class="header" href="#react-hooks">React Hooks</a></h3>
+<pre><code class="language-typescript">// Hook for account balance
+export function useBalance(address?: PublicKey) {
+  const { connection } = useArch();
+  const [balance, setBalance] = useState&lt;number&gt;(0);
+  const [loading, setLoading] = useState(false);
+  
+  useEffect(() =&gt; {
+    if (!address) return;
+    
+    let cancelled = false;
+    
+    const fetchBalance = async () =&gt; {
+      setLoading(true);
+      try {
+        const balance = await connection.getBalance(address);
+        if (!cancelled) {
+          setBalance(balance);
+        }
+      } catch (error) {
+        console.error('Failed to fetch balance:', error);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+    
+    fetchBalance();
+    
+    // Subscribe to changes
+    const id = connection.onAccountChange(
+      address,
+      (accountInfo) =&gt; {
+        setBalance(accountInfo.lamports);
+      },
+      'confirmed'
+    );
+    
+    return () =&gt; {
+      cancelled = true;
+      connection.removeAccountChangeListener(id);
+    };
+  }, [address, connection]);
+  
+  return { balance, loading };
+}
+
+// Hook for sending transactions
+export function useSendTransaction() {
+  const { connection, signTransaction } = useArch();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState&lt;Error | null&gt;(null);
+  
+  const sendTransaction = async (transaction: Transaction) =&gt; {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const signed = await signTransaction(transaction);
+      const signature = await connection.sendRawTransaction(signed.serialize());
+      await connection.confirmTransaction(signature);
+      return signature;
+    } catch (err) {
+      setError(err as Error);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  return { sendTransaction, loading, error };
+}
+</code></pre>
+<h2 id="vuejs-integration"><a class="header" href="#vuejs-integration">Vue.js Integration</a></h2>
+<h3 id="composition-api"><a class="header" href="#composition-api">Composition API</a></h3>
+<pre><code class="language-typescript">import { ref, computed, watch } from 'vue';
+import { Connection, PublicKey } from '@saturnbtcio/arch-sdk';
+
+export function useArchWallet(endpoint: string) {
+  const connection = new Connection(endpoint);
+  const publicKey = ref&lt;PublicKey | null&gt;(null);
+  const connected = computed(() =&gt; publicKey.value !== null);
+  const balance = ref(0);
+  
+  const connect = async () =&gt; {
+    try {
+      const response = await window.arch.connect();
+      publicKey.value = new PublicKey(response.publicKey);
+      await updateBalance();
+    } catch (error) {
+      console.error('Failed to connect:', error);
+      throw error;
+    }
+  };
+  
+  const disconnect = async () =&gt; {
+    await window.arch.disconnect();
+    publicKey.value = null;
+    balance.value = 0;
+  };
+  
+  const updateBalance = async () =&gt; {
+    if (!publicKey.value) return;
+    
+    try {
+      const bal = await connection.getBalance(publicKey.value);
+      balance.value = bal;
+    } catch (error) {
+      console.error('Failed to fetch balance:', error);
+    }
+  };
+  
+  // Watch for account changes
+  watch(publicKey, (newKey) =&gt; {
+    if (newKey) {
+      updateBalance();
+    }
+  });
+  
+  return {
+    connection,
+    publicKey,
+    connected,
+    balance,
+    connect,
+    disconnect,
+    updateBalance
+  };
+}
+</code></pre>
+<h2 id="dapp-development"><a class="header" href="#dapp-development">dApp Development</a></h2>
+<h3 id="transaction-builder-ui"><a class="header" href="#transaction-builder-ui">Transaction Builder UI</a></h3>
+<pre><code class="language-typescript">import React, { useState } from 'react';
+import { 
+  Transaction, 
+  SystemProgram, 
+  PublicKey,
+  LAMPORTS_PER_SOL 
+} from '@saturnbtcio/arch-sdk';
+import { useArch, useSendTransaction } from './arch-context';
+
+function TransferForm() {
+  const { publicKey } = useArch();
+  const { sendTransaction, loading } = useSendTransaction();
+  const [recipient, setRecipient] = useState('');
+  const [amount, setAmount] = useState('');
+  
+  const handleTransfer = async () =&gt; {
+    if (!publicKey) return;
+    
+    try {
+      const recipientPubkey = new PublicKey(recipient);
+      const lamports = parseFloat(amount) * LAMPORTS_PER_SOL;
+      
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: recipientPubkey,
+          lamports
+        })
+      );
+      
+      const signature = await sendTransaction(transaction);
+      console.log('Transfer successful:', signature);
+    } catch (error) {
+      console.error('Transfer failed:', error);
+    }
+  };
+  
+  return (
+    &lt;div&gt;
+      &lt;input
+        type="text"
+        placeholder="Recipient address"
+        value={recipient}
+        onChange={(e) =&gt; setRecipient(e.target.value)}
+      /&gt;
+      &lt;input
+        type="number"
+        placeholder="Amount (SOL)"
+        value={amount}
+        onChange={(e) =&gt; setAmount(e.target.value)}
+      /&gt;
+      &lt;button 
+        onClick={handleTransfer}
+        disabled={loading || !publicKey}
+      &gt;
+        {loading ? 'Sending...' : 'Send'}
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+</code></pre>
+<h3 id="multi-signature-support"><a class="header" href="#multi-signature-support">Multi-Signature Support</a></h3>
+<pre><code class="language-typescript">interface MultiSigConfig {
+  threshold: number;
+  signers: PublicKey[];
+}
+
+async function createMultiSigTransaction(
+  config: MultiSigConfig,
+  instruction: Instruction
+): Promise&lt;Transaction&gt; {
+  const transaction = new Transaction();
+  
+  // Add multisig verification instruction
+  transaction.add(
+    createMultiSigVerifyInstruction(config)
+  );
+  
+  // Add the actual instruction
+  transaction.add(instruction);
+  
+  return transaction;
+}
+
+async function collectSignatures(
+  transaction: Transaction,
+  signers: PublicKey[]
+): Promise&lt;Transaction&gt; {
+  let signedTx = transaction;
+  
+  for (const signer of signers) {
+    // Request signature from each signer
+    // This could be through different wallet connections
+    signedTx = await requestSignature(signedTx, signer);
+  }
+  
+  return signedTx;
+}
+</code></pre>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h3 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h3>
+<pre><code class="language-typescript">class WalletError extends Error {
+  code: string;
+  
+  constructor(message: string, code: string) {
+    super(message);
+    this.code = code;
+  }
+}
+
+async function safeWalletOperation&lt;T&gt;(
+  operation: () =&gt; Promise&lt;T&gt;
+): Promise&lt;T&gt; {
+  try {
+    return await operation();
+  } catch (error) {
+    if (error.code === 4001) {
+      throw new WalletError('User rejected request', 'USER_REJECTED');
+    } else if (error.code === -32002) {
+      throw new WalletError('Request already pending', 'REQUEST_PENDING');
+    } else if (error.message?.includes('not connected')) {
+      throw new WalletError('Wallet not connected', 'NOT_CONNECTED');
+    }
+    throw error;
+  }
+}
+</code></pre>
+<h3 id="state-management"><a class="header" href="#state-management">State Management</a></h3>
+<pre><code class="language-typescript">// Using Redux Toolkit
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { Connection, PublicKey } from '@saturnbtcio/arch-sdk';
+
+export const connectWallet = createAsyncThunk(
+  'wallet/connect',
+  async () =&gt; {
+    const response = await window.arch.connect();
+    return response.publicKey;
+  }
+);
+
+const walletSlice = createSlice({
+  name: 'wallet',
+  initialState: {
+    publicKey: null as string | null,
+    connected: false,
+    loading: false,
+    error: null as string | null
+  },
+  reducers: {
+    disconnect: (state) =&gt; {
+      state.publicKey = null;
+      state.connected = false;
+    }
+  },
+  extraReducers: (builder) =&gt; {
+    builder
+      .addCase(connectWallet.pending, (state) =&gt; {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(connectWallet.fulfilled, (state, action) =&gt; {
+        state.publicKey = action.payload;
+        state.connected = true;
+        state.loading = false;
+      })
+      .addCase(connectWallet.rejected, (state, action) =&gt; {
+        state.loading = false;
+        state.error = action.error.message || 'Connection failed';
+      });
+  }
+});
+</code></pre>
+<h2 id="security-considerations"><a class="header" href="#security-considerations">Security Considerations</a></h2>
+<ol>
+<li><strong>Always validate addresses</strong> before transactions</li>
+<li><strong>Never store private keys</strong> in frontend code</li>
+<li><strong>Use HTTPS</strong> in production</li>
+<li><strong>Implement transaction limits</strong> for automated operations</li>
+<li><strong>Show transaction details</strong> before signing</li>
+<li><strong>Handle wallet disconnections</strong> gracefully</li>
+</ol>
+<h2 id="resources"><a class="header" href="#resources">Resources</a></h2>
+<ul>
+<li><a href="getting-started.html">TypeScript SDK Documentation</a></li>
+<li><a href="examples.html#react-hook-example">React Examples</a></li>
+<li><a href="https://docs.arch.network">Arch Network Documentation</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../sdk/typescript/examples.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../sdk/rust/getting-started.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../sdk/typescript/examples.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../sdk/rust/getting-started.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../../ace.js"></script>
+        <script src="../../editor.js"></script>
+        <script src="../../mode-rust.js"></script>
+        <script src="../../theme-dawn.js"></script>
+        <script src="../../theme-tomorrow_night.js"></script>
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/mermaid.min.js"></script>
+        <script src="../../theme/mermaid-init.js"></script>
+        <script src="../../theme/custom.js"></script>
+
+
+    </div>
+    </body>
+</html>
