@@ -1,17 +1,16 @@
-# Getting Started with the Arch SDK
+# Getting Started with the TypeScript SDK
 
-This guide will walk you through setting up and using the Arch SDK to build your first application on the Arch Network.
+This guide will walk you through setting up and using the Arch Network TypeScript SDK (developed by Saturn) to build your first application.
 
 ## Prerequisites
 
-- **Node.js 16+** (for TypeScript/JavaScript)
-- **Rust 1.70+** (for Rust development)
-- **Basic understanding** of blockchain concepts
+- **Node.js 16+** and npm or yarn
+- **Basic understanding** of blockchain concepts and JavaScript/TypeScript
 - **Arch Network node** running locally or access to a remote node
 
 ## Installation
 
-### TypeScript/JavaScript
+### Create a New Project
 
 ```bash
 # Create a new project
@@ -19,7 +18,7 @@ mkdir my-arch-app
 cd my-arch-app
 npm init -y
 
-# Install the SDK
+# Install the Saturn TypeScript SDK
 npm install @saturnbtcio/arch-sdk
 
 # Install TypeScript (optional but recommended)
@@ -27,24 +26,22 @@ npm install -D typescript @types/node
 npx tsc --init
 ```
 
-### Rust
+### For Existing Projects
 
 ```bash
-# Create a new Rust project
-cargo new my-arch-app --bin
-cd my-arch-app
+# Using npm
+npm install @saturnbtcio/arch-sdk
 
-# Add the SDK to Cargo.toml
-cat >> Cargo.toml << EOF
-[dependencies]
-arch_sdk = "0.1.0"
-tokio = { version = "1.0", features = ["full"] }
-EOF
+# Using yarn
+yarn add @saturnbtcio/arch-sdk
+
+# Using pnpm
+pnpm add @saturnbtcio/arch-sdk
 ```
 
 ## Your First Connection
 
-### TypeScript Example
+Create a file named `connect.ts` (or `connect.js` for JavaScript):
 
 ```typescript
 import { Connection } from '@saturnbtcio/arch-sdk';
@@ -65,26 +62,13 @@ async function main() {
 main().catch(console.error);
 ```
 
-### Rust Example
+Run the script:
+```bash
+# TypeScript
+npx ts-node connect.ts
 
-```rust
-use arch_sdk::Connection;
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Connect to local validator
-    let connection = Connection::new("http://localhost:9002");
-    
-    // Check if node is ready
-    let is_ready = connection.is_node_ready().await?;
-    println!("Node ready: {}", is_ready);
-    
-    // Get current block count
-    let block_count = connection.get_block_count().await?;
-    println!("Current block count: {}", block_count);
-    
-    Ok(())
-}
+# JavaScript
+node connect.js
 ```
 
 ## Creating Your First Account
@@ -97,10 +81,15 @@ import { Keypair } from '@saturnbtcio/arch-sdk';
 // Generate a new keypair
 const keypair = Keypair.generate();
 console.log('Public key:', keypair.publicKey.toBase58());
-console.log('Private key:', keypair.secretKey);
+console.log('Secret key:', keypair.secretKey);
 
-// Or from existing secret key
-const existingKeypair = Keypair.fromSecretKey(secretKeyBytes);
+// Save for later use (be careful with private keys!)
+const secretKeyString = JSON.stringify(Array.from(keypair.secretKey));
+
+// Restore from saved secret key
+const restoredKeypair = Keypair.fromSecretKey(
+  new Uint8Array(JSON.parse(secretKeyString))
+);
 ```
 
 ### Fund Your Account (Testnet/Devnet)
@@ -117,7 +106,7 @@ await connection.confirmTransaction(airdropSignature);
 
 // Check balance
 const balance = await connection.getBalance(keypair.publicKey);
-console.log('Balance:', balance);
+console.log('Balance:', balance, 'lamports');
 ```
 
 ## Reading Account Information
@@ -163,9 +152,10 @@ accounts.forEach((account, index) => {
 ### Simple Transfer
 
 ```typescript
-import { Transaction, SystemProgram } from '@saturnbtcio/arch-sdk';
+import { Transaction, SystemProgram, Keypair } from '@saturnbtcio/arch-sdk';
 
 async function transferLamports() {
+  const sender = keypair; // Your funded keypair
   const recipient = Keypair.generate();
   
   // Create transfer instruction
@@ -193,6 +183,7 @@ async function transferLamports() {
 
 ```typescript
 async function createAccount() {
+  const payer = keypair; // Your funded keypair
   const newAccount = Keypair.generate();
   
   // Create account instruction
@@ -360,6 +351,44 @@ const connection = new Connection('http://localhost:9002', {
 });
 ```
 
+## Browser Usage
+
+The TypeScript SDK fully supports browser environments:
+
+```html
+<!-- In your HTML -->
+<script type="module">
+  import { Connection, Keypair } from 'https://unpkg.com/@saturnbtcio/arch-sdk';
+  
+  const connection = new Connection('https://api.arch.network');
+  const keypair = Keypair.generate();
+  
+  console.log('Public key:', keypair.publicKey.toBase58());
+</script>
+```
+
+### React Example
+
+```tsx
+import React, { useState, useEffect } from 'react';
+import { Connection, PublicKey } from '@saturnbtcio/arch-sdk';
+
+function ArchAccount({ address }: { address: string }) {
+  const [balance, setBalance] = useState<number | null>(null);
+  
+  useEffect(() => {
+    const connection = new Connection('https://api.arch.network');
+    const publicKey = new PublicKey(address);
+    
+    connection.getBalance(publicKey)
+      .then(setBalance)
+      .catch(console.error);
+  }, [address]);
+  
+  return <div>Balance: {balance ?? 'Loading...'} lamports</div>;
+}
+```
+
 ## Best Practices
 
 ### Security
@@ -401,16 +430,33 @@ const recentBlockhash = await connection.getLatestBlockhash('confirmed');
 const programAccountsCache = new Map();
 ```
 
-## Next Steps
+### TypeScript Best Practices
 
-Now that you have the basics, explore these advanced topics:
+```typescript
+// 1. Use strict types
+interface MyAccountData {
+  counter: number;
+  owner: PublicKey;
+  timestamp: number;
+}
 
-1. **[Account Management](account.md)** - Deep dive into account creation and management
-2. **[Instructions and Messages](instructions-and-messages.md)** - Building complex transactions
-3. **[Program Development](../program/program.md)** - Writing your own programs
-4. **[Token Operations](../apl/token-program.md)** - Working with tokens
+// 2. Type your custom errors
+class MyProgramError extends Error {
+  constructor(public code: number, message: string) {
+    super(message);
+  }
+}
 
-## Common Issues
+// 3. Use type guards
+function isMyAccountData(data: unknown): data is MyAccountData {
+  return typeof data === 'object' && 
+         data !== null &&
+         'counter' in data &&
+         'owner' in data;
+}
+```
+
+## Common Issues and Solutions
 
 ### Connection Issues
 
@@ -420,6 +466,7 @@ try {
   await connection.getVersion();
 } catch (error) {
   console.error('Cannot connect to node:', error);
+  // Try alternative endpoints
 }
 ```
 
@@ -436,11 +483,17 @@ if (error.message.includes('AccountNotFound')) {
   // Create the account first
   await createAccount();
 }
+
+if (error.message.includes('custom program error')) {
+  // Check program-specific error codes
+  const errorCode = parseInt(error.message.match(/0x([0-9a-f]+)/i)?.[1] || '0', 16);
+  handleProgramError(errorCode);
+}
 ```
 
 ## Complete Example
 
-Here's a complete example that demonstrates the concepts:
+Here's a complete example that demonstrates key concepts:
 
 ```typescript
 import { 
@@ -448,7 +501,8 @@ import {
   Keypair, 
   PublicKey, 
   Transaction, 
-  SystemProgram 
+  SystemProgram,
+  LAMPORTS_PER_SOL
 } from '@saturnbtcio/arch-sdk';
 
 async function completeExample() {
@@ -459,29 +513,54 @@ async function completeExample() {
   const payer = Keypair.generate();
   const recipient = Keypair.generate();
   
-  // 3. Fund payer account
-  await connection.requestAirdrop(payer.publicKey, 2000000);
+  // 3. Fund payer account (testnet only)
+  console.log('Requesting airdrop...');
+  const airdropSig = await connection.requestAirdrop(
+    payer.publicKey, 
+    2 * LAMPORTS_PER_SOL
+  );
+  await connection.confirmTransaction(airdropSig);
   
-  // 4. Create and send transaction
+  // 4. Check balance
+  const payerBalance = await connection.getBalance(payer.publicKey);
+  console.log('Payer balance:', payerBalance / LAMPORTS_PER_SOL, 'SOL');
+  
+  // 5. Create and send transaction
   const transaction = new Transaction()
     .add(SystemProgram.transfer({
       fromPubkey: payer.publicKey,
       toPubkey: recipient.publicKey,
-      lamports: 1000000
+      lamports: LAMPORTS_PER_SOL
     }));
   
+  console.log('Sending transaction...');
   const signature = await connection.sendAndConfirmTransaction(
     transaction,
     [payer]
   );
   
-  // 5. Verify the transfer
+  // 6. Verify the transfer
   const recipientBalance = await connection.getBalance(recipient.publicKey);
-  console.log('Recipient balance:', recipientBalance);
+  console.log('Recipient balance:', recipientBalance / LAMPORTS_PER_SOL, 'SOL');
   console.log('Transaction signature:', signature);
 }
 
 completeExample().catch(console.error);
 ```
 
-This guide covers the essentials of getting started with the Arch SDK. For more advanced topics and examples, explore the other sections of the documentation.
+## Next Steps
+
+Now that you have the basics of the TypeScript SDK:
+
+1. **[TypeScript API Reference](api-reference.md)** - Complete API documentation
+2. **[TypeScript Examples](examples.md)** - More complex examples
+3. **[Web3 Integration](web3-integration.md)** - Integrate with Web3 apps
+4. **[Account Management](../account.md)** - Deep dive into accounts
+5. **[Building Transactions](../instructions-and-messages.md)** - Advanced transaction building
+
+## Resources
+
+- **NPM Package**: [@saturnbtcio/arch-sdk](https://www.npmjs.com/package/@saturnbtcio/arch-sdk)
+- **GitHub Repository**: [saturnbtc/arch-typescript-sdk](https://github.com/saturnbtc/arch-typescript-sdk)
+- **Examples**: [TypeScript SDK Examples](https://github.com/saturnbtc/arch-typescript-sdk/tree/main/examples)
+- **Discord**: [Arch Network Discord](https://discord.gg/archnetwork) 

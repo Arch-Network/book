@@ -1,261 +1,174 @@
 # SDK Reference
 
-The Arch Network SDK provides comprehensive tools and type definitions for building applications on the Arch Network. Whether you're developing programs, building client applications, or integrating with existing systems, this SDK offers everything you need to interact with the network.
+The Arch Network ecosystem provides two distinct SDKs for building applications. Each SDK serves different use cases and development environments. This page will help you choose the right SDK for your project.
 
-## Quick Start
+## Available SDKs
 
-> **New to the Arch SDK?** Start with our [Getting Started Guide](getting-started.md) for a comprehensive walkthrough.
+### 1. TypeScript SDK (by Saturn)
 
-### Installation
+The **TypeScript SDK** is developed and maintained by Saturn (@saturnbtc) and provides a comprehensive JavaScript/TypeScript interface for interacting with the Arch Network.
 
-**TypeScript/JavaScript**
+**Package**: `@saturnbtcio/arch-sdk`  
+**Repository**: [arch-typescript-sdk](https://github.com/saturnbtc/arch-typescript-sdk)  
+**Language**: TypeScript/JavaScript  
+**Best for**: 
+- Frontend applications (React, Vue, Angular)
+- Node.js backend services
+- Web3 applications
+- Rapid prototyping
+- JavaScript/TypeScript developers
+
+### 2. Rust SDK
+
+The **Rust SDK** is the native SDK included in the main Arch Network repository. It provides low-level access to all network features and is used for building high-performance applications and programs.
+
+**Package**: `arch_sdk`  
+**Repository**: Part of [arch-network](https://github.com/Arch-Network/arch-network)  
+**Language**: Rust  
+**Best for**:
+- On-chain programs (smart contracts)
+- High-performance applications
+- System-level integrations
+- Validator/node development
+- Rust developers
+
+## Choosing the Right SDK
+
+### Use the TypeScript SDK when:
+- Building web applications or dApps
+- Working with Node.js backends
+- Integrating Arch Network into existing JavaScript projects
+- You need quick development cycles
+- Your team is more familiar with JavaScript/TypeScript
+
+### Use the Rust SDK when:
+- Writing on-chain programs for Arch Network
+- Building high-performance applications
+- Developing system-level tools or validators
+- You need maximum control and efficiency
+- Your team is comfortable with Rust
+
+## Quick Start Comparison
+
+### TypeScript SDK Installation
 ```bash
 npm install @saturnbtcio/arch-sdk
+# or
+yarn add @saturnbtcio/arch-sdk
 ```
 
-**Rust**
+### Rust SDK Installation
 ```toml
+# In your Cargo.toml
 [dependencies]
-arch_sdk = "0.1.0"
+arch_sdk = "0.5.4"
 ```
 
-### Basic Usage
+### Basic Connection Example
 
-**TypeScript Example:**
+**TypeScript SDK:**
 ```typescript
-import { Connection, Keypair, Transaction } from '@saturnbtcio/arch-sdk';
+import { Connection, Keypair } from '@saturnbtcio/arch-sdk';
 
-// Connect to a validator
 const connection = new Connection('http://localhost:9002');
-
-// Generate a new keypair
 const keypair = Keypair.generate();
 
-// Check if node is ready
 const isReady = await connection.isNodeReady();
 console.log('Node ready:', isReady);
 ```
 
-**Rust Example:**
+**Rust SDK:**
 ```rust
-use arch_sdk::{Connection, Keypair, Transaction};
+use arch_sdk::{Connection, Keypair};
 
-// Connect to a validator
-let connection = Connection::new("http://localhost:9002");
-
-// Generate a new keypair
-let keypair = Keypair::new();
-
-// Check if node is ready
-let is_ready = connection.is_node_ready().await?;
-println!("Node ready: {}", is_ready);
-```
-
-## Core Types
-
-### [Pubkey](pubkey.md)
-Public key type for identifying accounts, programs, and other entities on the network. Essential for all operations.
-
-### [Account](account.md)
-Data structure representing accounts on the network, including their state and metadata. Learn account creation, management, and data handling.
-
-### [Instructions and Messages](instructions-and-messages.md)
-Core types for building transactions and interacting with programs. Master transaction construction and program interactions.
-
-### [Runtime Transaction](runtime-transaction.md)
-The fundamental transaction type that gets processed by the Arch Network runtime. Contains version, signatures, and message data.
-
-### [Processed Transaction](processed-transaction.md)
-A wrapper around Runtime Transaction that includes execution status and associated Bitcoin transaction IDs. What you receive from RPC calls.
-
-### [Signature](signature.md)
-Digital signature implementation used to authenticate transactions and instructions. 64-byte signature format.
-
-## Key Features
-
-### Connection Management
-- **Multiple endpoints**: Connect to local validators, testnets, or mainnet
-- **Automatic retries**: Built-in retry logic for network requests
-- **Connection pooling**: Efficient management of network connections
-
-### Account Management
-- **Account creation**: Create new accounts with proper initialization
-- **Balance queries**: Check account balances and state
-- **Program interactions**: Invoke programs and read program accounts
-
-### Transaction Building
-- **Transaction construction**: Build complex transactions with multiple instructions
-- **Automatic signing**: Sign transactions with your keypairs
-- **Fee calculation**: Automatic fee estimation and payment
-
-### Program Development
-- **Program deployment**: Deploy your programs to the network
-- **Cross-program invocation**: Call other programs from your programs
-- **State management**: Manage program state and account data
-
-## Common Operations
-
-### Creating and Funding Accounts
-
-```typescript
-// Create a new account
-const newAccount = Keypair.generate();
-
-// Request airdrop (testnet/devnet only)
-const airdropTx = await connection.requestAirdrop(
-  newAccount.publicKey,
-  1000000 // lamports
-);
-
-// Confirm the transaction
-await connection.confirmTransaction(airdropTx);
-```
-
-### Reading Account Information
-
-```typescript
-// Get account info
-const accountInfo = await connection.getAccountInfo(publicKey);
-
-// Get account balance
-const balance = await connection.getBalance(publicKey);
-
-// Get program accounts
-const programAccounts = await connection.getProgramAccounts(programId);
-```
-
-### Building and Sending Transactions
-
-```typescript
-// Create instruction
-const instruction = new Instruction({
-  programId: myProgramId,
-  accounts: [
-    { pubkey: account1, isSigner: true, isWritable: true },
-    { pubkey: account2, isSigner: false, isWritable: false }
-  ],
-  data: instructionData
-});
-
-// Build transaction
-const transaction = new Transaction()
-  .add(instruction);
-
-// Sign and send
-const signature = await connection.sendAndConfirmTransaction(
-  transaction,
-  [keypair]
-);
-```
-
-### Working with Programs
-
-```typescript
-// Deploy a program
-const programId = await connection.deployProgram(
-  programBinary,
-  deployerKeypair
-);
-
-// Call a program function
-const result = await myProgram.methods
-  .myFunction(arg1, arg2)
-  .accounts({
-    account1: account1Pubkey,
-    account2: account2Pubkey
-  })
-  .signers([keypair])
-  .rpc();
-```
-
-## Error Handling
-
-The SDK provides comprehensive error handling:
-
-```typescript
-try {
-  const result = await connection.sendTransaction(transaction);
-} catch (error) {
-  if (error instanceof TransactionError) {
-    console.error('Transaction failed:', error.message);
-    console.error('Error code:', error.code);
-  } else if (error instanceof NetworkError) {
-    console.error('Network error:', error.message);
-  } else {
-    console.error('Unexpected error:', error);
-  }
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let connection = Connection::new("http://localhost:9002");
+    let keypair = Keypair::new();
+    
+    let is_ready = connection.is_node_ready().await?;
+    println!("Node ready: {}", is_ready);
+    
+    Ok(())
 }
 ```
 
-## Configuration
+## Documentation Structure
 
-### Network Configuration
-```typescript
-// Local validator
-const connection = new Connection('http://localhost:9002');
+### TypeScript SDK Documentation
+- [Getting Started with TypeScript SDK](typescript/getting-started.md)
+- [TypeScript API Reference](typescript/api-reference.md)
+- [TypeScript Examples](typescript/examples.md)
+- [Web3 Integration Guide](typescript/web3-integration.md)
 
-// Testnet
-const connection = new Connection('https://testnet.arch.network');
+### Rust SDK Documentation  
+- [Getting Started with Rust SDK](rust/getting-started.md)
+- [Rust API Reference](rust/api-reference.md)
+- [Program Development Guide](rust/program-development.md)
+- [Rust Examples](rust/examples.md)
 
-// Custom configuration
-const connection = new Connection('http://localhost:9002', {
-  timeout: 30000,
-  retries: 3,
-  retryDelay: 1000
-});
-```
+### Shared Concepts
+These concepts apply to both SDKs:
+- [Pubkey](pubkey.md) - Public key type for identifying accounts
+- [Account](account.md) - Account structure and management
+- [Instructions and Messages](instructions-and-messages.md) - Transaction building
+- [Runtime Transaction](runtime-transaction.md) - Transaction format
+- [Processed Transaction](processed-transaction.md) - Transaction results
+- [Signature](signature.md) - Digital signatures
 
-### Environment Variables
-```bash
-# Set default network
-export ARCH_NETWORK=testnet
+## Feature Comparison
 
-# Set custom RPC endpoint
-export ARCH_RPC_URL=http://localhost:9002
+| Feature | TypeScript SDK | Rust SDK |
+|---------|---------------|----------|
+| Language | TypeScript/JavaScript | Rust |
+| Installation | npm/yarn | Cargo |
+| Async Support | Promises/async-await | Tokio async |
+| Program Development | Client-side only | Full support |
+| Browser Support | ✅ Full | ❌ No |
+| Node.js Support | ✅ Full | ✅ Full |
+| Performance | Good | Excellent |
+| Type Safety | TypeScript types | Rust type system |
+| Bundle Size | ~200KB | N/A |
+| Learning Curve | Moderate | Steep |
 
-# Set logging level
-export ARCH_LOG_LEVEL=debug
-```
+## Migration Between SDKs
 
-## Best Practices
+While both SDKs interact with the same Arch Network, they have different APIs and patterns. Here are key differences to consider:
 
-### Security
-- **Never expose private keys**: Use secure key management
-- **Validate all inputs**: Check all parameters before use
-- **Use secure connections**: Always use HTTPS in production
-- **Implement proper error handling**: Don't ignore errors
+### Connection Management
+- **TypeScript**: Uses promise-based async patterns
+- **Rust**: Uses Tokio-based async runtime
 
-### Performance
-- **Batch operations**: Use batch methods when possible
-- **Cache frequently accessed data**: Reduce unnecessary network calls
-- **Use connection pooling**: Reuse connections efficiently
-- **Monitor resource usage**: Track memory and CPU usage
+### Error Handling
+- **TypeScript**: Try-catch with custom error types
+- **Rust**: Result<T, E> pattern with detailed error types
 
-### Development
-- **Test thoroughly**: Test all code paths and edge cases
-- **Use type safety**: Take advantage of TypeScript/Rust type systems
-- **Follow conventions**: Use consistent naming and patterns
-- **Document your code**: Write clear documentation
-
-## Examples
-
-For complete examples, check out the [Arch Examples Repository](https://github.com/Arch-Network/arch-examples):
-
-- **[Hello World](https://github.com/Arch-Network/arch-examples/tree/main/examples/helloworld)** - Basic program structure
-- **[Counter](https://github.com/Arch-Network/arch-examples/tree/main/examples/counter)** - State management
-- **[Token Program](https://github.com/Arch-Network/arch-examples/tree/main/examples/token)** - Fungible tokens
-- **[Escrow](https://github.com/Arch-Network/arch-examples/tree/main/examples/escrow)** - Multi-party agreements
-
-## Source Code
-
-The complete SDK source code is available on:
-- **Main SDK**: [GitHub](https://github.com/Arch-Network/arch-sdk)
-- **Examples**: [GitHub](https://github.com/Arch-Network/arch-examples)
-- **Documentation**: [GitHub](https://github.com/Arch-Network/arch-docs)
+### Data Serialization
+- **TypeScript**: JSON and Buffer-based serialization
+- **Rust**: Borsh and custom serialization
 
 ## Getting Help
 
-- **Documentation**: [https://docs.arch.network](https://docs.arch.network)
-- **Discord**: [https://discord.gg/archnetwork](https://discord.gg/archnetwork)
-- **GitHub Issues**: [https://github.com/Arch-Network/arch-sdk/issues](https://github.com/Arch-Network/arch-sdk/issues)
-- **Stack Overflow**: Use the `arch-network` tag
+### TypeScript SDK Support
+- **Issues**: [Saturn SDK GitHub Issues](https://github.com/saturnbtc/arch-typescript-sdk/issues)
+- **Documentation**: [TypeScript SDK Docs](typescript/getting-started.md)
+- **Examples**: [TypeScript Examples](https://github.com/saturnbtc/arch-typescript-sdk/tree/main/examples)
+
+### Rust SDK Support
+- **Issues**: [Arch Network GitHub Issues](https://github.com/arch-network/arch-network/issues)
+- **Documentation**: [Rust SDK Docs](rust/getting-started.md)
+- **Examples**: [Rust Examples](https://github.com/arch-network/arch-network/examples)
+
+### General Support
+- **Discord**: [Arch Network Discord](https://discord.gg/archnetwork)
+- **Forum**: [Arch Network Forum](https://forum.arch.network)
+- **Stack Overflow**: Tag with `arch-network`
+
+## Next Steps
+
+Choose your SDK and get started:
+
+- **[Get Started with TypeScript SDK →](typescript/getting-started.md)**
+- **[Get Started with Rust SDK →](rust/getting-started.md)**
+
+For a general introduction to Arch Network concepts, visit our [Getting Started Guide](../getting-started/quick-start.md).
