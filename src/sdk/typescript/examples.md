@@ -2,284 +2,465 @@
 
 This page provides practical examples of using the Arch Network TypeScript SDK (by Saturn) for common tasks.
 
+> **Note**: These examples demonstrate the low-level RPC API. The SDK does not include high-level abstractions like transaction builders or wallet management.
+
 ## Basic Examples
+
+### Connecting and Querying Network
+
+```typescript
+import { RpcConnection } from '@saturnbtcio/arch-sdk';
+
+async function networkExample() {
+  const connection = new RpcConnection('http://localhost:9002');
+  
+  try {
+    // Get network status
+    const blockCount = await connection.getBlockCount();
+    console.log('Current block count:', blockCount);
+    
+    // Get latest block
+    const bestBlockHash = await connection.getBestBlockHash();
+    const block = await connection.getBlock(bestBlockHash);
+    
+    if (block) {
+      console.log('Latest block:', {
+        hash: block.hash,
+        height: block.block_height,
+        transactions: block.transactions?.length || 0
+      });
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+  }
+}
+```
 
 ### Account Management
 
 ```typescript
-import { Connection, Keypair, PublicKey } from '@saturnbtcio/arch-sdk';
+import { RpcConnection, ArchConnection } from '@saturnbtcio/arch-sdk';
 
 async function accountExample() {
-  const connection = new Connection('http://localhost:9002');
+  const connection = new RpcConnection('http://localhost:9002');
+  const arch = ArchConnection(connection);
   
-  // Create a new account
-  const newAccount = Keypair.generate();
-  console.log('New account:', newAccount.publicKey.toBase58());
+  // Create a new account with private key
+  const newAccount = await arch.createNewAccount();
+  console.log('New account created:');
+  console.log('  Private key:', newAccount.privkey);
+  console.log('  Public key:', newAccount.pubkey);
+  console.log('  Address:', newAccount.address);
   
-  // Check if account exists
-  const accountInfo = await connection.getAccountInfo(newAccount.publicKey);
-  if (!accountInfo) {
-    console.log('Account does not exist yet');
+  // Convert hex pubkey to Uint8Array for RPC calls
+  const pubkeyBytes = new Uint8Array(
+    newAccount.pubkey.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16))
+  );
+  
+  // Read account info
+  try {
+    const accountInfo = await connection.readAccountInfo(pubkeyBytes);
+    console.log('Account info:', accountInfo);
+  } catch (error) {
+    console.log('Account not found (expected for new account)');
   }
-  
-  // Get multiple accounts at once
-  const accounts = await connection.getMultipleAccountsInfo([
-    new PublicKey('Account1...'),
-    new PublicKey('Account2...'),
-    newAccount.publicKey
-  ]);
 }
 ```
 
-### Token Operations
+### Creating and Funding Accounts
 
 ```typescript
-import { 
-  Connection, 
-  Keypair, 
-  Transaction,
-  SystemProgram
-} from '@saturnbtcio/arch-sdk';
+import { RpcConnection } from '@saturnbtcio/arch-sdk';
 
-async function tokenExample() {
-  const connection = new Connection('http://localhost:9002');
-  const payer = Keypair.generate();
+async function fundAccountExample() {
+  const connection = new RpcConnection('http://localhost:9002');
   
-  // Create a token mint account
-  const mint = Keypair.generate();
-  const mintSpace = 82; // Token mint size
-  const mintRent = await connection.getMinimumBalanceForRentExemption(mintSpace);
+  // Generate a random pubkey (in practice, derive from private key)
+  const pubkey = new Uint8Array(32);
+  crypto.getRandomValues(pubkey);
   
-  const createMintIx = SystemProgram.createAccount({
-    fromPubkey: payer.publicKey,
-    newAccountPubkey: mint.publicKey,
-    lamports: mintRent,
-    space: mintSpace,
-    programId: TOKEN_PROGRAM_ID
-  });
-  
-  const transaction = new Transaction().add(createMintIx);
-  // Add token initialization instructions here
+  try {
+    // Create and fund account (testnet only)
+    await connection.createAccountWithFaucet(pubkey);
+    console.log('Account created and funded');
+    
+    // Read the funded account
+    const accountInfo = await connection.readAccountInfo(pubkey);
+    console.log('Account balance:', accountInfo.lamports);
+  } catch (error) {
+    console.error('Failed to create account:', error);
+  }
 }
 ```
 
-### Working with UTXOs
+## Working with Messages and Instructions
+
+### Creating a Simple Message
 
 ```typescript
-import { Connection, PublicKey } from '@saturnbtcio/arch-sdk';
+import { MessageUtil, PubkeyUtil } from '@saturnbtcio/arch-sdk';
+import type { Message, Instruction } from '@saturnbtcio/arch-sdk';
 
-async function utxoExample() {
-  const connection = new Connection('http://localhost:9002');
-  const address = new PublicKey('YourAddress...');
+function createSimpleMessage() {
+  // Create account pubkeys
+  const signer = new Uint8Array(32);
+  crypto.getRandomValues(signer);
   
-  // Get UTXOs for an address
-  const utxos = await connection.getUtxos(address);
+  // Create an instruction
+  const instruction: Instruction = {
+    program_id: PubkeyUtil.systemProgram(),
+    accounts: [
+      {
+        pubkey: signer,
+        is_signer: true,
+        is_writable: true,
+      },
+    ],
+    data: new Uint8Array([1, 2, 3, 4]), // Instruction data
+  };
   
-  console.log('Found UTXOs:', utxos.length);
-  utxos.forEach((utxo, index) => {
-    console.log(`UTXO ${index}:`, {
-      txid: utxo.txid,
-      vout: utxo.vout,
-      value: utxo.value
-    });
-  });
+  // Create a message
+  const message: Message = {
+    signers: [signer],
+    instructions: [instruction],
+  };
+  
+  // Serialize for sending
+  const serialized = MessageUtil.serialize(message);
+  console.log('Serialized message:', serialized);
+  
+  // Deserialize back
+  const deserialized = MessageUtil.deserialize(serialized);
+  console.log('Deserialized:', deserialized);
+}
+```
+
+### Creating a Runtime Transaction
+
+```typescript
+import { RpcConnection, SanitizedMessageUtil } from '@saturnbtcio/arch-sdk';
+import type { RuntimeTransaction, SanitizedMessage } from '@saturnbtcio/arch-sdk';
+
+async function createTransaction() {
+  const connection = new RpcConnection('http://localhost:9002');
+  
+  // Create account keys
+  const signer = new Uint8Array(32);
+  crypto.getRandomValues(signer);
+  
+  // Create a sanitized message
+  const sanitizedMessage: SanitizedMessage = {
+    header: {
+      num_required_signatures: 1,
+      num_readonly_signed_accounts: 0,
+      num_readonly_unsigned_accounts: 1,
+    },
+    account_keys: [
+      signer,                          // Index 0: Signer
+      PubkeyUtil.systemProgram(),      // Index 1: System program
+    ],
+    recent_blockhash: new Uint8Array(32), // You need a real blockhash
+    instructions: [
+      {
+        program_id_index: 1,           // System program
+        accounts: [0],                 // Signer account
+        data: new Uint8Array([0, 0, 0, 0]), // Transfer instruction
+      },
+    ],
+  };
+  
+  // Create the runtime transaction
+  const transaction: RuntimeTransaction = {
+    version: 0,
+    signatures: [new Uint8Array(64)], // Need real signature
+    message: sanitizedMessage,
+  };
+  
+  // Note: This example doesn't include proper signing
+  // In practice, you need to sign the message with the private key
+  
+  console.log('Transaction created (unsigned)');
 }
 ```
 
 ## Advanced Examples
 
-### Batch Transactions
+### Querying Blocks and Transactions
 
 ```typescript
-async function batchTransactions() {
-  const connection = new Connection('http://localhost:9002');
-  const payer = Keypair.generate();
+import { RpcConnection } from '@saturnbtcio/arch-sdk';
+
+async function blockExplorer() {
+  const connection = new RpcConnection('http://localhost:9002');
   
-  // Create multiple transactions
-  const transactions = [];
-  
-  for (let i = 0; i < 5; i++) {
-    const recipient = Keypair.generate();
-    const tx = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: payer.publicKey,
-        toPubkey: recipient.publicKey,
-        lamports: 1000000
-      })
-    );
-    transactions.push(tx);
+  try {
+    // Get recent blocks
+    const blockCount = await connection.getBlockCount();
+    console.log(`\nExploring last 5 blocks (current height: ${blockCount})`);
+    
+    for (let i = 0; i < 5 && blockCount - i > 0; i++) {
+      const height = blockCount - i - 1;
+      const hash = await connection.getBlockHash(height);
+      const block = await connection.getBlock(hash);
+      
+      if (block) {
+        console.log(`\nBlock ${height}:`);
+        console.log(`  Hash: ${hash}`);
+        console.log(`  Transactions: ${block.transactions?.length || 0}`);
+        
+        // Check transactions in the block
+        if (block.transactions && block.transactions.length > 0) {
+          for (const tx of block.transactions) {
+            console.log(`  TX: ${tx.txid}`);
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error exploring blocks:', error);
   }
-  
-  // Send all transactions
-  const signatures = await Promise.all(
-    transactions.map(tx => 
-      connection.sendAndConfirmTransaction(tx, [payer])
-    )
-  );
-  
-  console.log('Batch complete:', signatures);
 }
 ```
 
-### Error Handling Patterns
+### Getting Program Accounts
 
 ```typescript
-import { TransactionError, NetworkError } from '@saturnbtcio/arch-sdk';
+import { RpcConnection } from '@saturnbtcio/arch-sdk';
 
-async function robustTransactionHandling() {
-  const maxRetries = 3;
-  let lastError;
+async function getProgramAccountsExample() {
+  const connection = new RpcConnection('http://localhost:9002');
   
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
+  // Example program ID (replace with actual program)
+  const programId = new Uint8Array(32);
+  programId[31] = 2; // Example program ID
+  
+  try {
+    // Get all accounts owned by the program
+    const accounts = await connection.getProgramAccounts(programId);
+    
+    console.log(`Found ${accounts.length} accounts for program`);
+    
+    accounts.forEach((account, index) => {
+      console.log(`\nAccount ${index}:`);
+      console.log('  Pubkey:', account.pubkey);
+      console.log('  Account:', account.account);
+    });
+    
+    // With filters (if supported)
+    const filteredAccounts = await connection.getProgramAccounts(
+      programId,
+      [
+        // Filter examples would go here
+        // The actual filter format depends on implementation
+      ]
+    );
+  } catch (error) {
+    console.error('Error getting program accounts:', error);
+  }
+}
+```
+
+### Error Handling with Retry
+
+```typescript
+import { RpcConnection, ArchRpcError } from '@saturnbtcio/arch-sdk';
+
+async function robustRpcCall<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3
+): Promise<T> {
+  let lastError: Error | undefined;
+  
+  for (let i = 0; i < maxRetries; i++) {
     try {
-      const result = await connection.sendAndConfirmTransaction(
-        transaction,
-        signers
-      );
-      return result; // Success!
+      return await fn();
     } catch (error) {
-      lastError = error;
+      lastError = error as Error;
       
-      if (error instanceof TransactionError) {
-        // Transaction-specific error
-        console.error(`Attempt ${attempt + 1} failed:`, error.logs);
+      if (error instanceof ArchRpcError) {
+        console.error(`RPC Error (attempt ${i + 1}):`, error.error);
         
-        if (error.message.includes('insufficient funds')) {
-          // Don't retry insufficient funds
-          throw error;
+        // Don't retry on certain errors
+        if (error.error.code === 404) {
+          throw error; // Not found - don't retry
         }
-      } else if (error instanceof NetworkError) {
-        // Network error - worth retrying
-        console.error(`Network error on attempt ${attempt + 1}`);
       }
       
-      // Wait before retry
-      if (attempt < maxRetries - 1) {
-        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+      // Wait before retry (exponential backoff)
+      if (i < maxRetries - 1) {
+        await new Promise(resolve => 
+          setTimeout(resolve, 1000 * Math.pow(2, i))
+        );
       }
     }
   }
   
   throw lastError;
 }
-```
 
-### Subscribing to Account Changes
-
-```typescript
-async function subscribeToAccount() {
-  const connection = new Connection('http://localhost:9002');
-  const accountToWatch = new PublicKey('AccountAddress...');
+// Usage example
+async function example() {
+  const connection = new RpcConnection('http://localhost:9002');
   
-  // Subscribe to account changes
-  const subscriptionId = connection.onAccountChange(
-    accountToWatch,
-    (accountInfo, context) => {
-      console.log('Account updated:', {
-        slot: context.slot,
-        lamports: accountInfo.lamports,
-        dataLength: accountInfo.data.length
-      });
-    },
-    'confirmed'
+  const blockCount = await robustRpcCall(
+    () => connection.getBlockCount()
   );
-  
-  // Later: unsubscribe
-  // await connection.removeAccountChangeListener(subscriptionId);
+  console.log('Block count:', blockCount);
 }
 ```
 
 ## Integration Examples
 
+### Node.js Service Example
+
+```typescript
+import express from 'express';
+import { RpcConnection, ArchConnection } from '@saturnbtcio/arch-sdk';
+
+const app = express();
+app.use(express.json());
+
+const connection = new RpcConnection(process.env.ARCH_RPC_URL || 'http://localhost:9002');
+const arch = ArchConnection(connection);
+
+// Get network status endpoint
+app.get('/api/status', async (req, res) => {
+  try {
+    const blockCount = await connection.getBlockCount();
+    const bestBlockHash = await connection.getBestBlockHash();
+    
+    res.json({
+      success: true,
+      data: {
+        blockCount,
+        bestBlockHash,
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Create new account endpoint
+app.post('/api/account/new', async (req, res) => {
+  try {
+    const account = await arch.createNewAccount();
+    
+    // In production, you'd want to securely store the private key
+    res.json({
+      success: true,
+      data: {
+        address: account.address,
+        pubkey: account.pubkey,
+        // Don't return private key in production!
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
+});
+```
+
 ### React Hook Example
 
 ```typescript
 import { useState, useEffect } from 'react';
-import { Connection, PublicKey } from '@saturnbtcio/arch-sdk';
+import { RpcConnection } from '@saturnbtcio/arch-sdk';
 
-function useArchBalance(address: string) {
-  const [balance, setBalance] = useState<number | null>(null);
+function useArchBlockCount() {
+  const [blockCount, setBlockCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
-    const connection = new Connection('https://api.arch.network');
+    const connection = new RpcConnection('https://api.arch.network');
+    let mounted = true;
     
-    async function fetchBalance() {
+    async function fetchBlockCount() {
       try {
-        setLoading(true);
-        const pubkey = new PublicKey(address);
-        const balance = await connection.getBalance(pubkey);
-        setBalance(balance);
-        setError(null);
+        const count = await connection.getBlockCount();
+        if (mounted) {
+          setBlockCount(count);
+          setError(null);
+        }
       } catch (err) {
-        setError(err.message);
-        setBalance(null);
+        if (mounted) {
+          setError(err.message);
+          setBlockCount(null);
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     }
     
-    fetchBalance();
+    fetchBlockCount();
     
     // Set up polling
-    const interval = setInterval(fetchBalance, 10000);
-    return () => clearInterval(interval);
-  }, [address]);
+    const interval = setInterval(fetchBlockCount, 10000);
+    
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
   
-  return { balance, loading, error };
+  return { blockCount, loading, error };
+}
+
+// Usage in component
+function BlockCounter() {
+  const { blockCount, loading, error } = useArchBlockCount();
+  
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  
+  return <div>Current block: {blockCount}</div>;
 }
 ```
 
-### Node.js Backend Service
+## Utility Functions
+
+### Working with Public Keys
 
 ```typescript
-import express from 'express';
-import { Connection, Keypair, Transaction } from '@saturnbtcio/arch-sdk';
+import { PubkeyUtil } from '@saturnbtcio/arch-sdk';
 
-const app = express();
-const connection = new Connection(process.env.ARCH_RPC_URL!);
-
-app.post('/api/transfer', async (req, res) => {
-  try {
-    const { to, amount } = req.body;
-    
-    // Load server wallet
-    const serverWallet = Keypair.fromSecretKey(
-      new Uint8Array(JSON.parse(process.env.SERVER_WALLET!))
-    );
-    
-    // Create and send transaction
-    const transaction = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: serverWallet.publicKey,
-        toPubkey: new PublicKey(to),
-        lamports: amount
-      })
-    );
-    
-    const signature = await connection.sendAndConfirmTransaction(
-      transaction,
-      [serverWallet]
-    );
-    
-    res.json({ success: true, signature });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
-  }
-});
+// Convert between formats
+function pubkeyExamples() {
+  // Create a pubkey from hex string
+  const hexPubkey = '0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20';
+  const pubkeyBytes = PubkeyUtil.fromHex(hexPubkey);
+  
+  // Convert back to hex
+  const hexAgain = PubkeyUtil.toHex(pubkeyBytes);
+  console.log('Hex match:', hexPubkey === hexAgain);
+  
+  // Get system program pubkey
+  const systemProgram = PubkeyUtil.systemProgram();
+  console.log('System program:', PubkeyUtil.toHex(systemProgram));
+}
 ```
 
 ## More Examples
 
-For more examples, check out:
+For more examples and implementation details:
 - [Arch Network Examples](https://github.com/arch-network/arch-network/tree/main/examples)
+- [TypeScript SDK Source](https://github.com/saturnbtc/arch-typescript-sdk/tree/main/src)
 
 ## Next Steps
 
 - [TypeScript API Reference](api-reference.md)
-- [Web3 Integration Guide](web3-integration.md)
 - [Getting Started Guide](getting-started.md) 
+- [RPC Methods Documentation](../../rpc/rpc.md) 
