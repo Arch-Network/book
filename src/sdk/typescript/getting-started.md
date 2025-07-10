@@ -44,21 +44,51 @@ pnpm add @saturnbtcio/arch-sdk
 Create a file named `connect.ts` (or `connect.js` for JavaScript):
 
 ```typescript
-import { Connection } from '@saturnbtcio/arch-sdk';
+import { RpcConnection } from '@saturnbtcio/arch-sdk';
 
 async function main() {
   // Connect to local validator
-  const connection = new Connection('http://localhost:9002');
+  const connection = new RpcConnection('http://localhost:9002');
   
-  // Check if node is ready
-  const isReady = await connection.isNodeReady();
-  console.log('Node ready:', isReady);
-  
-  // Get current block count
-  const blockCount = await connection.getBlockCount();
-  console.log('Current block count:', blockCount);
+  try {
+    console.log('🔌 Connecting to Arch node at http://localhost:9002...\n');
+    
+    // Get current block count
+    const blockCount = await connection.getBlockCount();
+    console.log('✓ Current block count:', blockCount);
+    
+    // Get best block hash
+    const bestBlockHash = await connection.getBestBlockHash();
+    console.log('✓ Best block hash:', bestBlockHash);
+    
+    // Get block hash for a specific height
+    if (blockCount > 0) {
+      const blockHeight = blockCount - 1;
+      const blockHash = await connection.getBlockHash(blockHeight);
+      console.log(`✓ Block hash at height ${blockHeight}:`, blockHash);
+    }
+    
+    // Example: Create an account with faucet (uncomment if you want to test)
+    // console.log('\n📝 Creating a new account with faucet...');
+    // const account = await connection.createAccountWithFaucet();
+    // console.log('✓ Account created:', account);
+    
+    // Example: Read account info (uncomment and replace with actual account address)
+    // const accountAddress = 'your-account-address-here';
+    // const accountInfo = await connection.readAccountInfo(accountAddress);
+    // console.log('✓ Account info:', accountInfo);
+    
+    console.log('\n✅ Successfully connected to Arch node!');
+    console.log('📊 Network is active with', blockCount, 'blocks');
+    
+  } catch (error) {
+    console.error('❌ Error connecting to Arch node:', error);
+    console.log('\n💡 Make sure your Arch node is running at http://localhost:9002');
+    console.log('   You can start it with: arch-node --network=testnet');
+  }
 }
 
+// Run the main function
 main().catch(console.error);
 ```
 
@@ -69,6 +99,18 @@ npx ts-node connect.ts
 
 # JavaScript
 node connect.js
+```
+
+Example output:
+```
+🔌 Connecting to Arch node at http://localhost:9002...
+
+✓ Current block count: 57230
+✓ Best block hash: 349e8a42cdc98d05d427ba8fe8efcfd13e875591f1f1f111960a991f3add8105
+✓ Block hash at height 57229: 349e8a42cdc98d05d427ba8fe8efcfd13e875591f1f1f111960a991f3add8105
+
+✅ Successfully connected to Arch node!
+📊 Network is active with 57230 blocks
 ```
 
 ## Creating Your First Account
@@ -336,19 +378,15 @@ export const CONFIG = {
 };
 
 // Use configuration
-const connection = new Connection(CONFIG.rpcUrl, CONFIG.commitment);
+const connection = new RpcConnection(CONFIG.rpcUrl, CONFIG.commitment);
 ```
 
 ### Connection Options
 
 ```typescript
-const connection = new Connection('http://localhost:9002', {
-  commitment: 'confirmed',
-  timeout: 30000,
-  retries: 3,
-  retryDelay: 1000,
-  skipPreflight: false
-});
+const connection = new RpcConnection('http://localhost:9002');
+// Note: RpcConnection uses a simpler constructor
+// Configuration options are handled differently in the RPC-based SDK
 ```
 
 ## Browser Usage
@@ -358,9 +396,9 @@ The TypeScript SDK fully supports browser environments:
 ```html
 <!-- In your HTML -->
 <script type="module">
-  import { Connection, Keypair } from 'https://unpkg.com/@saturnbtcio/arch-sdk';
+  import { RpcConnection, Keypair } from 'https://unpkg.com/@saturnbtcio/arch-sdk';
   
-  const connection = new Connection('https://api.arch.network');
+  const connection = new RpcConnection('https://api.arch.network');
   const keypair = Keypair.generate();
   
   console.log('Public key:', keypair.publicKey.toBase58());
@@ -371,13 +409,13 @@ The TypeScript SDK fully supports browser environments:
 
 ```tsx
 import React, { useState, useEffect } from 'react';
-import { Connection, PublicKey } from '@saturnbtcio/arch-sdk';
+import { RpcConnection, PublicKey } from '@saturnbtcio/arch-sdk';
 
 function ArchAccount({ address }: { address: string }) {
   const [balance, setBalance] = useState<number | null>(null);
   
   useEffect(() => {
-    const connection = new Connection('https://api.arch.network');
+    const connection = new RpcConnection('https://api.arch.network');
     const publicKey = new PublicKey(address);
     
     connection.getBalance(publicKey)
@@ -463,7 +501,8 @@ function isMyAccountData(data: unknown): data is MyAccountData {
 ```typescript
 // Check if node is accessible
 try {
-  await connection.getVersion();
+  const blockCount = await connection.getBlockCount();
+  console.log('Node is accessible, block count:', blockCount);
 } catch (error) {
   console.error('Cannot connect to node:', error);
   // Try alternative endpoints
@@ -497,7 +536,7 @@ Here's a complete example that demonstrates key concepts:
 
 ```typescript
 import { 
-  Connection, 
+  RpcConnection, 
   Keypair, 
   PublicKey, 
   Transaction, 
@@ -507,7 +546,7 @@ import {
 
 async function completeExample() {
   // 1. Setup connection
-  const connection = new Connection('http://localhost:9002');
+  const connection = new RpcConnection('http://localhost:9002');
   
   // 2. Create accounts
   const payer = Keypair.generate();
@@ -562,5 +601,4 @@ Now that you have the basics of the TypeScript SDK:
 
 - **NPM Package**: [@saturnbtcio/arch-sdk](https://www.npmjs.com/package/@saturnbtcio/arch-sdk)
 - **GitHub Repository**: [saturnbtc/arch-typescript-sdk](https://github.com/saturnbtc/arch-typescript-sdk)
-- **Examples**: [TypeScript SDK Examples](https://github.com/saturnbtc/arch-typescript-sdk/tree/main/examples)
 - **Discord**: [Arch Network Discord](https://discord.gg/archnetwork) 
