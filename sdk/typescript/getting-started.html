@@ -216,21 +216,51 @@ pnpm add @saturnbtcio/arch-sdk
 </code></pre>
 <h2 id="your-first-connection"><a class="header" href="#your-first-connection">Your First Connection</a></h2>
 <p>Create a file named <code>connect.ts</code> (or <code>connect.js</code> for JavaScript):</p>
-<pre><code class="language-typescript">import { Connection } from '@saturnbtcio/arch-sdk';
+<pre><code class="language-typescript">import { RpcConnection } from '@saturnbtcio/arch-sdk';
 
 async function main() {
   // Connect to local validator
-  const connection = new Connection('http://localhost:9002');
+  const connection = new RpcConnection('http://localhost:9002');
   
-  // Check if node is ready
-  const isReady = await connection.isNodeReady();
-  console.log('Node ready:', isReady);
-  
-  // Get current block count
-  const blockCount = await connection.getBlockCount();
-  console.log('Current block count:', blockCount);
+  try {
+    console.log('🔌 Connecting to Arch node at http://localhost:9002...\n');
+    
+    // Get current block count
+    const blockCount = await connection.getBlockCount();
+    console.log('✓ Current block count:', blockCount);
+    
+    // Get best block hash
+    const bestBlockHash = await connection.getBestBlockHash();
+    console.log('✓ Best block hash:', bestBlockHash);
+    
+    // Get block hash for a specific height
+    if (blockCount &gt; 0) {
+      const blockHeight = blockCount - 1;
+      const blockHash = await connection.getBlockHash(blockHeight);
+      console.log(`✓ Block hash at height ${blockHeight}:`, blockHash);
+    }
+    
+    // Example: Create an account with faucet (uncomment if you want to test)
+    // console.log('\n📝 Creating a new account with faucet...');
+    // const account = await connection.createAccountWithFaucet();
+    // console.log('✓ Account created:', account);
+    
+    // Example: Read account info (uncomment and replace with actual account address)
+    // const accountAddress = 'your-account-address-here';
+    // const accountInfo = await connection.readAccountInfo(accountAddress);
+    // console.log('✓ Account info:', accountInfo);
+    
+    console.log('\n✅ Successfully connected to Arch node!');
+    console.log('📊 Network is active with', blockCount, 'blocks');
+    
+  } catch (error) {
+    console.error('❌ Error connecting to Arch node:', error);
+    console.log('\n💡 Make sure your Arch node is running at http://localhost:9002');
+    console.log('   You can start it with: arch-node --network=testnet');
+  }
 }
 
+// Run the main function
 main().catch(console.error);
 </code></pre>
 <p>Run the script:</p>
@@ -239,6 +269,16 @@ npx ts-node connect.ts
 
 # JavaScript
 node connect.js
+</code></pre>
+<p>Example output:</p>
+<pre><code>🔌 Connecting to Arch node at http://localhost:9002...
+
+✓ Current block count: 57230
+✓ Best block hash: 349e8a42cdc98d05d427ba8fe8efcfd13e875591f1f1f111960a991f3add8105
+✓ Block hash at height 57229: 349e8a42cdc98d05d427ba8fe8efcfd13e875591f1f1f111960a991f3add8105
+
+✅ Successfully connected to Arch node!
+📊 Network is active with 57230 blocks
 </code></pre>
 <h2 id="creating-your-first-account"><a class="header" href="#creating-your-first-account">Creating Your First Account</a></h2>
 <h3 id="generate-a-keypair"><a class="header" href="#generate-a-keypair">Generate a Keypair</a></h3>
@@ -467,24 +507,20 @@ export const CONFIG = {
 };
 
 // Use configuration
-const connection = new Connection(CONFIG.rpcUrl, CONFIG.commitment);
+const connection = new RpcConnection(CONFIG.rpcUrl, CONFIG.commitment);
 </code></pre>
 <h3 id="connection-options"><a class="header" href="#connection-options">Connection Options</a></h3>
-<pre><code class="language-typescript">const connection = new Connection('http://localhost:9002', {
-  commitment: 'confirmed',
-  timeout: 30000,
-  retries: 3,
-  retryDelay: 1000,
-  skipPreflight: false
-});
+<pre><code class="language-typescript">const connection = new RpcConnection('http://localhost:9002');
+// Note: RpcConnection uses a simpler constructor
+// Configuration options are handled differently in the RPC-based SDK
 </code></pre>
 <h2 id="browser-usage"><a class="header" href="#browser-usage">Browser Usage</a></h2>
 <p>The TypeScript SDK fully supports browser environments:</p>
 <pre><code class="language-html">&lt;!-- In your HTML --&gt;
 &lt;script type="module"&gt;
-  import { Connection, Keypair } from 'https://unpkg.com/@saturnbtcio/arch-sdk';
+  import { RpcConnection, Keypair } from 'https://unpkg.com/@saturnbtcio/arch-sdk';
   
-  const connection = new Connection('https://api.arch.network');
+  const connection = new RpcConnection('https://api.arch.network');
   const keypair = Keypair.generate();
   
   console.log('Public key:', keypair.publicKey.toBase58());
@@ -492,13 +528,13 @@ const connection = new Connection(CONFIG.rpcUrl, CONFIG.commitment);
 </code></pre>
 <h3 id="react-example"><a class="header" href="#react-example">React Example</a></h3>
 <pre><code class="language-tsx">import React, { useState, useEffect } from 'react';
-import { Connection, PublicKey } from '@saturnbtcio/arch-sdk';
+import { RpcConnection, PublicKey } from '@saturnbtcio/arch-sdk';
 
 function ArchAccount({ address }: { address: string }) {
   const [balance, setBalance] = useState&lt;number | null&gt;(null);
   
   useEffect(() =&gt; {
-    const connection = new Connection('https://api.arch.network');
+    const connection = new RpcConnection('https://api.arch.network');
     const publicKey = new PublicKey(address);
     
     connection.getBalance(publicKey)
@@ -570,7 +606,8 @@ function isMyAccountData(data: unknown): data is MyAccountData {
 <h3 id="connection-issues"><a class="header" href="#connection-issues">Connection Issues</a></h3>
 <pre><code class="language-typescript">// Check if node is accessible
 try {
-  await connection.getVersion();
+  const blockCount = await connection.getBlockCount();
+  console.log('Node is accessible, block count:', blockCount);
 } catch (error) {
   console.error('Cannot connect to node:', error);
   // Try alternative endpoints
@@ -597,7 +634,7 @@ if (error.message.includes('custom program error')) {
 <h2 id="complete-example"><a class="header" href="#complete-example">Complete Example</a></h2>
 <p>Here’s a complete example that demonstrates key concepts:</p>
 <pre><code class="language-typescript">import { 
-  Connection, 
+  RpcConnection, 
   Keypair, 
   PublicKey, 
   Transaction, 
@@ -607,7 +644,7 @@ if (error.message.includes('custom program error')) {
 
 async function completeExample() {
   // 1. Setup connection
-  const connection = new Connection('http://localhost:9002');
+  const connection = new RpcConnection('http://localhost:9002');
   
   // 2. Create accounts
   const payer = Keypair.generate();
@@ -660,7 +697,6 @@ completeExample().catch(console.error);
 <ul>
 <li><strong>NPM Package</strong>: <a href="https://www.npmjs.com/package/@saturnbtcio/arch-sdk">@saturnbtcio/arch-sdk</a></li>
 <li><strong>GitHub Repository</strong>: <a href="https://github.com/saturnbtc/arch-typescript-sdk">saturnbtc/arch-typescript-sdk</a></li>
-<li><strong>Examples</strong>: <a href="https://github.com/saturnbtc/arch-typescript-sdk/tree/main/examples">TypeScript SDK Examples</a></li>
 <li><strong>Discord</strong>: <a href="https://discord.gg/archnetwork">Arch Network Discord</a></li>
 </ul>
 
