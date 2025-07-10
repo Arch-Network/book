@@ -9588,391 +9588,777 @@ completeExample().catch(console.error);
 <div style="break-before: page; page-break-before: always;"></div><h1 id="typescript-sdk-api-reference"><a class="header" href="#typescript-sdk-api-reference">TypeScript SDK API Reference</a></h1>
 <p>This page provides a comprehensive API reference for the Arch Network TypeScript SDK developed by Saturn.</p>
 <blockquote>
-<p><strong>Note</strong>: This documentation is under construction. For the most up-to-date API reference, please visit the <a href="https://github.com/saturnbtc/arch-typescript-sdk">TypeScript SDK GitHub repository</a>.</p>
+<p><strong>Note</strong>: The Arch TypeScript SDK is a low-level SDK that provides direct RPC access to Arch nodes. It does not include high-level abstractions like transaction builders or wallet management.</p>
 </blockquote>
 <h2 id="core-classes"><a class="header" href="#core-classes">Core Classes</a></h2>
-<p><strong>Connection</strong> - The main interface for interacting with an Arch Network node.</p>
-<p><strong>Keypair</strong> - Manages public/private key pairs for signing transactions.</p>
-<p><strong>Transaction</strong> - Represents a transaction to be sent to the network.</p>
-<p><strong>PublicKey</strong> - Represents a public key on the Arch Network.</p>
-<p><strong>SystemProgram</strong> - Provides system-level instructions like transfers and account creation.</p>
-<h2 id="complete-api-documentation"><a class="header" href="#complete-api-documentation">Complete API Documentation</a></h2>
-<p>For complete API documentation, please refer to:</p>
+<h3 id="rpcconnection"><a class="header" href="#rpcconnection">RpcConnection</a></h3>
+<p>The main class for interacting with an Arch Network node via RPC.</p>
+<pre><code class="language-typescript">import { RpcConnection } from '@saturnbtcio/arch-sdk';
+
+const connection = new RpcConnection('http://localhost:9002');
+</code></pre>
+<h4 id="methods"><a class="header" href="#methods">Methods</a></h4>
 <ul>
-<li><a href="https://www.npmjs.com/package/@saturnbtcio/arch-sdk">NPM Package Documentation</a></li>
+<li><code>sendTransaction(params: RuntimeTransaction): Promise&lt;string&gt;</code> - Send a transaction</li>
+<li><code>sendTransactions(params: RuntimeTransaction[]): Promise&lt;string[]&gt;</code> - Send multiple transactions</li>
+<li><code>readAccountInfo(pubkey: Pubkey): Promise&lt;AccountInfoResult&gt;</code> - Read account information</li>
+<li><code>getAccountAddress(pubkey: Pubkey): Promise&lt;string&gt;</code> - Get account address from pubkey</li>
+<li><code>getBestBlockHash(): Promise&lt;string&gt;</code> - Get the best block hash</li>
+<li><code>getBlock(blockHash: string): Promise&lt;Block | undefined&gt;</code> - Get block by hash</li>
+<li><code>getBlockCount(): Promise&lt;number&gt;</code> - Get current block count</li>
+<li><code>getBlockHash(blockHeight: number): Promise&lt;string&gt;</code> - Get block hash by height</li>
+<li><code>getProcessedTransaction(txid: string): Promise&lt;ProcessedTransaction | undefined&gt;</code> - Get transaction info</li>
+<li><code>getProgramAccounts(programId: Pubkey, filters?: AccountFilter[]): Promise&lt;ProgramAccount[]&gt;</code> - Get program accounts</li>
+<li><code>requestAirdrop(pubkey: Pubkey): Promise&lt;void&gt;</code> - Request airdrop (testnet only)</li>
+<li><code>createAccountWithFaucet(pubkey: Pubkey): Promise&lt;void&gt;</code> - Create and fund account (testnet only)</li>
+</ul>
+<h3 id="archconnection"><a class="header" href="#archconnection">ArchConnection</a></h3>
+<p>A wrapper that adds additional functionality to any Provider implementation.</p>
+<pre><code class="language-typescript">import { RpcConnection, ArchConnection } from '@saturnbtcio/arch-sdk';
+
+const connection = new RpcConnection('http://localhost:9002');
+const arch = ArchConnection(connection);
+</code></pre>
+<h4 id="methods-1"><a class="header" href="#methods-1">Methods</a></h4>
+<ul>
+<li><code>createNewAccount(): Promise&lt;CreatedAccount&gt;</code> - Create a new account with secp256k1 keypair</li>
+</ul>
+<h2 id="core-types"><a class="header" href="#core-types">Core Types</a></h2>
+<h3 id="pubkey"><a class="header" href="#pubkey">Pubkey</a></h3>
+<pre><code class="language-typescript">type Pubkey = Uint8Array; // 32 bytes
+</code></pre>
+<h3 id="message"><a class="header" href="#message">Message</a></h3>
+<pre><code class="language-typescript">interface Message {
+  signers: Pubkey[];
+  instructions: Instruction[];
+}
+</code></pre>
+<h3 id="instruction"><a class="header" href="#instruction">Instruction</a></h3>
+<pre><code class="language-typescript">interface Instruction {
+  program_id: Pubkey;
+  accounts: AccountMeta[];
+  data: Uint8Array;
+}
+</code></pre>
+<h3 id="accountmeta"><a class="header" href="#accountmeta">AccountMeta</a></h3>
+<pre><code class="language-typescript">interface AccountMeta {
+  pubkey: Pubkey;
+  is_signer: boolean;
+  is_writable: boolean;
+}
+</code></pre>
+<h3 id="runtimetransaction"><a class="header" href="#runtimetransaction">RuntimeTransaction</a></h3>
+<pre><code class="language-typescript">interface RuntimeTransaction {
+  version: number;
+  signatures: Signature[]; // Array of 64-byte signatures
+  message: SanitizedMessage;
+}
+</code></pre>
+<h3 id="sanitizedmessage"><a class="header" href="#sanitizedmessage">SanitizedMessage</a></h3>
+<pre><code class="language-typescript">interface SanitizedMessage {
+  header: MessageHeader;
+  account_keys: Pubkey[];
+  recent_blockhash: Uint8Array;
+  instructions: SanitizedInstruction[];
+}
+</code></pre>
+<h3 id="messageheader"><a class="header" href="#messageheader">MessageHeader</a></h3>
+<pre><code class="language-typescript">interface MessageHeader {
+  num_required_signatures: number;
+  num_readonly_signed_accounts: number;
+  num_readonly_unsigned_accounts: number;
+}
+</code></pre>
+<h3 id="sanitizedinstruction"><a class="header" href="#sanitizedinstruction">SanitizedInstruction</a></h3>
+<pre><code class="language-typescript">interface SanitizedInstruction {
+  program_id_index: number;
+  accounts: number[];
+  data: Uint8Array;
+}
+</code></pre>
+<h3 id="accountinforesult"><a class="header" href="#accountinforesult">AccountInfoResult</a></h3>
+<pre><code class="language-typescript">interface AccountInfoResult {
+  lamports: number;
+  data: Uint8Array;
+  owner: Pubkey;
+  executable: boolean;
+  rent_epoch: number;
+}
+</code></pre>
+<h3 id="createdaccount"><a class="header" href="#createdaccount">CreatedAccount</a></h3>
+<pre><code class="language-typescript">interface CreatedAccount {
+  privkey: string; // Hex-encoded private key
+  pubkey: string;  // Hex-encoded public key
+  address: string; // Bitcoin-style address
+}
+</code></pre>
+<h3 id="block"><a class="header" href="#block">Block</a></h3>
+<pre><code class="language-typescript">interface Block {
+  hash: string;
+  previous_blockhash: string;
+  parent_slot: number;
+  transactions?: ProcessedTransaction[];
+  block_time?: number;
+  block_height?: number;
+}
+</code></pre>
+<h3 id="processedtransaction"><a class="header" href="#processedtransaction">ProcessedTransaction</a></h3>
+<pre><code class="language-typescript">interface ProcessedTransaction {
+  txid: string;
+  status: ProcessedTransactionStatus;
+  bitcoin_txids: string[];
+}
+
+interface ProcessedTransactionStatus {
+  Processed?: {
+    runtime_transaction: RuntimeTransaction;
+    execution_result: any;
+    bitcoin_txids: string[];
+  };
+}
+</code></pre>
+<h2 id="utility-modules"><a class="header" href="#utility-modules">Utility Modules</a></h2>
+<h3 id="pubkeyutil"><a class="header" href="#pubkeyutil">PubkeyUtil</a></h3>
+<pre><code class="language-typescript">import { PubkeyUtil } from '@saturnbtcio/arch-sdk';
+
+// Get system program pubkey
+const systemProgram = PubkeyUtil.systemProgram();
+
+// Convert to/from hex
+const hex = PubkeyUtil.toHex(pubkey);
+const pubkey = PubkeyUtil.fromHex(hex);
+</code></pre>
+<h3 id="messageutil"><a class="header" href="#messageutil">MessageUtil</a></h3>
+<pre><code class="language-typescript">import { MessageUtil } from '@saturnbtcio/arch-sdk';
+
+// Serialize/deserialize messages
+const serialized = MessageUtil.serialize(message);
+const message = MessageUtil.deserialize(serialized);
+</code></pre>
+<h3 id="sanitizedmessageutil"><a class="header" href="#sanitizedmessageutil">SanitizedMessageUtil</a></h3>
+<pre><code class="language-typescript">import { SanitizedMessageUtil } from '@saturnbtcio/arch-sdk';
+
+// Work with sanitized messages
+const serialized = SanitizedMessageUtil.serialize(sanitizedMessage);
+const sanitizedMessage = SanitizedMessageUtil.deserialize(serialized);
+</code></pre>
+<h3 id="instructionutil"><a class="header" href="#instructionutil">InstructionUtil</a></h3>
+<pre><code class="language-typescript">import { InstructionUtil } from '@saturnbtcio/arch-sdk';
+
+// Serialize/deserialize instructions
+const serialized = InstructionUtil.serialize(instruction);
+const instruction = InstructionUtil.deserialize(serialized);
+</code></pre>
+<h3 id="accountutil"><a class="header" href="#accountutil">AccountUtil</a></h3>
+<pre><code class="language-typescript">import { AccountUtil } from '@saturnbtcio/arch-sdk';
+
+// Work with account data
+const serialized = AccountUtil.serialize(accountInfo);
+const accountInfo = AccountUtil.deserialize(serialized);
+</code></pre>
+<h3 id="signatureutil"><a class="header" href="#signatureutil">SignatureUtil</a></h3>
+<pre><code class="language-typescript">import { SignatureUtil } from '@saturnbtcio/arch-sdk';
+
+// Signature utilities (implementation details vary)
+</code></pre>
+<h2 id="error-handling-7"><a class="header" href="#error-handling-7">Error Handling</a></h2>
+<h3 id="archrpcerror"><a class="header" href="#archrpcerror">ArchRpcError</a></h3>
+<pre><code class="language-typescript">import { ArchRpcError } from '@saturnbtcio/arch-sdk';
+
+try {
+  await connection.getBlock('invalid-hash');
+} catch (error) {
+  if (error instanceof ArchRpcError) {
+    console.error('RPC Error:', error.error);
+    // error.error.code - Error code
+    // error.error.message - Error message
+  }
+}
+</code></pre>
+<h2 id="schema-exports"><a class="header" href="#schema-exports">Schema Exports</a></h2>
+<p>The SDK exports Borsh schemas for serialization:</p>
+<ul>
+<li><code>PubkeySchema</code></li>
+<li><code>MessageSchema</code></li>
+<li><code>SanitizedMessageSchema</code></li>
+<li><code>InstructionSchema</code></li>
+<li><code>SanitizedInstructionSchema</code></li>
+<li><code>MessageHeaderSchema</code></li>
+<li><code>UtxoMetaSchema</code></li>
+</ul>
+<h2 id="constants"><a class="header" href="#constants">Constants</a></h2>
+<h3 id="action"><a class="header" href="#action">Action</a></h3>
+<pre><code class="language-typescript">import { Action } from '@saturnbtcio/arch-sdk';
+
+// RPC action constants used internally
+</code></pre>
+<h2 id="complete-api-documentation"><a class="header" href="#complete-api-documentation">Complete API Documentation</a></h2>
+<p>For the most up-to-date API reference and implementation details:</p>
+<ul>
+<li><a href="https://www.npmjs.com/package/@saturnbtcio/arch-sdk">NPM Package</a></li>
 <li><a href="https://github.com/saturnbtc/arch-typescript-sdk">GitHub Repository</a></li>
+<li><a href="https://github.com/saturnbtc/arch-typescript-sdk/tree/main/src">Source Code</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="typescript-sdk-examples"><a class="header" href="#typescript-sdk-examples">TypeScript SDK Examples</a></h1>
 <p>This page provides practical examples of using the Arch Network TypeScript SDK (by Saturn) for common tasks.</p>
+<blockquote>
+<p><strong>Note</strong>: These examples demonstrate the low-level RPC API. The SDK does not include high-level abstractions like transaction builders or wallet management.</p>
+</blockquote>
 <h2 id="basic-examples"><a class="header" href="#basic-examples">Basic Examples</a></h2>
+<h3 id="connecting-and-querying-network"><a class="header" href="#connecting-and-querying-network">Connecting and Querying Network</a></h3>
+<pre><code class="language-typescript">import { RpcConnection } from '@saturnbtcio/arch-sdk';
+
+async function networkExample() {
+  const connection = new RpcConnection('http://localhost:9002');
+  
+  try {
+    // Get network status
+    const blockCount = await connection.getBlockCount();
+    console.log('Current block count:', blockCount);
+    
+    // Get latest block
+    const bestBlockHash = await connection.getBestBlockHash();
+    const block = await connection.getBlock(bestBlockHash);
+    
+    if (block) {
+      console.log('Latest block:', {
+        hash: block.hash,
+        height: block.block_height,
+        transactions: block.transactions?.length || 0
+      });
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+  }
+}
+</code></pre>
 <h3 id="account-management-2"><a class="header" href="#account-management-2">Account Management</a></h3>
-<pre><code class="language-typescript">import { Connection, Keypair, PublicKey } from '@saturnbtcio/arch-sdk';
+<pre><code class="language-typescript">import { RpcConnection, ArchConnection } from '@saturnbtcio/arch-sdk';
 
 async function accountExample() {
-  const connection = new Connection('http://localhost:9002');
+  const connection = new RpcConnection('http://localhost:9002');
+  const arch = ArchConnection(connection);
   
-  // Create a new account
-  const newAccount = Keypair.generate();
-  console.log('New account:', newAccount.publicKey.toBase58());
+  // Create a new account with private key
+  const newAccount = await arch.createNewAccount();
+  console.log('New account created:');
+  console.log('  Private key:', newAccount.privkey);
+  console.log('  Public key:', newAccount.pubkey);
+  console.log('  Address:', newAccount.address);
   
-  // Check if account exists
-  const accountInfo = await connection.getAccountInfo(newAccount.publicKey);
-  if (!accountInfo) {
-    console.log('Account does not exist yet');
+  // Convert hex pubkey to Uint8Array for RPC calls
+  const pubkeyBytes = new Uint8Array(
+    newAccount.pubkey.match(/.{1,2}/g)!.map(byte =&gt; parseInt(byte, 16))
+  );
+  
+  // Read account info
+  try {
+    const accountInfo = await connection.readAccountInfo(pubkeyBytes);
+    console.log('Account info:', accountInfo);
+  } catch (error) {
+    console.log('Account not found (expected for new account)');
   }
-  
-  // Get multiple accounts at once
-  const accounts = await connection.getMultipleAccountsInfo([
-    new PublicKey('Account1...'),
-    new PublicKey('Account2...'),
-    newAccount.publicKey
-  ]);
 }
 </code></pre>
-<h3 id="token-operations-1"><a class="header" href="#token-operations-1">Token Operations</a></h3>
-<pre><code class="language-typescript">import { 
-  Connection, 
-  Keypair, 
-  Transaction,
-  SystemProgram
-} from '@saturnbtcio/arch-sdk';
+<h3 id="creating-and-funding-accounts"><a class="header" href="#creating-and-funding-accounts">Creating and Funding Accounts</a></h3>
+<pre><code class="language-typescript">import { RpcConnection } from '@saturnbtcio/arch-sdk';
 
-async function tokenExample() {
-  const connection = new Connection('http://localhost:9002');
-  const payer = Keypair.generate();
+async function fundAccountExample() {
+  const connection = new RpcConnection('http://localhost:9002');
   
-  // Create a token mint account
-  const mint = Keypair.generate();
-  const mintSpace = 82; // Token mint size
-  const mintRent = await connection.getMinimumBalanceForRentExemption(mintSpace);
+  // Generate a random pubkey (in practice, derive from private key)
+  const pubkey = new Uint8Array(32);
+  crypto.getRandomValues(pubkey);
   
-  const createMintIx = SystemProgram.createAccount({
-    fromPubkey: payer.publicKey,
-    newAccountPubkey: mint.publicKey,
-    lamports: mintRent,
-    space: mintSpace,
-    programId: TOKEN_PROGRAM_ID
-  });
-  
-  const transaction = new Transaction().add(createMintIx);
-  // Add token initialization instructions here
+  try {
+    // Create and fund account (testnet only)
+    await connection.createAccountWithFaucet(pubkey);
+    console.log('Account created and funded');
+    
+    // Read the funded account
+    const accountInfo = await connection.readAccountInfo(pubkey);
+    console.log('Account balance:', accountInfo.lamports);
+  } catch (error) {
+    console.error('Failed to create account:', error);
+  }
 }
 </code></pre>
-<h3 id="working-with-utxos"><a class="header" href="#working-with-utxos">Working with UTXOs</a></h3>
-<pre><code class="language-typescript">import { Connection, PublicKey } from '@saturnbtcio/arch-sdk';
+<h2 id="working-with-messages-and-instructions-1"><a class="header" href="#working-with-messages-and-instructions-1">Working with Messages and Instructions</a></h2>
+<h3 id="creating-a-simple-message"><a class="header" href="#creating-a-simple-message">Creating a Simple Message</a></h3>
+<pre><code class="language-typescript">import { MessageUtil, PubkeyUtil } from '@saturnbtcio/arch-sdk';
+import type { Message, Instruction } from '@saturnbtcio/arch-sdk';
 
-async function utxoExample() {
-  const connection = new Connection('http://localhost:9002');
-  const address = new PublicKey('YourAddress...');
+function createSimpleMessage() {
+  // Create account pubkeys
+  const signer = new Uint8Array(32);
+  crypto.getRandomValues(signer);
   
-  // Get UTXOs for an address
-  const utxos = await connection.getUtxos(address);
+  // Create an instruction
+  const instruction: Instruction = {
+    program_id: PubkeyUtil.systemProgram(),
+    accounts: [
+      {
+        pubkey: signer,
+        is_signer: true,
+        is_writable: true,
+      },
+    ],
+    data: new Uint8Array([1, 2, 3, 4]), // Instruction data
+  };
   
-  console.log('Found UTXOs:', utxos.length);
-  utxos.forEach((utxo, index) =&gt; {
-    console.log(`UTXO ${index}:`, {
-      txid: utxo.txid,
-      vout: utxo.vout,
-      value: utxo.value
-    });
-  });
+  // Create a message
+  const message: Message = {
+    signers: [signer],
+    instructions: [instruction],
+  };
+  
+  // Serialize for sending
+  const serialized = MessageUtil.serialize(message);
+  console.log('Serialized message:', serialized);
+  
+  // Deserialize back
+  const deserialized = MessageUtil.deserialize(serialized);
+  console.log('Deserialized:', deserialized);
+}
+</code></pre>
+<h3 id="creating-a-runtime-transaction"><a class="header" href="#creating-a-runtime-transaction">Creating a Runtime Transaction</a></h3>
+<pre><code class="language-typescript">import { RpcConnection, SanitizedMessageUtil } from '@saturnbtcio/arch-sdk';
+import type { RuntimeTransaction, SanitizedMessage } from '@saturnbtcio/arch-sdk';
+
+async function createTransaction() {
+  const connection = new RpcConnection('http://localhost:9002');
+  
+  // Create account keys
+  const signer = new Uint8Array(32);
+  crypto.getRandomValues(signer);
+  
+  // Create a sanitized message
+  const sanitizedMessage: SanitizedMessage = {
+    header: {
+      num_required_signatures: 1,
+      num_readonly_signed_accounts: 0,
+      num_readonly_unsigned_accounts: 1,
+    },
+    account_keys: [
+      signer,                          // Index 0: Signer
+      PubkeyUtil.systemProgram(),      // Index 1: System program
+    ],
+    recent_blockhash: new Uint8Array(32), // You need a real blockhash
+    instructions: [
+      {
+        program_id_index: 1,           // System program
+        accounts: [0],                 // Signer account
+        data: new Uint8Array([0, 0, 0, 0]), // Transfer instruction
+      },
+    ],
+  };
+  
+  // Create the runtime transaction
+  const transaction: RuntimeTransaction = {
+    version: 0,
+    signatures: [new Uint8Array(64)], // Need real signature
+    message: sanitizedMessage,
+  };
+  
+  // Note: This example doesn't include proper signing
+  // In practice, you need to sign the message with the private key
+  
+  console.log('Transaction created (unsigned)');
 }
 </code></pre>
 <h2 id="advanced-examples"><a class="header" href="#advanced-examples">Advanced Examples</a></h2>
-<h3 id="batch-transactions"><a class="header" href="#batch-transactions">Batch Transactions</a></h3>
-<pre><code class="language-typescript">async function batchTransactions() {
-  const connection = new Connection('http://localhost:9002');
-  const payer = Keypair.generate();
+<h3 id="querying-blocks-and-transactions"><a class="header" href="#querying-blocks-and-transactions">Querying Blocks and Transactions</a></h3>
+<pre><code class="language-typescript">import { RpcConnection } from '@saturnbtcio/arch-sdk';
+
+async function blockExplorer() {
+  const connection = new RpcConnection('http://localhost:9002');
   
-  // Create multiple transactions
-  const transactions = [];
-  
-  for (let i = 0; i &lt; 5; i++) {
-    const recipient = Keypair.generate();
-    const tx = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: payer.publicKey,
-        toPubkey: recipient.publicKey,
-        lamports: 1000000
-      })
-    );
-    transactions.push(tx);
+  try {
+    // Get recent blocks
+    const blockCount = await connection.getBlockCount();
+    console.log(`\nExploring last 5 blocks (current height: ${blockCount})`);
+    
+    for (let i = 0; i &lt; 5 &amp;&amp; blockCount - i &gt; 0; i++) {
+      const height = blockCount - i - 1;
+      const hash = await connection.getBlockHash(height);
+      const block = await connection.getBlock(hash);
+      
+      if (block) {
+        console.log(`\nBlock ${height}:`);
+        console.log(`  Hash: ${hash}`);
+        console.log(`  Transactions: ${block.transactions?.length || 0}`);
+        
+        // Check transactions in the block
+        if (block.transactions &amp;&amp; block.transactions.length &gt; 0) {
+          for (const tx of block.transactions) {
+            console.log(`  TX: ${tx.txid}`);
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error exploring blocks:', error);
   }
-  
-  // Send all transactions
-  const signatures = await Promise.all(
-    transactions.map(tx =&gt; 
-      connection.sendAndConfirmTransaction(tx, [payer])
-    )
-  );
-  
-  console.log('Batch complete:', signatures);
 }
 </code></pre>
-<h3 id="error-handling-patterns"><a class="header" href="#error-handling-patterns">Error Handling Patterns</a></h3>
-<pre><code class="language-typescript">import { TransactionError, NetworkError } from '@saturnbtcio/arch-sdk';
+<h3 id="getting-program-accounts"><a class="header" href="#getting-program-accounts">Getting Program Accounts</a></h3>
+<pre><code class="language-typescript">import { RpcConnection } from '@saturnbtcio/arch-sdk';
 
-async function robustTransactionHandling() {
-  const maxRetries = 3;
-  let lastError;
+async function getProgramAccountsExample() {
+  const connection = new RpcConnection('http://localhost:9002');
   
-  for (let attempt = 0; attempt &lt; maxRetries; attempt++) {
+  // Example program ID (replace with actual program)
+  const programId = new Uint8Array(32);
+  programId[31] = 2; // Example program ID
+  
+  try {
+    // Get all accounts owned by the program
+    const accounts = await connection.getProgramAccounts(programId);
+    
+    console.log(`Found ${accounts.length} accounts for program`);
+    
+    accounts.forEach((account, index) =&gt; {
+      console.log(`\nAccount ${index}:`);
+      console.log('  Pubkey:', account.pubkey);
+      console.log('  Account:', account.account);
+    });
+    
+    // With filters (if supported)
+    const filteredAccounts = await connection.getProgramAccounts(
+      programId,
+      [
+        // Filter examples would go here
+        // The actual filter format depends on implementation
+      ]
+    );
+  } catch (error) {
+    console.error('Error getting program accounts:', error);
+  }
+}
+</code></pre>
+<h3 id="error-handling-with-retry"><a class="header" href="#error-handling-with-retry">Error Handling with Retry</a></h3>
+<pre><code class="language-typescript">import { RpcConnection, ArchRpcError } from '@saturnbtcio/arch-sdk';
+
+async function robustRpcCall&lt;T&gt;(
+  fn: () =&gt; Promise&lt;T&gt;,
+  maxRetries: number = 3
+): Promise&lt;T&gt; {
+  let lastError: Error | undefined;
+  
+  for (let i = 0; i &lt; maxRetries; i++) {
     try {
-      const result = await connection.sendAndConfirmTransaction(
-        transaction,
-        signers
-      );
-      return result; // Success!
+      return await fn();
     } catch (error) {
-      lastError = error;
+      lastError = error as Error;
       
-      if (error instanceof TransactionError) {
-        // Transaction-specific error
-        console.error(`Attempt ${attempt + 1} failed:`, error.logs);
+      if (error instanceof ArchRpcError) {
+        console.error(`RPC Error (attempt ${i + 1}):`, error.error);
         
-        if (error.message.includes('insufficient funds')) {
-          // Don't retry insufficient funds
-          throw error;
+        // Don't retry on certain errors
+        if (error.error.code === 404) {
+          throw error; // Not found - don't retry
         }
-      } else if (error instanceof NetworkError) {
-        // Network error - worth retrying
-        console.error(`Network error on attempt ${attempt + 1}`);
       }
       
-      // Wait before retry
-      if (attempt &lt; maxRetries - 1) {
-        await new Promise(resolve =&gt; setTimeout(resolve, 1000 * (attempt + 1)));
+      // Wait before retry (exponential backoff)
+      if (i &lt; maxRetries - 1) {
+        await new Promise(resolve =&gt; 
+          setTimeout(resolve, 1000 * Math.pow(2, i))
+        );
       }
     }
   }
   
   throw lastError;
 }
-</code></pre>
-<h3 id="subscribing-to-account-changes"><a class="header" href="#subscribing-to-account-changes">Subscribing to Account Changes</a></h3>
-<pre><code class="language-typescript">async function subscribeToAccount() {
-  const connection = new Connection('http://localhost:9002');
-  const accountToWatch = new PublicKey('AccountAddress...');
+
+// Usage example
+async function example() {
+  const connection = new RpcConnection('http://localhost:9002');
   
-  // Subscribe to account changes
-  const subscriptionId = connection.onAccountChange(
-    accountToWatch,
-    (accountInfo, context) =&gt; {
-      console.log('Account updated:', {
-        slot: context.slot,
-        lamports: accountInfo.lamports,
-        dataLength: accountInfo.data.length
-      });
-    },
-    'confirmed'
+  const blockCount = await robustRpcCall(
+    () =&gt; connection.getBlockCount()
   );
-  
-  // Later: unsubscribe
-  // await connection.removeAccountChangeListener(subscriptionId);
+  console.log('Block count:', blockCount);
 }
 </code></pre>
 <h2 id="integration-examples-1"><a class="header" href="#integration-examples-1">Integration Examples</a></h2>
+<h3 id="nodejs-service-example"><a class="header" href="#nodejs-service-example">Node.js Service Example</a></h3>
+<pre><code class="language-typescript">import express from 'express';
+import { RpcConnection, ArchConnection } from '@saturnbtcio/arch-sdk';
+
+const app = express();
+app.use(express.json());
+
+const connection = new RpcConnection(process.env.ARCH_RPC_URL || 'http://localhost:9002');
+const arch = ArchConnection(connection);
+
+// Get network status endpoint
+app.get('/api/status', async (req, res) =&gt; {
+  try {
+    const blockCount = await connection.getBlockCount();
+    const bestBlockHash = await connection.getBestBlockHash();
+    
+    res.json({
+      success: true,
+      data: {
+        blockCount,
+        bestBlockHash,
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+// Create new account endpoint
+app.post('/api/account/new', async (req, res) =&gt; {
+  try {
+    const account = await arch.createNewAccount();
+    
+    // In production, you'd want to securely store the private key
+    res.json({
+      success: true,
+      data: {
+        address: account.address,
+        pubkey: account.pubkey,
+        // Don't return private key in production!
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
+app.listen(3000, () =&gt; {
+  console.log('Server running on port 3000');
+});
+</code></pre>
 <h3 id="react-hook-example"><a class="header" href="#react-hook-example">React Hook Example</a></h3>
 <pre><code class="language-typescript">import { useState, useEffect } from 'react';
-import { Connection, PublicKey } from '@saturnbtcio/arch-sdk';
+import { RpcConnection } from '@saturnbtcio/arch-sdk';
 
-function useArchBalance(address: string) {
-  const [balance, setBalance] = useState&lt;number | null&gt;(null);
+function useArchBlockCount() {
+  const [blockCount, setBlockCount] = useState&lt;number | null&gt;(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState&lt;string | null&gt;(null);
   
   useEffect(() =&gt; {
-    const connection = new Connection('https://api.arch.network');
+    const connection = new RpcConnection('https://api.arch.network');
+    let mounted = true;
     
-    async function fetchBalance() {
+    async function fetchBlockCount() {
       try {
-        setLoading(true);
-        const pubkey = new PublicKey(address);
-        const balance = await connection.getBalance(pubkey);
-        setBalance(balance);
-        setError(null);
+        const count = await connection.getBlockCount();
+        if (mounted) {
+          setBlockCount(count);
+          setError(null);
+        }
       } catch (err) {
-        setError(err.message);
-        setBalance(null);
+        if (mounted) {
+          setError(err.message);
+          setBlockCount(null);
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     }
     
-    fetchBalance();
+    fetchBlockCount();
     
     // Set up polling
-    const interval = setInterval(fetchBalance, 10000);
-    return () =&gt; clearInterval(interval);
-  }, [address]);
+    const interval = setInterval(fetchBlockCount, 10000);
+    
+    return () =&gt; {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
   
-  return { balance, loading, error };
+  return { blockCount, loading, error };
+}
+
+// Usage in component
+function BlockCounter() {
+  const { blockCount, loading, error } = useArchBlockCount();
+  
+  if (loading) return &lt;div&gt;Loading...&lt;/div&gt;;
+  if (error) return &lt;div&gt;Error: {error}&lt;/div&gt;;
+  
+  return &lt;div&gt;Current block: {blockCount}&lt;/div&gt;;
 }
 </code></pre>
-<h3 id="nodejs-backend-service"><a class="header" href="#nodejs-backend-service">Node.js Backend Service</a></h3>
-<pre><code class="language-typescript">import express from 'express';
-import { Connection, Keypair, Transaction } from '@saturnbtcio/arch-sdk';
+<h2 id="utility-functions-1"><a class="header" href="#utility-functions-1">Utility Functions</a></h2>
+<h3 id="working-with-public-keys"><a class="header" href="#working-with-public-keys">Working with Public Keys</a></h3>
+<pre><code class="language-typescript">import { PubkeyUtil } from '@saturnbtcio/arch-sdk';
 
-const app = express();
-const connection = new Connection(process.env.ARCH_RPC_URL!);
-
-app.post('/api/transfer', async (req, res) =&gt; {
-  try {
-    const { to, amount } = req.body;
-    
-    // Load server wallet
-    const serverWallet = Keypair.fromSecretKey(
-      new Uint8Array(JSON.parse(process.env.SERVER_WALLET!))
-    );
-    
-    // Create and send transaction
-    const transaction = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: serverWallet.publicKey,
-        toPubkey: new PublicKey(to),
-        lamports: amount
-      })
-    );
-    
-    const signature = await connection.sendAndConfirmTransaction(
-      transaction,
-      [serverWallet]
-    );
-    
-    res.json({ success: true, signature });
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error.message 
-    });
-  }
-});
+// Convert between formats
+function pubkeyExamples() {
+  // Create a pubkey from hex string
+  const hexPubkey = '0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20';
+  const pubkeyBytes = PubkeyUtil.fromHex(hexPubkey);
+  
+  // Convert back to hex
+  const hexAgain = PubkeyUtil.toHex(pubkeyBytes);
+  console.log('Hex match:', hexPubkey === hexAgain);
+  
+  // Get system program pubkey
+  const systemProgram = PubkeyUtil.systemProgram();
+  console.log('System program:', PubkeyUtil.toHex(systemProgram));
+}
 </code></pre>
 <h2 id="more-examples"><a class="header" href="#more-examples">More Examples</a></h2>
-<p>For more examples, check out:</p>
+<p>For more examples and implementation details:</p>
 <ul>
 <li><a href="https://github.com/arch-network/arch-network/tree/main/examples">Arch Network Examples</a></li>
+<li><a href="https://github.com/saturnbtc/arch-typescript-sdk/tree/main/src">TypeScript SDK Source</a></li>
 </ul>
 <h2 id="next-steps-8"><a class="header" href="#next-steps-8">Next Steps</a></h2>
 <ul>
 <li><a href="sdk/typescript/api-reference.html">TypeScript API Reference</a></li>
-<li><a href="sdk/typescript/web3-integration.html">Web3 Integration Guide</a></li>
 <li><a href="sdk/typescript/getting-started.html">Getting Started Guide</a></li>
+<li><a href="sdk/typescript/../../rpc/rpc.html">RPC Methods Documentation</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="web3-integration-guide"><a class="header" href="#web3-integration-guide">Web3 Integration Guide</a></h1>
 <p>This guide covers how to integrate the Arch Network TypeScript SDK (by Saturn) with Web3 applications, wallets, and dApps.</p>
-<h2 id="wallet-integration-1"><a class="header" href="#wallet-integration-1">Wallet Integration</a></h2>
-<h3 id="browser-wallet-detection"><a class="header" href="#browser-wallet-detection">Browser Wallet Detection</a></h3>
-<pre><code class="language-typescript">import { Connection, PublicKey } from '@saturnbtcio/arch-sdk';
+<blockquote>
+<p><strong>Important</strong>: The Arch TypeScript SDK is a low-level RPC client. It does not include wallet adapters, transaction builders, or other high-level abstractions. This guide shows how you could build these features on top of the SDK.</p>
+</blockquote>
+<h2 id="understanding-the-limitations"><a class="header" href="#understanding-the-limitations">Understanding the Limitations</a></h2>
+<p>The current TypeScript SDK provides:</p>
+<ul>
+<li>Low-level RPC connection (<code>RpcConnection</code>)</li>
+<li>Basic account creation with secp256k1 (<code>ArchConnection</code>)</li>
+<li>Message/transaction serialization utilities</li>
+<li>Type definitions for Arch data structures</li>
+</ul>
+<p>It does <strong>NOT</strong> provide:</p>
+<ul>
+<li>Wallet adapters or browser wallet integration</li>
+<li>High-level transaction builders</li>
+<li>React/Vue components or hooks</li>
+<li>State management solutions</li>
+</ul>
+<h2 id="building-wallet-integration"><a class="header" href="#building-wallet-integration">Building Wallet Integration</a></h2>
+<p>Since the SDK doesn’t include wallet adapters, you’ll need to build your own. Here’s a conceptual approach:</p>
+<h3 id="defining-a-wallet-interface"><a class="header" href="#defining-a-wallet-interface">Defining a Wallet Interface</a></h3>
+<pre><code class="language-typescript">import { RpcConnection } from '@saturnbtcio/arch-sdk';
+import type { RuntimeTransaction, SanitizedMessage } from '@saturnbtcio/arch-sdk';
 
-// Check if Arch wallet is installed
-function isArchWalletInstalled(): boolean {
-  return typeof window !== 'undefined' &amp;&amp; 
-         window.arch !== undefined;
-}
-
-// Connect to wallet
-async function connectWallet() {
-  if (!isArchWalletInstalled()) {
-    throw new Error('Arch wallet not installed');
-  }
-  
-  try {
-    const response = await window.arch.connect();
-    const publicKey = new PublicKey(response.publicKey);
-    console.log('Connected:', publicKey.toBase58());
-    return publicKey;
-  } catch (error) {
-    console.error('Failed to connect:', error);
-    throw error;
-  }
-}
-</code></pre>
-<h3 id="wallet-adapter-pattern"><a class="header" href="#wallet-adapter-pattern">Wallet Adapter Pattern</a></h3>
-<pre><code class="language-typescript">interface WalletAdapter {
-  publicKey: PublicKey | null;
+// Define what a wallet adapter might look like
+interface ArchWallet {
+  publicKey: Uint8Array | null;
   connected: boolean;
-  connect(): Promise&lt;void&gt;;
+  connect(): Promise&lt;{ publicKey: string }&gt;;
   disconnect(): Promise&lt;void&gt;;
-  signTransaction(tx: Transaction): Promise&lt;Transaction&gt;;
-  signAllTransactions(txs: Transaction[]): Promise&lt;Transaction[]&gt;;
+  signMessage(message: Uint8Array): Promise&lt;Uint8Array&gt;;
+  signTransaction(tx: SanitizedMessage): Promise&lt;Uint8Array&gt;;
 }
 
-class ArchWalletAdapter implements WalletAdapter {
-  publicKey: PublicKey | null = null;
+// Example implementation skeleton
+class BrowserWalletAdapter implements ArchWallet {
+  publicKey: Uint8Array | null = null;
   connected: boolean = false;
   
-  async connect(): Promise&lt;void&gt; {
-    const response = await window.arch.connect();
-    this.publicKey = new PublicKey(response.publicKey);
-    this.connected = true;
+  async connect(): Promise&lt;{ publicKey: string }&gt; {
+    // This would interface with actual browser wallet
+    // For now, this is just a placeholder
+    throw new Error('Wallet integration not implemented');
   }
   
   async disconnect(): Promise&lt;void&gt; {
-    await window.arch.disconnect();
     this.publicKey = null;
     this.connected = false;
   }
   
-  async signTransaction(tx: Transaction): Promise&lt;Transaction&gt; {
-    return window.arch.signTransaction(tx);
+  async signMessage(message: Uint8Array): Promise&lt;Uint8Array&gt; {
+    // Would call wallet's signing method
+    throw new Error('Message signing not implemented');
   }
   
-  async signAllTransactions(txs: Transaction[]): Promise&lt;Transaction[]&gt; {
-    return window.arch.signAllTransactions(txs);
+  async signTransaction(tx: SanitizedMessage): Promise&lt;Uint8Array&gt; {
+    // Would call wallet's transaction signing
+    throw new Error('Transaction signing not implemented');
   }
 }
 </code></pre>
-<h2 id="react-integration"><a class="header" href="#react-integration">React Integration</a></h2>
-<h3 id="context-provider"><a class="header" href="#context-provider">Context Provider</a></h3>
-<pre><code class="language-typescript">import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Connection, PublicKey, Transaction } from '@saturnbtcio/arch-sdk';
+<h3 id="creating-transactions-with-external-signing"><a class="header" href="#creating-transactions-with-external-signing">Creating Transactions with External Signing</a></h3>
+<pre><code class="language-typescript">import { RpcConnection, SanitizedMessageUtil, PubkeyUtil } from '@saturnbtcio/arch-sdk';
+import type { RuntimeTransaction, SanitizedMessage, SanitizedInstruction } from '@saturnbtcio/arch-sdk';
+
+async function createAndSignTransaction(
+  connection: RpcConnection,
+  signer: Uint8Array,
+  signFunction: (message: Uint8Array) =&gt; Promise&lt;Uint8Array&gt;
+) {
+  // Build a sanitized message
+  const message: SanitizedMessage = {
+    header: {
+      num_required_signatures: 1,
+      num_readonly_signed_accounts: 0,
+      num_readonly_unsigned_accounts: 1,
+    },
+    account_keys: [
+      signer,                      // Signer pubkey
+      PubkeyUtil.systemProgram(),  // System program
+    ],
+    recent_blockhash: new Uint8Array(32), // Need actual blockhash
+    instructions: [
+      {
+        program_id_index: 1,
+        accounts: [0],
+        data: new Uint8Array([0, 0, 0, 0]),
+      },
+    ],
+  };
+  
+  // Serialize message for signing
+  const serializedMessage = SanitizedMessageUtil.serialize(message);
+  
+  // Sign with external wallet
+  const signature = await signFunction(serializedMessage);
+  
+  // Create runtime transaction
+  const transaction: RuntimeTransaction = {
+    version: 0,
+    signatures: [signature],
+    message: message,
+  };
+  
+  // Send transaction
+  const txId = await connection.sendTransaction(transaction);
+  return txId;
+}
+</code></pre>
+<h2 id="react-integration-pattern"><a class="header" href="#react-integration-pattern">React Integration Pattern</a></h2>
+<p>Here’s how you might structure a React integration:</p>
+<h3 id="basic-context-provider"><a class="header" href="#basic-context-provider">Basic Context Provider</a></h3>
+<pre><code class="language-typescript">import React, { createContext, useContext, useState } from 'react';
+import { RpcConnection, ArchConnection } from '@saturnbtcio/arch-sdk';
 
 interface ArchContextState {
-  connection: Connection;
-  publicKey: PublicKey | null;
-  connected: boolean;
-  connect: () =&gt; Promise&lt;void&gt;;
-  disconnect: () =&gt; Promise&lt;void&gt;;
-  signTransaction: (tx: Transaction) =&gt; Promise&lt;Transaction&gt;;
+  connection: RpcConnection;
+  arch: ReturnType&lt;typeof ArchConnection&gt;;
+  // Add your wallet adapter here when implemented
 }
 
 const ArchContext = createContext&lt;ArchContextState | null&gt;(null);
 
-export function ArchProvider({ children, endpoint }) {
-  const [publicKey, setPublicKey] = useState&lt;PublicKey | null&gt;(null);
-  const [connected, setConnected] = useState(false);
-  const connection = new Connection(endpoint);
-  
-  const connect = async () =&gt; {
-    try {
-      const response = await window.arch.connect();
-      setPublicKey(new PublicKey(response.publicKey));
-      setConnected(true);
-    } catch (error) {
-      console.error('Connection failed:', error);
-      throw error;
-    }
-  };
-  
-  const disconnect = async () =&gt; {
-    await window.arch.disconnect();
-    setPublicKey(null);
-    setConnected(false);
-  };
-  
-  const signTransaction = async (tx: Transaction) =&gt; {
-    if (!connected) throw new Error('Wallet not connected');
-    return window.arch.signTransaction(tx);
-  };
+export function ArchProvider({ children, endpoint }: { children: React.ReactNode, endpoint: string }) {
+  const connection = new RpcConnection(endpoint);
+  const arch = ArchConnection(connection);
   
   const value = {
     connection,
-    publicKey,
-    connected,
-    connect,
-    disconnect,
-    signTransaction
+    arch,
   };
   
   return (
@@ -9990,27 +10376,73 @@ export function useArch() {
   return context;
 }
 </code></pre>
-<h3 id="react-hooks"><a class="header" href="#react-hooks">React Hooks</a></h3>
-<pre><code class="language-typescript">// Hook for account balance
-export function useBalance(address?: PublicKey) {
+<h3 id="custom-hooks"><a class="header" href="#custom-hooks">Custom Hooks</a></h3>
+<pre><code class="language-typescript">import { useState, useEffect } from 'react';
+import { RpcConnection } from '@saturnbtcio/arch-sdk';
+
+// Hook for monitoring block count
+export function useBlockCount(endpoint: string) {
+  const [blockCount, setBlockCount] = useState&lt;number | null&gt;(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState&lt;Error | null&gt;(null);
+  
+  useEffect(() =&gt; {
+    const connection = new RpcConnection(endpoint);
+    let mounted = true;
+    
+    const fetchBlockCount = async () =&gt; {
+      try {
+        const count = await connection.getBlockCount();
+        if (mounted) {
+          setBlockCount(count);
+          setError(null);
+        }
+      } catch (err) {
+        if (mounted) {
+          setError(err as Error);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+    
+    fetchBlockCount();
+    const interval = setInterval(fetchBlockCount, 10000);
+    
+    return () =&gt; {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, [endpoint]);
+  
+  return { blockCount, loading, error };
+}
+
+// Hook for account information
+export function useAccountInfo(pubkey: Uint8Array | null) {
   const { connection } = useArch();
-  const [balance, setBalance] = useState&lt;number&gt;(0);
+  const [accountInfo, setAccountInfo] = useState&lt;any&gt;(null);
   const [loading, setLoading] = useState(false);
   
   useEffect(() =&gt; {
-    if (!address) return;
+    if (!pubkey) return;
     
     let cancelled = false;
     
-    const fetchBalance = async () =&gt; {
+    const fetchAccount = async () =&gt; {
       setLoading(true);
       try {
-        const balance = await connection.getBalance(address);
+        const info = await connection.readAccountInfo(pubkey);
         if (!cancelled) {
-          setBalance(balance);
+          setAccountInfo(info);
         }
       } catch (error) {
-        console.error('Failed to fetch balance:', error);
+        console.error('Failed to fetch account:', error);
+        if (!cancelled) {
+          setAccountInfo(null);
+        }
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -10018,297 +10450,175 @@ export function useBalance(address?: PublicKey) {
       }
     };
     
-    fetchBalance();
-    
-    // Subscribe to changes
-    const id = connection.onAccountChange(
-      address,
-      (accountInfo) =&gt; {
-        setBalance(accountInfo.lamports);
-      },
-      'confirmed'
-    );
+    fetchAccount();
     
     return () =&gt; {
       cancelled = true;
-      connection.removeAccountChangeListener(id);
     };
-  }, [address, connection]);
+  }, [pubkey, connection]);
   
-  return { balance, loading };
-}
-
-// Hook for sending transactions
-export function useSendTransaction() {
-  const { connection, signTransaction } = useArch();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState&lt;Error | null&gt;(null);
-  
-  const sendTransaction = async (transaction: Transaction) =&gt; {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const signed = await signTransaction(transaction);
-      const signature = await connection.sendRawTransaction(signed.serialize());
-      await connection.confirmTransaction(signature);
-      return signature;
-    } catch (err) {
-      setError(err as Error);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  return { sendTransaction, loading, error };
+  return { accountInfo, loading };
 }
 </code></pre>
-<h2 id="vuejs-integration"><a class="header" href="#vuejs-integration">Vue.js Integration</a></h2>
-<h3 id="composition-api"><a class="header" href="#composition-api">Composition API</a></h3>
-<pre><code class="language-typescript">import { ref, computed, watch } from 'vue';
-import { Connection, PublicKey } from '@saturnbtcio/arch-sdk';
+<h2 id="building-transaction-helpers"><a class="header" href="#building-transaction-helpers">Building Transaction Helpers</a></h2>
+<p>Since the SDK doesn’t include transaction builders, here’s how you might create your own:</p>
+<pre><code class="language-typescript">import { PubkeyUtil } from '@saturnbtcio/arch-sdk';
+import type { SanitizedMessage, SanitizedInstruction } from '@saturnbtcio/arch-sdk';
 
-export function useArchWallet(endpoint: string) {
-  const connection = new Connection(endpoint);
-  const publicKey = ref&lt;PublicKey | null&gt;(null);
-  const connected = computed(() =&gt; publicKey.value !== null);
-  const balance = ref(0);
+class TransactionBuilder {
+  private accountKeys: Uint8Array[] = [];
+  private instructions: SanitizedInstruction[] = [];
+  private signerCount = 0;
   
-  const connect = async () =&gt; {
-    try {
-      const response = await window.arch.connect();
-      publicKey.value = new PublicKey(response.publicKey);
-      await updateBalance();
-    } catch (error) {
-      console.error('Failed to connect:', error);
-      throw error;
-    }
-  };
+  addSigner(pubkey: Uint8Array): number {
+    const index = this.accountKeys.length;
+    this.accountKeys.push(pubkey);
+    this.signerCount++;
+    return index;
+  }
   
-  const disconnect = async () =&gt; {
-    await window.arch.disconnect();
-    publicKey.value = null;
-    balance.value = 0;
-  };
+  addAccount(pubkey: Uint8Array): number {
+    const index = this.accountKeys.length;
+    this.accountKeys.push(pubkey);
+    return index;
+  }
   
-  const updateBalance = async () =&gt; {
-    if (!publicKey.value) return;
+  addInstruction(
+    programId: Uint8Array,
+    accounts: number[],
+    data: Uint8Array
+  ): void {
+    // Ensure program ID is in account keys
+    let programIdIndex = this.accountKeys.findIndex(
+      key =&gt; this.arraysEqual(key, programId)
+    );
     
-    try {
-      const bal = await connection.getBalance(publicKey.value);
-      balance.value = bal;
-    } catch (error) {
-      console.error('Failed to fetch balance:', error);
+    if (programIdIndex === -1) {
+      programIdIndex = this.addAccount(programId);
     }
-  };
+    
+    this.instructions.push({
+      program_id_index: programIdIndex,
+      accounts,
+      data,
+    });
+  }
   
-  // Watch for account changes
-  watch(publicKey, (newKey) =&gt; {
-    if (newKey) {
-      updateBalance();
+  build(recentBlockhash: Uint8Array): SanitizedMessage {
+    return {
+      header: {
+        num_required_signatures: this.signerCount,
+        num_readonly_signed_accounts: 0,
+        num_readonly_unsigned_accounts: this.accountKeys.length - this.signerCount,
+      },
+      account_keys: this.accountKeys,
+      recent_blockhash: recentBlockhash,
+      instructions: this.instructions,
+    };
+  }
+  
+  private arraysEqual(a: Uint8Array, b: Uint8Array): boolean {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i &lt; a.length; i++) {
+      if (a[i] !== b[i]) return false;
     }
-  });
+    return true;
+  }
+}
+
+// Usage example
+function createTransferMessage(from: Uint8Array, to: Uint8Array, amount: bigint): SanitizedMessage {
+  const builder = new TransactionBuilder();
   
-  return {
-    connection,
-    publicKey,
-    connected,
-    balance,
-    connect,
-    disconnect,
-    updateBalance
-  };
+  // Add accounts
+  const fromIndex = builder.addSigner(from);
+  const toIndex = builder.addAccount(to);
+  
+  // Create transfer instruction data
+  // Note: This is a simplified example - actual encoding depends on the program
+  const data = new Uint8Array(8);
+  new DataView(data.buffer).setBigUint64(0, amount, true);
+  
+  // Add instruction
+  builder.addInstruction(
+    PubkeyUtil.systemProgram(),
+    [fromIndex, toIndex],
+    data
+  );
+  
+  // Build with a recent blockhash (you need to fetch this)
+  const recentBlockhash = new Uint8Array(32); // Placeholder
+  return builder.build(recentBlockhash);
 }
 </code></pre>
-<h2 id="dapp-development"><a class="header" href="#dapp-development">dApp Development</a></h2>
-<h3 id="transaction-builder-ui"><a class="header" href="#transaction-builder-ui">Transaction Builder UI</a></h3>
-<pre><code class="language-typescript">import React, { useState } from 'react';
-import { 
-  Transaction, 
-  SystemProgram, 
-  PublicKey,
-  LAMPORTS_PER_SOL 
-} from '@saturnbtcio/arch-sdk';
-import { useArch, useSendTransaction } from './arch-context';
+<h2 id="security-considerations-6"><a class="header" href="#security-considerations-6">Security Considerations</a></h2>
+<p>When building Web3 integrations with the low-level SDK:</p>
+<ol>
+<li><strong>Key Management</strong>: Never handle private keys directly in browser code</li>
+<li><strong>Message Validation</strong>: Always validate message contents before signing</li>
+<li><strong>Error Handling</strong>: Implement robust error handling for RPC calls</li>
+<li><strong>Type Safety</strong>: Use TypeScript strictly to catch errors at compile time</li>
+<li><strong>Input Validation</strong>: Validate all user inputs, especially addresses and amounts</li>
+</ol>
+<h2 id="example-simple-dapp-structure"><a class="header" href="#example-simple-dapp-structure">Example: Simple dApp Structure</a></h2>
+<pre><code class="language-typescript">// services/arch.ts
+import { RpcConnection, ArchConnection } from '@saturnbtcio/arch-sdk';
 
-function TransferForm() {
-  const { publicKey } = useArch();
-  const { sendTransaction, loading } = useSendTransaction();
-  const [recipient, setRecipient] = useState('');
-  const [amount, setAmount] = useState('');
+export class ArchService {
+  private connection: RpcConnection;
+  private arch: ReturnType&lt;typeof ArchConnection&gt;;
   
-  const handleTransfer = async () =&gt; {
-    if (!publicKey) return;
-    
-    try {
-      const recipientPubkey = new PublicKey(recipient);
-      const lamports = parseFloat(amount) * LAMPORTS_PER_SOL;
-      
-      const transaction = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey: publicKey,
-          toPubkey: recipientPubkey,
-          lamports
-        })
-      );
-      
-      const signature = await sendTransaction(transaction);
-      console.log('Transfer successful:', signature);
-    } catch (error) {
-      console.error('Transfer failed:', error);
-    }
-  };
+  constructor(endpoint: string) {
+    this.connection = new RpcConnection(endpoint);
+    this.arch = ArchConnection(this.connection);
+  }
+  
+  async getNetworkStatus() {
+    const blockCount = await this.connection.getBlockCount();
+    const bestBlockHash = await this.connection.getBestBlockHash();
+    return { blockCount, bestBlockHash };
+  }
+  
+  async createAccount() {
+    return await this.arch.createNewAccount();
+  }
+  
+  async getAccountInfo(pubkey: Uint8Array) {
+    return await this.connection.readAccountInfo(pubkey);
+  }
+}
+
+// components/NetworkStatus.tsx
+import React from 'react';
+import { useBlockCount } from '../hooks/useBlockCount';
+
+export function NetworkStatus() {
+  const { blockCount, loading, error } = useBlockCount('http://localhost:9002');
+  
+  if (loading) return &lt;div&gt;Loading network status...&lt;/div&gt;;
+  if (error) return &lt;div&gt;Error: {error.message}&lt;/div&gt;;
   
   return (
     &lt;div&gt;
-      &lt;input
-        type="text"
-        placeholder="Recipient address"
-        value={recipient}
-        onChange={(e) =&gt; setRecipient(e.target.value)}
-      /&gt;
-      &lt;input
-        type="number"
-        placeholder="Amount (SOL)"
-        value={amount}
-        onChange={(e) =&gt; setAmount(e.target.value)}
-      /&gt;
-      &lt;button 
-        onClick={handleTransfer}
-        disabled={loading || !publicKey}
-      &gt;
-        {loading ? 'Sending...' : 'Send'}
-      &lt;/button&gt;
+      &lt;h3&gt;Network Status&lt;/h3&gt;
+      &lt;p&gt;Current block: {blockCount}&lt;/p&gt;
     &lt;/div&gt;
   );
 }
 </code></pre>
-<h3 id="multi-signature-support"><a class="header" href="#multi-signature-support">Multi-Signature Support</a></h3>
-<pre><code class="language-typescript">interface MultiSigConfig {
-  threshold: number;
-  signers: PublicKey[];
-}
-
-async function createMultiSigTransaction(
-  config: MultiSigConfig,
-  instruction: Instruction
-): Promise&lt;Transaction&gt; {
-  const transaction = new Transaction();
-  
-  // Add multisig verification instruction
-  transaction.add(
-    createMultiSigVerifyInstruction(config)
-  );
-  
-  // Add the actual instruction
-  transaction.add(instruction);
-  
-  return transaction;
-}
-
-async function collectSignatures(
-  transaction: Transaction,
-  signers: PublicKey[]
-): Promise&lt;Transaction&gt; {
-  let signedTx = transaction;
-  
-  for (const signer of signers) {
-    // Request signature from each signer
-    // This could be through different wallet connections
-    signedTx = await requestSignature(signedTx, signer);
-  }
-  
-  return signedTx;
-}
-</code></pre>
-<h2 id="best-practices-9"><a class="header" href="#best-practices-9">Best Practices</a></h2>
-<h3 id="error-handling-7"><a class="header" href="#error-handling-7">Error Handling</a></h3>
-<pre><code class="language-typescript">class WalletError extends Error {
-  code: string;
-  
-  constructor(message: string, code: string) {
-    super(message);
-    this.code = code;
-  }
-}
-
-async function safeWalletOperation&lt;T&gt;(
-  operation: () =&gt; Promise&lt;T&gt;
-): Promise&lt;T&gt; {
-  try {
-    return await operation();
-  } catch (error) {
-    if (error.code === 4001) {
-      throw new WalletError('User rejected request', 'USER_REJECTED');
-    } else if (error.code === -32002) {
-      throw new WalletError('Request already pending', 'REQUEST_PENDING');
-    } else if (error.message?.includes('not connected')) {
-      throw new WalletError('Wallet not connected', 'NOT_CONNECTED');
-    }
-    throw error;
-  }
-}
-</code></pre>
-<h3 id="state-management-1"><a class="header" href="#state-management-1">State Management</a></h3>
-<pre><code class="language-typescript">// Using Redux Toolkit
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { Connection, PublicKey } from '@saturnbtcio/arch-sdk';
-
-export const connectWallet = createAsyncThunk(
-  'wallet/connect',
-  async () =&gt; {
-    const response = await window.arch.connect();
-    return response.publicKey;
-  }
-);
-
-const walletSlice = createSlice({
-  name: 'wallet',
-  initialState: {
-    publicKey: null as string | null,
-    connected: false,
-    loading: false,
-    error: null as string | null
-  },
-  reducers: {
-    disconnect: (state) =&gt; {
-      state.publicKey = null;
-      state.connected = false;
-    }
-  },
-  extraReducers: (builder) =&gt; {
-    builder
-      .addCase(connectWallet.pending, (state) =&gt; {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(connectWallet.fulfilled, (state, action) =&gt; {
-        state.publicKey = action.payload;
-        state.connected = true;
-        state.loading = false;
-      })
-      .addCase(connectWallet.rejected, (state, action) =&gt; {
-        state.loading = false;
-        state.error = action.error.message || 'Connection failed';
-      });
-  }
-});
-</code></pre>
-<h2 id="security-considerations-6"><a class="header" href="#security-considerations-6">Security Considerations</a></h2>
+<h2 id="next-steps-9"><a class="header" href="#next-steps-9">Next Steps</a></h2>
+<p>Since the TypeScript SDK is low-level, you’ll need to:</p>
 <ol>
-<li><strong>Always validate addresses</strong> before transactions</li>
-<li><strong>Never store private keys</strong> in frontend code</li>
-<li><strong>Use HTTPS</strong> in production</li>
-<li><strong>Implement transaction limits</strong> for automated operations</li>
-<li><strong>Show transaction details</strong> before signing</li>
-<li><strong>Handle wallet disconnections</strong> gracefully</li>
+<li>Implement your own wallet integration layer</li>
+<li>Build transaction construction utilities</li>
+<li>Create state management solutions</li>
+<li>Develop UI components for common operations</li>
 </ol>
-<h2 id="resources-1"><a class="header" href="#resources-1">Resources</a></h2>
+<p>For more information:</p>
 <ul>
-<li><a href="sdk/typescript/getting-started.html">TypeScript SDK Documentation</a></li>
-<li><a href="sdk/typescript/examples.html#react-hook-example">React Examples</a></li>
-<li><a href="https://docs.arch.network">Arch Network Documentation</a></li>
+<li><a href="sdk/typescript/api-reference.html">TypeScript SDK API Reference</a></li>
+<li><a href="sdk/typescript/examples.html">Low-Level Examples</a></li>
+<li><a href="sdk/typescript/../../rpc/rpc.html">RPC Documentation</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="getting-started-with-the-rust-sdk"><a class="header" href="#getting-started-with-the-rust-sdk">Getting Started with the Rust SDK</a></h1>
 <p>This guide will walk you through setting up and using the native Arch Network Rust SDK to build high-performance applications and on-chain programs.</p>
@@ -10771,7 +11081,7 @@ async fn test_full_transaction_flow() -&gt; Result&lt;()&gt; {
     Ok(())
 }
 <span class="boring">}</span></code></pre></pre>
-<h2 id="best-practices-10"><a class="header" href="#best-practices-10">Best Practices</a></h2>
+<h2 id="best-practices-9"><a class="header" href="#best-practices-9">Best Practices</a></h2>
 <h3 id="performance-optimization-1"><a class="header" href="#performance-optimization-1">Performance Optimization</a></h3>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -10893,7 +11203,7 @@ async fn main() -&gt; Result&lt;()&gt; {
     
     Ok(())
 }</code></pre></pre>
-<h2 id="next-steps-9"><a class="header" href="#next-steps-9">Next Steps</a></h2>
+<h2 id="next-steps-10"><a class="header" href="#next-steps-10">Next Steps</a></h2>
 <p>Now that you understand the basics of the Rust SDK:</p>
 <ol>
 <li><strong><a href="sdk/rust/program-development.html">Program Development Guide</a></strong> - Build on-chain programs</li>
@@ -10902,7 +11212,7 @@ async fn main() -&gt; Result&lt;()&gt; {
 <li><strong><a href="sdk/rust/../../program/program.html">Program Development</a></strong> - General program concepts</li>
 <li><strong><a href="sdk/rust/../../program/syscall.html">System Calls</a></strong> - System-level operations</li>
 </ol>
-<h2 id="resources-2"><a class="header" href="#resources-2">Resources</a></h2>
+<h2 id="resources-1"><a class="header" href="#resources-1">Resources</a></h2>
 <ul>
 <li><strong>Crate</strong>: <a href="https://crates.io/crates/arch_sdk">arch_sdk on crates.io</a></li>
 <li><strong>Documentation</strong>: <a href="https://docs.rs/arch_sdk">docs.rs/arch_sdk</a></li>
@@ -10924,7 +11234,7 @@ async fn main() -&gt; Result&lt;()&gt; {
 <p>Builds and signs transactions for the network.</p>
 <h3 id="account"><a class="header" href="#account">Account</a></h3>
 <p>Represents account data on the network.</p>
-<h3 id="instruction"><a class="header" href="#instruction">Instruction</a></h3>
+<h3 id="instruction-1"><a class="header" href="#instruction-1">Instruction</a></h3>
 <p>Defines instructions for programs.</p>
 <h2 id="key-traits"><a class="header" href="#key-traits">Key Traits</a></h2>
 <h3 id="signer"><a class="header" href="#signer">Signer</a></h3>
@@ -11452,7 +11762,7 @@ async fn use_pooled_connection() -&gt; Result&lt;()&gt; {
     Ok(())
 }
 <span class="boring">}</span></code></pre></pre>
-<h2 id="resources-3"><a class="header" href="#resources-3">Resources</a></h2>
+<h2 id="resources-2"><a class="header" href="#resources-2">Resources</a></h2>
 <p>For more examples and patterns:</p>
 <ul>
 <li><a href="https://github.com/arch-network/arch-network/tree/main/examples">Arch Network Examples</a></li>
@@ -11663,7 +11973,7 @@ impl Processor {
     }
 }
 <span class="boring">}</span></code></pre></pre>
-<h2 id="state-management-2"><a class="header" href="#state-management-2">State Management</a></h2>
+<h2 id="state-management-1"><a class="header" href="#state-management-1">State Management</a></h2>
 <h3 id="define-state-structures"><a class="header" href="#define-state-structures">Define State Structures</a></h3>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -12035,14 +12345,14 @@ pub fn process_proxy(
     )
 }
 <span class="boring">}</span></code></pre></pre>
-<h2 id="resources-4"><a class="header" href="#resources-4">Resources</a></h2>
+<h2 id="resources-3"><a class="header" href="#resources-3">Resources</a></h2>
 <ul>
 <li><a href="sdk/rust/../../program/program.html">Program Examples</a></li>
 <li><a href="https://docs.rs/arch_program">Arch Program Crate Docs</a></li>
 <li><a href="https://github.com/arch-network/arch-network/tree/main/examples">Example Programs</a></li>
 <li><a href="sdk/rust/../../guides/testing-guide.html">Testing Guide</a></li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="core-types"><a class="header" href="#core-types">Core Types</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="core-types-1"><a class="header" href="#core-types-1">Core Types</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="pubkey-public-key"><a class="header" href="#pubkey-public-key">Pubkey (Public Key)</a></h1>
 <p>A <code>Pubkey</code> represents a public key in the Arch Network, serving as a unique identifier for accounts, programs, and other entities. It’s a fundamental type you’ll use throughout your development with the Arch SDK.</p>
 <h2 id="overview-6"><a class="header" href="#overview-6">Overview</a></h2>
@@ -12223,7 +12533,7 @@ const instruction = new Instruction({
   }
 }
 </code></pre>
-<h2 id="best-practices-11"><a class="header" href="#best-practices-11">Best Practices</a></h2>
+<h2 id="best-practices-10"><a class="header" href="#best-practices-10">Best Practices</a></h2>
 <h3 id="security-3"><a class="header" href="#security-3">Security</a></h3>
 <ul>
 <li><strong>Always validate input</strong>: Never trust user-provided public key strings</li>
@@ -12278,7 +12588,7 @@ pub struct AccountInfo&lt;'a&gt; {
     pub is_executable: bool,       // Whether account contains executable code
 }
 <span class="boring">}</span></code></pre></pre>
-<h3 id="accountmeta"><a class="header" href="#accountmeta">AccountMeta</a></h3>
+<h3 id="accountmeta-1"><a class="header" href="#accountmeta-1">AccountMeta</a></h3>
 <p>The <code>AccountMeta</code> struct describes how an account is used in a transaction:</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -12536,7 +12846,7 @@ const closeInstruction = new Instruction({
   }
 }
 </code></pre>
-<h2 id="best-practices-12"><a class="header" href="#best-practices-12">Best Practices</a></h2>
+<h2 id="best-practices-11"><a class="header" href="#best-practices-11">Best Practices</a></h2>
 <h3 id="security-4"><a class="header" href="#security-4">Security</a></h3>
 <ul>
 <li><strong>Always validate ownership</strong>: Check that accounts are owned by expected programs</li>
@@ -12843,7 +13153,7 @@ function validateInstruction(instruction: Instruction): void {
   }
 }
 </code></pre>
-<h2 id="best-practices-13"><a class="header" href="#best-practices-13">Best Practices</a></h2>
+<h2 id="best-practices-12"><a class="header" href="#best-practices-12">Best Practices</a></h2>
 <h3 id="security-5"><a class="header" href="#security-5">Security</a></h3>
 <ul>
 <li><strong>Validate all accounts</strong>: Ensure accounts have correct permissions</li>
@@ -13705,7 +14015,7 @@ pub const MIN_ACCOUNT_LAMPORTS: u64 = 1024;
 // Maximum permitted data length for accounts
 pub const MAX_PERMITTED_DATA_LENGTH: usize = 10 * 1024 * 1024; // 10MB
 <span class="boring">}</span></code></pre></pre>
-<h2 id="best-practices-14"><a class="header" href="#best-practices-14">Best Practices</a></h2>
+<h2 id="best-practices-13"><a class="header" href="#best-practices-13">Best Practices</a></h2>
 <h3 id="account-creation"><a class="header" href="#account-creation">Account Creation</a></h3>
 <ol>
 <li><strong>Always fund with sufficient lamports</strong>: Accounts need at least <code>MIN_ACCOUNT_LAMPORTS</code> to be created</li>
@@ -13934,7 +14244,7 @@ cargo build
 <p>View account data:</p>
 <pre><code class="language-bash">arch-cli account &lt;ACCOUNT_ADDRESS&gt;
 </code></pre>
-<h2 id="best-practices-15"><a class="header" href="#best-practices-15">Best Practices</a></h2>
+<h2 id="best-practices-14"><a class="header" href="#best-practices-14">Best Practices</a></h2>
 <ol>
 <li>
 <p><strong>Development Workflow</strong></p>
@@ -13976,7 +14286,7 @@ cargo build
 <li>Steps to reproduce</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="faq"><a class="header" href="#faq">FAQ</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="resources-5"><a class="header" href="#resources-5">Resources</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="resources-4"><a class="header" href="#resources-4">Resources</a></h1>
 <h3 id="bitcoin-mempool-and-blockchain-explorer"><a class="header" href="#bitcoin-mempool-and-blockchain-explorer">Bitcoin mempool and blockchain explorer</a></h3>
 <ul>
 <li><a href="https://mempool.dev.aws.archnetwork.xyz">mempool.space - Arch Regtest</a>

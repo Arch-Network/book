@@ -185,19 +185,216 @@
                         <h1 id="typescript-sdk-api-reference"><a class="header" href="#typescript-sdk-api-reference">TypeScript SDK API Reference</a></h1>
 <p>This page provides a comprehensive API reference for the Arch Network TypeScript SDK developed by Saturn.</p>
 <blockquote>
-<p><strong>Note</strong>: This documentation is under construction. For the most up-to-date API reference, please visit the <a href="https://github.com/saturnbtc/arch-typescript-sdk">TypeScript SDK GitHub repository</a>.</p>
+<p><strong>Note</strong>: The Arch TypeScript SDK is a low-level SDK that provides direct RPC access to Arch nodes. It does not include high-level abstractions like transaction builders or wallet management.</p>
 </blockquote>
 <h2 id="core-classes"><a class="header" href="#core-classes">Core Classes</a></h2>
-<p><strong>Connection</strong> - The main interface for interacting with an Arch Network node.</p>
-<p><strong>Keypair</strong> - Manages public/private key pairs for signing transactions.</p>
-<p><strong>Transaction</strong> - Represents a transaction to be sent to the network.</p>
-<p><strong>PublicKey</strong> - Represents a public key on the Arch Network.</p>
-<p><strong>SystemProgram</strong> - Provides system-level instructions like transfers and account creation.</p>
-<h2 id="complete-api-documentation"><a class="header" href="#complete-api-documentation">Complete API Documentation</a></h2>
-<p>For complete API documentation, please refer to:</p>
+<h3 id="rpcconnection"><a class="header" href="#rpcconnection">RpcConnection</a></h3>
+<p>The main class for interacting with an Arch Network node via RPC.</p>
+<pre><code class="language-typescript">import { RpcConnection } from '@saturnbtcio/arch-sdk';
+
+const connection = new RpcConnection('http://localhost:9002');
+</code></pre>
+<h4 id="methods"><a class="header" href="#methods">Methods</a></h4>
 <ul>
-<li><a href="https://www.npmjs.com/package/@saturnbtcio/arch-sdk">NPM Package Documentation</a></li>
+<li><code>sendTransaction(params: RuntimeTransaction): Promise&lt;string&gt;</code> - Send a transaction</li>
+<li><code>sendTransactions(params: RuntimeTransaction[]): Promise&lt;string[]&gt;</code> - Send multiple transactions</li>
+<li><code>readAccountInfo(pubkey: Pubkey): Promise&lt;AccountInfoResult&gt;</code> - Read account information</li>
+<li><code>getAccountAddress(pubkey: Pubkey): Promise&lt;string&gt;</code> - Get account address from pubkey</li>
+<li><code>getBestBlockHash(): Promise&lt;string&gt;</code> - Get the best block hash</li>
+<li><code>getBlock(blockHash: string): Promise&lt;Block | undefined&gt;</code> - Get block by hash</li>
+<li><code>getBlockCount(): Promise&lt;number&gt;</code> - Get current block count</li>
+<li><code>getBlockHash(blockHeight: number): Promise&lt;string&gt;</code> - Get block hash by height</li>
+<li><code>getProcessedTransaction(txid: string): Promise&lt;ProcessedTransaction | undefined&gt;</code> - Get transaction info</li>
+<li><code>getProgramAccounts(programId: Pubkey, filters?: AccountFilter[]): Promise&lt;ProgramAccount[]&gt;</code> - Get program accounts</li>
+<li><code>requestAirdrop(pubkey: Pubkey): Promise&lt;void&gt;</code> - Request airdrop (testnet only)</li>
+<li><code>createAccountWithFaucet(pubkey: Pubkey): Promise&lt;void&gt;</code> - Create and fund account (testnet only)</li>
+</ul>
+<h3 id="archconnection"><a class="header" href="#archconnection">ArchConnection</a></h3>
+<p>A wrapper that adds additional functionality to any Provider implementation.</p>
+<pre><code class="language-typescript">import { RpcConnection, ArchConnection } from '@saturnbtcio/arch-sdk';
+
+const connection = new RpcConnection('http://localhost:9002');
+const arch = ArchConnection(connection);
+</code></pre>
+<h4 id="methods-1"><a class="header" href="#methods-1">Methods</a></h4>
+<ul>
+<li><code>createNewAccount(): Promise&lt;CreatedAccount&gt;</code> - Create a new account with secp256k1 keypair</li>
+</ul>
+<h2 id="core-types"><a class="header" href="#core-types">Core Types</a></h2>
+<h3 id="pubkey"><a class="header" href="#pubkey">Pubkey</a></h3>
+<pre><code class="language-typescript">type Pubkey = Uint8Array; // 32 bytes
+</code></pre>
+<h3 id="message"><a class="header" href="#message">Message</a></h3>
+<pre><code class="language-typescript">interface Message {
+  signers: Pubkey[];
+  instructions: Instruction[];
+}
+</code></pre>
+<h3 id="instruction"><a class="header" href="#instruction">Instruction</a></h3>
+<pre><code class="language-typescript">interface Instruction {
+  program_id: Pubkey;
+  accounts: AccountMeta[];
+  data: Uint8Array;
+}
+</code></pre>
+<h3 id="accountmeta"><a class="header" href="#accountmeta">AccountMeta</a></h3>
+<pre><code class="language-typescript">interface AccountMeta {
+  pubkey: Pubkey;
+  is_signer: boolean;
+  is_writable: boolean;
+}
+</code></pre>
+<h3 id="runtimetransaction"><a class="header" href="#runtimetransaction">RuntimeTransaction</a></h3>
+<pre><code class="language-typescript">interface RuntimeTransaction {
+  version: number;
+  signatures: Signature[]; // Array of 64-byte signatures
+  message: SanitizedMessage;
+}
+</code></pre>
+<h3 id="sanitizedmessage"><a class="header" href="#sanitizedmessage">SanitizedMessage</a></h3>
+<pre><code class="language-typescript">interface SanitizedMessage {
+  header: MessageHeader;
+  account_keys: Pubkey[];
+  recent_blockhash: Uint8Array;
+  instructions: SanitizedInstruction[];
+}
+</code></pre>
+<h3 id="messageheader"><a class="header" href="#messageheader">MessageHeader</a></h3>
+<pre><code class="language-typescript">interface MessageHeader {
+  num_required_signatures: number;
+  num_readonly_signed_accounts: number;
+  num_readonly_unsigned_accounts: number;
+}
+</code></pre>
+<h3 id="sanitizedinstruction"><a class="header" href="#sanitizedinstruction">SanitizedInstruction</a></h3>
+<pre><code class="language-typescript">interface SanitizedInstruction {
+  program_id_index: number;
+  accounts: number[];
+  data: Uint8Array;
+}
+</code></pre>
+<h3 id="accountinforesult"><a class="header" href="#accountinforesult">AccountInfoResult</a></h3>
+<pre><code class="language-typescript">interface AccountInfoResult {
+  lamports: number;
+  data: Uint8Array;
+  owner: Pubkey;
+  executable: boolean;
+  rent_epoch: number;
+}
+</code></pre>
+<h3 id="createdaccount"><a class="header" href="#createdaccount">CreatedAccount</a></h3>
+<pre><code class="language-typescript">interface CreatedAccount {
+  privkey: string; // Hex-encoded private key
+  pubkey: string;  // Hex-encoded public key
+  address: string; // Bitcoin-style address
+}
+</code></pre>
+<h3 id="block"><a class="header" href="#block">Block</a></h3>
+<pre><code class="language-typescript">interface Block {
+  hash: string;
+  previous_blockhash: string;
+  parent_slot: number;
+  transactions?: ProcessedTransaction[];
+  block_time?: number;
+  block_height?: number;
+}
+</code></pre>
+<h3 id="processedtransaction"><a class="header" href="#processedtransaction">ProcessedTransaction</a></h3>
+<pre><code class="language-typescript">interface ProcessedTransaction {
+  txid: string;
+  status: ProcessedTransactionStatus;
+  bitcoin_txids: string[];
+}
+
+interface ProcessedTransactionStatus {
+  Processed?: {
+    runtime_transaction: RuntimeTransaction;
+    execution_result: any;
+    bitcoin_txids: string[];
+  };
+}
+</code></pre>
+<h2 id="utility-modules"><a class="header" href="#utility-modules">Utility Modules</a></h2>
+<h3 id="pubkeyutil"><a class="header" href="#pubkeyutil">PubkeyUtil</a></h3>
+<pre><code class="language-typescript">import { PubkeyUtil } from '@saturnbtcio/arch-sdk';
+
+// Get system program pubkey
+const systemProgram = PubkeyUtil.systemProgram();
+
+// Convert to/from hex
+const hex = PubkeyUtil.toHex(pubkey);
+const pubkey = PubkeyUtil.fromHex(hex);
+</code></pre>
+<h3 id="messageutil"><a class="header" href="#messageutil">MessageUtil</a></h3>
+<pre><code class="language-typescript">import { MessageUtil } from '@saturnbtcio/arch-sdk';
+
+// Serialize/deserialize messages
+const serialized = MessageUtil.serialize(message);
+const message = MessageUtil.deserialize(serialized);
+</code></pre>
+<h3 id="sanitizedmessageutil"><a class="header" href="#sanitizedmessageutil">SanitizedMessageUtil</a></h3>
+<pre><code class="language-typescript">import { SanitizedMessageUtil } from '@saturnbtcio/arch-sdk';
+
+// Work with sanitized messages
+const serialized = SanitizedMessageUtil.serialize(sanitizedMessage);
+const sanitizedMessage = SanitizedMessageUtil.deserialize(serialized);
+</code></pre>
+<h3 id="instructionutil"><a class="header" href="#instructionutil">InstructionUtil</a></h3>
+<pre><code class="language-typescript">import { InstructionUtil } from '@saturnbtcio/arch-sdk';
+
+// Serialize/deserialize instructions
+const serialized = InstructionUtil.serialize(instruction);
+const instruction = InstructionUtil.deserialize(serialized);
+</code></pre>
+<h3 id="accountutil"><a class="header" href="#accountutil">AccountUtil</a></h3>
+<pre><code class="language-typescript">import { AccountUtil } from '@saturnbtcio/arch-sdk';
+
+// Work with account data
+const serialized = AccountUtil.serialize(accountInfo);
+const accountInfo = AccountUtil.deserialize(serialized);
+</code></pre>
+<h3 id="signatureutil"><a class="header" href="#signatureutil">SignatureUtil</a></h3>
+<pre><code class="language-typescript">import { SignatureUtil } from '@saturnbtcio/arch-sdk';
+
+// Signature utilities (implementation details vary)
+</code></pre>
+<h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
+<h3 id="archrpcerror"><a class="header" href="#archrpcerror">ArchRpcError</a></h3>
+<pre><code class="language-typescript">import { ArchRpcError } from '@saturnbtcio/arch-sdk';
+
+try {
+  await connection.getBlock('invalid-hash');
+} catch (error) {
+  if (error instanceof ArchRpcError) {
+    console.error('RPC Error:', error.error);
+    // error.error.code - Error code
+    // error.error.message - Error message
+  }
+}
+</code></pre>
+<h2 id="schema-exports"><a class="header" href="#schema-exports">Schema Exports</a></h2>
+<p>The SDK exports Borsh schemas for serialization:</p>
+<ul>
+<li><code>PubkeySchema</code></li>
+<li><code>MessageSchema</code></li>
+<li><code>SanitizedMessageSchema</code></li>
+<li><code>InstructionSchema</code></li>
+<li><code>SanitizedInstructionSchema</code></li>
+<li><code>MessageHeaderSchema</code></li>
+<li><code>UtxoMetaSchema</code></li>
+</ul>
+<h2 id="constants"><a class="header" href="#constants">Constants</a></h2>
+<h3 id="action"><a class="header" href="#action">Action</a></h3>
+<pre><code class="language-typescript">import { Action } from '@saturnbtcio/arch-sdk';
+
+// RPC action constants used internally
+</code></pre>
+<h2 id="complete-api-documentation"><a class="header" href="#complete-api-documentation">Complete API Documentation</a></h2>
+<p>For the most up-to-date API reference and implementation details:</p>
+<ul>
+<li><a href="https://www.npmjs.com/package/@saturnbtcio/arch-sdk">NPM Package</a></li>
 <li><a href="https://github.com/saturnbtc/arch-typescript-sdk">GitHub Repository</a></li>
+<li><a href="https://github.com/saturnbtc/arch-typescript-sdk/tree/main/src">Source Code</a></li>
 </ul>
 
                     </main>
