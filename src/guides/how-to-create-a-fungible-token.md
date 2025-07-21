@@ -58,8 +58,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-arch_sdk = "0.5.4"
-arch_program = "0.5.4"
+arch_sdk = { git = "https://github.com/Arch-Network/arch-network", branch = "dev" }
+arch_program = { git = "https://github.com/Arch-Network/arch-network", branch = "dev" }
+arch_test_sdk = { git = "https://github.com/Arch-Network/arch-network", branch = "dev" }
 apl-token = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
 apl-associated-token-account = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
 borsh = { version = "1.5.1", features = ["derive"] }
