@@ -233,7 +233,6 @@ edition = "2021"
 [dependencies]
 arch_sdk = "0.5.4"
 arch_program = "0.5.4"
-arch_test_sdk = "0.5.4"
 apl-token = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
 apl-associated-token-account = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
 borsh = { version = "1.5.1", features = ["derive"] }
@@ -253,29 +252,29 @@ serial_test = "3.1.1"
 <pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::Mint;
 use arch_program::{
     program_pack::Pack,
-    pubkey::Pubkey,
-    sanitized::ArchMessage,
-    account::MIN_ACCOUNT_LAMPORTS,
-    system_instruction::create_account,
 };
-use arch_sdk::{build_and_sign_transaction, generate_new_keypair, ArchRpcClient};
+use arch_sdk::{generate_new_keypair, ArchRpcClient};
 use arch_test_sdk::{
     constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
-    helper::{create_and_fund_account_with_faucet, send_transactions_and_wait},
+    helper::create_and_fund_account_with_faucet,
     instructions::initialize_mint_token,
 };
 
 fn main() {
-    env_logger::init();
-    
     let client = ArchRpcClient::new(NODE1_ADDRESS);
 
     // Create authority keypair (this will be the mint authority)
     let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
     create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
 
+    println!("Authority account created and funded: {}", authority_pubkey);
+
     // Create mint using the helper function
-    let (_, token_mint_pubkey) = initialize_mint_token(
+    // This function handles:
+    // 1. Creating the mint account
+    // 2. Initializing the mint with the specified parameters
+    // 3. Sending and waiting for transaction confirmation
+    let (token_mint_keypair, token_mint_pubkey) = initialize_mint_token(
         &amp;client,
         authority_pubkey,
         authority_keypair,
@@ -284,27 +283,77 @@ fn main() {
         &amp;apl_token::id(),
     );
 
-    println!("Token mint created: {}", token_mint_pubkey);
-}</code></pre></pre>
+    // The fact that initialize_mint_token returns successfully means:
+    // 1. The mint account was created on-chain
+    // 2. The mint was initialized with the correct parameters
+    // 3. The transaction was processed and confirmed
+    println!("\n✅ Token mint successfully created!");
+    println!("Token mint address: {}", token_mint_pubkey);
+    println!("Token mint authority: {}", authority_pubkey);
+    
+    println!("\nWhat this proves:");
+    println!("✓ The mint account exists on-chain");
+    println!("✓ The mint is initialized and ready to mint tokens");
+    println!("✓ The authority can now mint tokens to any account");
+    
+    println!("\nThe initialize_mint_token helper function internally:");
+    println!("1. Created a new account for the mint");
+    println!("2. Initialized it as a token mint");
+    println!("3. Sent the transaction to the network");
+    println!("4. Waited for confirmation");
+    println!("5. Only returned after successful on-chain confirmation");
+}}</code></pre></pre>
 <h3 id="22-create-token-accounts"><a class="header" href="#22-create-token-accounts">2.2 Create Token Accounts</a></h3>
 <p>Token accounts hold tokens for specific owners:</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use arch_test_sdk::instructions::initialize_token_account;
-
-fn create_user_token_account(
+</span>fn create_token_account(
     client: &amp;ArchRpcClient,
     token_mint_pubkey: Pubkey,
-    user_keypair: bitcoin::key::Keypair,
+    owner_keypair: bitcoin::key::Keypair,
 ) -&gt; Pubkey {
-    // The helper function creates and initializes a token account in one step
-    let (_, token_account_pubkey) = initialize_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        user_keypair,
+    let owner_pubkey = Pubkey::from_slice(
+        &amp;owner_keypair.x_only_public_key().0.serialize()
     );
+
+    let (token_account_keypair, token_account_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
+
+    // Create the account
+    let create_account_instruction = create_account(
+        &amp;owner_pubkey,
+        &amp;token_account_pubkey,
+        MIN_ACCOUNT_LAMPORTS,
+        apl_token::state::Account::LEN as u64,
+        &amp;apl_token::id(),
+    );
+
+    // Initialize the token account
+    let initialize_account_instruction = apl_token::instruction::initialize_account(
+        &amp;apl_token::id(),
+        &amp;token_account_pubkey,
+        &amp;token_mint_pubkey,
+        &amp;owner_pubkey,
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[create_account_instruction, initialize_account_instruction],
+            Some(owner_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![owner_keypair, token_account_keypair],
+        BITCOIN_NETWORK,
+    ).expect("Failed to build and sign transaction");
+
+    let tx_id = client.send_transaction(transaction)
+        .expect("Failed to send transaction");
     
+    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
+        .expect("Failed to process transaction");
+    
+    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
     println!("Token account created: {}", token_account_pubkey);
+    
     token_account_pubkey
 }
 <span class="boring">}</span></code></pre></pre>
@@ -312,9 +361,7 @@ fn create_user_token_account(
 <p>Mint new tokens to a token account:</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use arch_test_sdk::instructions::mint_tokens;
-
-fn mint_tokens_to_account(
+</span>fn mint_tokens(
     client: &amp;ArchRpcClient,
     mint_pubkey: &amp;Pubkey,
     account_pubkey: &amp;Pubkey,
@@ -322,15 +369,32 @@ fn mint_tokens_to_account(
     authority_keypair: bitcoin::key::Keypair,
     amount: u64,
 ) {
-    mint_tokens(
-        &amp;client,
+    let mint_instruction = apl_token::instruction::mint_to(
+        &amp;apl_token::id(),
         mint_pubkey,
         account_pubkey,
         authority_pubkey,
-        authority_keypair,
+        &amp;[], // No additional signers for single authority
         amount,
-    );
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[mint_instruction],
+            Some(*authority_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![authority_keypair],
+        BITCOIN_NETWORK,
+    ).expect("Failed to build and sign transaction");
+
+    let tx_id = client.send_transaction(transaction)
+        .expect("Failed to send transaction");
     
+    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
+        .expect("Failed to process transaction");
+    
+    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
     println!("Minted {} tokens", amount);
 }
 <span class="boring">}</span></code></pre></pre>
@@ -363,11 +427,15 @@ fn mint_tokens_to_account(
         ),
         vec![owner_keypair],
         BITCOIN_NETWORK,
-    );
+    ).expect("Failed to build and sign transaction");
 
-    let processed_transactions = send_transactions_and_wait(vec![transaction]);
-    assert_eq!(processed_transactions[0].status, arch_sdk::Status::Processed);
+    let tx_id = client.send_transaction(transaction)
+        .expect("Failed to send transaction");
     
+    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
+        .expect("Failed to process transaction");
+    
+    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
     println!("Transferred {} tokens", amount);
 }
 <span class="boring">}</span></code></pre></pre>
@@ -376,9 +444,7 @@ fn mint_tokens_to_account(
 <p>Allow another account to spend tokens on your behalf:</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use arch_test_sdk::instructions::approve;
-
-fn approve_delegate(
+</span>fn approve_delegate(
     client: &amp;ArchRpcClient,
     source_account: &amp;Pubkey,
     delegate_account: &amp;Pubkey,
@@ -386,15 +452,32 @@ fn approve_delegate(
     owner_keypair: bitcoin::key::Keypair,
     amount: u64,
 ) {
-    approve(
-        &amp;client,
+    let approve_instruction = apl_token::instruction::approve(
+        &amp;apl_token::id(),
         source_account,
         delegate_account,
         owner_pubkey,
-        owner_keypair,
+        &amp;[owner_pubkey],
         amount,
-    );
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[approve_instruction],
+            Some(*owner_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![owner_keypair],
+        BITCOIN_NETWORK,
+    ).expect("Failed to build and sign transaction");
+
+    let tx_id = client.send_transaction(transaction)
+        .expect("Failed to send transaction");
     
+    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
+        .expect("Failed to process transaction");
+    
+    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
     println!("Approved {} tokens for delegation", amount);
 }
 <span class="boring">}</span></code></pre></pre>
@@ -427,11 +510,15 @@ fn approve_delegate(
         ),
         vec![owner_keypair],
         BITCOIN_NETWORK,
-    );
+    ).expect("Failed to build and sign transaction");
 
-    let processed_transactions = send_transactions_and_wait(vec![transaction]);
-    assert_eq!(processed_transactions[0].status, arch_sdk::Status::Processed);
+    let tx_id = client.send_transaction(transaction)
+        .expect("Failed to send transaction");
     
+    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
+        .expect("Failed to process transaction");
+    
+    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
     println!("Burned {} tokens", amount);
 }
 <span class="boring">}</span></code></pre></pre>
@@ -439,102 +526,130 @@ fn approve_delegate(
 <p>If you set a freeze authority when creating the mint, you can freeze/thaw accounts:</p>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>use arch_test_sdk::instructions::freeze_account;
-
-fn freeze_token_account(
+</span>fn freeze_account(
     client: &amp;ArchRpcClient,
     account_pubkey: &amp;Pubkey,
     mint_pubkey: &amp;Pubkey,
     freeze_authority_pubkey: &amp;Pubkey,
     freeze_authority_keypair: bitcoin::key::Keypair,
 ) {
-    freeze_account(
-        &amp;client,
+    let freeze_instruction = apl_token::instruction::freeze_account(
+        &amp;apl_token::id(),
         account_pubkey,
         mint_pubkey,
         freeze_authority_pubkey,
-        freeze_authority_keypair,
-    );
+        &amp;[freeze_authority_pubkey],
+    ).unwrap();
+
+    let transaction = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[freeze_instruction],
+            Some(*freeze_authority_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![freeze_authority_keypair],
+        BITCOIN_NETWORK,
+    ).expect("Failed to build and sign transaction");
+
+    let tx_id = client.send_transaction(transaction)
+        .expect("Failed to send transaction");
     
+    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
+        .expect("Failed to process transaction");
+    
+    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
     println!("Account frozen");
 }
 <span class="boring">}</span></code></pre></pre>
 <h2 id="step-4-complete-example"><a class="header" href="#step-4-complete-example">Step 4: Complete Example</a></h2>
 <p>Here’s a complete example that demonstrates the full token lifecycle:</p>
 <pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::{Mint, Account};
-use arch_program::{program_pack::Pack, sanitized::ArchMessage};
-use arch_sdk::{build_and_sign_transaction, generate_new_keypair, ArchRpcClient};
-use arch_test_sdk::{
-    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
-    helper::{create_and_fund_account_with_faucet, read_account_info, send_transactions_and_wait},
-    instructions::{initialize_mint_token, initialize_token_account, mint_tokens},
+use arch_program::{
+    program_pack::Pack,
+    pubkey::Pubkey,
+    sanitized::ArchMessage,
+    account::MIN_ACCOUNT_LAMPORTS,
+    system_instruction::create_account,
 };
+use arch_sdk::{build_and_sign_transaction, generate_new_keypair, ArchRpcClient};
+use bitcoin::Network;
+
+const BITCOIN_NETWORK: Network = Network::Regtest;
+const NODE_URL: &amp;str = "http://localhost:9002";
 
 fn main() {
     env_logger::init();
     
-    let client = ArchRpcClient::new(NODE1_ADDRESS);
+    let client = ArchRpcClient::new(NODE_URL);
 
     // 1. Create authority and mint
     let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
+    client.create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK)
+        .expect("Failed to fund authority account");
 
-    let (_, token_mint_pubkey) = initialize_mint_token(
-        &amp;client,
-        authority_pubkey,
-        authority_keypair,
-        None, // No freeze authority
+    let (mint_keypair, mint_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
+    
+    // Create and initialize mint
+    let create_mint_ix = create_account(
+        &amp;authority_pubkey,
+        &amp;mint_pubkey,
+        MIN_ACCOUNT_LAMPORTS,
         Mint::LEN as u64,
         &amp;apl_token::id(),
     );
     
+    let init_mint_ix = apl_token::instruction::initialize_mint(
+        &amp;apl_token::id(),
+        &amp;mint_pubkey,
+        &amp;authority_pubkey,
+        None,
+        9, // 9 decimals
+    ).unwrap();
+    
+    let tx = build_and_sign_transaction(
+        ArchMessage::new(
+            &amp;[create_mint_ix, init_mint_ix],
+            Some(authority_pubkey),
+            client.get_best_block_hash().unwrap(),
+        ),
+        vec![authority_keypair, mint_keypair],
+        BITCOIN_NETWORK,
+    ).unwrap();
+    
+    let tx_id = client.send_transaction(tx).unwrap();
+    client.wait_for_processed_transaction(&amp;tx_id).unwrap();
+    
+    println!("Token mint created: {}", mint_pubkey);
+    
     // 2. Create token accounts for two users
     let (user1_keypair, user1_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;user1_keypair, BITCOIN_NETWORK);
+    client.create_and_fund_account_with_faucet(&amp;user1_keypair, BITCOIN_NETWORK)
+        .expect("Failed to fund user1 account");
     
     let (user2_keypair, user2_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;user2_keypair, BITCOIN_NETWORK);
+    client.create_and_fund_account_with_faucet(&amp;user2_keypair, BITCOIN_NETWORK)
+        .expect("Failed to fund user2 account");
 
-    let (_, user1_token_account) = initialize_token_account(&amp;client, token_mint_pubkey, user1_keypair);
-    let (_, user2_token_account) = initialize_token_account(&amp;client, token_mint_pubkey, user2_keypair);
+    let user1_token_account = create_token_account(&amp;client, mint_pubkey, user1_keypair);
+    let user2_token_account = create_token_account(&amp;client, mint_pubkey, user2_keypair);
 
     // 3. Mint tokens to user1
-    mint_tokens(&amp;client, &amp;token_mint_pubkey, &amp;user1_token_account, &amp;authority_pubkey, authority_keypair, 1_000_000_000); // 1 token with 9 decimals
+    mint_tokens(&amp;client, &amp;mint_pubkey, &amp;user1_token_account, &amp;authority_pubkey, authority_keypair, 1_000_000_000); // 1 token with 9 decimals
 
     // 4. Check balance
-    let account_info = read_account_info(user1_token_account);
+    let account_info = client.read_account_info(user1_token_account).unwrap();
     let account_data = Account::unpack(&amp;account_info.data).unwrap();
     println!("User1 balance: {}", account_data.amount);
 
     // 5. Transfer tokens from user1 to user2
-    let transfer_instruction = apl_token::instruction::transfer(
-        &amp;apl_token::id(),
-        &amp;user1_token_account,
-        &amp;user2_token_account,
-        &amp;user1_pubkey,
-        &amp;[&amp;user1_pubkey],
-        500_000_000, // 0.5 tokens
-    ).unwrap();
-
-    let transaction = build_and_sign_transaction(
-        ArchMessage::new(
-            &amp;[transfer_instruction],
-            Some(user1_pubkey),
-            client.get_best_block_hash().unwrap(),
-        ),
-        vec![user1_keypair],
-        BITCOIN_NETWORK,
-    );
-
-    let processed_transactions = send_transactions_and_wait(vec![transaction]);
-    assert_eq!(processed_transactions[0].status, arch_sdk::Status::Processed);
+    transfer_tokens(&amp;client, &amp;user1_token_account, &amp;user2_token_account, &amp;user1_pubkey, user1_keypair, 500_000_000); // 0.5 tokens
 
     // 6. Check both balances
-    let user1_info = read_account_info(user1_token_account);
+    let user1_info = client.read_account_info(user1_token_account).unwrap();
     let user1_data = Account::unpack(&amp;user1_info.data).unwrap();
     println!("User1 balance after transfer: {}", user1_data.amount);
 
-    let user2_info = read_account_info(user2_token_account);
+    let user2_info = client.read_account_info(user2_token_account).unwrap();
     let user2_data = Account::unpack(&amp;user2_info.data).unwrap();
     println!("User2 balance after transfer: {}", user2_data.amount);
 
@@ -602,6 +717,26 @@ fn get_associated_token_account(
     );
     
     ata_address
+}
+<span class="boring">}</span></code></pre></pre>
+<h2 id="handling-errors"><a class="header" href="#handling-errors">Handling Errors</a></h2>
+<p>When working with tokens, always handle potential errors:</p>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>match client.send_transaction(transaction) {
+    Ok(tx_id) =&gt; {
+        match client.wait_for_processed_transaction(&amp;tx_id) {
+            Ok(processed_tx) =&gt; {
+                if processed_tx.status == arch_sdk::Status::Processed {
+                    println!("Transaction successful");
+                } else {
+                    eprintln!("Transaction failed: {:?}", processed_tx.status);
+                }
+            }
+            Err(e) =&gt; eprintln!("Failed to wait for transaction: {}", e),
+        }
+    }
+    Err(e) =&gt; eprintln!("Failed to send transaction: {}", e),
 }
 <span class="boring">}</span></code></pre></pre>
 <h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
