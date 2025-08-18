@@ -182,17 +182,18 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="using-apl-tokens-on-arch-network"><a class="header" href="#using-apl-tokens-on-arch-network">Using APL Tokens on Arch Network</a></h1>
-<p>This guide shows you how to work with fungible tokens on Arch Network using the built-in <strong>APL (Arch Program Library) Token Program</strong>. APL tokens are based on Solana’s SPL token standard and provide a robust foundation for creating and managing tokens on Arch Network.</p>
+                        <h1 id="creating-apl-tokens-on-arch-network"><a class="header" href="#creating-apl-tokens-on-arch-network">Creating APL Tokens on Arch Network</a></h1>
+<p>This guide shows you how to create and manage fungible tokens on Arch Network using the built-in <strong>APL (Arch Program Library) Token Program</strong>. APL tokens are based on Solana’s SPL token standard and provide a robust foundation for creating and managing tokens on Arch Network.</p>
 <h2 id="what-youll-learn"><a class="header" href="#what-youll-learn">What You’ll Learn</a></h2>
 <p>By the end of this guide, you’ll understand how to:</p>
 <ul>
-<li><strong>Create token mints</strong> using the APL token program</li>
+<li><strong>Create token mints</strong> using the Arch CLI</li>
 <li><strong>Initialize token accounts</strong> for holding tokens</li>
 <li><strong>Mint tokens</strong> to accounts</li>
 <li><strong>Transfer tokens</strong> between accounts</li>
 <li><strong>Approve delegations</strong> for spending tokens</li>
 <li><strong>Burn tokens</strong> and manage token lifecycle</li>
+<li><strong>Use advanced features</strong> like multisig, freezing, and batch operations</li>
 </ul>
 <h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
 <p>The APL Token Program is Arch Network’s native token standard, providing:</p>
@@ -201,21 +202,232 @@
 <li><strong>Bitcoin Integration</strong>: All operations are recorded on Bitcoin</li>
 <li><strong>Comprehensive Features</strong>: Minting, transferring, burning, delegation, freezing</li>
 <li><strong>Multisig Support</strong>: Multiple signature authorities for enhanced security</li>
+<li><strong>CLI Integration</strong>: Full command-line interface for token management</li>
 </ul>
 <h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
 <p>Before starting, ensure you have:</p>
 <ul>
-<li><strong>Rust 1.70+</strong> and Cargo installed (<a href="https://rustup.rs/">Install Rust</a>)</li>
+<li><strong>Rust 1.84.1+</strong> and Cargo installed (<a href="https://rustup.rs/">Install Rust</a>)</li>
 <li><strong>Arch Network CLI</strong> - <a href="https://github.com/Arch-Network/arch-network/releases/latest">Download Latest</a></li>
-<li><strong>Running validator</strong> (see <a href="./how-to-configure-local-validator-bitcoin-testnet4.html">Validator Setup Guide</a>)</li>
-<li><strong>Basic familiarity</strong> with Arch Network program development</li>
+<li><strong>Docker</strong> - Required for local development</li>
+<li><strong>Running development environment</strong> (see <a href="../getting-started/quick-start.html">Quick Start Guide</a>)</li>
 </ul>
 <h2 id="apl-token-program-id"><a class="header" href="#apl-token-program-id">APL Token Program ID</a></h2>
 <p>The APL Token Program has a fixed program ID:</p>
 <pre><code class="language-text">apl-token00000000000000000000000
 </code></pre>
-<h2 id="step-1-project-setup"><a class="header" href="#step-1-project-setup">Step 1: Project Setup</a></h2>
-<h3 id="11-create-project-structure"><a class="header" href="#11-create-project-structure">1.1 Create Project Structure</a></h3>
+<h2 id="quick-start-create-your-first-token"><a class="header" href="#quick-start-create-your-first-token">Quick Start: Create Your First Token</a></h2>
+<h3 id="step-1-start-local-environment"><a class="header" href="#step-1-start-local-environment">Step 1: Start Local Environment</a></h3>
+<pre><code class="language-bash"># Start local development environment
+arch-cli orchestrate start
+
+# Verify services are running
+arch-cli orchestrate validator-status
+arch-cli get-block-height
+</code></pre>
+<h3 id="step-2-create-configuration-profile"><a class="header" href="#step-2-create-configuration-profile">Step 2: Create Configuration Profile</a></h3>
+<pre><code class="language-bash"># Create a profile for local development
+arch-cli config create-profile local \
+    --bitcoin-node-endpoint http://127.0.0.1:18443 \
+    --bitcoin-node-username bitcoin \
+    --bitcoin-node-password bitcoinpass \
+    --bitcoin-network regtest \
+    --arch-node-url http://localhost:9002
+
+# Set as default profile
+arch-cli config set-default-profile local
+</code></pre>
+<h3 id="step-3-generate-demo-keys"><a class="header" href="#step-3-generate-demo-keys">Step 3: Generate Demo Keys</a></h3>
+<pre><code class="language-bash"># Create directory for demo keys
+mkdir -p ~/DEMO_KEYS
+
+# Generate keys for different roles
+openssl rand -out ~/DEMO_KEYS/payer.key 32
+openssl rand -out ~/DEMO_KEYS/mint_authority.key 32
+openssl rand -out ~/DEMO_KEYS/mint.key 32
+
+# Fund the payer account
+arch-cli account airdrop --keypair-path ~/DEMO_KEYS/payer.key
+</code></pre>
+<h3 id="step-4-create-token-mint"><a class="header" href="#step-4-create-token-mint">Step 4: Create Token Mint</a></h3>
+<pre><code class="language-bash"># Create a new token mint with 6 decimals
+arch-cli token create-mint \
+    --keypair-path ~/DEMO_KEYS/mint.key \
+    --decimals 6
+
+# Save the mint address
+export MINT=$(arch-cli token show-mint ~/DEMO_KEYS/mint.key | grep "Mint:" | awk '{print $2}')
+echo "Mint address: $MINT"
+</code></pre>
+<h3 id="step-5-create-token-account"><a class="header" href="#step-5-create-token-account">Step 5: Create Token Account</a></h3>
+<pre><code class="language-bash"># Create an Associated Token Account (ATA) for the mint authority
+arch-cli token create-account \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT"
+
+# Save the ATA address
+export ATA=$(arch-cli token show-account ~/DEMO_KEYS/mint_authority.key | grep "Address:" | awk '{print $2}')
+echo "Token account: $ATA"
+</code></pre>
+<h3 id="step-6-mint-initial-supply"><a class="header" href="#step-6-mint-initial-supply">Step 6: Mint Initial Supply</a></h3>
+<pre><code class="language-bash"># Mint 1,000,000 tokens (1,000,000 raw units with 6 decimals = 1.000000 tokens)
+arch-cli token mint \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --to "$ATA" \
+    --amount 1000000
+</code></pre>
+<h3 id="step-7-verify-your-token"><a class="header" href="#step-7-verify-your-token">Step 7: Verify Your Token</a></h3>
+<pre><code class="language-bash"># Check mint information
+arch-cli token show-mint "$MINT"
+
+# Check account balance
+arch-cli token balance "$ATA"
+
+# Check mint supply
+arch-cli token supply "$MINT"
+</code></pre>
+<h2 id="advanced-token-operations"><a class="header" href="#advanced-token-operations">Advanced Token Operations</a></h2>
+<h3 id="transferring-tokens"><a class="header" href="#transferring-tokens">Transferring Tokens</a></h3>
+<pre><code class="language-bash"># Create a recipient account
+openssl rand -out ~/DEMO_KEYS/recipient.key 32
+
+# Create ATA for recipient
+arch-cli token create-account \
+    --keypair-path ~/DEMO_KEYS/recipient.key \
+    --mint "$MINT"
+
+# Get recipient ATA
+export RECIPIENT_ATA=$(arch-cli token show-account ~/DEMO_KEYS/recipient.key | grep "Address:" | awk '{print $2}')
+
+# Transfer 100,000 tokens (0.100000 with 6 decimals)
+arch-cli token transfer \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --from "$ATA" \
+    --to "$RECIPIENT_ATA" \
+    --amount 100000
+</code></pre>
+<h3 id="delegation-and-approval"><a class="header" href="#delegation-and-approval">Delegation and Approval</a></h3>
+<pre><code class="language-bash"># Approve a delegate to spend up to 500,000 tokens
+arch-cli token approve \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --from "$ATA" \
+    --delegate ~/DEMO_KEYS/recipient.key \
+    --amount 500000
+
+# Later, revoke the delegation
+arch-cli token revoke \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --from "$ATA"
+</code></pre>
+<h3 id="account-control"><a class="header" href="#account-control">Account Control</a></h3>
+<pre><code class="language-bash"># Freeze the account (requires freeze authority)
+arch-cli token freeze-account \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --account "$ATA"
+
+# Thaw the account
+arch-cli token thaw-account \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --account "$ATA"
+</code></pre>
+<h3 id="multisignature-operations"><a class="header" href="#multisignature-operations">Multisignature Operations</a></h3>
+<pre><code class="language-bash"># Create a multisig with 2-of-3 threshold
+arch-cli token create-multisig \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --signers "key1,key2,key3" \
+    --threshold 2
+
+# Save multisig address
+export MULTISIG=$(arch-cli token multisig-show &lt;MULTISIG_ADDRESS&gt; | grep "Address:" | awk '{print $2}')
+
+# Sign a transaction with multisig
+arch-cli token multisig-sign \
+    --keypair-path ~/DEMO_KEYS/key1.key \
+    --multisig "$MULTISIG" \
+    --transaction &lt;TRANSACTION_DATA&gt;
+
+# Execute the signed transaction
+arch-cli token multisig-execute \
+    --keypair-path ~/DEMO_KEYS/key2.key \
+    --multisig "$MULTISIG" \
+    --transaction &lt;SIGNED_TRANSACTION&gt;
+</code></pre>
+<h3 id="advanced-features"><a class="header" href="#advanced-features">Advanced Features</a></h3>
+<h4 id="checked-operations-decimal-verification"><a class="header" href="#checked-operations-decimal-verification">Checked Operations (Decimal Verification)</a></h4>
+<pre><code class="language-bash"># Transfer with decimal verification
+arch-cli token transfer-checked \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --from "$ATA" \
+    --to "$RECIPIENT_ATA" \
+    --amount 100000 \
+    --decimals 6
+
+# Mint with decimal verification
+arch-cli token mint-to-checked \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --to "$ATA" \
+    --amount 500000 \
+    --decimals 6
+</code></pre>
+<h4 id="batch-operations"><a class="header" href="#batch-operations">Batch Operations</a></h4>
+<pre><code class="language-bash"># Batch transfer to multiple accounts
+arch-cli token batch-transfer \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --from "$ATA" \
+    --transfers '[{"to":"account1","amount":100000},{"to":"account2","amount":200000}]'
+
+# Batch mint to multiple accounts
+arch-cli token batch-mint \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --mints '[{"to":"account1","amount":100000},{"to":"account2","amount":200000}]'
+</code></pre>
+<h4 id="authority-management"><a class="header" href="#authority-management">Authority Management</a></h4>
+<pre><code class="language-bash"># Set new mint authority
+arch-cli token set-authority \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --new-authority &lt;NEW_AUTHORITY_PUBKEY&gt; \
+    --authority-type mint
+
+# Set new freeze authority
+arch-cli token set-authority \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --new-authority &lt;NEW_FREEZE_AUTHORITY&gt; \
+    --authority-type freeze
+</code></pre>
+<h2 id="utility-commands"><a class="header" href="#utility-commands">Utility Commands</a></h2>
+<h3 id="information-and-queries"><a class="header" href="#information-and-queries">Information and Queries</a></h3>
+<pre><code class="language-bash"># List all mints
+arch-cli token mints
+
+# List all accounts for a mint
+arch-cli token accounts "$MINT"
+
+# Convert amounts between raw and UI format
+arch-cli token amount-to-ui "$MINT" 1000000  # Raw to UI
+arch-cli token ui-to-amount "$MINT" 1.5      # UI to raw
+</code></pre>
+<h3 id="account-lifecycle"><a class="header" href="#account-lifecycle">Account Lifecycle</a></h3>
+<pre><code class="language-bash"># Close a token account (reclaims rent)
+arch-cli token close-account \
+    --keypair-path ~/DEMO_KEYS/recipient.key \
+    --mint "$MINT" \
+    --account "$RECIPIENT_ATA"
+</code></pre>
+<h2 id="programmatic-token-creation"><a class="header" href="#programmatic-token-creation">Programmatic Token Creation</a></h2>
+<p>For developers who want to create tokens programmatically, here’s how to use the APL token program directly:</p>
+<h3 id="project-setup"><a class="header" href="#project-setup">Project Setup</a></h3>
 <pre><code class="language-bash"># Create project directory
 mkdir arch-token-example
 cd arch-token-example
@@ -223,7 +435,7 @@ cd arch-token-example
 # Initialize Rust project
 cargo init --bin
 </code></pre>
-<h3 id="12-configure-dependencies"><a class="header" href="#12-configure-dependencies">1.2 Configure Dependencies</a></h3>
+<h3 id="dependencies"><a class="header" href="#dependencies">Dependencies</a></h3>
 <p><strong>Cargo.toml</strong></p>
 <pre><code class="language-toml">[package]
 name = "arch_token_example"
@@ -233,766 +445,110 @@ edition = "2021"
 [dependencies]
 arch_sdk = { git = "https://github.com/Arch-Network/arch-network", branch = "dev" }
 arch_program = { git = "https://github.com/Arch-Network/arch-network", branch = "dev" }
-arch_test_sdk = { git = "https://github.com/Arch-Network/arch-network", branch = "dev" }
 apl-token = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
 apl-associated-token-account = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
 borsh = { version = "1.5.1", features = ["derive"] }
-bitcoincore-rpc = "0.19.0"
-bitcoin = { version = "0.32.3", features = ["serde", "rand"] }
-hex = "0.4.3"
-log = "0.4"
-env_logger = "0.10"
-
-[dev-dependencies]
-serial_test = "3.1.1"
 </code></pre>
-<h2 id="step-2-create-a-token-mint"><a class="header" href="#step-2-create-a-token-mint">Step 2: Create a Token Mint</a></h2>
-<p>First, let’s create a new token mint. This is the foundation for your token.</p>
-<p><strong>src/main.rs</strong></p>
-<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::Mint;
-use arch_program::{
-    program_pack::Pack,
+<h3 id="create-token-programmatically"><a class="header" href="#create-token-programmatically">Create Token Programmatically</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::{
+    instruction,
+    state::{Mint, Account},
 };
-use arch_sdk::{generate_new_keypair, ArchRpcClient};
-use arch_test_sdk::{
-    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
-    helper::create_and_fund_account_with_faucet,
-    instructions::initialize_mint_token,
-};
+use arch_sdk::{ArchRpcClient, generate_new_keypair};
+use arch_program::pubkey::Pubkey;
 
-fn main() {
-    let client = ArchRpcClient::new(NODE1_ADDRESS);
+#[tokio::main]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let client = ArchRpcClient::new("http://localhost:9002");
 
-    // Create authority keypair (this will be the mint authority)
-    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
+    // Generate keypairs
+    let (mint_keypair, mint_pubkey, _) = generate_new_keypair("regtest");
+    let (authority_keypair, authority_pubkey, _) = generate_new_keypair("regtest");
 
-    println!("Authority account created and funded: {}", authority_pubkey);
-
-    // Create mint using the helper function
-    let (_token_mint_keypair, token_mint_pubkey) = initialize_mint_token(
-        &amp;client,
-        authority_pubkey,
-        authority_keypair,
-        None, // No freeze authority
-        Mint::LEN as u64,
+    // Create mint account
+    let mint_rent = client.get_minimum_balance_for_rent_exemption(Mint::LEN).await?;
+    
+    // Initialize mint
+    let init_mint_ix = instruction::initialize_mint(
         &amp;apl_token::id(),
-    );
-
-    println!("\n✅ Token mint successfully created!");
-    println!("Token mint address: {}", token_mint_pubkey);
-    println!("Token mint authority: {}", authority_pubkey);
-    
-    println!("\nWhat this proves:");
-    println!("✓ The mint account exists on-chain");
-    println!("✓ The mint is initialized and ready to mint tokens");
-    println!("✓ The authority can now mint tokens to any account");
-}</code></pre></pre>
-<p><strong>Run this step:</strong></p>
-<pre><code class="language-bash">cargo run
-</code></pre>
-<p><strong>Expected output:</strong></p>
-<pre><code>Authority account created and funded: [authority_address]
-✅ Token mint successfully created!
-Token mint address: [mint_address]
-Token mint authority: [authority_address]
-</code></pre>
-<h2 id="step-3-create-token-accounts"><a class="header" href="#step-3-create-token-accounts">Step 3: Create Token Accounts</a></h2>
-<p>Now that you have a mint, you need token accounts to hold tokens. Each user needs their own token account for your mint.</p>
-<p><strong>src/main.rs</strong></p>
-<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::Mint;
-use arch_program::{
-    program_pack::Pack,
-    pubkey::Pubkey,
-};
-use arch_sdk::{generate_new_keypair, ArchRpcClient};
-use arch_test_sdk::{
-    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
-    helper::create_and_fund_account_with_faucet,
-    instructions::{initialize_mint_token, initialize_token_account},
-};
-use bitcoin::key::Keypair;
-
-fn main() {
-    let client = ArchRpcClient::new(NODE1_ADDRESS);
-
-    // Create authority keypair (this will be the mint authority)
-    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
-
-    println!("Authority account created and funded: {}", authority_pubkey);
-
-    // Create mint using the helper function
-    let (_token_mint_keypair, token_mint_pubkey) = initialize_mint_token(
-        &amp;client,
-        authority_pubkey,
-        authority_keypair.clone(),
-        None, // No freeze authority
-        Mint::LEN as u64,
-        &amp;apl_token::id(),
-    );
-
-    println!("\n✅ Token mint successfully created!");
-    println!("Token mint address: {}", token_mint_pubkey);
-    println!("Token mint authority: {}", authority_pubkey);
-    
-    // Create a token account for the authority
-    println!("\n📦 Creating first token account...");
-    
-    let (_token_account_keypair, token_account_pubkey) = initialize_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        authority_keypair.clone(),
-    );
-    
-    println!("✅ Token account successfully created!");
-    println!("Token account address: {}", token_account_pubkey);
-    println!("Token account owner: {}", authority_pubkey);
-    
-    // Create a second user and their token account
-    println!("\n👤 Creating second user and their token account...");
-    
-    let (user2_keypair, user2_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;user2_keypair, BITCOIN_NETWORK);
-    
-    let user2_token_account = create_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        user2_keypair,
-    );
-    
-    println!("✅ Second user's token account created!");
-    println!("User 2 address: {}", user2_pubkey);
-    println!("User 2 token account: {}", user2_token_account);
-    
-    println!("\n🎉 Complete token setup verified!");
-    println!("Summary:");
-    println!("- Token mint: {}", token_mint_pubkey);
-    println!("- Authority's token account: {}", token_account_pubkey);
-    println!("- User 2's token account: {}", user2_token_account);
-}
-
-// Standalone function to create token accounts
-fn create_token_account(
-    client: &amp;ArchRpcClient,
-    token_mint_pubkey: Pubkey,
-    owner_keypair: Keypair,
-) -&gt; Pubkey {
-    let (_token_account_keypair, token_account_pubkey) = initialize_token_account(
-        client,
-        token_mint_pubkey,
-        owner_keypair,
-    );
-    
-    token_account_pubkey
-}</code></pre></pre>
-<p><strong>Run this step:</strong></p>
-<pre><code class="language-bash">cargo run
-</code></pre>
-<p><strong>Expected output:</strong></p>
-<pre><code>Authority account created and funded: [authority_address]
-✅ Token mint successfully created!
-Token mint address: [mint_address]
-📦 Creating first token account...
-✅ Token account successfully created!
-Token account address: [account1_address]
-👤 Creating second user and their token account...
-✅ Second user's token account created!
-User 2 address: [user2_address]
-User 2 token account: [account2_address]
-</code></pre>
-<h2 id="step-4-mint-tokens"><a class="header" href="#step-4-mint-tokens">Step 4: Mint Tokens</a></h2>
-<p>Now let’s mint some tokens to the accounts we created.</p>
-<p><strong>src/main.rs</strong></p>
-<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::Mint;
-use arch_program::{
-    program_pack::Pack,
-    pubkey::Pubkey,
-};
-use arch_sdk::{generate_new_keypair, ArchRpcClient};
-use arch_test_sdk::{
-    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
-    helper::create_and_fund_account_with_faucet,
-    instructions::{initialize_mint_token, initialize_token_account, mint_tokens},
-};
-use bitcoin::key::Keypair;
-
-fn main() {
-    let client = ArchRpcClient::new(NODE1_ADDRESS);
-
-    // Create authority keypair (this will be the mint authority)
-    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
-
-    println!("Authority account created and funded: {}", authority_pubkey);
-
-    // Create mint using the helper function
-    let (_token_mint_keypair, token_mint_pubkey) = initialize_mint_token(
-        &amp;client,
-        authority_pubkey,
-        authority_keypair.clone(),
-        None, // No freeze authority
-        Mint::LEN as u64,
-        &amp;apl_token::id(),
-    );
-
-    println!("\n✅ Token mint successfully created!");
-    println!("Token mint address: {}", token_mint_pubkey);
-    
-    // Create token accounts
-    let (_token_account_keypair, authority_token_account) = initialize_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        authority_keypair.clone(),
-    );
-    
-    let (user2_keypair, user2_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;user2_keypair, BITCOIN_NETWORK);
-    
-    let user2_token_account = create_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        user2_keypair,
-    );
-    
-    println!("✅ Token accounts created!");
-    println!("Authority's token account: {}", authority_token_account);
-    println!("User 2's token account: {}", user2_token_account);
-    
-    // Mint tokens to the authority's account
-    println!("\n🪙 Minting tokens to authority's account...");
-    mint_tokens(
-        &amp;client,
-        &amp;token_mint_pubkey,
-        &amp;authority_token_account,
+        &amp;mint_pubkey,
         &amp;authority_pubkey,
-        authority_keypair.clone(),
-        1_000_000_000, // 1 token with 9 decimals
-    );
-    
-    // Mint tokens to user2's account
-    println!("\n🪙 Minting tokens to user2's account...");
-    mint_tokens(
-        &amp;client,
-        &amp;token_mint_pubkey,
-        &amp;user2_token_account,
-        &amp;authority_pubkey,
-        authority_keypair,
-        500_000_000, // 0.5 tokens with 9 decimals
-    );
-    
-    println!("\n🎉 Token minting completed!");
-    println!("Summary:");
-    println!("- Authority received: 1.0 tokens");
-    println!("- User 2 received: 0.5 tokens");
-    println!("- Total supply: 1.5 tokens");
-}
-
-// Standalone function to create token accounts
-fn create_token_account(
-    client: &amp;ArchRpcClient,
-    token_mint_pubkey: Pubkey,
-    owner_keypair: Keypair,
-) -&gt; Pubkey {
-    let (_token_account_keypair, token_account_pubkey) = initialize_token_account(
-        client,
-        token_mint_pubkey,
-        owner_keypair,
-    );
-    
-    token_account_pubkey
-}</code></pre></pre>
-<p><strong>Run this step:</strong></p>
-<pre><code class="language-bash">cargo run
-</code></pre>
-<p><strong>Expected output:</strong></p>
-<pre><code>Authority account created and funded: [authority_address]
-✅ Token mint successfully created!
-Token mint address: [mint_address]
-✅ Token accounts created!
-Authority's token account: [account1_address]
-User 2's token account: [account2_address]
-🪙 Minting tokens to authority's account...
-🪙 Minting tokens to user2's account...
-🎉 Token minting completed!
-Summary:
-- Authority received: 1.0 tokens
-- User 2 received: 0.5 tokens
-- Total supply: 1.5 tokens
-</code></pre>
-<h2 id="step-5-transfer-tokens"><a class="header" href="#step-5-transfer-tokens">Step 5: Transfer Tokens</a></h2>
-<p>Now let’s transfer tokens between accounts.</p>
-<p><strong>src/main.rs</strong></p>
-<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::Mint;
-use arch_program::{
-    program_pack::Pack,
-    pubkey::Pubkey,
-};
-use arch_sdk::{generate_new_keypair, ArchRpcClient};
-use arch_test_sdk::{
-    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
-    helper::create_and_fund_account_with_faucet,
-    instructions::{initialize_mint_token, initialize_token_account, mint_tokens},
-};
-use bitcoin::key::Keypair;
-
-fn main() {
-    let client = ArchRpcClient::new(NODE1_ADDRESS);
-
-    // Create authority keypair (this will be the mint authority)
-    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
-
-    println!("Authority account created and funded: {}", authority_pubkey);
-
-    // Create mint using the helper function
-    let (_token_mint_keypair, token_mint_pubkey) = initialize_mint_token(
-        &amp;client,
-        authority_pubkey,
-        authority_keypair.clone(),
         None, // No freeze authority
-        Mint::LEN as u64,
-        &amp;apl_token::id(),
-    );
+        6,    // Decimals
+    )?;
 
-    println!("\n✅ Token mint successfully created!");
-    println!("Token mint address: {}", token_mint_pubkey);
-    
-    // Create token accounts
-    let (_token_account_keypair, authority_token_account) = initialize_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        authority_keypair.clone(),
-    );
-    
-    let (user2_keypair, user2_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;user2_keypair, BITCOIN_NETWORK);
-    
-    let user2_token_account = create_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        user2_keypair.clone(),
-    );
-    
-    println!("✅ Token accounts created!");
-    println!("Authority's token account: {}", authority_token_account);
-    println!("User 2's token account: {}", user2_token_account);
-    
-    // Mint tokens to both accounts
-    mint_tokens(
-        &amp;client,
-        &amp;token_mint_pubkey,
-        &amp;authority_token_account,
-        &amp;authority_pubkey,
-        authority_keypair.clone(),
-        1_000_000_000, // 1 token with 9 decimals
-    );
-    
-    mint_tokens(
-        &amp;client,
-        &amp;token_mint_pubkey,
-        &amp;user2_token_account,
-        &amp;authority_pubkey,
-        authority_keypair,
-        500_000_000, // 0.5 tokens with 9 decimals
-    );
-    
-    println!("✅ Tokens minted to both accounts");
-    
-    // Transfer tokens from user2 to authority
-    println!("\n🔄 Transferring tokens from user2 to authority...");
-    transfer_tokens(
-        &amp;client,
-        &amp;user2_token_account,
-        &amp;authority_token_account,
-        &amp;user2_pubkey,
-        user2_keypair,
-        200_000_000, // 0.2 tokens
-    );
-    
-    println!("\n🎉 Token transfer completed!");
-    println!("Summary:");
-    println!("- User2 transferred 0.2 tokens to authority");
-    println!("- Authority now has: 1.2 tokens");
-    println!("- User2 now has: 0.3 tokens");
-}
+    // Create and send transaction
+    let signature = client.send_and_confirm_transaction_with_spinner(
+        &amp;[&amp;mint_keypair, &amp;authority_keypair],
+        &amp;[init_mint_ix],
+        &amp;mint_pubkey,
+    ).await?;
 
-// Standalone function to create token accounts
-fn create_token_account(
-    client: &amp;ArchRpcClient,
-    token_mint_pubkey: Pubkey,
-    owner_keypair: Keypair,
-) -&gt; Pubkey {
-    let (_token_account_keypair, token_account_pubkey) = initialize_token_account(
-        client,
-        token_mint_pubkey,
-        owner_keypair,
-    );
-    
-    token_account_pubkey
-}
+    println!("Mint created: {}", mint_pubkey);
+    println!("Transaction: {}", signature);
 
-// Function to transfer tokens between accounts
-fn transfer_tokens(
-    client: &amp;ArchRpcClient,
-    source_account: &amp;Pubkey,
-    destination_account: &amp;Pubkey,
-    owner_pubkey: &amp;Pubkey,
-    owner_keypair: Keypair,
-    amount: u64,
-) {
-    use arch_program::{
-        sanitized::ArchMessage,
-        system_instruction::create_account,
-    };
-    use arch_sdk::build_and_sign_transaction;
-    
-    let transfer_instruction = apl_token::instruction::transfer(
-        &amp;apl_token::id(),
-        source_account,
-        destination_account,
-        owner_pubkey,
-        &amp;[], // No additional signers
-        amount,
-    ).unwrap();
-
-    let transaction = build_and_sign_transaction(
-        ArchMessage::new(
-            &amp;[transfer_instruction],
-            Some(*owner_pubkey),
-            client.get_best_block_hash().unwrap(),
-        ),
-        vec![owner_keypair],
-        BITCOIN_NETWORK,
-    ).expect("Failed to build and sign transaction");
-
-    let tx_id = client.send_transaction(transaction)
-        .expect("Failed to send transaction");
-    
-    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
-        .expect("Failed to process transaction");
-    
-    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
-    println!("Transferred {} tokens", amount);
+    Ok(())
 }</code></pre></pre>
-<p><strong>Run this step:</strong></p>
-<pre><code class="language-bash">cargo run
-</code></pre>
-<p><strong>Expected output:</strong></p>
-<pre><code>Authority account created and funded: [authority_address]
-✅ Token mint successfully created!
-Token mint address: [mint_address]
-✅ Token accounts created!
-Authority's token account: [account1_address]
-User 2's token account: [account2_address]
-✅ Tokens minted to both accounts
-🔄 Transferring tokens from user2 to authority...
-Transferred 200000000 tokens
-🎉 Token transfer completed!
-Summary:
-- User2 transferred 0.2 tokens to authority
-- Authority now has: 1.2 tokens
-- User2 now has: 0.3 tokens
-</code></pre>
-<h2 id="step-6-advanced-operations"><a class="header" href="#step-6-advanced-operations">Step 6: Advanced Operations</a></h2>
-<p>Now let’s explore some advanced token operations like delegation and burning.</p>
-<p><strong>src/main.rs</strong></p>
-<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::Mint;
-use arch_program::{
-    program_pack::Pack,
-    pubkey::Pubkey,
-};
-use arch_sdk::{generate_new_keypair, ArchRpcClient};
-use arch_test_sdk::{
-    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
-    helper::create_and_fund_account_with_faucet,
-    instructions::{initialize_mint_token, initialize_token_account, mint_tokens},
-};
-use bitcoin::key::Keypair;
-
-fn main() {
-    let client = ArchRpcClient::new(NODE1_ADDRESS);
-
-    // Create authority keypair (this will be the mint authority)
-    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
-
-    println!("Authority account created and funded: {}", authority_pubkey);
-
-    // Create mint using the helper function
-    let (_token_mint_keypair, token_mint_pubkey) = initialize_mint_token(
-        &amp;client,
-        authority_pubkey,
-        authority_keypair.clone(),
-        None, // No freeze authority
-        Mint::LEN as u64,
-        &amp;apl_token::id(),
-    );
-
-    println!("\n✅ Token mint successfully created!");
-    println!("Token mint address: {}", token_mint_pubkey);
-    
-    // Create token accounts for multiple users
-    let (_token_account_keypair, authority_token_account) = initialize_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        authority_keypair.clone(),
-    );
-    
-    let (user2_keypair, user2_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;user2_keypair, BITCOIN_NETWORK);
-    
-    let user2_token_account = create_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        user2_keypair.clone(),
-    );
-    
-    let (delegate_keypair, delegate_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;delegate_keypair, BITCOIN_NETWORK);
-    
-    let delegate_token_account = create_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        delegate_keypair.clone(),
-    );
-    
-    println!("✅ Token accounts created!");
-    println!("Authority's token account: {}", authority_token_account);
-    println!("User 2's token account: {}", user2_token_account);
-    println!("Delegate's token account: {}", delegate_token_account);
-    
-    // Mint tokens to user2's account
-    mint_tokens(
-        &amp;client,
-        &amp;token_mint_pubkey,
-        &amp;user2_token_account,
-        &amp;authority_pubkey,
-        authority_keypair.clone(),
-        1_000_000_000, // 1 token with 9 decimals
-    );
-    
-    println!("✅ Tokens minted to user2's account");
-    
-    // Step 1: Approve delegation - User2 allows delegate to spend 0.3 tokens
-    println!("\n🔐 Approving delegation...");
-    approve_delegate(
-        &amp;client,
-        &amp;user2_token_account,
-        &amp;delegate_pubkey,
-        &amp;user2_pubkey,
-        user2_keypair.clone(),
-        300_000_000, // 0.3 tokens
-    );
-    
-    // Step 2: Delegate transfers tokens on behalf of user2
-    println!("\n🔄 Delegate transferring tokens on behalf of user2...");
-    transfer_tokens_as_delegate(
-        &amp;client,
-        &amp;user2_token_account,
-        &amp;delegate_token_account,
-        &amp;delegate_pubkey,
-        delegate_keypair.clone(),
-        200_000_000, // 0.2 tokens
-    );
-    
-    // Step 3: Burn some tokens from user2's account
-    println!("\n🔥 Burning tokens from user2's account...");
-    burn_tokens(
-        &amp;client,
-        &amp;user2_token_account,
-        &amp;token_mint_pubkey,
-        &amp;user2_pubkey,
-        user2_keypair,
-        100_000_000, // 0.1 tokens
-    );
-    
-    println!("\n🎉 Advanced operations completed!");
-    println!("Summary:");
-    println!("- User2 approved delegate to spend 0.3 tokens");
-    println!("- Delegate transferred 0.2 tokens to their own account");
-    println!("- User2 burned 0.1 tokens");
-    println!("- User2 remaining balance: 0.7 tokens");
-    println!("- Delegate balance: 0.2 tokens");
-}
-
-// Standalone function to create token accounts
-fn create_token_account(
-    client: &amp;ArchRpcClient,
-    token_mint_pubkey: Pubkey,
-    owner_keypair: Keypair,
-) -&gt; Pubkey {
-    let (_token_account_keypair, token_account_pubkey) = initialize_token_account(
-        client,
-        token_mint_pubkey,
-        owner_keypair,
-    );
-    
-    token_account_pubkey
-}
-
-// Function to approve a delegate to spend tokens
-fn approve_delegate(
-    client: &amp;ArchRpcClient,
-    source_account: &amp;Pubkey,
-    delegate_account: &amp;Pubkey,
-    owner_pubkey: &amp;Pubkey,
-    owner_keypair: Keypair,
-    amount: u64,
-) {
-    use arch_program::sanitized::ArchMessage;
-    use arch_sdk::build_and_sign_transaction;
-    
-    let approve_instruction = apl_token::instruction::approve(
-        &amp;apl_token::id(),
-        source_account,
-        delegate_account,
-        owner_pubkey,
-        &amp;[],
-        amount,
-    ).unwrap();
-
-    let transaction = build_and_sign_transaction(
-        ArchMessage::new(
-            &amp;[approve_instruction],
-            Some(*owner_pubkey),
-            client.get_best_block_hash().unwrap(),
-        ),
-        vec![owner_keypair],
-        BITCOIN_NETWORK,
-    ).expect("Failed to build and sign transaction");
-
-    let tx_id = client.send_transaction(transaction)
-        .expect("Failed to send transaction");
-    
-    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
-        .expect("Failed to process transaction");
-    
-    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
-    println!("Approved {} tokens for delegation", amount);
-}
-
-// Function to transfer tokens as a delegate
-fn transfer_tokens_as_delegate(
-    client: &amp;ArchRpcClient,
-    source_account: &amp;Pubkey,
-    destination_account: &amp;Pubkey,
-    delegate_pubkey: &amp;Pubkey,
-    delegate_keypair: Keypair,
-    amount: u64,
-) {
-    use arch_program::sanitized::ArchMessage;
-    use arch_sdk::build_and_sign_transaction;
-    
-    let transfer_instruction = apl_token::instruction::transfer(
-        &amp;apl_token::id(),
-        source_account,
-        destination_account,
-        delegate_pubkey,
-        &amp;[],
-        amount,
-    ).unwrap();
-
-    let transaction = build_and_sign_transaction(
-        ArchMessage::new(
-            &amp;[transfer_instruction],
-            Some(*delegate_pubkey),
-            client.get_best_block_hash().unwrap(),
-        ),
-        vec![delegate_keypair],
-        BITCOIN_NETWORK,
-    ).expect("Failed to build and sign transaction");
-
-    let tx_id = client.send_transaction(transaction)
-        .expect("Failed to send transaction");
-    
-    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
-        .expect("Failed to process transaction");
-    
-    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
-    println!("Delegate transferred {} tokens", amount);
-}
-
-// Function to burn tokens
-fn burn_tokens(
-    client: &amp;ArchRpcClient,
-    account_pubkey: &amp;Pubkey,
-    mint_pubkey: &amp;Pubkey,
-    owner_pubkey: &amp;Pubkey,
-    owner_keypair: Keypair,
-    amount: u64,
-) {
-    use arch_program::sanitized::ArchMessage;
-    use arch_sdk::build_and_sign_transaction;
-    
-    let burn_instruction = apl_token::instruction::burn(
-        &amp;apl_token::id(),
-        account_pubkey,
-        mint_pubkey,
-        owner_pubkey,
-        &amp;[],
-        amount,
-    ).unwrap();
-
-    let transaction = build_and_sign_transaction(
-        ArchMessage::new(
-            &amp;[burn_instruction],
-            Some(*owner_pubkey),
-            client.get_best_block_hash().unwrap(),
-        ),
-        vec![owner_keypair],
-        BITCOIN_NETWORK,
-    ).expect("Failed to build and sign transaction");
-
-    let tx_id = client.send_transaction(transaction)
-        .expect("Failed to send transaction");
-    
-    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
-        .expect("Failed to process transaction");
-    
-    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
-    println!("Burned {} tokens", amount);
-}</code></pre></pre>
-<p><strong>Run this step:</strong></p>
-<pre><code class="language-bash">cargo run
-</code></pre>
-<p><strong>Expected output:</strong></p>
-<pre><code>Authority account created and funded: [authority_address]
-✅ Token mint successfully created!
-Token mint address: [mint_address]
-✅ Token accounts created!
-Authority's token account: [account1_address]
-User 2's token account: [account2_address]
-Delegate's token account: [delegate_account_address]
-✅ Tokens minted to user2's account
-🔐 Approving delegation...
-Approved 300000000 tokens for delegation
-🔄 Delegate transferring tokens on behalf of user2...
-Delegate transferred 200000000 tokens
-🔥 Burning tokens from user2's account...
-Burned 100000000 tokens
-🎉 Advanced operations completed!
-Summary:
-- User2 approved delegate to spend 0.3 tokens
-- Delegate transferred 0.2 tokens to their own account
-- User2 burned 0.1 tokens
-- User2 remaining balance: 0.7 tokens
-- Delegate balance: 0.2 tokens
-</code></pre>
-<h3 id="what-this-demonstrates"><a class="header" href="#what-this-demonstrates">What This Demonstrates:</a></h3>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h3 id="security"><a class="header" href="#security">Security</a></h3>
 <ol>
-<li><strong>Delegation</strong>: User2 approves a delegate to spend tokens on their behalf</li>
-<li><strong>Delegate Transfers</strong>: The delegate can transfer tokens from User2’s account to their own</li>
-<li><strong>Token Burning</strong>: User2 can burn tokens to reduce the total supply</li>
-<li><strong>Complex Workflows</strong>: Shows how multiple parties can interact with tokens</li>
+<li><strong>Separate Authorities</strong>: Use different keypairs for mint authority, freeze authority, and payer</li>
+<li><strong>Multisig for High-Value Operations</strong>: Implement multisig for minting and authority changes</li>
+<li><strong>Freeze Authority</strong>: Only set freeze authority if you need the ability to freeze accounts</li>
+<li><strong>Key Management</strong>: Store private keys securely and never share them</li>
 </ol>
-<h3 id="key-concepts"><a class="header" href="#key-concepts">Key Concepts:</a></h3>
+<h3 id="token-design"><a class="header" href="#token-design">Token Design</a></h3>
+<ol>
+<li><strong>Decimal Precision</strong>: Choose appropriate decimals (6-9 is common)</li>
+<li><strong>Supply Planning</strong>: Plan your initial supply and minting schedule</li>
+<li><strong>Metadata</strong>: Consider adding off-chain metadata for name, symbol, and logo</li>
+<li><strong>Access Control</strong>: Design your authority structure carefully</li>
+</ol>
+<h3 id="development-workflow"><a class="header" href="#development-workflow">Development Workflow</a></h3>
+<ol>
+<li><strong>Local Testing</strong>: Always test on local environment first</li>
+<li><strong>Profile Management</strong>: Use different profiles for different environments</li>
+<li><strong>Transaction Monitoring</strong>: Monitor transactions and verify state changes</li>
+<li><strong>Error Handling</strong>: Implement proper error handling in your applications</li>
+</ol>
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
+<h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
+<p><strong>Insufficient Balance:</strong></p>
+<pre><code class="language-bash"># Check account balance
+arch-cli token balance &lt;ACCOUNT_ADDRESS&gt;
+
+# Fund account if needed
+arch-cli account airdrop --keypair-path &lt;KEYPAIR_PATH&gt;
+</code></pre>
+<p><strong>Invalid Authority:</strong></p>
+<pre><code class="language-bash"># Check mint authorities
+arch-cli token show-mint &lt;MINT_ADDRESS&gt;
+
+# Check account owner
+arch-cli token show-account &lt;ACCOUNT_ADDRESS&gt;
+</code></pre>
+<p><strong>Transaction Failures:</strong></p>
+<pre><code class="language-bash"># Check transaction status
+arch-cli tx confirm &lt;SIGNATURE&gt;
+
+# View program logs
+arch-cli tx log-program-messages &lt;SIGNATURE&gt;
+</code></pre>
+<h3 id="getting-help"><a class="header" href="#getting-help">Getting Help</a></h3>
 <ul>
-<li><strong>Delegation</strong>: Allows one account to spend tokens on behalf of another</li>
-<li><strong>Burning</strong>: Permanently removes tokens from circulation</li>
-<li><strong>Multi-party Operations</strong>: Demonstrates how tokens can be used in complex scenarios</li>
+<li><strong>Discord Community</strong>: <a href="https://discord.gg/archnetwork">https://discord.gg/archnetwork</a></li>
+<li><strong>GitHub Issues</strong>: <a href="https://github.com/Arch-Network/arch-node/issues">https://github.com/Arch-Network/arch-node/issues</a></li>
+<li><strong>Documentation</strong>: <a href="https://docs.arch.network">https://docs.arch.network</a></li>
 </ul>
-<p>This completes the full token lifecycle from creation to advanced operations!</p>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<ul>
+<li><strong>Advanced Token Features</strong>: Explore <a href="../../arch-cli/APL_TOKEN_WALKTHROUGH_LEVEL_2.html">APL Token Walkthrough Level 2</a></li>
+<li><strong>Program Development</strong>: Learn about <a href="writing-your-first-program.html">Writing Your First Program</a></li>
+<li><strong>Testing</strong>: Understand <a href="testing-guide.html">Testing Strategies</a></li>
+<li><strong>Deployment</strong>: Deploy to <a href="../getting-started/bitcoin-and-titan-setup.html">Testnet and Mainnet</a></li>
+</ul>
+<hr />
+<p><strong>Congratulations!</strong> You’ve successfully created and managed APL tokens on Arch Network. You now have the foundation to build sophisticated token-based applications that integrate seamlessly with Bitcoin.</p>
 
                     </main>
 

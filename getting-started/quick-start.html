@@ -191,6 +191,7 @@
 <li><strong>Rust</strong> (v1.84.1 or later) - <a href="https://rustup.rs/">Install Rust</a></li>
 <li><strong>Solana CLI</strong> (v2.2.14 or later) - <a href="https://docs.solana.com/cli/install-solana-cli-tools">Install Solana</a></li>
 <li><strong>Arch Network CLI</strong> - Download from <a href="https://github.com/Arch-Network/arch-node/releases/latest">Arch Network Releases</a></li>
+<li><strong>Docker</strong> - Required for local development - <a href="https://docs.docker.com/engine/install/">Install Docker</a></li>
 </ul>
 <blockquote>
 <p>⚠️ <strong>Important</strong>: Arch Network now requires Solana CLI 2.x. Please ensure you have version 2.2.14 or later installed.</p>
@@ -200,6 +201,7 @@
 rustc --version
 solana --version  # Should show 2.2.14 or later
 arch-cli --version
+docker --version
 </code></pre>
 <blockquote>
 <p>💡 Note: If you encounter any issues during installation, join our <a href="https://discord.gg/archnetwork">Discord</a> for support.</p>
@@ -210,21 +212,12 @@ arch-cli --version
 git clone https://github.com/Arch-Network/arch-examples
 cd arch-examples/examples/helloworld
 </code></pre>
-<h3 id="2-start-local-validator"><a class="header" href="#2-start-local-validator">2. Start Local Validator</a></h3>
+<h3 id="2-start-local-development-environment"><a class="header" href="#2-start-local-development-environment">2. Start Local Development Environment</a></h3>
 <p>Choose one of the following network modes:</p>
-<h4 id="option-a-testnet-recommended-for-testing"><a class="header" href="#option-a-testnet-recommended-for-testing">Option A: Testnet (Recommended for Testing)</a></h4>
-<pre><code class="language-bash">arch-cli validator-start \
-    --network-mode testnet \
-    --data-dir ./.arch_data \
-    --rpc-bind-ip 127.0.0.1 \
-    --rpc-bind-port 9002 \
-    --titan-endpoint https://titan-public-http.test.arch.network \
-    --titan-socket-endpoint titan-public-tcp.test.arch.network:3030
-</code></pre>
-<h4 id="option-b-local-development-regtest---recommended"><a class="header" href="#option-b-local-development-regtest---recommended">Option B: Local Development (Regtest) - Recommended</a></h4>
+<h4 id="option-a-local-development-recommended"><a class="header" href="#option-a-local-development-recommended">Option A: Local Development (Recommended)</a></h4>
 <p><strong>Prerequisites:</strong></p>
 <ul>
-<li><strong>Docker</strong>: Required on all platforms - <a href="https://docs.docker.com/engine/install/">Install Docker</a></li>
+<li><strong>Docker</strong>: Required on all platforms</li>
 <li><strong>Docker Management</strong> (optional but recommended):
 <ul>
 <li><strong>macOS</strong>: <a href="https://orbstack.dev/">OrbStack</a> (recommended) or <a href="https://www.docker.com/products/docker-desktop/">Docker Desktop</a></li>
@@ -245,14 +238,24 @@ arch-cli orchestrate start
 <pre><code class="language-bash"># Use local source code for development
 arch-cli orchestrate start --local "$(pwd)"
 
-# Customize Titan image
-arch-cli orchestrate start --titan-image ghcr.io/arch-network/titan:latest
+# Skip bitcoind and use remote Bitcoin RPC
+arch-cli orchestrate start --no-bitcoind
 
 # Force rebuild images
-arch-cli orchestrate start --force-rebuild --rebuild-titan
+arch-cli orchestrate start --force-rebuild
+</code></pre>
+<h4 id="option-b-testnet-remote-bitcoin--local-arch"><a class="header" href="#option-b-testnet-remote-bitcoin--local-arch">Option B: Testnet (Remote Bitcoin + Local Arch)</a></h4>
+<p>For testnet development with remote Bitcoin node:</p>
+<pre><code class="language-bash"># 1. Create a configuration profile
+arch-cli config create-profile testnet \
+    --bitcoin-node-endpoint http://bitcoin-node.test.aws.archnetwork.xyz:49332 \
+    --bitcoin-node-username bitcoin \
+    --bitcoin-node-password uU1taFBTUvae96UCtA8YxAepYTFszYvYVSXK8xgzBs0 \
+    --bitcoin-network testnet \
+    --arch-node-url http://localhost:9002
 
-# Skip bitcoind and use profile's Bitcoin RPC
-arch-cli orchestrate start --no-bitcoind
+# 2. Start local Arch environment (no local bitcoind)
+arch-cli --profile testnet orchestrate start --local "$(pwd)" --no-bitcoind
 </code></pre>
 <h4 id="option-c-devnet-full-local-stack"><a class="header" href="#option-c-devnet-full-local-stack">Option C: Devnet (Full Local Stack)</a></h4>
 <p>For devnet, you’ll need to run your own Bitcoin regtest node and Titan indexer:</p>
@@ -272,287 +275,91 @@ bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoinpass generatetoaddress
 # 3. Clone and build Titan indexer (if not already done)
 git clone https://github.com/saturnbtc/Titan.git
 cd Titan
+cargo build --release
+cd ..
 
-# 4. Start Titan indexer pointing to your Bitcoin node
-cargo run --bin titan -- \
-    --bitcoin-rpc-url http://127.0.0.1:18443 \
-    --bitcoin-rpc-username bitcoin \
-    --bitcoin-rpc-password bitcoinpass \
-    --chain regtest \
-    --index-addresses \
-    --index-bitcoin-transactions \
-    --enable-tcp-subscriptions \
-    --main-loop-interval 0 \
-    --http-listen 127.0.0.1:3030
+# 4. Start Titan indexer
+./Titan/target/release/titan \
+    --network regtest \
+    --bitcoin-rpc-url http://bitcoin:bitcoinpass@127.0.0.1:18443 \
+    --http-addr 127.0.0.1:8080 \
+    --tcp-addr 127.0.0.1:3030
 
-# 5. Start validator pointing to your local Titan (in a new terminal)
-arch-cli validator-start \
-    --network-mode devnet \
-    --data-dir ./.arch_data \
-    --rpc-bind-ip 127.0.0.1 \
-    --rpc-bind-port 9002 \
-    --titan-endpoint http://127.0.0.1:3030 \
-    --titan-socket-endpoint 127.0.0.1:3030
+# 5. Start local validator
+arch-cli orchestrate validator-start
 </code></pre>
-<blockquote>
-<p>💡 <strong>Note</strong>: This option requires you to build and run Bitcoin Core and Titan yourself. For easier local development, use Option B (orchestrate start) instead.</p>
-</blockquote>
-<blockquote>
-<p>⚠️ <strong>First-time setup</strong>: The wallet creation and block generation steps are only needed the first time you start bitcoind in regtest mode.</p>
-</blockquote>
-<h3 id="3-create-and-fund-account"><a class="header" href="#3-create-and-fund-account">3. Create and Fund Account</a></h3>
-<p>Create a new account with the faucet:</p>
-<pre><code class="language-bash"># Create account and fund with 1 ARCH (1 billion lamports)
-arch-cli account create --keypair-path ./my-account.json --airdrop
+<h3 id="3-verify-your-environment"><a class="header" href="#3-verify-your-environment">3. Verify Your Environment</a></h3>
+<p>Check that all services are running:</p>
+<pre><code class="language-bash"># Check orchestrated services status
+arch-cli orchestrate validator-status
 
-# Or create account first, then fund separately
-arch-cli account create --keypair-path ./my-account.json
-arch-cli account airdrop --keypair-path ./my-account.json --amount 1000000000
+# Check network connectivity
+arch-cli get-block-height
 
-# Alternative: Fund by public key
-arch-cli account airdrop --pubkey &lt;PUBLIC_KEY&gt; --amount 1000000000
+# Check Bitcoin integration
+arch-cli orchestrate mine-blocks --num-blocks 1
 </code></pre>
 <h3 id="4-build-and-deploy-your-program"><a class="header" href="#4-build-and-deploy-your-program">4. Build and Deploy Your Program</a></h3>
-<pre><code class="language-bash"># Navigate to the program directory
-cd program
+<pre><code class="language-bash"># Build the example program
+cargo build-bpf
 
-# Build the program using Solana's BPF compiler
-cargo build-sbf
-
-# Deploy to the validator
-arch-cli deploy ./target/deploy/&lt;program_name&gt;.so --generate-if-missing --fund-authority
-
-# Note: Save your program ID for later use
-export PROGRAM_ID=&lt;DEPLOYED_PROGRAM_ADDRESS&gt;
+# Deploy to your local network
+arch-cli deploy target/deploy/
 </code></pre>
-<h3 id="5-test-your-deployment"><a class="header" href="#5-test-your-deployment">5. Test Your Deployment</a></h3>
-<pre><code class="language-bash"># Verify program deployment
-arch-cli show $PROGRAM_ID
+<h3 id="5-test-your-program"><a class="header" href="#5-test-your-program">5. Test Your Program</a></h3>
+<pre><code class="language-bash"># Check the deployed program
+arch-cli show &lt;PROGRAM_ID&gt;
 
-# Check transaction status
-arch-cli tx confirm &lt;TX_ID&gt;
-
-# Get current block height
-arch-cli get-block-height
-
-# Get latest block information
-arch-cli get-block &lt;BLOCK_HASH&gt;
+# Run the program (if it has a client)
+cargo run
 </code></pre>
-<h2 id="-available-cli-commands"><a class="header" href="#-available-cli-commands">🔧 Available CLI Commands</a></h2>
-<h3 id="global-options"><a class="header" href="#global-options">Global Options</a></h3>
-<pre><code class="language-bash"># Specify network mode
-arch-cli --network-mode devnet|testnet|mainnet
-
-# Use configuration profile
-arch-cli --profile &lt;PROFILE_NAME&gt;
-</code></pre>
-<h3 id="validator-management"><a class="header" href="#validator-management">Validator Management</a></h3>
-<pre><code class="language-bash"># Start local validator
-arch-cli validator-start [OPTIONS]
-
-# Orchestrate full local devnet
-arch-cli orchestrate start     # Start bitcoind + titan + validator
-arch-cli orchestrate stop      # Stop all services
-arch-cli orchestrate reset     # Reset entire environment
-
-# Fine-grained control
-arch-cli orchestrate validator-start    # Start only validator
-arch-cli orchestrate validator-stop     # Stop only validator
-arch-cli orchestrate validator-restart  # Restart only validator
-arch-cli orchestrate validator-status   # Check validator status
-arch-cli orchestrate validator-reset    # Reset only validator
-
-# Bitcoin mining (regtest)
-arch-cli orchestrate mine-blocks --num-blocks 10
-</code></pre>
-<h3 id="configuration-profiles"><a class="header" href="#configuration-profiles">Configuration Profiles</a></h3>
-<pre><code class="language-bash"># Create configuration profile
-arch-cli config create-profile &lt;NAME&gt; \
-    --bitcoin-node-endpoint &lt;URL&gt; \
-    --bitcoin-node-username &lt;USER&gt; \
-    --bitcoin-node-password &lt;PASS&gt; \
-    --bitcoin-network &lt;mainnet|testnet|regtest&gt; \
-    --arch-node-url &lt;URL&gt;
-
-# List profiles
-arch-cli config list-profiles
-
-# Update profile
-arch-cli config update-profile &lt;NAME&gt; [OPTIONS]
-
-# Delete profile
-arch-cli config delete-profile &lt;NAME&gt;
-
-# Set default profile
-arch-cli config set-default-profile &lt;NAME&gt;
-</code></pre>
-<h3 id="account-operations"><a class="header" href="#account-operations">Account Operations</a></h3>
-<pre><code class="language-bash"># Create new account
-arch-cli account create --keypair-path &lt;PATH&gt; [--airdrop]
-
-# Fund existing account
-arch-cli account airdrop --keypair-path &lt;PATH&gt; --amount &lt;LAMPORTS&gt;
-arch-cli account airdrop --pubkey &lt;PUBKEY&gt; --amount &lt;LAMPORTS&gt;
-
-# Change account owner
-arch-cli account change-owner &lt;ACCOUNT&gt; &lt;NEW_OWNER&gt; &lt;PAYER_KEYPAIR&gt;
-
-# Assign UTXO to account
-arch-cli account assign-utxo &lt;ACCOUNT_PUBKEY&gt;
-</code></pre>
-<h3 id="program-deployment"><a class="header" href="#program-deployment">Program Deployment</a></h3>
-<pre><code class="language-bash"># Deploy program
-arch-cli deploy &lt;ELF_PATH&gt; [--generate-if-missing] [--fund-authority]
-
-# Show account/program info
-arch-cli show &lt;ADDRESS&gt;
-</code></pre>
-<h3 id="transaction-operations"><a class="header" href="#transaction-operations">Transaction Operations</a></h3>
-<pre><code class="language-bash"># Confirm transaction status
-arch-cli tx confirm &lt;TX_ID&gt;
-
-# Get transaction details
-arch-cli tx get &lt;TX_ID&gt;
-
-# View program logs from transaction
-arch-cli tx log-program-messages &lt;TX_ID&gt;
-</code></pre>
-<h3 id="block-and-network-info"><a class="header" href="#block-and-network-info">Block and Network Info</a></h3>
-<pre><code class="language-bash"># Get block by hash
-arch-cli get-block &lt;BLOCK_HASH&gt;
-
-# Get current block height
-arch-cli get-block-height
-
-# Get group key
-arch-cli get-group-key &lt;PUBKEY&gt;
-</code></pre>
-<h3 id="apl-token-operations"><a class="header" href="#apl-token-operations">APL Token Operations</a></h3>
-<pre><code class="language-bash"># Token mint management
-arch-cli token create-mint --decimals &lt;DECIMALS&gt; --mint-authority &lt;PATH&gt; --keypair-path &lt;PATH&gt;
-arch-cli token show-mint &lt;MINT_ADDRESS&gt;
-
-# Token account management
-arch-cli token create-account --mint &lt;MINT&gt; --owner &lt;PATH&gt; --keypair-path &lt;PATH&gt;
-arch-cli token show-account &lt;ACCOUNT_ADDRESS&gt;
-
-# Token operations
-arch-cli token mint &lt;MINT_ADDRESS&gt; &lt;AMOUNT&gt; --authority &lt;PATH&gt; --keypair-path &lt;PATH&gt;
-arch-cli token transfer &lt;SOURCE&gt; &lt;DESTINATION&gt; &lt;AMOUNT&gt; --owner &lt;PATH&gt; --keypair-path &lt;PATH&gt;
-arch-cli token burn &lt;ACCOUNT&gt; &lt;AMOUNT&gt; --owner &lt;PATH&gt; --keypair-path &lt;PATH&gt;
-
-# Advanced features
-arch-cli token create-multisig &lt;M&gt; --signers &lt;PATHS&gt; --keypair-path &lt;PATH&gt;
-arch-cli token multisig-sign &lt;MULTISIG&gt; &lt;TRANSACTION&gt; --keypair-path &lt;PATH&gt;
-arch-cli token multisig-execute &lt;MULTISIG&gt; &lt;TRANSACTION&gt; --signers &lt;PATHS&gt; --keypair-path &lt;PATH&gt;
-
-# Utility commands
-arch-cli token balance &lt;ACCOUNT&gt;
-arch-cli token supply &lt;MINT&gt;
-arch-cli token amount-to-ui &lt;MINT&gt; &lt;AMOUNT&gt;
-arch-cli token ui-to-amount &lt;MINT&gt; &lt;UI_AMOUNT&gt;
-</code></pre>
-<h2 id="-network-modes"><a class="header" href="#-network-modes">🌐 Network Modes</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>Network Mode</th><th>Description</th><th>Use Case</th></tr></thead><tbody>
-<tr><td><code>devnet</code></td><td>Development network (default)</td><td>Development and integration testing</td></tr>
-<tr><td><code>testnet</code></td><td>Test network with Bitcoin testnet</td><td>Pre-production testing</td></tr>
-<tr><td><code>mainnet</code></td><td>Main production network</td><td>Production use (use with caution)</td></tr>
-</tbody></table>
-</div>
-<h2 id="-validator-configuration"><a class="header" href="#-validator-configuration">⚙️ Validator Configuration</a></h2>
-<h3 id="key-parameters"><a class="header" href="#key-parameters">Key Parameters</a></h3>
-<pre><code class="language-bash"># Basic configuration
---data-dir ./.arch_data                    # Data directory
---network-mode devnet                      # Network mode
---rpc-bind-ip 127.0.0.1                   # RPC bind IP
---rpc-bind-port 9002                      # RPC port
-
-# Titan integration (for testnet/mainnet)
---titan-endpoint &lt;URL&gt;                     # Titan HTTP endpoint
---titan-socket-endpoint &lt;HOST:PORT&gt;        # Titan TCP endpoint
-
-# Performance tuning
---max-tx-pool-size 10000                  # Transaction pool size
---full-snapshot-reccurence 100            # Snapshot frequency
---max-snapshots 5                         # Max snapshots to keep
-
-# Security
---private-key-password &lt;PASSWORD&gt;         # Key encryption password
-</code></pre>
-<h3 id="environment-variables"><a class="header" href="#environment-variables">Environment Variables</a></h3>
-<p>You can also use environment variables instead of command-line flags:</p>
-<pre><code class="language-bash">export ARCH_NETWORK_MODE=devnet
-export ARCH_RPC_BIND_PORT=9002
-export ARCH_DATA_DIR=./.arch_data
-export ARCH_TITAN_ENDPOINT=https://titan-public-http.test.arch.network
-export ARCH_PROFILE=my-profile
-</code></pre>
-<h2 id="-next-steps"><a class="header" href="#-next-steps">🎮 Next Steps</a></h2>
-<p>Congratulations! You’ve successfully deployed your first program. Here’s what you can explore next:</p>
-<h3 id="development"><a class="header" href="#development">Development</a></h3>
+<h2 id="-next-steps"><a class="header" href="#-next-steps">🎯 Next Steps</a></h2>
 <ul>
-<li><strong><a href="../guides/understanding-arch-programs.html">Program Development Guide</a></strong> - Learn about program architecture</li>
-<li><strong><a href="../guides/writing-your-first-program.html">Writing Your First Program</a></strong> - Detailed program development</li>
-<li><strong><a href="../guides/testing-guide.html">Testing Guide</a></strong> - Testing strategies and tools</li>
+<li><strong>Learn More</strong>: Check out our <a href="guides/writing-your-first-program.html">Program Development Guide</a></li>
+<li><strong>Token Development</strong>: Explore <a href="guides/how-to-create-a-fungible-token.html">APL Token Creation</a></li>
+<li><strong>Examples</strong>: Browse more examples in the <a href="https://github.com/Arch-Network/arch-examples">examples directory</a></li>
+<li><strong>Community</strong>: Join our <a href="https://discord.gg/archnetwork">Discord</a> for support and updates</li>
 </ul>
-<h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
-<ul>
-<li><strong><a href="../guides/how-to-create-a-fungible-token.html">Fungible Token</a></strong> - Create your own token</li>
-<li><strong><a href="../guides/how-to-write-oracle-program.html">Oracle Program</a></strong> - Build price oracles</li>
-<li><strong><a href="../guides/how-to-build-runes-swap.html">Runes Swap</a></strong> - Create a DEX for Bitcoin Runes</li>
-</ul>
-<h3 id="production"><a class="header" href="#production">Production</a></h3>
-<ul>
-<li><strong><a href="bitcoin-and-titan-setup.html">Validator Setup</a></strong> - Run a production validator</li>
-<li><strong><a href="../concepts/network-architecture.html">Network Configuration</a></strong> - Understanding network topology</li>
-<li><strong><a href="../concepts/bitcoin-integration.html#security-model">Security Best Practices</a></strong> - Production security</li>
-</ul>
-<h2 id="-need-help"><a class="header" href="#-need-help">🆘 Need Help?</a></h2>
-<ul>
-<li><strong><a href="https://discord.gg/archnetwork">Discord Community</a></strong> - Real-time support and discussion</li>
-<li><strong><a href="../reference/troubleshooting.html">Troubleshooting Guide</a></strong> - Common issues and solutions</li>
-<li><strong><a href="faq.html">FAQ</a></strong> - Frequently asked questions</li>
-<li><strong><a href="../rpc/rpc.html">API Reference</a></strong> - Complete RPC documentation</li>
-</ul>
-<h2 id="-system-requirements"><a class="header" href="#-system-requirements">📊 System Requirements</a></h2>
-<h3 id="minimum-requirements"><a class="header" href="#minimum-requirements">Minimum Requirements</a></h3>
-<ul>
-<li><strong>CPU</strong>: 4+ cores</li>
-<li><strong>RAM</strong>: 8GB</li>
-<li><strong>Storage</strong>: 100GB SSD</li>
-<li><strong>Network</strong>: 100 Mbps</li>
-</ul>
-<h3 id="recommended-for-production"><a class="header" href="#recommended-for-production">Recommended for Production</a></h3>
-<ul>
-<li><strong>CPU</strong>: 8+ cores</li>
-<li><strong>RAM</strong>: 16GB+</li>
-<li><strong>Storage</strong>: 500GB+ NVMe SSD</li>
-<li><strong>Network</strong>: 1 Gbps</li>
-</ul>
-<h2 id="-common-commands-quick-reference"><a class="header" href="#-common-commands-quick-reference">🔍 Common Commands Quick Reference</a></h2>
-<pre><code class="language-bash"># Full local development setup
-arch-cli orchestrate start
+<h2 id="-troubleshooting"><a class="header" href="#-troubleshooting">🔧 Troubleshooting</a></h2>
+<h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
+<p><strong>Docker not running:</strong></p>
+<pre><code class="language-bash"># Check Docker status
+docker ps
 
-# Deploy and test a program
-arch-cli deploy ./target/deploy/program.so --generate-if-missing
-arch-cli show &lt;PROGRAM_ADDRESS&gt;
-arch-cli tx confirm &lt;TX_ID&gt;
-
-# Account management
-arch-cli account create --keypair-path ./account.json --airdrop
-arch-cli show &lt;ACCOUNT_ADDRESS&gt;
-
-# Network information
-arch-cli get-block-height
-arch-cli get-block &lt;BLOCK_HASH&gt;
-
-# Stop local environment
-arch-cli orchestrate stop
-
-# Token operations
-arch-cli token create-mint --decimals 6 --mint-authority ./authority.json --keypair-path ./payer.json
-arch-cli token mint &lt;MINT&gt; 1000000 --authority ./authority.json --keypair-path ./payer.json
+# Start Docker if needed
+# macOS: Open Docker Desktop or OrbStack
+# Linux: sudo systemctl start docker
 </code></pre>
+<p><strong>Port conflicts:</strong></p>
+<pre><code class="language-bash"># Check if ports are in use
+netstat -an | grep 9002
+netstat -an | grep 18443
+
+# Stop conflicting services or use different ports
+</code></pre>
+<p><strong>Build failures:</strong></p>
+<pre><code class="language-bash"># Clean and rebuild
+cargo clean
+cargo build-bpf
+
+# Check Rust version
+rustc --version  # Should be 1.84.1+
+</code></pre>
+<p><strong>Validator won’t start:</strong></p>
+<pre><code class="language-bash"># Reset environment
+arch-cli orchestrate reset
+
+# Check logs
+arch-cli orchestrate validator-status
+</code></pre>
+<h3 id="getting-help"><a class="header" href="#getting-help">Getting Help</a></h3>
+<ul>
+<li><strong>Discord</strong>: <a href="https://discord.gg/archnetwork">https://discord.gg/archnetwork</a></li>
+<li><strong>GitHub Issues</strong>: <a href="https://github.com/Arch-Network/arch-node/issues">https://github.com/Arch-Network/arch-node/issues</a></li>
+<li><strong>Documentation</strong>: <a href="https://docs.arch.network">https://docs.arch.network</a></li>
+</ul>
+<hr />
+<p><strong>Congratulations!</strong> You’ve successfully set up your Arch Network development environment. You’re now ready to build and deploy programs on the most Bitcoin-native smart contract platform.</p>
 
                     </main>
 

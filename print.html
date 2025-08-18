@@ -357,6 +357,7 @@ Technical documentation:
 <li><strong>Rust</strong> (v1.84.1 or later) - <a href="https://rustup.rs/">Install Rust</a></li>
 <li><strong>Solana CLI</strong> (v2.2.14 or later) - <a href="https://docs.solana.com/cli/install-solana-cli-tools">Install Solana</a></li>
 <li><strong>Arch Network CLI</strong> - Download from <a href="https://github.com/Arch-Network/arch-node/releases/latest">Arch Network Releases</a></li>
+<li><strong>Docker</strong> - Required for local development - <a href="https://docs.docker.com/engine/install/">Install Docker</a></li>
 </ul>
 <blockquote>
 <p>⚠️ <strong>Important</strong>: Arch Network now requires Solana CLI 2.x. Please ensure you have version 2.2.14 or later installed.</p>
@@ -366,6 +367,7 @@ Technical documentation:
 rustc --version
 solana --version  # Should show 2.2.14 or later
 arch-cli --version
+docker --version
 </code></pre>
 <blockquote>
 <p>💡 Note: If you encounter any issues during installation, join our <a href="https://discord.gg/archnetwork">Discord</a> for support.</p>
@@ -376,21 +378,12 @@ arch-cli --version
 git clone https://github.com/Arch-Network/arch-examples
 cd arch-examples/examples/helloworld
 </code></pre>
-<h3 id="2-start-local-validator"><a class="header" href="#2-start-local-validator">2. Start Local Validator</a></h3>
+<h3 id="2-start-local-development-environment"><a class="header" href="#2-start-local-development-environment">2. Start Local Development Environment</a></h3>
 <p>Choose one of the following network modes:</p>
-<h4 id="option-a-testnet-recommended-for-testing"><a class="header" href="#option-a-testnet-recommended-for-testing">Option A: Testnet (Recommended for Testing)</a></h4>
-<pre><code class="language-bash">arch-cli validator-start \
-    --network-mode testnet \
-    --data-dir ./.arch_data \
-    --rpc-bind-ip 127.0.0.1 \
-    --rpc-bind-port 9002 \
-    --titan-endpoint https://titan-public-http.test.arch.network \
-    --titan-socket-endpoint titan-public-tcp.test.arch.network:3030
-</code></pre>
-<h4 id="option-b-local-development-regtest---recommended"><a class="header" href="#option-b-local-development-regtest---recommended">Option B: Local Development (Regtest) - Recommended</a></h4>
+<h4 id="option-a-local-development-recommended"><a class="header" href="#option-a-local-development-recommended">Option A: Local Development (Recommended)</a></h4>
 <p><strong>Prerequisites:</strong></p>
 <ul>
-<li><strong>Docker</strong>: Required on all platforms - <a href="https://docs.docker.com/engine/install/">Install Docker</a></li>
+<li><strong>Docker</strong>: Required on all platforms</li>
 <li><strong>Docker Management</strong> (optional but recommended):
 <ul>
 <li><strong>macOS</strong>: <a href="https://orbstack.dev/">OrbStack</a> (recommended) or <a href="https://www.docker.com/products/docker-desktop/">Docker Desktop</a></li>
@@ -411,14 +404,24 @@ arch-cli orchestrate start
 <pre><code class="language-bash"># Use local source code for development
 arch-cli orchestrate start --local "$(pwd)"
 
-# Customize Titan image
-arch-cli orchestrate start --titan-image ghcr.io/arch-network/titan:latest
+# Skip bitcoind and use remote Bitcoin RPC
+arch-cli orchestrate start --no-bitcoind
 
 # Force rebuild images
-arch-cli orchestrate start --force-rebuild --rebuild-titan
+arch-cli orchestrate start --force-rebuild
+</code></pre>
+<h4 id="option-b-testnet-remote-bitcoin--local-arch"><a class="header" href="#option-b-testnet-remote-bitcoin--local-arch">Option B: Testnet (Remote Bitcoin + Local Arch)</a></h4>
+<p>For testnet development with remote Bitcoin node:</p>
+<pre><code class="language-bash"># 1. Create a configuration profile
+arch-cli config create-profile testnet \
+    --bitcoin-node-endpoint http://bitcoin-node.test.aws.archnetwork.xyz:49332 \
+    --bitcoin-node-username bitcoin \
+    --bitcoin-node-password uU1taFBTUvae96UCtA8YxAepYTFszYvYVSXK8xgzBs0 \
+    --bitcoin-network testnet \
+    --arch-node-url http://localhost:9002
 
-# Skip bitcoind and use profile's Bitcoin RPC
-arch-cli orchestrate start --no-bitcoind
+# 2. Start local Arch environment (no local bitcoind)
+arch-cli --profile testnet orchestrate start --local "$(pwd)" --no-bitcoind
 </code></pre>
 <h4 id="option-c-devnet-full-local-stack"><a class="header" href="#option-c-devnet-full-local-stack">Option C: Devnet (Full Local Stack)</a></h4>
 <p>For devnet, you’ll need to run your own Bitcoin regtest node and Titan indexer:</p>
@@ -438,287 +441,91 @@ bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoinpass generatetoaddress
 # 3. Clone and build Titan indexer (if not already done)
 git clone https://github.com/saturnbtc/Titan.git
 cd Titan
+cargo build --release
+cd ..
 
-# 4. Start Titan indexer pointing to your Bitcoin node
-cargo run --bin titan -- \
-    --bitcoin-rpc-url http://127.0.0.1:18443 \
-    --bitcoin-rpc-username bitcoin \
-    --bitcoin-rpc-password bitcoinpass \
-    --chain regtest \
-    --index-addresses \
-    --index-bitcoin-transactions \
-    --enable-tcp-subscriptions \
-    --main-loop-interval 0 \
-    --http-listen 127.0.0.1:3030
+# 4. Start Titan indexer
+./Titan/target/release/titan \
+    --network regtest \
+    --bitcoin-rpc-url http://bitcoin:bitcoinpass@127.0.0.1:18443 \
+    --http-addr 127.0.0.1:8080 \
+    --tcp-addr 127.0.0.1:3030
 
-# 5. Start validator pointing to your local Titan (in a new terminal)
-arch-cli validator-start \
-    --network-mode devnet \
-    --data-dir ./.arch_data \
-    --rpc-bind-ip 127.0.0.1 \
-    --rpc-bind-port 9002 \
-    --titan-endpoint http://127.0.0.1:3030 \
-    --titan-socket-endpoint 127.0.0.1:3030
+# 5. Start local validator
+arch-cli orchestrate validator-start
 </code></pre>
-<blockquote>
-<p>💡 <strong>Note</strong>: This option requires you to build and run Bitcoin Core and Titan yourself. For easier local development, use Option B (orchestrate start) instead.</p>
-</blockquote>
-<blockquote>
-<p>⚠️ <strong>First-time setup</strong>: The wallet creation and block generation steps are only needed the first time you start bitcoind in regtest mode.</p>
-</blockquote>
-<h3 id="3-create-and-fund-account"><a class="header" href="#3-create-and-fund-account">3. Create and Fund Account</a></h3>
-<p>Create a new account with the faucet:</p>
-<pre><code class="language-bash"># Create account and fund with 1 ARCH (1 billion lamports)
-arch-cli account create --keypair-path ./my-account.json --airdrop
+<h3 id="3-verify-your-environment"><a class="header" href="#3-verify-your-environment">3. Verify Your Environment</a></h3>
+<p>Check that all services are running:</p>
+<pre><code class="language-bash"># Check orchestrated services status
+arch-cli orchestrate validator-status
 
-# Or create account first, then fund separately
-arch-cli account create --keypair-path ./my-account.json
-arch-cli account airdrop --keypair-path ./my-account.json --amount 1000000000
+# Check network connectivity
+arch-cli get-block-height
 
-# Alternative: Fund by public key
-arch-cli account airdrop --pubkey &lt;PUBLIC_KEY&gt; --amount 1000000000
+# Check Bitcoin integration
+arch-cli orchestrate mine-blocks --num-blocks 1
 </code></pre>
 <h3 id="4-build-and-deploy-your-program"><a class="header" href="#4-build-and-deploy-your-program">4. Build and Deploy Your Program</a></h3>
-<pre><code class="language-bash"># Navigate to the program directory
-cd program
+<pre><code class="language-bash"># Build the example program
+cargo build-bpf
 
-# Build the program using Solana's BPF compiler
-cargo build-sbf
-
-# Deploy to the validator
-arch-cli deploy ./target/deploy/&lt;program_name&gt;.so --generate-if-missing --fund-authority
-
-# Note: Save your program ID for later use
-export PROGRAM_ID=&lt;DEPLOYED_PROGRAM_ADDRESS&gt;
+# Deploy to your local network
+arch-cli deploy target/deploy/
 </code></pre>
-<h3 id="5-test-your-deployment"><a class="header" href="#5-test-your-deployment">5. Test Your Deployment</a></h3>
-<pre><code class="language-bash"># Verify program deployment
-arch-cli show $PROGRAM_ID
+<h3 id="5-test-your-program"><a class="header" href="#5-test-your-program">5. Test Your Program</a></h3>
+<pre><code class="language-bash"># Check the deployed program
+arch-cli show &lt;PROGRAM_ID&gt;
 
-# Check transaction status
-arch-cli tx confirm &lt;TX_ID&gt;
-
-# Get current block height
-arch-cli get-block-height
-
-# Get latest block information
-arch-cli get-block &lt;BLOCK_HASH&gt;
+# Run the program (if it has a client)
+cargo run
 </code></pre>
-<h2 id="-available-cli-commands"><a class="header" href="#-available-cli-commands">🔧 Available CLI Commands</a></h2>
-<h3 id="global-options"><a class="header" href="#global-options">Global Options</a></h3>
-<pre><code class="language-bash"># Specify network mode
-arch-cli --network-mode devnet|testnet|mainnet
-
-# Use configuration profile
-arch-cli --profile &lt;PROFILE_NAME&gt;
-</code></pre>
-<h3 id="validator-management"><a class="header" href="#validator-management">Validator Management</a></h3>
-<pre><code class="language-bash"># Start local validator
-arch-cli validator-start [OPTIONS]
-
-# Orchestrate full local devnet
-arch-cli orchestrate start     # Start bitcoind + titan + validator
-arch-cli orchestrate stop      # Stop all services
-arch-cli orchestrate reset     # Reset entire environment
-
-# Fine-grained control
-arch-cli orchestrate validator-start    # Start only validator
-arch-cli orchestrate validator-stop     # Stop only validator
-arch-cli orchestrate validator-restart  # Restart only validator
-arch-cli orchestrate validator-status   # Check validator status
-arch-cli orchestrate validator-reset    # Reset only validator
-
-# Bitcoin mining (regtest)
-arch-cli orchestrate mine-blocks --num-blocks 10
-</code></pre>
-<h3 id="configuration-profiles"><a class="header" href="#configuration-profiles">Configuration Profiles</a></h3>
-<pre><code class="language-bash"># Create configuration profile
-arch-cli config create-profile &lt;NAME&gt; \
-    --bitcoin-node-endpoint &lt;URL&gt; \
-    --bitcoin-node-username &lt;USER&gt; \
-    --bitcoin-node-password &lt;PASS&gt; \
-    --bitcoin-network &lt;mainnet|testnet|regtest&gt; \
-    --arch-node-url &lt;URL&gt;
-
-# List profiles
-arch-cli config list-profiles
-
-# Update profile
-arch-cli config update-profile &lt;NAME&gt; [OPTIONS]
-
-# Delete profile
-arch-cli config delete-profile &lt;NAME&gt;
-
-# Set default profile
-arch-cli config set-default-profile &lt;NAME&gt;
-</code></pre>
-<h3 id="account-operations"><a class="header" href="#account-operations">Account Operations</a></h3>
-<pre><code class="language-bash"># Create new account
-arch-cli account create --keypair-path &lt;PATH&gt; [--airdrop]
-
-# Fund existing account
-arch-cli account airdrop --keypair-path &lt;PATH&gt; --amount &lt;LAMPORTS&gt;
-arch-cli account airdrop --pubkey &lt;PUBKEY&gt; --amount &lt;LAMPORTS&gt;
-
-# Change account owner
-arch-cli account change-owner &lt;ACCOUNT&gt; &lt;NEW_OWNER&gt; &lt;PAYER_KEYPAIR&gt;
-
-# Assign UTXO to account
-arch-cli account assign-utxo &lt;ACCOUNT_PUBKEY&gt;
-</code></pre>
-<h3 id="program-deployment"><a class="header" href="#program-deployment">Program Deployment</a></h3>
-<pre><code class="language-bash"># Deploy program
-arch-cli deploy &lt;ELF_PATH&gt; [--generate-if-missing] [--fund-authority]
-
-# Show account/program info
-arch-cli show &lt;ADDRESS&gt;
-</code></pre>
-<h3 id="transaction-operations"><a class="header" href="#transaction-operations">Transaction Operations</a></h3>
-<pre><code class="language-bash"># Confirm transaction status
-arch-cli tx confirm &lt;TX_ID&gt;
-
-# Get transaction details
-arch-cli tx get &lt;TX_ID&gt;
-
-# View program logs from transaction
-arch-cli tx log-program-messages &lt;TX_ID&gt;
-</code></pre>
-<h3 id="block-and-network-info"><a class="header" href="#block-and-network-info">Block and Network Info</a></h3>
-<pre><code class="language-bash"># Get block by hash
-arch-cli get-block &lt;BLOCK_HASH&gt;
-
-# Get current block height
-arch-cli get-block-height
-
-# Get group key
-arch-cli get-group-key &lt;PUBKEY&gt;
-</code></pre>
-<h3 id="apl-token-operations"><a class="header" href="#apl-token-operations">APL Token Operations</a></h3>
-<pre><code class="language-bash"># Token mint management
-arch-cli token create-mint --decimals &lt;DECIMALS&gt; --mint-authority &lt;PATH&gt; --keypair-path &lt;PATH&gt;
-arch-cli token show-mint &lt;MINT_ADDRESS&gt;
-
-# Token account management
-arch-cli token create-account --mint &lt;MINT&gt; --owner &lt;PATH&gt; --keypair-path &lt;PATH&gt;
-arch-cli token show-account &lt;ACCOUNT_ADDRESS&gt;
-
-# Token operations
-arch-cli token mint &lt;MINT_ADDRESS&gt; &lt;AMOUNT&gt; --authority &lt;PATH&gt; --keypair-path &lt;PATH&gt;
-arch-cli token transfer &lt;SOURCE&gt; &lt;DESTINATION&gt; &lt;AMOUNT&gt; --owner &lt;PATH&gt; --keypair-path &lt;PATH&gt;
-arch-cli token burn &lt;ACCOUNT&gt; &lt;AMOUNT&gt; --owner &lt;PATH&gt; --keypair-path &lt;PATH&gt;
-
-# Advanced features
-arch-cli token create-multisig &lt;M&gt; --signers &lt;PATHS&gt; --keypair-path &lt;PATH&gt;
-arch-cli token multisig-sign &lt;MULTISIG&gt; &lt;TRANSACTION&gt; --keypair-path &lt;PATH&gt;
-arch-cli token multisig-execute &lt;MULTISIG&gt; &lt;TRANSACTION&gt; --signers &lt;PATHS&gt; --keypair-path &lt;PATH&gt;
-
-# Utility commands
-arch-cli token balance &lt;ACCOUNT&gt;
-arch-cli token supply &lt;MINT&gt;
-arch-cli token amount-to-ui &lt;MINT&gt; &lt;AMOUNT&gt;
-arch-cli token ui-to-amount &lt;MINT&gt; &lt;UI_AMOUNT&gt;
-</code></pre>
-<h2 id="-network-modes"><a class="header" href="#-network-modes">🌐 Network Modes</a></h2>
-<div class="table-wrapper"><table><thead><tr><th>Network Mode</th><th>Description</th><th>Use Case</th></tr></thead><tbody>
-<tr><td><code>devnet</code></td><td>Development network (default)</td><td>Development and integration testing</td></tr>
-<tr><td><code>testnet</code></td><td>Test network with Bitcoin testnet</td><td>Pre-production testing</td></tr>
-<tr><td><code>mainnet</code></td><td>Main production network</td><td>Production use (use with caution)</td></tr>
-</tbody></table>
-</div>
-<h2 id="-validator-configuration"><a class="header" href="#-validator-configuration">⚙️ Validator Configuration</a></h2>
-<h3 id="key-parameters"><a class="header" href="#key-parameters">Key Parameters</a></h3>
-<pre><code class="language-bash"># Basic configuration
---data-dir ./.arch_data                    # Data directory
---network-mode devnet                      # Network mode
---rpc-bind-ip 127.0.0.1                   # RPC bind IP
---rpc-bind-port 9002                      # RPC port
-
-# Titan integration (for testnet/mainnet)
---titan-endpoint &lt;URL&gt;                     # Titan HTTP endpoint
---titan-socket-endpoint &lt;HOST:PORT&gt;        # Titan TCP endpoint
-
-# Performance tuning
---max-tx-pool-size 10000                  # Transaction pool size
---full-snapshot-reccurence 100            # Snapshot frequency
---max-snapshots 5                         # Max snapshots to keep
-
-# Security
---private-key-password &lt;PASSWORD&gt;         # Key encryption password
-</code></pre>
-<h3 id="environment-variables"><a class="header" href="#environment-variables">Environment Variables</a></h3>
-<p>You can also use environment variables instead of command-line flags:</p>
-<pre><code class="language-bash">export ARCH_NETWORK_MODE=devnet
-export ARCH_RPC_BIND_PORT=9002
-export ARCH_DATA_DIR=./.arch_data
-export ARCH_TITAN_ENDPOINT=https://titan-public-http.test.arch.network
-export ARCH_PROFILE=my-profile
-</code></pre>
-<h2 id="-next-steps"><a class="header" href="#-next-steps">🎮 Next Steps</a></h2>
-<p>Congratulations! You’ve successfully deployed your first program. Here’s what you can explore next:</p>
-<h3 id="development"><a class="header" href="#development">Development</a></h3>
+<h2 id="-next-steps"><a class="header" href="#-next-steps">🎯 Next Steps</a></h2>
 <ul>
-<li><strong><a href="getting-started/../guides/understanding-arch-programs.html">Program Development Guide</a></strong> - Learn about program architecture</li>
-<li><strong><a href="getting-started/../guides/writing-your-first-program.html">Writing Your First Program</a></strong> - Detailed program development</li>
-<li><strong><a href="getting-started/../guides/testing-guide.html">Testing Guide</a></strong> - Testing strategies and tools</li>
+<li><strong>Learn More</strong>: Check out our <a href="getting-started/guides/writing-your-first-program.html">Program Development Guide</a></li>
+<li><strong>Token Development</strong>: Explore <a href="getting-started/guides/how-to-create-a-fungible-token.html">APL Token Creation</a></li>
+<li><strong>Examples</strong>: Browse more examples in the <a href="https://github.com/Arch-Network/arch-examples">examples directory</a></li>
+<li><strong>Community</strong>: Join our <a href="https://discord.gg/archnetwork">Discord</a> for support and updates</li>
 </ul>
-<h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
-<ul>
-<li><strong><a href="getting-started/../guides/how-to-create-a-fungible-token.html">Fungible Token</a></strong> - Create your own token</li>
-<li><strong><a href="getting-started/../guides/how-to-write-oracle-program.html">Oracle Program</a></strong> - Build price oracles</li>
-<li><strong><a href="getting-started/../guides/how-to-build-runes-swap.html">Runes Swap</a></strong> - Create a DEX for Bitcoin Runes</li>
-</ul>
-<h3 id="production"><a class="header" href="#production">Production</a></h3>
-<ul>
-<li><strong><a href="getting-started/bitcoin-and-titan-setup.html">Validator Setup</a></strong> - Run a production validator</li>
-<li><strong><a href="getting-started/../concepts/network-architecture.html">Network Configuration</a></strong> - Understanding network topology</li>
-<li><strong><a href="getting-started/../concepts/bitcoin-integration.html#security-model">Security Best Practices</a></strong> - Production security</li>
-</ul>
-<h2 id="-need-help"><a class="header" href="#-need-help">🆘 Need Help?</a></h2>
-<ul>
-<li><strong><a href="https://discord.gg/archnetwork">Discord Community</a></strong> - Real-time support and discussion</li>
-<li><strong><a href="getting-started/../reference/troubleshooting.html">Troubleshooting Guide</a></strong> - Common issues and solutions</li>
-<li><strong><a href="getting-started/faq.html">FAQ</a></strong> - Frequently asked questions</li>
-<li><strong><a href="getting-started/../rpc/rpc.html">API Reference</a></strong> - Complete RPC documentation</li>
-</ul>
-<h2 id="-system-requirements"><a class="header" href="#-system-requirements">📊 System Requirements</a></h2>
-<h3 id="minimum-requirements"><a class="header" href="#minimum-requirements">Minimum Requirements</a></h3>
-<ul>
-<li><strong>CPU</strong>: 4+ cores</li>
-<li><strong>RAM</strong>: 8GB</li>
-<li><strong>Storage</strong>: 100GB SSD</li>
-<li><strong>Network</strong>: 100 Mbps</li>
-</ul>
-<h3 id="recommended-for-production"><a class="header" href="#recommended-for-production">Recommended for Production</a></h3>
-<ul>
-<li><strong>CPU</strong>: 8+ cores</li>
-<li><strong>RAM</strong>: 16GB+</li>
-<li><strong>Storage</strong>: 500GB+ NVMe SSD</li>
-<li><strong>Network</strong>: 1 Gbps</li>
-</ul>
-<h2 id="-common-commands-quick-reference"><a class="header" href="#-common-commands-quick-reference">🔍 Common Commands Quick Reference</a></h2>
-<pre><code class="language-bash"># Full local development setup
-arch-cli orchestrate start
+<h2 id="-troubleshooting"><a class="header" href="#-troubleshooting">🔧 Troubleshooting</a></h2>
+<h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
+<p><strong>Docker not running:</strong></p>
+<pre><code class="language-bash"># Check Docker status
+docker ps
 
-# Deploy and test a program
-arch-cli deploy ./target/deploy/program.so --generate-if-missing
-arch-cli show &lt;PROGRAM_ADDRESS&gt;
-arch-cli tx confirm &lt;TX_ID&gt;
-
-# Account management
-arch-cli account create --keypair-path ./account.json --airdrop
-arch-cli show &lt;ACCOUNT_ADDRESS&gt;
-
-# Network information
-arch-cli get-block-height
-arch-cli get-block &lt;BLOCK_HASH&gt;
-
-# Stop local environment
-arch-cli orchestrate stop
-
-# Token operations
-arch-cli token create-mint --decimals 6 --mint-authority ./authority.json --keypair-path ./payer.json
-arch-cli token mint &lt;MINT&gt; 1000000 --authority ./authority.json --keypair-path ./payer.json
+# Start Docker if needed
+# macOS: Open Docker Desktop or OrbStack
+# Linux: sudo systemctl start docker
 </code></pre>
+<p><strong>Port conflicts:</strong></p>
+<pre><code class="language-bash"># Check if ports are in use
+netstat -an | grep 9002
+netstat -an | grep 18443
+
+# Stop conflicting services or use different ports
+</code></pre>
+<p><strong>Build failures:</strong></p>
+<pre><code class="language-bash"># Clean and rebuild
+cargo clean
+cargo build-bpf
+
+# Check Rust version
+rustc --version  # Should be 1.84.1+
+</code></pre>
+<p><strong>Validator won’t start:</strong></p>
+<pre><code class="language-bash"># Reset environment
+arch-cli orchestrate reset
+
+# Check logs
+arch-cli orchestrate validator-status
+</code></pre>
+<h3 id="getting-help"><a class="header" href="#getting-help">Getting Help</a></h3>
+<ul>
+<li><strong>Discord</strong>: <a href="https://discord.gg/archnetwork">https://discord.gg/archnetwork</a></li>
+<li><strong>GitHub Issues</strong>: <a href="https://github.com/Arch-Network/arch-node/issues">https://github.com/Arch-Network/arch-node/issues</a></li>
+<li><strong>Documentation</strong>: <a href="https://docs.arch.network">https://docs.arch.network</a></li>
+</ul>
+<hr />
+<p><strong>Congratulations!</strong> You’ve successfully set up your Arch Network development environment. You’re now ready to build and deploy programs on the most Bitcoin-native smart contract platform.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="-validator-setup"><a class="header" href="#-validator-setup">🏗️ Validator Setup</a></h1>
 <p>Welcome to the validator setup guide! This guide will walk you through setting up a full Arch Network validator node. You can choose between an automated setup or manual configuration depending on your needs.</p>
 <h2 id="-what-youll-build"><a class="header" href="#-what-youll-build">🎯 What You’ll Build</a></h2>
@@ -764,7 +571,7 @@ arch-cli token mint &lt;MINT&gt; 1000000 --authority ./authority.json --keypair-
 <li>Help secure the Bitcoin integration</li>
 <li>Earn rewards for your contribution</li>
 </ul>
-<h2 id="-system-requirements-1"><a class="header" href="#-system-requirements-1">📋 System Requirements</a></h2>
+<h2 id="-system-requirements"><a class="header" href="#-system-requirements">📋 System Requirements</a></h2>
 <ul>
 <li><strong>CPU</strong>: 4+ cores recommended</li>
 <li><strong>RAM</strong>: 16GB+ recommended</li>
@@ -937,8 +744,8 @@ arch-cli tx confirm &lt;TX_ID&gt;
 # Get transaction details
 arch-cli tx get &lt;TX_ID&gt;
 </code></pre>
-<h2 id="-troubleshooting"><a class="header" href="#-troubleshooting">🔍 Troubleshooting</a></h2>
-<h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
+<h2 id="-troubleshooting-1"><a class="header" href="#-troubleshooting-1">🔍 Troubleshooting</a></h2>
+<h3 id="common-issues-1"><a class="header" href="#common-issues-1">Common Issues</a></h3>
 <p><strong>Docker/Orchestrate Issues:</strong></p>
 <pre><code class="language-bash"># Check Docker is running
 docker ps
@@ -1258,7 +1065,7 @@ arch-cli deploy --network-mode testnet --rpc-url http://localhost:9002
 <pre><code class="language-bash">arch-cli validator-status --rpc-url http://localhost:9002
 </code></pre>
 <h2 id="troubleshooting-1"><a class="header" href="#troubleshooting-1">Troubleshooting</a></h2>
-<h3 id="common-issues-1"><a class="header" href="#common-issues-1">Common Issues</a></h3>
+<h3 id="common-issues-2"><a class="header" href="#common-issues-2">Common Issues</a></h3>
 <h4 id="1-connection-refused"><a class="header" href="#1-connection-refused">1. Connection Refused</a></h4>
 <pre><code class="language-bash"># Check if validator is running
 curl -X POST http://localhost:9002/ \
@@ -1402,7 +1209,7 @@ arch-cli validator-start --network-mode testnet
 <h2 id="prerequisites-3"><a class="header" href="#prerequisites-3">Prerequisites</a></h2>
 <div class="requirement-grid">
 <div class="requirement-card">
-<h3 id="-system-requirements-2"><a class="header" href="#-system-requirements-2">🖥️ System Requirements</a></h3>
+<h3 id="-system-requirements-1"><a class="header" href="#-system-requirements-1">🖥️ System Requirements</a></h3>
 <table>
 <tr><th>Component</th><th>Minimum</th><th>Recommended</th></tr>
 <tr><td>CPU</td><td>4+ cores</td><td>8+ cores</td></tr>
@@ -4070,7 +3877,7 @@ mod debug_tests {
 <li><strong>Document your code</strong> - Future you (and your team) will thank you</li>
 <li><strong>Use CLI profiles</strong> - Set up configuration profiles for different environments</li>
 </ul>
-<h3 id="getting-help"><a class="header" href="#getting-help">Getting Help</a></h3>
+<h3 id="getting-help-1"><a class="header" href="#getting-help-1">Getting Help</a></h3>
 <ul>
 <li><strong>Join our <a href="https://discord.gg/archnetwork">Discord</a></strong> for real-time support</li>
 <li><strong>Check the <a href="guides/../rpc/rpc.html">API Reference</a></strong> for detailed documentation</li>
@@ -4096,17 +3903,18 @@ mod debug_tests {
 <li><strong>Interested in DeFi?</strong> Try the <a href="guides/./how-to-build-lending-protocol.html">Lending Protocol</a> guide</li>
 </ul>
 <p>Happy building! 🚀</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="using-apl-tokens-on-arch-network"><a class="header" href="#using-apl-tokens-on-arch-network">Using APL Tokens on Arch Network</a></h1>
-<p>This guide shows you how to work with fungible tokens on Arch Network using the built-in <strong>APL (Arch Program Library) Token Program</strong>. APL tokens are based on Solana’s SPL token standard and provide a robust foundation for creating and managing tokens on Arch Network.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="creating-apl-tokens-on-arch-network"><a class="header" href="#creating-apl-tokens-on-arch-network">Creating APL Tokens on Arch Network</a></h1>
+<p>This guide shows you how to create and manage fungible tokens on Arch Network using the built-in <strong>APL (Arch Program Library) Token Program</strong>. APL tokens are based on Solana’s SPL token standard and provide a robust foundation for creating and managing tokens on Arch Network.</p>
 <h2 id="what-youll-learn-1"><a class="header" href="#what-youll-learn-1">What You’ll Learn</a></h2>
 <p>By the end of this guide, you’ll understand how to:</p>
 <ul>
-<li><strong>Create token mints</strong> using the APL token program</li>
+<li><strong>Create token mints</strong> using the Arch CLI</li>
 <li><strong>Initialize token accounts</strong> for holding tokens</li>
 <li><strong>Mint tokens</strong> to accounts</li>
 <li><strong>Transfer tokens</strong> between accounts</li>
 <li><strong>Approve delegations</strong> for spending tokens</li>
 <li><strong>Burn tokens</strong> and manage token lifecycle</li>
+<li><strong>Use advanced features</strong> like multisig, freezing, and batch operations</li>
 </ul>
 <h2 id="overview-2"><a class="header" href="#overview-2">Overview</a></h2>
 <p>The APL Token Program is Arch Network’s native token standard, providing:</p>
@@ -4115,21 +3923,232 @@ mod debug_tests {
 <li><strong>Bitcoin Integration</strong>: All operations are recorded on Bitcoin</li>
 <li><strong>Comprehensive Features</strong>: Minting, transferring, burning, delegation, freezing</li>
 <li><strong>Multisig Support</strong>: Multiple signature authorities for enhanced security</li>
+<li><strong>CLI Integration</strong>: Full command-line interface for token management</li>
 </ul>
 <h2 id="prerequisites-6"><a class="header" href="#prerequisites-6">Prerequisites</a></h2>
 <p>Before starting, ensure you have:</p>
 <ul>
-<li><strong>Rust 1.70+</strong> and Cargo installed (<a href="https://rustup.rs/">Install Rust</a>)</li>
+<li><strong>Rust 1.84.1+</strong> and Cargo installed (<a href="https://rustup.rs/">Install Rust</a>)</li>
 <li><strong>Arch Network CLI</strong> - <a href="https://github.com/Arch-Network/arch-network/releases/latest">Download Latest</a></li>
-<li><strong>Running validator</strong> (see <a href="guides/./how-to-configure-local-validator-bitcoin-testnet4.html">Validator Setup Guide</a>)</li>
-<li><strong>Basic familiarity</strong> with Arch Network program development</li>
+<li><strong>Docker</strong> - Required for local development</li>
+<li><strong>Running development environment</strong> (see <a href="guides/../getting-started/quick-start.html">Quick Start Guide</a>)</li>
 </ul>
 <h2 id="apl-token-program-id"><a class="header" href="#apl-token-program-id">APL Token Program ID</a></h2>
 <p>The APL Token Program has a fixed program ID:</p>
 <pre><code class="language-text">apl-token00000000000000000000000
 </code></pre>
-<h2 id="step-1-project-setup-1"><a class="header" href="#step-1-project-setup-1">Step 1: Project Setup</a></h2>
-<h3 id="11-create-project-structure-1"><a class="header" href="#11-create-project-structure-1">1.1 Create Project Structure</a></h3>
+<h2 id="quick-start-create-your-first-token"><a class="header" href="#quick-start-create-your-first-token">Quick Start: Create Your First Token</a></h2>
+<h3 id="step-1-start-local-environment"><a class="header" href="#step-1-start-local-environment">Step 1: Start Local Environment</a></h3>
+<pre><code class="language-bash"># Start local development environment
+arch-cli orchestrate start
+
+# Verify services are running
+arch-cli orchestrate validator-status
+arch-cli get-block-height
+</code></pre>
+<h3 id="step-2-create-configuration-profile"><a class="header" href="#step-2-create-configuration-profile">Step 2: Create Configuration Profile</a></h3>
+<pre><code class="language-bash"># Create a profile for local development
+arch-cli config create-profile local \
+    --bitcoin-node-endpoint http://127.0.0.1:18443 \
+    --bitcoin-node-username bitcoin \
+    --bitcoin-node-password bitcoinpass \
+    --bitcoin-network regtest \
+    --arch-node-url http://localhost:9002
+
+# Set as default profile
+arch-cli config set-default-profile local
+</code></pre>
+<h3 id="step-3-generate-demo-keys"><a class="header" href="#step-3-generate-demo-keys">Step 3: Generate Demo Keys</a></h3>
+<pre><code class="language-bash"># Create directory for demo keys
+mkdir -p ~/DEMO_KEYS
+
+# Generate keys for different roles
+openssl rand -out ~/DEMO_KEYS/payer.key 32
+openssl rand -out ~/DEMO_KEYS/mint_authority.key 32
+openssl rand -out ~/DEMO_KEYS/mint.key 32
+
+# Fund the payer account
+arch-cli account airdrop --keypair-path ~/DEMO_KEYS/payer.key
+</code></pre>
+<h3 id="step-4-create-token-mint"><a class="header" href="#step-4-create-token-mint">Step 4: Create Token Mint</a></h3>
+<pre><code class="language-bash"># Create a new token mint with 6 decimals
+arch-cli token create-mint \
+    --keypair-path ~/DEMO_KEYS/mint.key \
+    --decimals 6
+
+# Save the mint address
+export MINT=$(arch-cli token show-mint ~/DEMO_KEYS/mint.key | grep "Mint:" | awk '{print $2}')
+echo "Mint address: $MINT"
+</code></pre>
+<h3 id="step-5-create-token-account"><a class="header" href="#step-5-create-token-account">Step 5: Create Token Account</a></h3>
+<pre><code class="language-bash"># Create an Associated Token Account (ATA) for the mint authority
+arch-cli token create-account \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT"
+
+# Save the ATA address
+export ATA=$(arch-cli token show-account ~/DEMO_KEYS/mint_authority.key | grep "Address:" | awk '{print $2}')
+echo "Token account: $ATA"
+</code></pre>
+<h3 id="step-6-mint-initial-supply"><a class="header" href="#step-6-mint-initial-supply">Step 6: Mint Initial Supply</a></h3>
+<pre><code class="language-bash"># Mint 1,000,000 tokens (1,000,000 raw units with 6 decimals = 1.000000 tokens)
+arch-cli token mint \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --to "$ATA" \
+    --amount 1000000
+</code></pre>
+<h3 id="step-7-verify-your-token"><a class="header" href="#step-7-verify-your-token">Step 7: Verify Your Token</a></h3>
+<pre><code class="language-bash"># Check mint information
+arch-cli token show-mint "$MINT"
+
+# Check account balance
+arch-cli token balance "$ATA"
+
+# Check mint supply
+arch-cli token supply "$MINT"
+</code></pre>
+<h2 id="advanced-token-operations"><a class="header" href="#advanced-token-operations">Advanced Token Operations</a></h2>
+<h3 id="transferring-tokens"><a class="header" href="#transferring-tokens">Transferring Tokens</a></h3>
+<pre><code class="language-bash"># Create a recipient account
+openssl rand -out ~/DEMO_KEYS/recipient.key 32
+
+# Create ATA for recipient
+arch-cli token create-account \
+    --keypair-path ~/DEMO_KEYS/recipient.key \
+    --mint "$MINT"
+
+# Get recipient ATA
+export RECIPIENT_ATA=$(arch-cli token show-account ~/DEMO_KEYS/recipient.key | grep "Address:" | awk '{print $2}')
+
+# Transfer 100,000 tokens (0.100000 with 6 decimals)
+arch-cli token transfer \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --from "$ATA" \
+    --to "$RECIPIENT_ATA" \
+    --amount 100000
+</code></pre>
+<h3 id="delegation-and-approval"><a class="header" href="#delegation-and-approval">Delegation and Approval</a></h3>
+<pre><code class="language-bash"># Approve a delegate to spend up to 500,000 tokens
+arch-cli token approve \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --from "$ATA" \
+    --delegate ~/DEMO_KEYS/recipient.key \
+    --amount 500000
+
+# Later, revoke the delegation
+arch-cli token revoke \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --from "$ATA"
+</code></pre>
+<h3 id="account-control"><a class="header" href="#account-control">Account Control</a></h3>
+<pre><code class="language-bash"># Freeze the account (requires freeze authority)
+arch-cli token freeze-account \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --account "$ATA"
+
+# Thaw the account
+arch-cli token thaw-account \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --account "$ATA"
+</code></pre>
+<h3 id="multisignature-operations"><a class="header" href="#multisignature-operations">Multisignature Operations</a></h3>
+<pre><code class="language-bash"># Create a multisig with 2-of-3 threshold
+arch-cli token create-multisig \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --signers "key1,key2,key3" \
+    --threshold 2
+
+# Save multisig address
+export MULTISIG=$(arch-cli token multisig-show &lt;MULTISIG_ADDRESS&gt; | grep "Address:" | awk '{print $2}')
+
+# Sign a transaction with multisig
+arch-cli token multisig-sign \
+    --keypair-path ~/DEMO_KEYS/key1.key \
+    --multisig "$MULTISIG" \
+    --transaction &lt;TRANSACTION_DATA&gt;
+
+# Execute the signed transaction
+arch-cli token multisig-execute \
+    --keypair-path ~/DEMO_KEYS/key2.key \
+    --multisig "$MULTISIG" \
+    --transaction &lt;SIGNED_TRANSACTION&gt;
+</code></pre>
+<h3 id="advanced-features"><a class="header" href="#advanced-features">Advanced Features</a></h3>
+<h4 id="checked-operations-decimal-verification"><a class="header" href="#checked-operations-decimal-verification">Checked Operations (Decimal Verification)</a></h4>
+<pre><code class="language-bash"># Transfer with decimal verification
+arch-cli token transfer-checked \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --from "$ATA" \
+    --to "$RECIPIENT_ATA" \
+    --amount 100000 \
+    --decimals 6
+
+# Mint with decimal verification
+arch-cli token mint-to-checked \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --to "$ATA" \
+    --amount 500000 \
+    --decimals 6
+</code></pre>
+<h4 id="batch-operations"><a class="header" href="#batch-operations">Batch Operations</a></h4>
+<pre><code class="language-bash"># Batch transfer to multiple accounts
+arch-cli token batch-transfer \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --from "$ATA" \
+    --transfers '[{"to":"account1","amount":100000},{"to":"account2","amount":200000}]'
+
+# Batch mint to multiple accounts
+arch-cli token batch-mint \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --mints '[{"to":"account1","amount":100000},{"to":"account2","amount":200000}]'
+</code></pre>
+<h4 id="authority-management"><a class="header" href="#authority-management">Authority Management</a></h4>
+<pre><code class="language-bash"># Set new mint authority
+arch-cli token set-authority \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --new-authority &lt;NEW_AUTHORITY_PUBKEY&gt; \
+    --authority-type mint
+
+# Set new freeze authority
+arch-cli token set-authority \
+    --keypair-path ~/DEMO_KEYS/mint_authority.key \
+    --mint "$MINT" \
+    --new-authority &lt;NEW_FREEZE_AUTHORITY&gt; \
+    --authority-type freeze
+</code></pre>
+<h2 id="utility-commands"><a class="header" href="#utility-commands">Utility Commands</a></h2>
+<h3 id="information-and-queries"><a class="header" href="#information-and-queries">Information and Queries</a></h3>
+<pre><code class="language-bash"># List all mints
+arch-cli token mints
+
+# List all accounts for a mint
+arch-cli token accounts "$MINT"
+
+# Convert amounts between raw and UI format
+arch-cli token amount-to-ui "$MINT" 1000000  # Raw to UI
+arch-cli token ui-to-amount "$MINT" 1.5      # UI to raw
+</code></pre>
+<h3 id="account-lifecycle"><a class="header" href="#account-lifecycle">Account Lifecycle</a></h3>
+<pre><code class="language-bash"># Close a token account (reclaims rent)
+arch-cli token close-account \
+    --keypair-path ~/DEMO_KEYS/recipient.key \
+    --mint "$MINT" \
+    --account "$RECIPIENT_ATA"
+</code></pre>
+<h2 id="programmatic-token-creation"><a class="header" href="#programmatic-token-creation">Programmatic Token Creation</a></h2>
+<p>For developers who want to create tokens programmatically, here’s how to use the APL token program directly:</p>
+<h3 id="project-setup-1"><a class="header" href="#project-setup-1">Project Setup</a></h3>
 <pre><code class="language-bash"># Create project directory
 mkdir arch-token-example
 cd arch-token-example
@@ -4137,7 +4156,7 @@ cd arch-token-example
 # Initialize Rust project
 cargo init --bin
 </code></pre>
-<h3 id="12-configure-dependencies-1"><a class="header" href="#12-configure-dependencies-1">1.2 Configure Dependencies</a></h3>
+<h3 id="dependencies"><a class="header" href="#dependencies">Dependencies</a></h3>
 <p><strong>Cargo.toml</strong></p>
 <pre><code class="language-toml">[package]
 name = "arch_token_example"
@@ -4147,766 +4166,110 @@ edition = "2021"
 [dependencies]
 arch_sdk = { git = "https://github.com/Arch-Network/arch-network", branch = "dev" }
 arch_program = { git = "https://github.com/Arch-Network/arch-network", branch = "dev" }
-arch_test_sdk = { git = "https://github.com/Arch-Network/arch-network", branch = "dev" }
 apl-token = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
 apl-associated-token-account = { git = "https://github.com/Arch-Network/arch-network", branch = "dev", features = ["no-entrypoint"] }
 borsh = { version = "1.5.1", features = ["derive"] }
-bitcoincore-rpc = "0.19.0"
-bitcoin = { version = "0.32.3", features = ["serde", "rand"] }
-hex = "0.4.3"
-log = "0.4"
-env_logger = "0.10"
-
-[dev-dependencies]
-serial_test = "3.1.1"
 </code></pre>
-<h2 id="step-2-create-a-token-mint"><a class="header" href="#step-2-create-a-token-mint">Step 2: Create a Token Mint</a></h2>
-<p>First, let’s create a new token mint. This is the foundation for your token.</p>
-<p><strong>src/main.rs</strong></p>
-<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::Mint;
-use arch_program::{
-    program_pack::Pack,
+<h3 id="create-token-programmatically"><a class="header" href="#create-token-programmatically">Create Token Programmatically</a></h3>
+<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::{
+    instruction,
+    state::{Mint, Account},
 };
-use arch_sdk::{generate_new_keypair, ArchRpcClient};
-use arch_test_sdk::{
-    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
-    helper::create_and_fund_account_with_faucet,
-    instructions::initialize_mint_token,
-};
+use arch_sdk::{ArchRpcClient, generate_new_keypair};
+use arch_program::pubkey::Pubkey;
 
-fn main() {
-    let client = ArchRpcClient::new(NODE1_ADDRESS);
+#[tokio::main]
+async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    let client = ArchRpcClient::new("http://localhost:9002");
 
-    // Create authority keypair (this will be the mint authority)
-    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
+    // Generate keypairs
+    let (mint_keypair, mint_pubkey, _) = generate_new_keypair("regtest");
+    let (authority_keypair, authority_pubkey, _) = generate_new_keypair("regtest");
 
-    println!("Authority account created and funded: {}", authority_pubkey);
-
-    // Create mint using the helper function
-    let (_token_mint_keypair, token_mint_pubkey) = initialize_mint_token(
-        &amp;client,
-        authority_pubkey,
-        authority_keypair,
-        None, // No freeze authority
-        Mint::LEN as u64,
+    // Create mint account
+    let mint_rent = client.get_minimum_balance_for_rent_exemption(Mint::LEN).await?;
+    
+    // Initialize mint
+    let init_mint_ix = instruction::initialize_mint(
         &amp;apl_token::id(),
-    );
-
-    println!("\n✅ Token mint successfully created!");
-    println!("Token mint address: {}", token_mint_pubkey);
-    println!("Token mint authority: {}", authority_pubkey);
-    
-    println!("\nWhat this proves:");
-    println!("✓ The mint account exists on-chain");
-    println!("✓ The mint is initialized and ready to mint tokens");
-    println!("✓ The authority can now mint tokens to any account");
-}</code></pre></pre>
-<p><strong>Run this step:</strong></p>
-<pre><code class="language-bash">cargo run
-</code></pre>
-<p><strong>Expected output:</strong></p>
-<pre><code>Authority account created and funded: [authority_address]
-✅ Token mint successfully created!
-Token mint address: [mint_address]
-Token mint authority: [authority_address]
-</code></pre>
-<h2 id="step-3-create-token-accounts"><a class="header" href="#step-3-create-token-accounts">Step 3: Create Token Accounts</a></h2>
-<p>Now that you have a mint, you need token accounts to hold tokens. Each user needs their own token account for your mint.</p>
-<p><strong>src/main.rs</strong></p>
-<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::Mint;
-use arch_program::{
-    program_pack::Pack,
-    pubkey::Pubkey,
-};
-use arch_sdk::{generate_new_keypair, ArchRpcClient};
-use arch_test_sdk::{
-    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
-    helper::create_and_fund_account_with_faucet,
-    instructions::{initialize_mint_token, initialize_token_account},
-};
-use bitcoin::key::Keypair;
-
-fn main() {
-    let client = ArchRpcClient::new(NODE1_ADDRESS);
-
-    // Create authority keypair (this will be the mint authority)
-    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
-
-    println!("Authority account created and funded: {}", authority_pubkey);
-
-    // Create mint using the helper function
-    let (_token_mint_keypair, token_mint_pubkey) = initialize_mint_token(
-        &amp;client,
-        authority_pubkey,
-        authority_keypair.clone(),
-        None, // No freeze authority
-        Mint::LEN as u64,
-        &amp;apl_token::id(),
-    );
-
-    println!("\n✅ Token mint successfully created!");
-    println!("Token mint address: {}", token_mint_pubkey);
-    println!("Token mint authority: {}", authority_pubkey);
-    
-    // Create a token account for the authority
-    println!("\n📦 Creating first token account...");
-    
-    let (_token_account_keypair, token_account_pubkey) = initialize_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        authority_keypair.clone(),
-    );
-    
-    println!("✅ Token account successfully created!");
-    println!("Token account address: {}", token_account_pubkey);
-    println!("Token account owner: {}", authority_pubkey);
-    
-    // Create a second user and their token account
-    println!("\n👤 Creating second user and their token account...");
-    
-    let (user2_keypair, user2_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;user2_keypair, BITCOIN_NETWORK);
-    
-    let user2_token_account = create_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        user2_keypair,
-    );
-    
-    println!("✅ Second user's token account created!");
-    println!("User 2 address: {}", user2_pubkey);
-    println!("User 2 token account: {}", user2_token_account);
-    
-    println!("\n🎉 Complete token setup verified!");
-    println!("Summary:");
-    println!("- Token mint: {}", token_mint_pubkey);
-    println!("- Authority's token account: {}", token_account_pubkey);
-    println!("- User 2's token account: {}", user2_token_account);
-}
-
-// Standalone function to create token accounts
-fn create_token_account(
-    client: &amp;ArchRpcClient,
-    token_mint_pubkey: Pubkey,
-    owner_keypair: Keypair,
-) -&gt; Pubkey {
-    let (_token_account_keypair, token_account_pubkey) = initialize_token_account(
-        client,
-        token_mint_pubkey,
-        owner_keypair,
-    );
-    
-    token_account_pubkey
-}</code></pre></pre>
-<p><strong>Run this step:</strong></p>
-<pre><code class="language-bash">cargo run
-</code></pre>
-<p><strong>Expected output:</strong></p>
-<pre><code>Authority account created and funded: [authority_address]
-✅ Token mint successfully created!
-Token mint address: [mint_address]
-📦 Creating first token account...
-✅ Token account successfully created!
-Token account address: [account1_address]
-👤 Creating second user and their token account...
-✅ Second user's token account created!
-User 2 address: [user2_address]
-User 2 token account: [account2_address]
-</code></pre>
-<h2 id="step-4-mint-tokens"><a class="header" href="#step-4-mint-tokens">Step 4: Mint Tokens</a></h2>
-<p>Now let’s mint some tokens to the accounts we created.</p>
-<p><strong>src/main.rs</strong></p>
-<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::Mint;
-use arch_program::{
-    program_pack::Pack,
-    pubkey::Pubkey,
-};
-use arch_sdk::{generate_new_keypair, ArchRpcClient};
-use arch_test_sdk::{
-    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
-    helper::create_and_fund_account_with_faucet,
-    instructions::{initialize_mint_token, initialize_token_account, mint_tokens},
-};
-use bitcoin::key::Keypair;
-
-fn main() {
-    let client = ArchRpcClient::new(NODE1_ADDRESS);
-
-    // Create authority keypair (this will be the mint authority)
-    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
-
-    println!("Authority account created and funded: {}", authority_pubkey);
-
-    // Create mint using the helper function
-    let (_token_mint_keypair, token_mint_pubkey) = initialize_mint_token(
-        &amp;client,
-        authority_pubkey,
-        authority_keypair.clone(),
-        None, // No freeze authority
-        Mint::LEN as u64,
-        &amp;apl_token::id(),
-    );
-
-    println!("\n✅ Token mint successfully created!");
-    println!("Token mint address: {}", token_mint_pubkey);
-    
-    // Create token accounts
-    let (_token_account_keypair, authority_token_account) = initialize_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        authority_keypair.clone(),
-    );
-    
-    let (user2_keypair, user2_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;user2_keypair, BITCOIN_NETWORK);
-    
-    let user2_token_account = create_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        user2_keypair,
-    );
-    
-    println!("✅ Token accounts created!");
-    println!("Authority's token account: {}", authority_token_account);
-    println!("User 2's token account: {}", user2_token_account);
-    
-    // Mint tokens to the authority's account
-    println!("\n🪙 Minting tokens to authority's account...");
-    mint_tokens(
-        &amp;client,
-        &amp;token_mint_pubkey,
-        &amp;authority_token_account,
+        &amp;mint_pubkey,
         &amp;authority_pubkey,
-        authority_keypair.clone(),
-        1_000_000_000, // 1 token with 9 decimals
-    );
-    
-    // Mint tokens to user2's account
-    println!("\n🪙 Minting tokens to user2's account...");
-    mint_tokens(
-        &amp;client,
-        &amp;token_mint_pubkey,
-        &amp;user2_token_account,
-        &amp;authority_pubkey,
-        authority_keypair,
-        500_000_000, // 0.5 tokens with 9 decimals
-    );
-    
-    println!("\n🎉 Token minting completed!");
-    println!("Summary:");
-    println!("- Authority received: 1.0 tokens");
-    println!("- User 2 received: 0.5 tokens");
-    println!("- Total supply: 1.5 tokens");
-}
-
-// Standalone function to create token accounts
-fn create_token_account(
-    client: &amp;ArchRpcClient,
-    token_mint_pubkey: Pubkey,
-    owner_keypair: Keypair,
-) -&gt; Pubkey {
-    let (_token_account_keypair, token_account_pubkey) = initialize_token_account(
-        client,
-        token_mint_pubkey,
-        owner_keypair,
-    );
-    
-    token_account_pubkey
-}</code></pre></pre>
-<p><strong>Run this step:</strong></p>
-<pre><code class="language-bash">cargo run
-</code></pre>
-<p><strong>Expected output:</strong></p>
-<pre><code>Authority account created and funded: [authority_address]
-✅ Token mint successfully created!
-Token mint address: [mint_address]
-✅ Token accounts created!
-Authority's token account: [account1_address]
-User 2's token account: [account2_address]
-🪙 Minting tokens to authority's account...
-🪙 Minting tokens to user2's account...
-🎉 Token minting completed!
-Summary:
-- Authority received: 1.0 tokens
-- User 2 received: 0.5 tokens
-- Total supply: 1.5 tokens
-</code></pre>
-<h2 id="step-5-transfer-tokens"><a class="header" href="#step-5-transfer-tokens">Step 5: Transfer Tokens</a></h2>
-<p>Now let’s transfer tokens between accounts.</p>
-<p><strong>src/main.rs</strong></p>
-<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::Mint;
-use arch_program::{
-    program_pack::Pack,
-    pubkey::Pubkey,
-};
-use arch_sdk::{generate_new_keypair, ArchRpcClient};
-use arch_test_sdk::{
-    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
-    helper::create_and_fund_account_with_faucet,
-    instructions::{initialize_mint_token, initialize_token_account, mint_tokens},
-};
-use bitcoin::key::Keypair;
-
-fn main() {
-    let client = ArchRpcClient::new(NODE1_ADDRESS);
-
-    // Create authority keypair (this will be the mint authority)
-    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
-
-    println!("Authority account created and funded: {}", authority_pubkey);
-
-    // Create mint using the helper function
-    let (_token_mint_keypair, token_mint_pubkey) = initialize_mint_token(
-        &amp;client,
-        authority_pubkey,
-        authority_keypair.clone(),
         None, // No freeze authority
-        Mint::LEN as u64,
-        &amp;apl_token::id(),
-    );
+        6,    // Decimals
+    )?;
 
-    println!("\n✅ Token mint successfully created!");
-    println!("Token mint address: {}", token_mint_pubkey);
-    
-    // Create token accounts
-    let (_token_account_keypair, authority_token_account) = initialize_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        authority_keypair.clone(),
-    );
-    
-    let (user2_keypair, user2_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;user2_keypair, BITCOIN_NETWORK);
-    
-    let user2_token_account = create_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        user2_keypair.clone(),
-    );
-    
-    println!("✅ Token accounts created!");
-    println!("Authority's token account: {}", authority_token_account);
-    println!("User 2's token account: {}", user2_token_account);
-    
-    // Mint tokens to both accounts
-    mint_tokens(
-        &amp;client,
-        &amp;token_mint_pubkey,
-        &amp;authority_token_account,
-        &amp;authority_pubkey,
-        authority_keypair.clone(),
-        1_000_000_000, // 1 token with 9 decimals
-    );
-    
-    mint_tokens(
-        &amp;client,
-        &amp;token_mint_pubkey,
-        &amp;user2_token_account,
-        &amp;authority_pubkey,
-        authority_keypair,
-        500_000_000, // 0.5 tokens with 9 decimals
-    );
-    
-    println!("✅ Tokens minted to both accounts");
-    
-    // Transfer tokens from user2 to authority
-    println!("\n🔄 Transferring tokens from user2 to authority...");
-    transfer_tokens(
-        &amp;client,
-        &amp;user2_token_account,
-        &amp;authority_token_account,
-        &amp;user2_pubkey,
-        user2_keypair,
-        200_000_000, // 0.2 tokens
-    );
-    
-    println!("\n🎉 Token transfer completed!");
-    println!("Summary:");
-    println!("- User2 transferred 0.2 tokens to authority");
-    println!("- Authority now has: 1.2 tokens");
-    println!("- User2 now has: 0.3 tokens");
-}
+    // Create and send transaction
+    let signature = client.send_and_confirm_transaction_with_spinner(
+        &amp;[&amp;mint_keypair, &amp;authority_keypair],
+        &amp;[init_mint_ix],
+        &amp;mint_pubkey,
+    ).await?;
 
-// Standalone function to create token accounts
-fn create_token_account(
-    client: &amp;ArchRpcClient,
-    token_mint_pubkey: Pubkey,
-    owner_keypair: Keypair,
-) -&gt; Pubkey {
-    let (_token_account_keypair, token_account_pubkey) = initialize_token_account(
-        client,
-        token_mint_pubkey,
-        owner_keypair,
-    );
-    
-    token_account_pubkey
-}
+    println!("Mint created: {}", mint_pubkey);
+    println!("Transaction: {}", signature);
 
-// Function to transfer tokens between accounts
-fn transfer_tokens(
-    client: &amp;ArchRpcClient,
-    source_account: &amp;Pubkey,
-    destination_account: &amp;Pubkey,
-    owner_pubkey: &amp;Pubkey,
-    owner_keypair: Keypair,
-    amount: u64,
-) {
-    use arch_program::{
-        sanitized::ArchMessage,
-        system_instruction::create_account,
-    };
-    use arch_sdk::build_and_sign_transaction;
-    
-    let transfer_instruction = apl_token::instruction::transfer(
-        &amp;apl_token::id(),
-        source_account,
-        destination_account,
-        owner_pubkey,
-        &amp;[], // No additional signers
-        amount,
-    ).unwrap();
-
-    let transaction = build_and_sign_transaction(
-        ArchMessage::new(
-            &amp;[transfer_instruction],
-            Some(*owner_pubkey),
-            client.get_best_block_hash().unwrap(),
-        ),
-        vec![owner_keypair],
-        BITCOIN_NETWORK,
-    ).expect("Failed to build and sign transaction");
-
-    let tx_id = client.send_transaction(transaction)
-        .expect("Failed to send transaction");
-    
-    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
-        .expect("Failed to process transaction");
-    
-    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
-    println!("Transferred {} tokens", amount);
+    Ok(())
 }</code></pre></pre>
-<p><strong>Run this step:</strong></p>
-<pre><code class="language-bash">cargo run
-</code></pre>
-<p><strong>Expected output:</strong></p>
-<pre><code>Authority account created and funded: [authority_address]
-✅ Token mint successfully created!
-Token mint address: [mint_address]
-✅ Token accounts created!
-Authority's token account: [account1_address]
-User 2's token account: [account2_address]
-✅ Tokens minted to both accounts
-🔄 Transferring tokens from user2 to authority...
-Transferred 200000000 tokens
-🎉 Token transfer completed!
-Summary:
-- User2 transferred 0.2 tokens to authority
-- Authority now has: 1.2 tokens
-- User2 now has: 0.3 tokens
-</code></pre>
-<h2 id="step-6-advanced-operations"><a class="header" href="#step-6-advanced-operations">Step 6: Advanced Operations</a></h2>
-<p>Now let’s explore some advanced token operations like delegation and burning.</p>
-<p><strong>src/main.rs</strong></p>
-<pre><pre class="playground"><code class="language-rust edition2021">use apl_token::state::Mint;
-use arch_program::{
-    program_pack::Pack,
-    pubkey::Pubkey,
-};
-use arch_sdk::{generate_new_keypair, ArchRpcClient};
-use arch_test_sdk::{
-    constants::{BITCOIN_NETWORK, NODE1_ADDRESS},
-    helper::create_and_fund_account_with_faucet,
-    instructions::{initialize_mint_token, initialize_token_account, mint_tokens},
-};
-use bitcoin::key::Keypair;
-
-fn main() {
-    let client = ArchRpcClient::new(NODE1_ADDRESS);
-
-    // Create authority keypair (this will be the mint authority)
-    let (authority_keypair, authority_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;authority_keypair, BITCOIN_NETWORK);
-
-    println!("Authority account created and funded: {}", authority_pubkey);
-
-    // Create mint using the helper function
-    let (_token_mint_keypair, token_mint_pubkey) = initialize_mint_token(
-        &amp;client,
-        authority_pubkey,
-        authority_keypair.clone(),
-        None, // No freeze authority
-        Mint::LEN as u64,
-        &amp;apl_token::id(),
-    );
-
-    println!("\n✅ Token mint successfully created!");
-    println!("Token mint address: {}", token_mint_pubkey);
-    
-    // Create token accounts for multiple users
-    let (_token_account_keypair, authority_token_account) = initialize_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        authority_keypair.clone(),
-    );
-    
-    let (user2_keypair, user2_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;user2_keypair, BITCOIN_NETWORK);
-    
-    let user2_token_account = create_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        user2_keypair.clone(),
-    );
-    
-    let (delegate_keypair, delegate_pubkey, _) = generate_new_keypair(BITCOIN_NETWORK);
-    create_and_fund_account_with_faucet(&amp;delegate_keypair, BITCOIN_NETWORK);
-    
-    let delegate_token_account = create_token_account(
-        &amp;client,
-        token_mint_pubkey,
-        delegate_keypair.clone(),
-    );
-    
-    println!("✅ Token accounts created!");
-    println!("Authority's token account: {}", authority_token_account);
-    println!("User 2's token account: {}", user2_token_account);
-    println!("Delegate's token account: {}", delegate_token_account);
-    
-    // Mint tokens to user2's account
-    mint_tokens(
-        &amp;client,
-        &amp;token_mint_pubkey,
-        &amp;user2_token_account,
-        &amp;authority_pubkey,
-        authority_keypair.clone(),
-        1_000_000_000, // 1 token with 9 decimals
-    );
-    
-    println!("✅ Tokens minted to user2's account");
-    
-    // Step 1: Approve delegation - User2 allows delegate to spend 0.3 tokens
-    println!("\n🔐 Approving delegation...");
-    approve_delegate(
-        &amp;client,
-        &amp;user2_token_account,
-        &amp;delegate_pubkey,
-        &amp;user2_pubkey,
-        user2_keypair.clone(),
-        300_000_000, // 0.3 tokens
-    );
-    
-    // Step 2: Delegate transfers tokens on behalf of user2
-    println!("\n🔄 Delegate transferring tokens on behalf of user2...");
-    transfer_tokens_as_delegate(
-        &amp;client,
-        &amp;user2_token_account,
-        &amp;delegate_token_account,
-        &amp;delegate_pubkey,
-        delegate_keypair.clone(),
-        200_000_000, // 0.2 tokens
-    );
-    
-    // Step 3: Burn some tokens from user2's account
-    println!("\n🔥 Burning tokens from user2's account...");
-    burn_tokens(
-        &amp;client,
-        &amp;user2_token_account,
-        &amp;token_mint_pubkey,
-        &amp;user2_pubkey,
-        user2_keypair,
-        100_000_000, // 0.1 tokens
-    );
-    
-    println!("\n🎉 Advanced operations completed!");
-    println!("Summary:");
-    println!("- User2 approved delegate to spend 0.3 tokens");
-    println!("- Delegate transferred 0.2 tokens to their own account");
-    println!("- User2 burned 0.1 tokens");
-    println!("- User2 remaining balance: 0.7 tokens");
-    println!("- Delegate balance: 0.2 tokens");
-}
-
-// Standalone function to create token accounts
-fn create_token_account(
-    client: &amp;ArchRpcClient,
-    token_mint_pubkey: Pubkey,
-    owner_keypair: Keypair,
-) -&gt; Pubkey {
-    let (_token_account_keypair, token_account_pubkey) = initialize_token_account(
-        client,
-        token_mint_pubkey,
-        owner_keypair,
-    );
-    
-    token_account_pubkey
-}
-
-// Function to approve a delegate to spend tokens
-fn approve_delegate(
-    client: &amp;ArchRpcClient,
-    source_account: &amp;Pubkey,
-    delegate_account: &amp;Pubkey,
-    owner_pubkey: &amp;Pubkey,
-    owner_keypair: Keypair,
-    amount: u64,
-) {
-    use arch_program::sanitized::ArchMessage;
-    use arch_sdk::build_and_sign_transaction;
-    
-    let approve_instruction = apl_token::instruction::approve(
-        &amp;apl_token::id(),
-        source_account,
-        delegate_account,
-        owner_pubkey,
-        &amp;[],
-        amount,
-    ).unwrap();
-
-    let transaction = build_and_sign_transaction(
-        ArchMessage::new(
-            &amp;[approve_instruction],
-            Some(*owner_pubkey),
-            client.get_best_block_hash().unwrap(),
-        ),
-        vec![owner_keypair],
-        BITCOIN_NETWORK,
-    ).expect("Failed to build and sign transaction");
-
-    let tx_id = client.send_transaction(transaction)
-        .expect("Failed to send transaction");
-    
-    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
-        .expect("Failed to process transaction");
-    
-    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
-    println!("Approved {} tokens for delegation", amount);
-}
-
-// Function to transfer tokens as a delegate
-fn transfer_tokens_as_delegate(
-    client: &amp;ArchRpcClient,
-    source_account: &amp;Pubkey,
-    destination_account: &amp;Pubkey,
-    delegate_pubkey: &amp;Pubkey,
-    delegate_keypair: Keypair,
-    amount: u64,
-) {
-    use arch_program::sanitized::ArchMessage;
-    use arch_sdk::build_and_sign_transaction;
-    
-    let transfer_instruction = apl_token::instruction::transfer(
-        &amp;apl_token::id(),
-        source_account,
-        destination_account,
-        delegate_pubkey,
-        &amp;[],
-        amount,
-    ).unwrap();
-
-    let transaction = build_and_sign_transaction(
-        ArchMessage::new(
-            &amp;[transfer_instruction],
-            Some(*delegate_pubkey),
-            client.get_best_block_hash().unwrap(),
-        ),
-        vec![delegate_keypair],
-        BITCOIN_NETWORK,
-    ).expect("Failed to build and sign transaction");
-
-    let tx_id = client.send_transaction(transaction)
-        .expect("Failed to send transaction");
-    
-    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
-        .expect("Failed to process transaction");
-    
-    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
-    println!("Delegate transferred {} tokens", amount);
-}
-
-// Function to burn tokens
-fn burn_tokens(
-    client: &amp;ArchRpcClient,
-    account_pubkey: &amp;Pubkey,
-    mint_pubkey: &amp;Pubkey,
-    owner_pubkey: &amp;Pubkey,
-    owner_keypair: Keypair,
-    amount: u64,
-) {
-    use arch_program::sanitized::ArchMessage;
-    use arch_sdk::build_and_sign_transaction;
-    
-    let burn_instruction = apl_token::instruction::burn(
-        &amp;apl_token::id(),
-        account_pubkey,
-        mint_pubkey,
-        owner_pubkey,
-        &amp;[],
-        amount,
-    ).unwrap();
-
-    let transaction = build_and_sign_transaction(
-        ArchMessage::new(
-            &amp;[burn_instruction],
-            Some(*owner_pubkey),
-            client.get_best_block_hash().unwrap(),
-        ),
-        vec![owner_keypair],
-        BITCOIN_NETWORK,
-    ).expect("Failed to build and sign transaction");
-
-    let tx_id = client.send_transaction(transaction)
-        .expect("Failed to send transaction");
-    
-    let processed_tx = client.wait_for_processed_transaction(&amp;tx_id)
-        .expect("Failed to process transaction");
-    
-    assert_eq!(processed_tx.status, arch_sdk::Status::Processed);
-    println!("Burned {} tokens", amount);
-}</code></pre></pre>
-<p><strong>Run this step:</strong></p>
-<pre><code class="language-bash">cargo run
-</code></pre>
-<p><strong>Expected output:</strong></p>
-<pre><code>Authority account created and funded: [authority_address]
-✅ Token mint successfully created!
-Token mint address: [mint_address]
-✅ Token accounts created!
-Authority's token account: [account1_address]
-User 2's token account: [account2_address]
-Delegate's token account: [delegate_account_address]
-✅ Tokens minted to user2's account
-🔐 Approving delegation...
-Approved 300000000 tokens for delegation
-🔄 Delegate transferring tokens on behalf of user2...
-Delegate transferred 200000000 tokens
-🔥 Burning tokens from user2's account...
-Burned 100000000 tokens
-🎉 Advanced operations completed!
-Summary:
-- User2 approved delegate to spend 0.3 tokens
-- Delegate transferred 0.2 tokens to their own account
-- User2 burned 0.1 tokens
-- User2 remaining balance: 0.7 tokens
-- Delegate balance: 0.2 tokens
-</code></pre>
-<h3 id="what-this-demonstrates"><a class="header" href="#what-this-demonstrates">What This Demonstrates:</a></h3>
+<h2 id="best-practices-3"><a class="header" href="#best-practices-3">Best Practices</a></h2>
+<h3 id="security-2"><a class="header" href="#security-2">Security</a></h3>
 <ol>
-<li><strong>Delegation</strong>: User2 approves a delegate to spend tokens on their behalf</li>
-<li><strong>Delegate Transfers</strong>: The delegate can transfer tokens from User2’s account to their own</li>
-<li><strong>Token Burning</strong>: User2 can burn tokens to reduce the total supply</li>
-<li><strong>Complex Workflows</strong>: Shows how multiple parties can interact with tokens</li>
+<li><strong>Separate Authorities</strong>: Use different keypairs for mint authority, freeze authority, and payer</li>
+<li><strong>Multisig for High-Value Operations</strong>: Implement multisig for minting and authority changes</li>
+<li><strong>Freeze Authority</strong>: Only set freeze authority if you need the ability to freeze accounts</li>
+<li><strong>Key Management</strong>: Store private keys securely and never share them</li>
 </ol>
-<h3 id="key-concepts"><a class="header" href="#key-concepts">Key Concepts:</a></h3>
+<h3 id="token-design"><a class="header" href="#token-design">Token Design</a></h3>
+<ol>
+<li><strong>Decimal Precision</strong>: Choose appropriate decimals (6-9 is common)</li>
+<li><strong>Supply Planning</strong>: Plan your initial supply and minting schedule</li>
+<li><strong>Metadata</strong>: Consider adding off-chain metadata for name, symbol, and logo</li>
+<li><strong>Access Control</strong>: Design your authority structure carefully</li>
+</ol>
+<h3 id="development-workflow-1"><a class="header" href="#development-workflow-1">Development Workflow</a></h3>
+<ol>
+<li><strong>Local Testing</strong>: Always test on local environment first</li>
+<li><strong>Profile Management</strong>: Use different profiles for different environments</li>
+<li><strong>Transaction Monitoring</strong>: Monitor transactions and verify state changes</li>
+<li><strong>Error Handling</strong>: Implement proper error handling in your applications</li>
+</ol>
+<h2 id="troubleshooting-3"><a class="header" href="#troubleshooting-3">Troubleshooting</a></h2>
+<h3 id="common-issues-3"><a class="header" href="#common-issues-3">Common Issues</a></h3>
+<p><strong>Insufficient Balance:</strong></p>
+<pre><code class="language-bash"># Check account balance
+arch-cli token balance &lt;ACCOUNT_ADDRESS&gt;
+
+# Fund account if needed
+arch-cli account airdrop --keypair-path &lt;KEYPAIR_PATH&gt;
+</code></pre>
+<p><strong>Invalid Authority:</strong></p>
+<pre><code class="language-bash"># Check mint authorities
+arch-cli token show-mint &lt;MINT_ADDRESS&gt;
+
+# Check account owner
+arch-cli token show-account &lt;ACCOUNT_ADDRESS&gt;
+</code></pre>
+<p><strong>Transaction Failures:</strong></p>
+<pre><code class="language-bash"># Check transaction status
+arch-cli tx confirm &lt;SIGNATURE&gt;
+
+# View program logs
+arch-cli tx log-program-messages &lt;SIGNATURE&gt;
+</code></pre>
+<h3 id="getting-help-2"><a class="header" href="#getting-help-2">Getting Help</a></h3>
 <ul>
-<li><strong>Delegation</strong>: Allows one account to spend tokens on behalf of another</li>
-<li><strong>Burning</strong>: Permanently removes tokens from circulation</li>
-<li><strong>Multi-party Operations</strong>: Demonstrates how tokens can be used in complex scenarios</li>
+<li><strong>Discord Community</strong>: <a href="https://discord.gg/archnetwork">https://discord.gg/archnetwork</a></li>
+<li><strong>GitHub Issues</strong>: <a href="https://github.com/Arch-Network/arch-node/issues">https://github.com/Arch-Network/arch-node/issues</a></li>
+<li><strong>Documentation</strong>: <a href="https://docs.arch.network">https://docs.arch.network</a></li>
 </ul>
-<p>This completes the full token lifecycle from creation to advanced operations!</p>
+<h2 id="next-steps-3"><a class="header" href="#next-steps-3">Next Steps</a></h2>
+<ul>
+<li><strong>Advanced Token Features</strong>: Explore <a href="guides/../../arch-cli/APL_TOKEN_WALKTHROUGH_LEVEL_2.html">APL Token Walkthrough Level 2</a></li>
+<li><strong>Program Development</strong>: Learn about <a href="guides/writing-your-first-program.html">Writing Your First Program</a></li>
+<li><strong>Testing</strong>: Understand <a href="guides/testing-guide.html">Testing Strategies</a></li>
+<li><strong>Deployment</strong>: Deploy to <a href="guides/../getting-started/bitcoin-and-titan-setup.html">Testnet and Mainnet</a></li>
+</ul>
+<hr />
+<p><strong>Congratulations!</strong> You’ve successfully created and managed APL tokens on Arch Network. You now have the foundation to build sophisticated token-based applications that integrate seamlessly with Bitcoin.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="how-to-write-an-oracle-program"><a class="header" href="#how-to-write-an-oracle-program">How to write an oracle program</a></h1>
 <p>This guide walks through the innerworkings of an oracle program as well as details how oracle data can be utilized by other programs on Arch Network.</p>
 <p>Table of Contents:</p>
@@ -5365,7 +4728,7 @@ arch-cli validator-start
 <li>Implement proper error handling</li>
 <li>Add detailed documentation</li>
 </ul>
-<h2 id="next-steps-3"><a class="header" href="#next-steps-3">Next Steps</a></h2>
+<h2 id="next-steps-4"><a class="header" href="#next-steps-4">Next Steps</a></h2>
 <p>To further improve your program, consider adding:</p>
 <ol>
 <li>A UI for interacting with the swap program</li>
@@ -6293,7 +5656,7 @@ mod tests {
 <li><strong>Access Control</strong>: Implement proper permission checks for all sensitive operations</li>
 <li><strong>Liquidation Thresholds</strong>: Set appropriate thresholds to maintain protocol solvency</li>
 </ol>
-<h2 id="next-steps-4"><a class="header" href="#next-steps-4">Next Steps</a></h2>
+<h2 id="next-steps-5"><a class="header" href="#next-steps-5">Next Steps</a></h2>
 <ol>
 <li>
 <p>Implement additional features:</p>
@@ -6903,8 +6266,8 @@ let instruction = apl_token::instruction::approve(
     // ... other errors
 }
 <span class="boring">}</span></code></pre></pre>
-<h2 id="best-practices-3"><a class="header" href="#best-practices-3">Best Practices</a></h2>
-<h3 id="security-2"><a class="header" href="#security-2">Security</a></h3>
+<h2 id="best-practices-4"><a class="header" href="#best-practices-4">Best Practices</a></h2>
+<h3 id="security-3"><a class="header" href="#security-3">Security</a></h3>
 <ol>
 <li>
 <p><strong>Account Validation</strong></p>
@@ -7173,7 +6536,7 @@ let instruction = arch_program::instruction::Instruction {
     ],
     data: utxo_data, // UTXO data for account creation
 };</code></pre>
-<h2 id="best-practices-4"><a class="header" href="#best-practices-4">Best Practices</a></h2>
+<h2 id="best-practices-5"><a class="header" href="#best-practices-5">Best Practices</a></h2>
 <h3 id="account-management-1"><a class="header" href="#account-management-1">Account Management</a></h3>
 <ol>
 <li>
@@ -7732,7 +7095,7 @@ pub struct ValidatorSet {
 <li><code>/peers</code> - Connected peers</li>
 <li><code>/status</code> - Network status</li>
 </ul>
-<h2 id="best-practices-5"><a class="header" href="#best-practices-5">Best Practices</a></h2>
+<h2 id="best-practices-6"><a class="header" href="#best-practices-6">Best Practices</a></h2>
 <h3 id="1-node-operation"><a class="header" href="#1-node-operation">1. Node Operation</a></h3>
 <ul>
 <li>Secure key management</li>
@@ -7955,7 +7318,7 @@ pub struct SecurityParams {
     InvalidSignature(Signature),
     InvalidState(Hash),
 }</code></pre>
-<h2 id="best-practices-6"><a class="header" href="#best-practices-6">Best Practices</a></h2>
+<h2 id="best-practices-7"><a class="header" href="#best-practices-7">Best Practices</a></h2>
 <h3 id="1-utxo-management-1"><a class="header" href="#1-utxo-management-1">1. UTXO Management</a></h3>
 <ul>
 <li>Always verify UTXO ownership</li>
@@ -9267,7 +8630,7 @@ pub fn process_instruction(
     }
     Ok(())
 }</code></pre>
-<h2 id="best-practices-7"><a class="header" href="#best-practices-7">Best Practices</a></h2>
+<h2 id="best-practices-8"><a class="header" href="#best-practices-8">Best Practices</a></h2>
 <h3 id="1-account-management"><a class="header" href="#1-account-management">1. Account Management</a></h3>
 <ul>
 <li>Always validate account ownership before modifications</li>
@@ -9447,7 +8810,7 @@ pub fn process_instruction(
 </ul>
 </li>
 </ol>
-<h3 id="best-practices-8"><a class="header" href="#best-practices-8">Best Practices:</a></h3>
+<h3 id="best-practices-9"><a class="header" href="#best-practices-9">Best Practices:</a></h3>
 <ol>
 <li>
 <p><strong>Account Validation</strong></p>
@@ -9774,7 +9137,7 @@ async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <li><strong>TypeScript</strong>: JSON and Buffer-based serialization</li>
 <li><strong>Rust</strong>: Borsh and custom serialization</li>
 </ul>
-<h2 id="getting-help-1"><a class="header" href="#getting-help-1">Getting Help</a></h2>
+<h2 id="getting-help-3"><a class="header" href="#getting-help-3">Getting Help</a></h2>
 <h3 id="typescript-sdk-support"><a class="header" href="#typescript-sdk-support">TypeScript SDK Support</a></h3>
 <ul>
 <li><strong>Issues</strong>: <a href="https://github.com/saturnbtc/arch-typescript-sdk/issues">Saturn SDK GitHub Issues</a></li>
@@ -9793,7 +9156,7 @@ async fn main() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
 <li><strong>Forum</strong>: <a href="https://forum.arch.network">Arch Network Forum</a></li>
 <li><strong>Stack Overflow</strong>: Tag with <code>arch-network</code></li>
 </ul>
-<h2 id="next-steps-5"><a class="header" href="#next-steps-5">Next Steps</a></h2>
+<h2 id="next-steps-6"><a class="header" href="#next-steps-6">Next Steps</a></h2>
 <p>Choose your SDK and get started:</p>
 <ul>
 <li><strong><a href="sdk/typescript/getting-started.html">Get Started with TypeScript SDK →</a></strong></li>
@@ -10275,7 +9638,7 @@ completeExample().catch(console.error);
 <p><strong>Error Handling</strong>: Always wrap RPC calls in try-catch blocks as network operations can fail.</p>
 </li>
 </ol>
-<h2 id="next-steps-6"><a class="header" href="#next-steps-6">Next Steps</a></h2>
+<h2 id="next-steps-7"><a class="header" href="#next-steps-7">Next Steps</a></h2>
 <ul>
 <li>Learn about <a href="sdk/typescript/../account.html">Arch’s account model</a></li>
 <li>Understand <a href="sdk/typescript/../instructions-and-messages.html">message and instruction formats</a></li>
@@ -10924,7 +10287,7 @@ function pubkeyExamples() {
 <li><a href="https://github.com/arch-network/arch-network/tree/main/examples">Arch Network Examples</a></li>
 <li><a href="https://github.com/saturnbtc/arch-typescript-sdk/tree/main/src">TypeScript SDK Source</a></li>
 </ul>
-<h2 id="next-steps-7"><a class="header" href="#next-steps-7">Next Steps</a></h2>
+<h2 id="next-steps-8"><a class="header" href="#next-steps-8">Next Steps</a></h2>
 <ul>
 <li><a href="sdk/typescript/api-reference.html">TypeScript API Reference</a></li>
 <li><a href="sdk/typescript/getting-started.html">Getting Started Guide</a></li>
@@ -11309,7 +10672,7 @@ export function NetworkStatus() {
   );
 }
 </code></pre>
-<h2 id="next-steps-8"><a class="header" href="#next-steps-8">Next Steps</a></h2>
+<h2 id="next-steps-9"><a class="header" href="#next-steps-9">Next Steps</a></h2>
 <p>Since the TypeScript SDK is low-level, you’ll need to:</p>
 <ol>
 <li>Implement your own wallet integration layer</li>
@@ -11674,7 +11037,7 @@ fn validate_account(account: &amp;AccountInfo) -&gt; Result&lt;(), MyProgramErro
     Ok(())
 }
 <span class="boring">}</span></code></pre></pre>
-<h2 id="advanced-features"><a class="header" href="#advanced-features">Advanced Features</a></h2>
+<h2 id="advanced-features-1"><a class="header" href="#advanced-features-1">Advanced Features</a></h2>
 <h3 id="parallel-account-processing"><a class="header" href="#parallel-account-processing">Parallel Account Processing</a></h3>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -11784,7 +11147,7 @@ async fn test_full_transaction_flow() -&gt; Result&lt;()&gt; {
     Ok(())
 }
 <span class="boring">}</span></code></pre></pre>
-<h2 id="best-practices-9"><a class="header" href="#best-practices-9">Best Practices</a></h2>
+<h2 id="best-practices-10"><a class="header" href="#best-practices-10">Best Practices</a></h2>
 <h3 id="performance-optimization-1"><a class="header" href="#performance-optimization-1">Performance Optimization</a></h3>
 <pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -11906,7 +11269,7 @@ async fn main() -&gt; Result&lt;()&gt; {
     
     Ok(())
 }</code></pre></pre>
-<h2 id="next-steps-9"><a class="header" href="#next-steps-9">Next Steps</a></h2>
+<h2 id="next-steps-10"><a class="header" href="#next-steps-10">Next Steps</a></h2>
 <p>Now that you understand the basics of the Rust SDK:</p>
 <ol>
 <li><strong><a href="sdk/rust/program-development.html">Program Development Guide</a></strong> - Build on-chain programs</li>
@@ -13236,8 +12599,8 @@ const instruction = new Instruction({
   }
 }
 </code></pre>
-<h2 id="best-practices-10"><a class="header" href="#best-practices-10">Best Practices</a></h2>
-<h3 id="security-3"><a class="header" href="#security-3">Security</a></h3>
+<h2 id="best-practices-11"><a class="header" href="#best-practices-11">Best Practices</a></h2>
+<h3 id="security-4"><a class="header" href="#security-4">Security</a></h3>
 <ul>
 <li><strong>Always validate input</strong>: Never trust user-provided public key strings</li>
 <li><strong>Use type safety</strong>: Take advantage of TypeScript/Rust type systems</li>
@@ -13249,13 +12612,13 @@ const instruction = new Instruction({
 <li><strong>Use constants</strong>: Define well-known public keys as constants</li>
 <li><strong>Batch operations</strong>: Process multiple public keys together when possible</li>
 </ul>
-<h3 id="development-1"><a class="header" href="#development-1">Development</a></h3>
+<h3 id="development"><a class="header" href="#development">Development</a></h3>
 <ul>
 <li><strong>Use meaningful names</strong>: Give public key variables descriptive names</li>
 <li><strong>Document usage</strong>: Explain what each public key represents</li>
 <li><strong>Test edge cases</strong>: Test with invalid and edge-case public keys</li>
 </ul>
-<h2 id="examples-1"><a class="header" href="#examples-1">Examples</a></h2>
+<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
 <p>For complete examples using public keys, see:</p>
 <ul>
 <li><strong><a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/helloworld">Hello World</a></strong> - Basic public key usage</li>
@@ -13549,8 +12912,8 @@ const closeInstruction = new Instruction({
   }
 }
 </code></pre>
-<h2 id="best-practices-11"><a class="header" href="#best-practices-11">Best Practices</a></h2>
-<h3 id="security-4"><a class="header" href="#security-4">Security</a></h3>
+<h2 id="best-practices-12"><a class="header" href="#best-practices-12">Best Practices</a></h2>
+<h3 id="security-5"><a class="header" href="#security-5">Security</a></h3>
 <ul>
 <li><strong>Always validate ownership</strong>: Check that accounts are owned by expected programs</li>
 <li><strong>Verify signatures</strong>: Ensure required accounts have signed the transaction</li>
@@ -13564,14 +12927,14 @@ const closeInstruction = new Instruction({
 <li><strong>Cache account data</strong>: Cache frequently accessed account information</li>
 <li><strong>Monitor account changes</strong>: Subscribe to account changes for real-time updates</li>
 </ul>
-<h3 id="development-2"><a class="header" href="#development-2">Development</a></h3>
+<h3 id="development-1"><a class="header" href="#development-1">Development</a></h3>
 <ul>
 <li><strong>Use TypeScript</strong>: Take advantage of type safety for account structures</li>
 <li><strong>Document account layouts</strong>: Clearly document your account data structures</li>
 <li><strong>Test edge cases</strong>: Test with empty accounts, invalid data, etc.</li>
 <li><strong>Handle errors gracefully</strong>: Provide meaningful error messages</li>
 </ul>
-<h2 id="examples-2"><a class="header" href="#examples-2">Examples</a></h2>
+<h2 id="examples-1"><a class="header" href="#examples-1">Examples</a></h2>
 <p>For complete examples working with accounts, see:</p>
 <ul>
 <li><strong><a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/account">Account Management</a></strong> - Creating and managing accounts</li>
@@ -13856,8 +13219,8 @@ function validateInstruction(instruction: Instruction): void {
   }
 }
 </code></pre>
-<h2 id="best-practices-12"><a class="header" href="#best-practices-12">Best Practices</a></h2>
-<h3 id="security-5"><a class="header" href="#security-5">Security</a></h3>
+<h2 id="best-practices-13"><a class="header" href="#best-practices-13">Best Practices</a></h2>
+<h3 id="security-6"><a class="header" href="#security-6">Security</a></h3>
 <ul>
 <li><strong>Validate all accounts</strong>: Ensure accounts have correct permissions</li>
 <li><strong>Check program ownership</strong>: Verify accounts are owned by expected programs</li>
@@ -13871,7 +13234,7 @@ function validateInstruction(instruction: Instruction): void {
 <li><strong>Cache program IDs</strong>: Store frequently used program IDs as constants</li>
 <li><strong>Optimize instruction data</strong>: Use efficient serialization formats</li>
 </ul>
-<h3 id="development-3"><a class="header" href="#development-3">Development</a></h3>
+<h3 id="development-2"><a class="header" href="#development-2">Development</a></h3>
 <ul>
 <li><strong>Create instruction builders</strong>: Build helper functions for common operations</li>
 <li><strong>Document instruction formats</strong>: Clearly document expected data formats</li>
@@ -13922,7 +13285,7 @@ function createTokenTransferInstruction(
   });
 }
 </code></pre>
-<h2 id="examples-3"><a class="header" href="#examples-3">Examples</a></h2>
+<h2 id="examples-2"><a class="header" href="#examples-2">Examples</a></h2>
 <p>For complete examples using instructions and messages, see:</p>
 <ul>
 <li><strong><a href="https://github.com/Arch-Network/arch-examples/tree/main/examples/helloworld">Hello World</a></strong> - Basic instruction usage</li>
@@ -13981,10 +13344,10 @@ pub struct Signature(pub Vec&lt;u8&gt;);</code></pre>
 <li><a href="guides/arch-cli-reference.html#orchestration-commands">Orchestration Commands</a></li>
 <li><a href="guides/arch-cli-reference.html#error-reference">Error Reference</a></li>
 </ul>
-<h2 id="global-options-1"><a class="header" href="#global-options-1">Global Options</a></h2>
+<h2 id="global-options"><a class="header" href="#global-options">Global Options</a></h2>
 <p>These options can be used with any command:</p>
 <pre><code class="language-bash"># Specify network mode
-arch-cli --network-mode devnet|testnet|mainnet
+arch-cli --network-mode devnet|testnet|mainnet|localnet
 
 # Use configuration profile
 arch-cli --profile &lt;PROFILE_NAME&gt;
@@ -13995,6 +13358,13 @@ arch-cli --help
 # Show version
 arch-cli --version
 </code></pre>
+<p><strong>Network Modes:</strong></p>
+<ul>
+<li><code>devnet</code>: Development network (default)</li>
+<li><code>testnet</code>: Test network</li>
+<li><code>mainnet</code>: Production network</li>
+<li><code>localnet</code>: Local development network</li>
+</ul>
 <h2 id="configuration-management"><a class="header" href="#configuration-management">Configuration Management</a></h2>
 <h3 id="create-profile"><a class="header" href="#create-profile">Create Profile</a></h3>
 <p>Create a new configuration profile for connecting to Bitcoin and Arch Network nodes:</p>
@@ -14026,6 +13396,10 @@ arch-cli --version
 <p>List all available configuration profiles:</p>
 <pre><code class="language-bash">arch-cli config list-profiles
 </code></pre>
+<h3 id="show-profile"><a class="header" href="#show-profile">Show Profile</a></h3>
+<p>Display detailed information about a specific profile:</p>
+<pre><code class="language-bash">arch-cli config show-profile &lt;NAME&gt;
+</code></pre>
 <h3 id="update-profile"><a class="header" href="#update-profile">Update Profile</a></h3>
 <p>Update an existing profile’s settings:</p>
 <pre><code class="language-bash">arch-cli config update-profile &lt;NAME&gt; \
@@ -14045,169 +13419,142 @@ arch-cli --version
 <p>Set which profile is used by default:</p>
 <pre><code class="language-bash">arch-cli config set-default-profile &lt;NAME&gt;
 </code></pre>
-<h2 id="validator-management-1"><a class="header" href="#validator-management-1">Validator Management</a></h2>
-<h3 id="start-validator"><a class="header" href="#start-validator">Start Validator</a></h3>
-<p>Start a local validator node:</p>
-<pre><code class="language-bash">arch-cli validator-start [OPTIONS]
-</code></pre>
-<p><strong>Common Options:</strong></p>
-<ul>
-<li><code>--data-dir &lt;PATH&gt;</code>: Data directory for validator</li>
-<li><code>--network-mode &lt;MODE&gt;</code>: Network mode (devnet, testnet, mainnet)</li>
-<li><code>--rpc-bind-ip &lt;IP&gt;</code>: RPC bind IP address</li>
-<li><code>--rpc-bind-port &lt;PORT&gt;</code>: RPC bind port</li>
-<li><code>--titan-endpoint &lt;URL&gt;</code>: Titan HTTP endpoint</li>
-<li><code>--titan-socket-endpoint &lt;HOST:PORT&gt;</code>: Titan TCP endpoint</li>
-<li><code>--max-tx-pool-size &lt;SIZE&gt;</code>: Maximum transaction pool size</li>
-<li><code>--full-snapshot-reccurence &lt;COUNT&gt;</code>: Snapshot frequency</li>
-<li><code>--max-snapshots &lt;COUNT&gt;</code>: Maximum snapshots to keep</li>
-</ul>
-<p><strong>Example:</strong></p>
-<pre><code class="language-bash">arch-cli validator-start \
-    --network-mode testnet \
-    --data-dir ./.arch_data \
-    --rpc-bind-ip 127.0.0.1 \
-    --rpc-bind-port 9002 \
-    --titan-endpoint https://titan-public-http.test.arch.network \
-    --titan-socket-endpoint titan-public-tcp.test.arch.network:3030
-</code></pre>
-<h2 id="account-operations-1"><a class="header" href="#account-operations-1">Account Operations</a></h2>
+<h2 id="account-operations"><a class="header" href="#account-operations">Account Operations</a></h2>
 <h3 id="create-account-1"><a class="header" href="#create-account-1">Create Account</a></h3>
 <p>Create a new account:</p>
-<pre><code class="language-bash">arch-cli account create --keypair-path &lt;PATH&gt; [--airdrop]
+<pre><code class="language-bash">arch-cli account create \
+    --keypair-path &lt;PATH&gt; \
+    --owner &lt;OWNER&gt; \
+    --lamports &lt;LAMPORTS&gt; \
+    --space &lt;SPACE&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path &lt;PATH&gt;</code>: Path to save the generated keypair file</li>
-<li><code>--airdrop</code>: Whether to airdrop 1 ARCH to the new account</li>
+<li><code>--keypair-path</code>: Path to the keypair file</li>
+<li><code>--owner</code>: Public key of the program that will own the account</li>
+<li><code>--lamports</code>: Initial balance in lamports</li>
+<li><code>--space</code>: Account size in bytes</li>
 </ul>
-<p><strong>Example:</strong></p>
-<pre><code class="language-bash">arch-cli account create --keypair-path ./my-account.json --airdrop
-</code></pre>
 <h3 id="fund-account"><a class="header" href="#fund-account">Fund Account</a></h3>
 <p>Fund an existing account using the faucet:</p>
 <pre><code class="language-bash">arch-cli account airdrop \
-    [--keypair-path &lt;PATH&gt; | --account &lt;PUBKEY&gt; | --pubkey &lt;PUBKEY&gt;] \
-    --amount &lt;LAMPORTS&gt;
+    --keypair-path &lt;PATH&gt; \
+    [--lamports &lt;LAMPORTS&gt;]
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path &lt;PATH&gt;</code>: Path to the keypair file to fund</li>
-<li><code>--account &lt;PUBKEY&gt;</code>: Account public key to fund (hex format)</li>
-<li><code>--pubkey &lt;PUBKEY&gt;</code>: Account public key to fund (hex format, alias for –account)</li>
-<li><code>--amount &lt;LAMPORTS&gt;</code>: Amount to airdrop (default: 1,000,000,000)</li>
+<li><code>--keypair-path</code>: Path to the keypair file</li>
+<li><code>--lamports</code>: Amount to airdrop (default: 1000000000 lamports)</li>
 </ul>
-<p><strong>Examples:</strong></p>
-<pre><code class="language-bash"># Fund by keypair file
-arch-cli account airdrop --keypair-path ./my-account.json --amount 1000000000
-
-# Fund by public key
-arch-cli account airdrop --pubkey 02a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943c2b752a68e2a47e247c7 --amount 1000000000
-</code></pre>
 <h3 id="change-account-owner"><a class="header" href="#change-account-owner">Change Account Owner</a></h3>
 <p>Change the owner of an account:</p>
-<pre><code class="language-bash">arch-cli account change-owner &lt;ACCOUNT_ADDRESS&gt; &lt;NEW_OWNER&gt; &lt;PAYER_KEYPAIR&gt;
+<pre><code class="language-bash">arch-cli account change-owner \
+    --keypair-path &lt;PATH&gt; \
+    --account &lt;ACCOUNT&gt; \
+    --new-owner &lt;NEW_OWNER&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Address of the account to change ownership of</li>
-<li><code>&lt;NEW_OWNER&gt;</code>: New owner’s public key</li>
-<li><code>&lt;PAYER_KEYPAIR&gt;</code>: Payer’s keypair path</li>
+<li><code>--keypair-path</code>: Path to the payer’s keypair file</li>
+<li><code>--account</code>: Public key of the account to change</li>
+<li><code>--new-owner</code>: Public key of the new owner</li>
 </ul>
-<h3 id="assign-utxo"><a class="header" href="#assign-utxo">Assign UTXO</a></h3>
+<h3 id="assign-utxos"><a class="header" href="#assign-utxos">Assign UTXOs</a></h3>
 <p>Assign UTXOs to an account:</p>
-<pre><code class="language-bash">arch-cli account assign-utxo &lt;ACCOUNT_PUBKEY&gt;
+<pre><code class="language-bash">arch-cli account assign-utxo \
+    --keypair-path &lt;PATH&gt; \
+    --utxo &lt;UTXO&gt; \
+    --account &lt;ACCOUNT&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;ACCOUNT_PUBKEY&gt;</code>: Public key of the account to assign UTXOs to</li>
+<li><code>--keypair-path</code>: Path to the keypair file</li>
+<li><code>--utxo</code>: UTXO identifier</li>
+<li><code>--account</code>: Public key of the account</li>
 </ul>
-<h2 id="program-deployment-1"><a class="header" href="#program-deployment-1">Program Deployment</a></h2>
+<h2 id="program-deployment"><a class="header" href="#program-deployment">Program Deployment</a></h2>
 <h3 id="deploy-program-1"><a class="header" href="#deploy-program-1">Deploy Program</a></h3>
-<p>Deploy a compiled program to the Arch Network:</p>
-<pre><code class="language-bash">arch-cli deploy [&lt;ELF_PATH&gt;] [--generate-if-missing] [--fund-authority]
+<p>Deploy a compiled program to the network:</p>
+<pre><code class="language-bash">arch-cli deploy &lt;PROGRAM_PATH&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;ELF_PATH&gt;</code> (Optional): Path to the directory containing the ELF file and keypair</li>
-<li><code>--generate-if-missing</code>: Automatically generate program and authority keypair files</li>
-<li><code>--fund-authority</code>: Fund the authority account using the faucet</li>
+<li><code>&lt;PROGRAM_PATH&gt;</code>: Path to the directory containing the compiled program (.so file)</li>
 </ul>
 <p><strong>Example:</strong></p>
-<pre><code class="language-bash">arch-cli deploy ./target/deploy/program.so --generate-if-missing --fund-authority
+<pre><code class="language-bash">arch-cli deploy examples/helloworld/
 </code></pre>
-<h2 id="transaction-operations-1"><a class="header" href="#transaction-operations-1">Transaction Operations</a></h2>
-<h3 id="confirm-transaction"><a class="header" href="#confirm-transaction">Confirm Transaction</a></h3>
-<p>Check the status of a transaction:</p>
-<pre><code class="language-bash">arch-cli tx confirm &lt;TX_ID&gt;
-</code></pre>
-<p><strong>Arguments:</strong></p>
-<ul>
-<li><code>&lt;TX_ID&gt;</code>: Transaction ID to confirm (32-byte hex string)</li>
-</ul>
+<h2 id="transaction-operations"><a class="header" href="#transaction-operations">Transaction Operations</a></h2>
 <h3 id="get-transaction"><a class="header" href="#get-transaction">Get Transaction</a></h3>
-<p>Get transaction details:</p>
-<pre><code class="language-bash">arch-cli tx get &lt;TX_ID&gt;
+<p>Retrieve transaction information:</p>
+<pre><code class="language-bash">arch-cli tx get &lt;SIGNATURE&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;TX_ID&gt;</code>: Transaction ID to retrieve</li>
+<li><code>&lt;SIGNATURE&gt;</code>: Transaction signature</li>
+</ul>
+<h3 id="confirm-transaction"><a class="header" href="#confirm-transaction">Confirm Transaction</a></h3>
+<p>Check if a transaction is confirmed:</p>
+<pre><code class="language-bash">arch-cli tx confirm &lt;SIGNATURE&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;SIGNATURE&gt;</code>: Transaction signature</li>
 </ul>
 <h3 id="log-program-messages"><a class="header" href="#log-program-messages">Log Program Messages</a></h3>
-<p>View program messages from a transaction:</p>
-<pre><code class="language-bash">arch-cli tx log-program-messages &lt;TX_ID&gt;
+<p>Log program messages for a transaction:</p>
+<pre><code class="language-bash">arch-cli tx log-program-messages &lt;SIGNATURE&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;TX_ID&gt;</code>: Transaction ID to log</li>
+<li><code>&lt;SIGNATURE&gt;</code>: Transaction signature</li>
 </ul>
-<h2 id="block-and-network-info-1"><a class="header" href="#block-and-network-info-1">Block and Network Info</a></h2>
+<h2 id="block-and-network-info"><a class="header" href="#block-and-network-info">Block and Network Info</a></h2>
 <h3 id="get-block"><a class="header" href="#get-block">Get Block</a></h3>
-<p>Retrieve information about a specific block:</p>
-<pre><code class="language-bash">arch-cli get-block &lt;BLOCK_HASH&gt;
+<p>Retrieve block information:</p>
+<pre><code class="language-bash">arch-cli get-block &lt;SLOT&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;BLOCK_HASH&gt;</code>: Block hash to retrieve (32-byte hex string)</li>
+<li><code>&lt;SLOT&gt;</code>: Block slot number</li>
 </ul>
 <h3 id="get-block-height"><a class="header" href="#get-block-height">Get Block Height</a></h3>
 <p>Get the current block height:</p>
 <pre><code class="language-bash">arch-cli get-block-height
 </code></pre>
 <h3 id="get-group-key"><a class="header" href="#get-group-key">Get Group Key</a></h3>
-<p>Fetch the network’s group verifying key:</p>
+<p>Fetch the network’s account address:</p>
 <pre><code class="language-bash">arch-cli get-group-key &lt;PUBKEY&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;PUBKEY&gt;</code>: Public key (not used in current implementation but kept for compatibility)</li>
+<li><code>&lt;PUBKEY&gt;</code>: Public key to use for group key calculation</li>
 </ul>
-<h3 id="show-accountprogram"><a class="header" href="#show-accountprogram">Show Account/Program</a></h3>
-<p>Display information about an account or program:</p>
-<pre><code class="language-bash">arch-cli show &lt;ADDRESS&gt;
+<h3 id="show-account"><a class="header" href="#show-account">Show Account</a></h3>
+<p>Display account information:</p>
+<pre><code class="language-bash">arch-cli show &lt;ACCOUNT_ADDRESS&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;ADDRESS&gt;</code>: Address of the account or program to show</li>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the account to display</li>
 </ul>
-<h2 id="apl-token-operations-1"><a class="header" href="#apl-token-operations-1">APL Token Operations</a></h2>
-<h3 id="token-mint-management"><a class="header" href="#token-mint-management">Token Mint Management</a></h3>
+<h2 id="apl-token-operations"><a class="header" href="#apl-token-operations">APL Token Operations</a></h2>
+<p>The Arch CLI provides comprehensive token management capabilities for APL (Arch Program Library) tokens. All token commands support the same global options as other CLI commands.</p>
+<h3 id="mint-management"><a class="header" href="#mint-management">Mint Management</a></h3>
 <h4 id="create-mint"><a class="header" href="#create-mint">Create Mint</a></h4>
 <p>Create a new token mint:</p>
 <pre><code class="language-bash">arch-cli token create-mint \
-    --decimals &lt;DECIMALS&gt; \
-    --mint-authority &lt;PATH&gt; \
     --keypair-path &lt;PATH&gt; \
-    [--freeze-authority &lt;PATH&gt;] \
-    [--mint-keypair-path &lt;PATH&gt;]
+    --decimals &lt;DECIMALS&gt; \
+    [--freeze-authority &lt;AUTHORITY&gt;] \
+    [--mint-authority &lt;AUTHORITY&gt;]
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--decimals &lt;DECIMALS&gt;</code>: Number of decimal places (0-9)</li>
-<li><code>--mint-authority &lt;PATH&gt;</code>: Keypair path for mint authority</li>
-<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
-<li><code>--freeze-authority &lt;PATH&gt;</code>: Optional keypair path for freeze authority</li>
-<li><code>--mint-keypair-path &lt;PATH&gt;</code>: Optional keypair path for the mint account</li>
+<li><code>--keypair-path</code>: Path to the keypair file for the mint</li>
+<li><code>--decimals</code>: Number of decimal places (0-9)</li>
+<li><code>--freeze-authority</code>: Public key of the freeze authority (optional)</li>
+<li><code>--mint-authority</code>: Public key of the mint authority (optional)</li>
 </ul>
 <h4 id="show-mint"><a class="header" href="#show-mint">Show Mint</a></h4>
 <p>Display mint information:</p>
@@ -14215,23 +13562,23 @@ arch-cli account airdrop --pubkey 02a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;MINT_ADDRESS&gt;</code>: Public key of the mint to display</li>
+<li><code>&lt;MINT_ADDRESS&gt;</code>: Public key of the mint</li>
 </ul>
-<h3 id="token-account-management"><a class="header" href="#token-account-management">Token Account Management</a></h3>
-<h4 id="create-token-account"><a class="header" href="#create-token-account">Create Token Account</a></h4>
+<h3 id="account-management-5"><a class="header" href="#account-management-5">Account Management</a></h3>
+<h4 id="create-account-2"><a class="header" href="#create-account-2">Create Account</a></h4>
 <p>Create a new token account:</p>
 <pre><code class="language-bash">arch-cli token create-account \
+    --keypair-path &lt;PATH&gt; \
     --mint &lt;MINT&gt; \
-    --owner &lt;PATH&gt; \
-    --keypair-path &lt;PATH&gt;
+    [--owner &lt;OWNER&gt;]
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--mint &lt;MINT&gt;</code>: Public key of the mint</li>
-<li><code>--owner &lt;PATH&gt;</code>: Keypair path for account owner</li>
-<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
+<li><code>--keypair-path</code>: Path to the keypair file for the account</li>
+<li><code>--mint</code>: Public key of the mint</li>
+<li><code>--owner</code>: Public key of the account owner (defaults to keypair owner)</li>
 </ul>
-<h4 id="show-token-account"><a class="header" href="#show-token-account">Show Token Account</a></h4>
+<h4 id="show-account-1"><a class="header" href="#show-account-1">Show Account</a></h4>
 <p>Display token account information:</p>
 <pre><code class="language-bash">arch-cli token show-account &lt;ACCOUNT_ADDRESS&gt;
 </code></pre>
@@ -14239,99 +13586,153 @@ arch-cli account airdrop --pubkey 02a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943
 <ul>
 <li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the token account</li>
 </ul>
-<h3 id="basic-token-operations"><a class="header" href="#basic-token-operations">Basic Token Operations</a></h3>
+<h3 id="token-operations-1"><a class="header" href="#token-operations-1">Token Operations</a></h3>
 <h4 id="mint-tokens"><a class="header" href="#mint-tokens">Mint Tokens</a></h4>
 <p>Mint tokens to an account:</p>
-<pre><code class="language-bash">arch-cli token mint &lt;MINT_ADDRESS&gt; &lt;AMOUNT&gt; \
-    --authority &lt;PATH&gt; \
+<pre><code class="language-bash">arch-cli token mint \
     --keypair-path &lt;PATH&gt; \
-    [--account-address &lt;ADDRESS&gt;] \
-    [--auto-create-ata] \
-    [--multisig &lt;ADDRESS&gt;] \
-    [--signers &lt;PATHS&gt;]
+    --mint &lt;MINT&gt; \
+    --to &lt;ACCOUNT&gt; \
+    --amount &lt;AMOUNT&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;MINT_ADDRESS&gt;</code>: Public key of the mint</li>
-<li><code>&lt;AMOUNT&gt;</code>: Amount to mint (raw amount)</li>
-<li><code>--authority &lt;PATH&gt;</code>: Keypair path for mint authority</li>
-<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
-<li><code>--account-address &lt;ADDRESS&gt;</code>: Public key of destination account (optional)</li>
-<li><code>--auto-create-ata</code>: Whether to auto-create Associated Token Account</li>
-<li><code>--multisig &lt;ADDRESS&gt;</code>: Multisig authority address</li>
-<li><code>--signers &lt;PATHS&gt;</code>: Keypair paths for multisig signers</li>
+<li><code>--keypair-path</code>: Path to the mint authority’s keypair file</li>
+<li><code>--mint</code>: Public key of the mint</li>
+<li><code>--to</code>: Public key of the destination account</li>
+<li><code>--amount</code>: Amount to mint (in raw units)</li>
 </ul>
 <h4 id="transfer-tokens"><a class="header" href="#transfer-tokens">Transfer Tokens</a></h4>
 <p>Transfer tokens between accounts:</p>
-<pre><code class="language-bash">arch-cli token transfer &lt;SOURCE_ACCOUNT&gt; &lt;DESTINATION_ACCOUNT&gt; &lt;AMOUNT&gt; \
-    --owner &lt;PATH&gt; \
+<pre><code class="language-bash">arch-cli token transfer \
     --keypair-path &lt;PATH&gt; \
-    [--multisig &lt;ADDRESS&gt;] \
-    [--signers &lt;PATHS&gt;]
+    --mint &lt;MINT&gt; \
+    --from &lt;FROM_ACCOUNT&gt; \
+    --to &lt;TO_ACCOUNT&gt; \
+    --amount &lt;AMOUNT&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;SOURCE_ACCOUNT&gt;</code>: Public key of source account</li>
-<li><code>&lt;DESTINATION_ACCOUNT&gt;</code>: Public key of destination account</li>
-<li><code>&lt;AMOUNT&gt;</code>: Amount to transfer (raw amount)</li>
-<li><code>--owner &lt;PATH&gt;</code>: Keypair path for account owner</li>
-<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
-<li><code>--multisig &lt;ADDRESS&gt;</code>: Multisig owner address</li>
-<li><code>--signers &lt;PATHS&gt;</code>: Keypair paths for multisig signers</li>
+<li><code>--keypair-path</code>: Path to the owner’s keypair file</li>
+<li><code>--mint</code>: Public key of the mint</li>
+<li><code>--from</code>: Public key of the source account</li>
+<li><code>--to</code>: Public key of the destination account</li>
+<li><code>--amount</code>: Amount to transfer (in raw units)</li>
 </ul>
 <h4 id="burn-tokens"><a class="header" href="#burn-tokens">Burn Tokens</a></h4>
 <p>Burn tokens from an account:</p>
-<pre><code class="language-bash">arch-cli token burn &lt;ACCOUNT_ADDRESS&gt; &lt;AMOUNT&gt; \
-    --owner &lt;PATH&gt; \
+<pre><code class="language-bash">arch-cli token burn \
     --keypair-path &lt;PATH&gt; \
-    [--multisig &lt;ADDRESS&gt;] \
-    [--signers &lt;PATHS&gt;]
+    --mint &lt;MINT&gt; \
+    --from &lt;ACCOUNT&gt; \
+    --amount &lt;AMOUNT&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the account to burn from</li>
-<li><code>&lt;AMOUNT&gt;</code>: Amount to burn (raw amount)</li>
-<li><code>--owner &lt;PATH&gt;</code>: Keypair path for account owner</li>
-<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
-<li><code>--multisig &lt;ADDRESS&gt;</code>: Multisig owner address</li>
-<li><code>--signers &lt;PATHS&gt;</code>: Keypair paths for multisig signers</li>
+<li><code>--keypair-path</code>: Path to the owner’s keypair file</li>
+<li><code>--mint</code>: Public key of the mint</li>
+<li><code>--from</code>: Public key of the account to burn from</li>
+<li><code>--amount</code>: Amount to burn (in raw units)</li>
 </ul>
-<h3 id="advanced-token-features"><a class="header" href="#advanced-token-features">Advanced Token Features</a></h3>
-<h4 id="multisig-operations"><a class="header" href="#multisig-operations">Multisig Operations</a></h4>
-<h5 id="create-multisig"><a class="header" href="#create-multisig">Create Multisig</a></h5>
+<h3 id="delegation-1"><a class="header" href="#delegation-1">Delegation</a></h3>
+<h4 id="approve-delegate"><a class="header" href="#approve-delegate">Approve Delegate</a></h4>
+<p>Approve a delegate for spending:</p>
+<pre><code class="language-bash">arch-cli token approve \
+    --keypair-path &lt;PATH&gt; \
+    --mint &lt;MINT&gt; \
+    --from &lt;ACCOUNT&gt; \
+    --delegate &lt;DELEGATE&gt; \
+    --amount &lt;AMOUNT&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>--keypair-path</code>: Path to the owner’s keypair file</li>
+<li><code>--mint</code>: Public key of the mint</li>
+<li><code>--from</code>: Public key of the source account</li>
+<li><code>--delegate</code>: Public key of the delegate</li>
+<li><code>--amount</code>: Amount the delegate can spend</li>
+</ul>
+<h4 id="revoke-delegate"><a class="header" href="#revoke-delegate">Revoke Delegate</a></h4>
+<p>Revoke delegate authority:</p>
+<pre><code class="language-bash">arch-cli token revoke \
+    --keypair-path &lt;PATH&gt; \
+    --mint &lt;MINT&gt; \
+    --from &lt;ACCOUNT&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>--keypair-path</code>: Path to the owner’s keypair file</li>
+<li><code>--mint</code>: Public key of the mint</li>
+<li><code>--from</code>: Public key of the account</li>
+</ul>
+<h3 id="account-control-1"><a class="header" href="#account-control-1">Account Control</a></h3>
+<h4 id="freeze-account"><a class="header" href="#freeze-account">Freeze Account</a></h4>
+<p>Freeze a token account:</p>
+<pre><code class="language-bash">arch-cli token freeze-account \
+    --keypair-path &lt;PATH&gt; \
+    --mint &lt;MINT&gt; \
+    --account &lt;ACCOUNT&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>--keypair-path</code>: Path to the freeze authority’s keypair file</li>
+<li><code>--mint</code>: Public key of the mint</li>
+<li><code>--account</code>: Public key of the account to freeze</li>
+</ul>
+<h4 id="thaw-account"><a class="header" href="#thaw-account">Thaw Account</a></h4>
+<p>Thaw a frozen account:</p>
+<pre><code class="language-bash">arch-cli token thaw-account \
+    --keypair-path &lt;PATH&gt; \
+    --mint &lt;MINT&gt; \
+    --account &lt;ACCOUNT&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>--keypair-path</code>: Path to the freeze authority’s keypair file</li>
+<li><code>--mint</code>: Public key of the mint</li>
+<li><code>--account</code>: Public key of the account to thaw</li>
+</ul>
+<h3 id="multisignature-operations-1"><a class="header" href="#multisignature-operations-1">Multisignature Operations</a></h3>
+<h4 id="create-multisig"><a class="header" href="#create-multisig">Create Multisig</a></h4>
 <p>Create a multisignature authority:</p>
-<pre><code class="language-bash">arch-cli token create-multisig &lt;M&gt; --signers &lt;PATHS&gt; --keypair-path &lt;PATH&gt;
+<pre><code class="language-bash">arch-cli token create-multisig \
+    --keypair-path &lt;PATH&gt; \
+    --signers &lt;SIGNERS&gt; \
+    --threshold &lt;THRESHOLD&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;M&gt;</code>: Number of required signers</li>
-<li><code>--signers &lt;PATHS&gt;</code>: Keypair paths for signers</li>
-<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
+<li><code>--keypair-path</code>: Path to the keypair file for the multisig account</li>
+<li><code>--signers</code>: Comma-separated list of public keys</li>
+<li><code>--threshold</code>: Number of signatures required</li>
 </ul>
-<h5 id="sign-multisig-transaction"><a class="header" href="#sign-multisig-transaction">Sign Multisig Transaction</a></h5>
+<h4 id="sign-multisig"><a class="header" href="#sign-multisig">Sign Multisig</a></h4>
 <p>Sign a transaction with multisig:</p>
-<pre><code class="language-bash">arch-cli token multisig-sign &lt;MULTISIG_ADDRESS&gt; &lt;TRANSACTION&gt; --keypair-path &lt;PATH&gt;
+<pre><code class="language-bash">arch-cli token multisig-sign \
+    --keypair-path &lt;PATH&gt; \
+    --multisig &lt;MULTISIG&gt; \
+    --transaction &lt;TRANSACTION&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;MULTISIG_ADDRESS&gt;</code>: Public key of the multisig account</li>
-<li><code>&lt;TRANSACTION&gt;</code>: Transaction to sign (base64 encoded)</li>
-<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for the signer</li>
+<li><code>--keypair-path</code>: Path to the signer’s keypair file</li>
+<li><code>--multisig</code>: Public key of the multisig account</li>
+<li><code>--transaction</code>: Transaction to sign</li>
 </ul>
-<h5 id="execute-multisig-transaction"><a class="header" href="#execute-multisig-transaction">Execute Multisig Transaction</a></h5>
+<h4 id="execute-multisig"><a class="header" href="#execute-multisig">Execute Multisig</a></h4>
 <p>Execute a signed multisig transaction:</p>
-<pre><code class="language-bash">arch-cli token multisig-execute &lt;MULTISIG_ADDRESS&gt; &lt;TRANSACTION&gt; \
-    --signers &lt;PATHS&gt; \
-    --keypair-path &lt;PATH&gt;
+<pre><code class="language-bash">arch-cli token multisig-execute \
+    --keypair-path &lt;PATH&gt; \
+    --multisig &lt;MULTISIG&gt; \
+    --transaction &lt;TRANSACTION&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;MULTISIG_ADDRESS&gt;</code>: Public key of the multisig account</li>
-<li><code>&lt;TRANSACTION&gt;</code>: Transaction to execute (base64 encoded)</li>
-<li><code>--signers &lt;PATHS&gt;</code>: Keypair paths for signers</li>
-<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
+<li><code>--keypair-path</code>: Path to the executor’s keypair file</li>
+<li><code>--multisig</code>: Public key of the multisig account</li>
+<li><code>--transaction</code>: Signed transaction to execute</li>
 </ul>
-<h5 id="show-multisig"><a class="header" href="#show-multisig">Show Multisig</a></h5>
+<h4 id="show-multisig"><a class="header" href="#show-multisig">Show Multisig</a></h4>
 <p>Display multisig account information:</p>
 <pre><code class="language-bash">arch-cli token multisig-show &lt;MULTISIG_ADDRESS&gt;
 </code></pre>
@@ -14339,42 +13740,8 @@ arch-cli account airdrop --pubkey 02a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943
 <ul>
 <li><code>&lt;MULTISIG_ADDRESS&gt;</code>: Public key of the multisig account</li>
 </ul>
-<h4 id="authority-management"><a class="header" href="#authority-management">Authority Management</a></h4>
-<h5 id="approve-delegate"><a class="header" href="#approve-delegate">Approve Delegate</a></h5>
-<p>Approve a delegate for spending:</p>
-<pre><code class="language-bash">arch-cli token approve &lt;ACCOUNT_ADDRESS&gt; &lt;DELEGATE_ADDRESS&gt; &lt;AMOUNT&gt; --owner &lt;PATH&gt;
-</code></pre>
-<p><strong>Arguments:</strong></p>
-<ul>
-<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the account to approve</li>
-<li><code>&lt;DELEGATE_ADDRESS&gt;</code>: Public key of the delegate</li>
-<li><code>&lt;AMOUNT&gt;</code>: Amount to approve</li>
-<li><code>--owner &lt;PATH&gt;</code>: Keypair path for account owner</li>
-</ul>
-<h5 id="revoke-delegate"><a class="header" href="#revoke-delegate">Revoke Delegate</a></h5>
-<p>Revoke delegate authority:</p>
-<pre><code class="language-bash">arch-cli token revoke &lt;ACCOUNT_ADDRESS&gt; --owner &lt;PATH&gt;
-</code></pre>
-<p><strong>Arguments:</strong></p>
-<ul>
-<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the account to revoke</li>
-<li><code>--owner &lt;PATH&gt;</code>: Keypair path for account owner</li>
-</ul>
-<h5 id="freezethaw-account"><a class="header" href="#freezethaw-account">Freeze/Thaw Account</a></h5>
-<p>Freeze or thaw a token account:</p>
-<pre><code class="language-bash"># Freeze account
-arch-cli token freeze-account &lt;ACCOUNT_ADDRESS&gt; --authority &lt;PATH&gt;
-
-# Thaw account
-arch-cli token thaw-account &lt;ACCOUNT_ADDRESS&gt; --authority &lt;PATH&gt;
-</code></pre>
-<p><strong>Arguments:</strong></p>
-<ul>
-<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the account to freeze/thaw</li>
-<li><code>--authority &lt;PATH&gt;</code>: Keypair path for freeze authority</li>
-</ul>
-<h4 id="utility-commands"><a class="header" href="#utility-commands">Utility Commands</a></h4>
-<h5 id="check-balance"><a class="header" href="#check-balance">Check Balance</a></h5>
+<h3 id="utility-commands-1"><a class="header" href="#utility-commands-1">Utility Commands</a></h3>
+<h4 id="balance"><a class="header" href="#balance">Balance</a></h4>
 <p>Display token balance:</p>
 <pre><code class="language-bash">arch-cli token balance &lt;ACCOUNT_ADDRESS&gt;
 </code></pre>
@@ -14382,7 +13749,7 @@ arch-cli token thaw-account &lt;ACCOUNT_ADDRESS&gt; --authority &lt;PATH&gt;
 <ul>
 <li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the token account</li>
 </ul>
-<h5 id="check-supply"><a class="header" href="#check-supply">Check Supply</a></h5>
+<h4 id="supply"><a class="header" href="#supply">Supply</a></h4>
 <p>Display mint supply:</p>
 <pre><code class="language-bash">arch-cli token supply &lt;MINT_ADDRESS&gt;
 </code></pre>
@@ -14390,7 +13757,7 @@ arch-cli token thaw-account &lt;ACCOUNT_ADDRESS&gt; --authority &lt;PATH&gt;
 <ul>
 <li><code>&lt;MINT_ADDRESS&gt;</code>: Public key of the mint</li>
 </ul>
-<h5 id="list-accounts"><a class="header" href="#list-accounts">List Accounts</a></h5>
+<h4 id="list-accounts"><a class="header" href="#list-accounts">List Accounts</a></h4>
 <p>List token accounts for a mint:</p>
 <pre><code class="language-bash">arch-cli token accounts &lt;MINT_ADDRESS&gt;
 </code></pre>
@@ -14398,136 +13765,145 @@ arch-cli token thaw-account &lt;ACCOUNT_ADDRESS&gt; --authority &lt;PATH&gt;
 <ul>
 <li><code>&lt;MINT_ADDRESS&gt;</code>: Public key of the mint</li>
 </ul>
-<h5 id="list-mints"><a class="header" href="#list-mints">List Mints</a></h5>
+<h4 id="list-mints"><a class="header" href="#list-mints">List Mints</a></h4>
 <p>List all mints:</p>
 <pre><code class="language-bash">arch-cli token mints
 </code></pre>
-<h5 id="amount-conversion"><a class="header" href="#amount-conversion">Amount Conversion</a></h5>
+<h4 id="amount-conversion"><a class="header" href="#amount-conversion">Amount Conversion</a></h4>
 <p>Convert between raw and UI amounts:</p>
 <pre><code class="language-bash"># Convert raw amount to UI format
-arch-cli token amount-to-ui &lt;MINT_ADDRESS&gt; &lt;AMOUNT&gt;
+arch-cli token amount-to-ui &lt;MINT_ADDRESS&gt; &lt;RAW_AMOUNT&gt;
 
 # Convert UI amount to raw format
 arch-cli token ui-to-amount &lt;MINT_ADDRESS&gt; &lt;UI_AMOUNT&gt;
 </code></pre>
-<p><strong>Arguments:</strong></p>
-<ul>
-<li><code>&lt;MINT_ADDRESS&gt;</code>: Public key of the mint</li>
-<li><code>&lt;AMOUNT&gt;</code>: Raw amount to convert</li>
-<li><code>&lt;UI_AMOUNT&gt;</code>: UI amount to convert</li>
-</ul>
+<h3 id="advanced-token-features"><a class="header" href="#advanced-token-features">Advanced Token Features</a></h3>
 <h4 id="checked-operations"><a class="header" href="#checked-operations">Checked Operations</a></h4>
-<p>For operations with decimal verification:</p>
+<p>Perform operations with decimal verification:</p>
 <pre><code class="language-bash"># Transfer with decimal verification
-arch-cli token transfer-checked &lt;SOURCE&gt; &lt;DESTINATION&gt; &lt;AMOUNT&gt; &lt;DECIMALS&gt; --owner &lt;PATH&gt;
+arch-cli token transfer-checked \
+    --keypair-path &lt;PATH&gt; \
+    --mint &lt;MINT&gt; \
+    --from &lt;FROM_ACCOUNT&gt; \
+    --to &lt;TO_ACCOUNT&gt; \
+    --amount &lt;AMOUNT&gt; \
+    --decimals &lt;DECIMALS&gt;
 
 # Approve with decimal verification
-arch-cli token approve-checked &lt;ACCOUNT&gt; &lt;DELEGATE&gt; &lt;AMOUNT&gt; &lt;DECIMALS&gt; --owner &lt;PATH&gt;
+arch-cli token approve-checked \
+    --keypair-path &lt;PATH&gt; \
+    --mint &lt;MINT&gt; \
+    --from &lt;ACCOUNT&gt; \
+    --delegate &lt;DELEGATE&gt; \
+    --amount &lt;AMOUNT&gt; \
+    --decimals &lt;DECIMALS&gt;
 
 # Mint with decimal verification
-arch-cli token mint-to-checked &lt;MINT&gt; &lt;ACCOUNT&gt; &lt;AMOUNT&gt; &lt;DECIMALS&gt; --authority &lt;PATH&gt;
+arch-cli token mint-to-checked \
+    --keypair-path &lt;PATH&gt; \
+    --mint &lt;MINT&gt; \
+    --to &lt;ACCOUNT&gt; \
+    --amount &lt;AMOUNT&gt; \
+    --decimals &lt;DECIMALS&gt;
 
 # Burn with decimal verification
-arch-cli token burn-checked &lt;ACCOUNT&gt; &lt;AMOUNT&gt; &lt;DECIMALS&gt; --owner &lt;PATH&gt;
+arch-cli token burn-checked \
+    --keypair-path &lt;PATH&gt; \
+    --mint &lt;MINT&gt; \
+    --from &lt;ACCOUNT&gt; \
+    --amount &lt;AMOUNT&gt; \
+    --decimals &lt;DECIMALS&gt;
 </code></pre>
 <h4 id="authority-management-1"><a class="header" href="#authority-management-1">Authority Management</a></h4>
-<h5 id="set-authority"><a class="header" href="#set-authority">Set Authority</a></h5>
 <p>Set authority on mint or account:</p>
-<pre><code class="language-bash">arch-cli token set-authority &lt;TARGET_ADDRESS&gt; \
-    --authority-type &lt;TYPE&gt; \
-    --current-authority &lt;PATH&gt; \
-    [--new-authority &lt;ADDRESS&gt;]
+<pre><code class="language-bash">arch-cli token set-authority \
+    --keypair-path &lt;PATH&gt; \
+    --mint &lt;MINT&gt; \
+    --new-authority &lt;NEW_AUTHORITY&gt; \
+    --authority-type &lt;TYPE&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;TARGET_ADDRESS&gt;</code>: Public key of the mint or account</li>
-<li><code>--authority-type &lt;TYPE&gt;</code>: Type of authority to set</li>
-<li><code>--current-authority &lt;PATH&gt;</code>: Keypair path for current authority</li>
-<li><code>--new-authority &lt;ADDRESS&gt;</code>: New authority address (optional, use “none” to disable)</li>
+<li><code>--keypair-path</code>: Path to the current authority’s keypair file</li>
+<li><code>--mint</code>: Public key of the mint or account</li>
+<li><code>--new-authority</code>: Public key of the new authority</li>
+<li><code>--authority-type</code>: Type of authority (mint, freeze, or account)</li>
 </ul>
-<h4 id="account-management-5"><a class="header" href="#account-management-5">Account Management</a></h4>
-<h5 id="close-account"><a class="header" href="#close-account">Close Account</a></h5>
+<h4 id="account-management-6"><a class="header" href="#account-management-6">Account Management</a></h4>
 <p>Close a token account:</p>
-<pre><code class="language-bash">arch-cli token close-account &lt;ACCOUNT_ADDRESS&gt; &lt;DESTINATION_ADDRESS&gt; --owner &lt;PATH&gt;
+<pre><code class="language-bash">arch-cli token close-account \
+    --keypair-path &lt;PATH&gt; \
+    --mint &lt;MINT&gt; \
+    --account &lt;ACCOUNT&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the account to close</li>
-<li><code>&lt;DESTINATION_ADDRESS&gt;</code>: Public key of the destination for remaining SOL</li>
-<li><code>--owner &lt;PATH&gt;</code>: Keypair path for account owner</li>
+<li><code>--keypair-path</code>: Path to the owner’s keypair file</li>
+<li><code>--mint</code>: Public key of the mint</li>
+<li><code>--account</code>: Public key of the account to close</li>
 </ul>
-<h4 id="batch-operations"><a class="header" href="#batch-operations">Batch Operations</a></h4>
-<h5 id="batch-transfer"><a class="header" href="#batch-transfer">Batch Transfer</a></h5>
-<p>Batch transfer tokens:</p>
-<pre><code class="language-bash">arch-cli token batch-transfer &lt;TRANSFERS_FILE&gt; --keypair-path &lt;PATH&gt;
+<h4 id="batch-operations-1"><a class="header" href="#batch-operations-1">Batch Operations</a></h4>
+<p>Perform multiple operations at once:</p>
+<pre><code class="language-bash"># Batch transfer tokens
+arch-cli token batch-transfer \
+    --keypair-path &lt;PATH&gt; \
+    --mint &lt;MINT&gt; \
+    --from &lt;FROM_ACCOUNT&gt; \
+    --transfers &lt;TRANSFERS&gt;
+
+# Batch mint tokens
+arch-cli token batch-mint \
+    --keypair-path &lt;PATH&gt; \
+    --mint &lt;MINT&gt; \
+    --mints &lt;MINTS&gt;
 </code></pre>
-<p><strong>Arguments:</strong></p>
-<ul>
-<li><code>&lt;TRANSFERS_FILE&gt;</code>: JSON file containing transfer operations</li>
-<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
-</ul>
-<h5 id="batch-mint"><a class="header" href="#batch-mint">Batch Mint</a></h5>
-<p>Batch mint tokens:</p>
-<pre><code class="language-bash">arch-cli token batch-mint &lt;MINTS_FILE&gt; --keypair-path &lt;PATH&gt;
-</code></pre>
-<p><strong>Arguments:</strong></p>
-<ul>
-<li><code>&lt;MINTS_FILE&gt;</code>: JSON file containing mint operations</li>
-<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
-</ul>
 <h2 id="orchestration-commands"><a class="header" href="#orchestration-commands">Orchestration Commands</a></h2>
-<h3 id="start-full-environment"><a class="header" href="#start-full-environment">Start Full Environment</a></h3>
-<p>Start the complete local devnet (bitcoind, titan, local_validator):</p>
-<pre><code class="language-bash">arch-cli orchestrate start [OPTIONS]
+<h3 id="start-local-environment"><a class="header" href="#start-local-environment">Start Local Environment</a></h3>
+<p>Start the complete local development environment:</p>
+<pre><code class="language-bash">arch-cli orchestrate start [--local &lt;PATH&gt;] [--no-bitcoind]
 </code></pre>
-<p><strong>Options:</strong></p>
+<p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--local &lt;PATH&gt;</code>: Use local arch-network source code instead of remote image</li>
-<li><code>--force-rebuild</code>: Force rebuild of the local validator Docker image</li>
-<li><code>--rebuild-titan</code>: Force rebuild of the Titan Docker image</li>
-<li><code>--titan-image &lt;IMAGE&gt;</code>: Specify which Titan Docker image to use</li>
-<li><code>--no-bitcoind</code>: Skip starting bitcoind, use profile’s Bitcoin RPC</li>
+<li><code>--local &lt;PATH&gt;</code>: Path to local source code for building images</li>
+<li><code>--no-bitcoind</code>: Skip starting local Bitcoin node (use remote RPC)</li>
 </ul>
 <p><strong>Examples:</strong></p>
-<pre><code class="language-bash"># Start with default images
+<pre><code class="language-bash"># Start with remote Bitcoin RPC
 arch-cli orchestrate start
 
 # Start with local source code
 arch-cli orchestrate start --local "$(pwd)"
 
-# Start with custom Titan image
-arch-cli orchestrate start --titan-image ghcr.io/arch-network/titan:latest
-
-# Start without bitcoind (use profile's Bitcoin RPC)
-arch-cli orchestrate start --no-bitcoind
+# Start without local bitcoind
+arch-cli orchestrate start --local "$(pwd)" --no-bitcoind
 </code></pre>
-<h3 id="stop-environment"><a class="header" href="#stop-environment">Stop Environment</a></h3>
-<p>Stop the local devnet:</p>
+<h3 id="stop-local-environment"><a class="header" href="#stop-local-environment">Stop Local Environment</a></h3>
+<p>Stop all local services:</p>
 <pre><code class="language-bash">arch-cli orchestrate stop
 </code></pre>
-<h3 id="reset-environment"><a class="header" href="#reset-environment">Reset Environment</a></h3>
-<p>Reset the entire environment:</p>
-<pre><code class="language-bash">arch-cli orchestrate reset
-</code></pre>
-<p>This stops all services, removes all Docker volumes, and deletes local data directories.</p>
-<h3 id="fine-grained-control"><a class="header" href="#fine-grained-control">Fine-Grained Control</a></h3>
-<h4 id="validator-only-operations"><a class="header" href="#validator-only-operations">Validator Only Operations</a></h4>
-<pre><code class="language-bash"># Start only the local_validator service
+<h3 id="validator-management"><a class="header" href="#validator-management">Validator Management</a></h3>
+<p>Manage the local validator service:</p>
+<pre><code class="language-bash"># Start only the validator
 arch-cli orchestrate validator-start
 
-# Stop only the local_validator service
+# Stop only the validator
 arch-cli orchestrate validator-stop
 
-# Restart only the local_validator service
+# Restart only the validator
 arch-cli orchestrate validator-restart
 
-# Check validator status
+# Show validator status
 arch-cli orchestrate validator-status
+</code></pre>
+<h3 id="reset-environment"><a class="header" href="#reset-environment">Reset Environment</a></h3>
+<p>Reset the development environment:</p>
+<pre><code class="language-bash"># Reset entire environment
+arch-cli orchestrate reset
 
-# Reset only the local_validator
+# Reset only validator
 arch-cli orchestrate validator-reset
 </code></pre>
-<h4 id="bitcoin-mining"><a class="header" href="#bitcoin-mining">Bitcoin Mining</a></h4>
+<h3 id="bitcoin-mining"><a class="header" href="#bitcoin-mining">Bitcoin Mining</a></h3>
 <p>Mine Bitcoin blocks in regtest mode:</p>
 <pre><code class="language-bash">arch-cli orchestrate mine-blocks [--num-blocks &lt;COUNT&gt;]
 </code></pre>
@@ -14582,22 +13958,22 @@ arch-cli orchestrate mine-blocks --num-blocks 10
 <li><code>Image build failed</code>: Failed to build Docker image from local source</li>
 <li><code>Service startup failed</code>: Failed to start one or more services</li>
 </ul>
-<h2 id="best-practices-13"><a class="header" href="#best-practices-13">Best Practices</a></h2>
-<h3 id="configuration-profiles-1"><a class="header" href="#configuration-profiles-1">Configuration Profiles</a></h3>
+<h2 id="best-practices-14"><a class="header" href="#best-practices-14">Best Practices</a></h2>
+<h3 id="configuration-profiles"><a class="header" href="#configuration-profiles">Configuration Profiles</a></h3>
 <ol>
 <li><strong>Use descriptive names</strong>: Name profiles based on their purpose (e.g., <code>dev-local</code>, <code>testnet-remote</code>)</li>
 <li><strong>Match network modes</strong>: Ensure profile’s Bitcoin network matches your CLI network mode</li>
 <li><strong>Secure credentials</strong>: Store sensitive information in profiles rather than command line</li>
 <li><strong>Environment variables</strong>: Use <code>ARCH_PROFILE</code> for automation scripts</li>
 </ol>
-<h3 id="token-operations-1"><a class="header" href="#token-operations-1">Token Operations</a></h3>
+<h3 id="token-operations-2"><a class="header" href="#token-operations-2">Token Operations</a></h3>
 <ol>
 <li><strong>Verify decimals</strong>: Always use the correct decimal places for your mint</li>
 <li><strong>Check authorities</strong>: Ensure you have the correct authority for operations</li>
 <li><strong>Use multisig</strong>: Implement multisig for high-value operations</li>
 <li><strong>Batch operations</strong>: Use batch commands for multiple similar operations</li>
 </ol>
-<h3 id="development-workflow-1"><a class="header" href="#development-workflow-1">Development Workflow</a></h3>
+<h3 id="development-workflow-2"><a class="header" href="#development-workflow-2">Development Workflow</a></h3>
 <ol>
 <li><strong>Local development</strong>: Use <code>orchestrate start --local</code> for testing local changes</li>
 <li><strong>Profile management</strong>: Create separate profiles for different environments</li>
@@ -14610,8 +13986,8 @@ arch-cli orchestrate mine-blocks --num-blocks 10
 <li><strong>Authority limits</strong>: Limit authority access to only what’s necessary</li>
 <li><strong>Regular updates</strong>: Keep arch-cli and dependencies updated</li>
 </ol>
-<h2 id="troubleshooting-3"><a class="header" href="#troubleshooting-3">Troubleshooting</a></h2>
-<h3 id="common-issues-2"><a class="header" href="#common-issues-2">Common Issues</a></h3>
+<h2 id="troubleshooting-4"><a class="header" href="#troubleshooting-4">Troubleshooting</a></h2>
+<h3 id="common-issues-4"><a class="header" href="#common-issues-4">Common Issues</a></h3>
 <h4 id="validator-wont-start"><a class="header" href="#validator-wont-start">Validator Won’t Start</a></h4>
 <pre><code class="language-bash"># Check if ports are available
 netstat -an | grep 9002
@@ -14642,20 +14018,43 @@ arch-cli config show-profile &lt;NAME&gt;
 # Test profile connection
 arch-cli --profile &lt;NAME&gt; get-block-height
 </code></pre>
-<h3 id="getting-help-2"><a class="header" href="#getting-help-2">Getting Help</a></h3>
+<h3 id="getting-help-4"><a class="header" href="#getting-help-4">Getting Help</a></h3>
 <ul>
 <li><strong>Discord Community</strong>: <a href="https://discord.gg/archnetwork">https://discord.gg/archnetwork</a></li>
 <li><strong>GitHub Issues</strong>: <a href="https://github.com/Arch-Network/arch-node/issues">https://github.com/Arch-Network/arch-node/issues</a></li>
 <li><strong>Documentation</strong>: <a href="https://docs.arch.network">https://docs.arch.network</a></li>
 </ul>
 <h2 id="version-compatibility"><a class="header" href="#version-compatibility">Version Compatibility</a></h2>
-<p>This guide covers arch-cli version 1.85.0 and later. For older versions, please refer to the appropriate release documentation.</p>
+<p>This guide covers arch-cli version 0.5.5 and later. For older versions, please refer to the appropriate release documentation.</p>
 <p><strong>Minimum Requirements:</strong></p>
 <ul>
 <li>Rust: 1.84.1+</li>
 <li>Solana CLI: 2.2.14+</li>
 <li>Docker: 20.10+ (for orchestration features)</li>
 <li>OS: Linux, macOS, or Windows (WSL2)</li>
+</ul>
+<h2 id="quick-reference-1"><a class="header" href="#quick-reference-1">Quick Reference</a></h2>
+<h3 id="common-commands"><a class="header" href="#common-commands">Common Commands</a></h3>
+<pre><code class="language-bash"># Create and configure profile
+arch-cli config create-profile dev --bitcoin-node-endpoint http://127.0.0.1:18443 --bitcoin-node-username bitcoin --bitcoin-node-password password --bitcoin-network regtest --arch-node-url http://localhost:9002
+
+# Start local environment
+arch-cli orchestrate start --local "$(pwd)"
+
+# Create token mint
+arch-cli token create-mint --keypair-path ~/my-keypair.json --decimals 6
+
+# Deploy program
+arch-cli deploy examples/helloworld/
+
+# Check account
+arch-cli show &lt;ACCOUNT_ADDRESS&gt;
+</code></pre>
+<h3 id="environment-variables"><a class="header" href="#environment-variables">Environment Variables</a></h3>
+<ul>
+<li><code>ARCH_PROFILE</code>: Set default profile</li>
+<li><code>NETWORK_MODE</code>: Set default network mode</li>
+<li><code>PUBKEY</code>: Set default public key for some commands</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="rpc-api-reference"><a class="header" href="#rpc-api-reference">RPC API Reference</a></h1>
 <p>The Arch Network provides a comprehensive JSON-RPC API for interacting with validator nodes. This API allows you to:</p>
@@ -14694,7 +14093,7 @@ arch-cli --profile &lt;NAME&gt; get-block-height
 }
 </code></pre>
 <h2 id="available-methods"><a class="header" href="#available-methods">Available Methods</a></h2>
-<h3 id="account-operations-2"><a class="header" href="#account-operations-2">Account Operations</a></h3>
+<h3 id="account-operations-1"><a class="header" href="#account-operations-1">Account Operations</a></h3>
 <ul>
 <li><a href="rpc/rpc.html#read_account_info"><code>read_account_info</code></a> - Get account information</li>
 <li><a href="rpc/rpc.html#get_account_address"><code>get_account_address</code></a> - Get Bitcoin address for account</li>
@@ -14703,7 +14102,7 @@ arch-cli --profile &lt;NAME&gt; get-block-height
 <li><a href="rpc/rpc.html#request_airdrop"><code>request_airdrop</code></a> - Request airdrop of lamports (dev networks only)</li>
 <li><a href="rpc/rpc.html#create_account_with_faucet"><code>create_account_with_faucet</code></a> - Create and fund account with faucet (dev networks only)</li>
 </ul>
-<h3 id="transaction-operations-2"><a class="header" href="#transaction-operations-2">Transaction Operations</a></h3>
+<h3 id="transaction-operations-1"><a class="header" href="#transaction-operations-1">Transaction Operations</a></h3>
 <ul>
 <li><a href="rpc/rpc.html#send_transaction"><code>send_transaction</code></a> - Submit a single transaction</li>
 <li><a href="rpc/rpc.html#send_transactions"><code>send_transactions</code></a> - Submit multiple transactions</li>
@@ -14736,7 +14135,7 @@ arch-cli --profile &lt;NAME&gt; get-block-height
 <li><a href="rpc/rpc.html#get_all_accounts"><code>get_all_accounts</code></a> - Get all account public keys</li>
 </ul>
 <hr />
-<h2 id="account-operations-3"><a class="header" href="#account-operations-3">Account Operations</a></h2>
+<h2 id="account-operations-2"><a class="header" href="#account-operations-2">Account Operations</a></h2>
 <h3 id="read_account_info"><a class="header" href="#read_account_info">read_account_info</a></h3>
 <p>Retrieves information for a specified account.</p>
 <p><strong>Parameters:</strong></p>
@@ -14853,7 +14252,7 @@ arch-cli --profile &lt;NAME&gt; get-block-height
     ]
 }' http://localhost:9002/
 </code></pre>
-<h2 id="transaction-operations-3"><a class="header" href="#transaction-operations-3">Transaction Operations</a></h2>
+<h2 id="transaction-operations-2"><a class="header" href="#transaction-operations-2">Transaction Operations</a></h2>
 <h3 id="send_transaction"><a class="header" href="#send_transaction">send_transaction</a></h3>
 <p>Submits a single transaction to the network.</p>
 <p><strong>Parameters:</strong></p>
@@ -15409,7 +14808,7 @@ pub const MIN_ACCOUNT_LAMPORTS: u64 = 1024;
 // Maximum permitted data length for accounts
 pub const MAX_PERMITTED_DATA_LENGTH: usize = 10 * 1024 * 1024; // 10MB
 <span class="boring">}</span></code></pre></pre>
-<h2 id="best-practices-14"><a class="header" href="#best-practices-14">Best Practices</a></h2>
+<h2 id="best-practices-15"><a class="header" href="#best-practices-15">Best Practices</a></h2>
 <h3 id="account-creation"><a class="header" href="#account-creation">Account Creation</a></h3>
 <ol>
 <li><strong>Always fund with sufficient lamports</strong>: Accounts need at least <code>MIN_ACCOUNT_LAMPORTS</code> to be created</li>
@@ -15488,9 +14887,9 @@ let instruction = Instruction {
 );</code></pre>
 <!-- Internal -->
 <!-- External -->
-<div style="break-before: page; page-break-before: always;"></div><h1 id="troubleshooting-4"><a class="header" href="#troubleshooting-4">Troubleshooting</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="troubleshooting-5"><a class="header" href="#troubleshooting-5">Troubleshooting</a></h1>
 <p>This guide helps you diagnose and resolve common issues you might encounter while developing on the Arch Network.</p>
-<h2 id="common-issues-3"><a class="header" href="#common-issues-3">Common Issues</a></h2>
+<h2 id="common-issues-5"><a class="header" href="#common-issues-5">Common Issues</a></h2>
 <h3 id="build-errors"><a class="header" href="#build-errors">Build Errors</a></h3>
 <h4 id="1-cargo-build-failures"><a class="header" href="#1-cargo-build-failures">1. Cargo Build Failures</a></h4>
 <pre><code class="language-bash">error: failed to run custom build command for `arch-sdk v0.1.0`
@@ -15638,7 +15037,7 @@ cargo build
 <p>View account data:</p>
 <pre><code class="language-bash">arch-cli account &lt;ACCOUNT_ADDRESS&gt;
 </code></pre>
-<h2 id="best-practices-15"><a class="header" href="#best-practices-15">Best Practices</a></h2>
+<h2 id="best-practices-16"><a class="header" href="#best-practices-16">Best Practices</a></h2>
 <ol>
 <li>
 <p><strong>Development Workflow</strong></p>
@@ -15665,7 +15064,7 @@ cargo build
 </ul>
 </li>
 </ol>
-<h2 id="getting-help-3"><a class="header" href="#getting-help-3">Getting Help</a></h2>
+<h2 id="getting-help-5"><a class="header" href="#getting-help-5">Getting Help</a></h2>
 <p>If you’re still experiencing issues:</p>
 <ol>
 <li>Check the <a href="https://github.com/arch-network/arch-node/issues">GitHub Issues</a></li>
