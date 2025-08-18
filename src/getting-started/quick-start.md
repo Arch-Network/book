@@ -7,17 +7,17 @@ Welcome to Arch Network! Let's get your first program running in under 15 minute
 Before starting, ensure you have the following tools installed:
 
 - **Git** (v2.0 or later)
-- **Rust** (v1.70 or later) - [Install Rust](https://rustup.rs/)
-- **Solana CLI** (v2.0 or later) - [Install Solana](https://docs.solana.com/cli/install-solana-cli-tools)
+- **Rust** (v1.84.1 or later) - [Install Rust](https://rustup.rs/)
+- **Solana CLI** (v2.2.14 or later) - [Install Solana](https://docs.solana.com/cli/install-solana-cli-tools)
 - **Arch Network CLI** - Download from [Arch Network Releases](https://github.com/Arch-Network/arch-node/releases/latest)
 
-> ⚠️ **Important**: Arch Network now requires Solana CLI 2.x. Please ensure you have version 2.0 or later installed.
+> ⚠️ **Important**: Arch Network now requires Solana CLI 2.x. Please ensure you have version 2.2.14 or later installed.
 
 Verify your installation:
 ```bash
 git --version
 rustc --version
-solana --version  # Should show 2.x.x or later
+solana --version  # Should show 2.2.14 or later
 arch-cli --version
 ```
 
@@ -47,7 +47,7 @@ arch-cli validator-start \
     --titan-socket-endpoint titan-public-tcp.test.arch.network:3030
 ```
 
-#### Option B: Local Development (Regtest)
+#### Option B: Local Development (Regtest) - Recommended
 **Prerequisites:**
 - **Docker**: Required on all platforms - [Install Docker](https://docs.docker.com/engine/install/)
 - **Docker Management** (optional but recommended):
@@ -63,6 +63,21 @@ This starts a complete local development environment with:
 - Bitcoin Core (regtest mode)
 - Titan indexer
 - Local validator
+
+**Advanced Options:**
+```bash
+# Use local source code for development
+arch-cli orchestrate start --local "$(pwd)"
+
+# Customize Titan image
+arch-cli orchestrate start --titan-image ghcr.io/arch-network/titan:latest
+
+# Force rebuild images
+arch-cli orchestrate start --force-rebuild --rebuild-titan
+
+# Skip bitcoind and use profile's Bitcoin RPC
+arch-cli orchestrate start --no-bitcoind
+```
 
 #### Option C: Devnet (Full Local Stack)
 For devnet, you'll need to run your own Bitcoin regtest node and Titan indexer:
@@ -116,11 +131,14 @@ arch-cli validator-start \
 Create a new account with the faucet:
 ```bash
 # Create account and fund with 1 ARCH (1 billion lamports)
-arch-cli account create --keypair-path ./my-account.json --airdrop 1000000000
+arch-cli account create --keypair-path ./my-account.json --airdrop
 
 # Or create account first, then fund separately
 arch-cli account create --keypair-path ./my-account.json
 arch-cli account airdrop --keypair-path ./my-account.json --amount 1000000000
+
+# Alternative: Fund by public key
+arch-cli account airdrop --pubkey <PUBLIC_KEY> --amount 1000000000
 ```
 
 ### 4. Build and Deploy Your Program
@@ -157,6 +175,18 @@ arch-cli get-block <BLOCK_HASH>
 
 ## 🔧 Available CLI Commands
 
+### Global Options
+```bash
+# Enable verbose output (default: true)
+arch-cli --verbose
+
+# Specify network mode
+arch-cli --network-mode devnet|testnet|mainnet
+
+# Use configuration profile
+arch-cli --profile <PROFILE_NAME>
+```
+
 ### Validator Management
 ```bash
 # Start local validator
@@ -166,15 +196,49 @@ arch-cli validator-start [OPTIONS]
 arch-cli orchestrate start     # Start bitcoind + titan + validator
 arch-cli orchestrate stop      # Stop all services
 arch-cli orchestrate reset     # Reset entire environment
+
+# Fine-grained control
+arch-cli orchestrate validator-start    # Start only validator
+arch-cli orchestrate validator-stop     # Stop only validator
+arch-cli orchestrate validator-restart  # Restart only validator
+arch-cli orchestrate validator-status   # Check validator status
+arch-cli orchestrate validator-reset    # Reset only validator
+
+# Bitcoin mining (regtest)
+arch-cli orchestrate mine-blocks --num-blocks 10
+```
+
+### Configuration Profiles
+```bash
+# Create configuration profile
+arch-cli config create-profile <NAME> \
+    --bitcoin-node-endpoint <URL> \
+    --bitcoin-node-username <USER> \
+    --bitcoin-node-password <PASS> \
+    --bitcoin-network <mainnet|testnet|regtest> \
+    --arch-node-url <URL>
+
+# List profiles
+arch-cli config list-profiles
+
+# Update profile
+arch-cli config update-profile <NAME> [OPTIONS]
+
+# Delete profile
+arch-cli config delete-profile <NAME>
+
+# Set default profile
+arch-cli config set-default-profile <NAME>
 ```
 
 ### Account Operations
 ```bash
 # Create new account
-arch-cli account create --keypair-path <PATH> [--airdrop <AMOUNT>]
+arch-cli account create --keypair-path <PATH> [--airdrop]
 
 # Fund existing account
 arch-cli account airdrop --keypair-path <PATH> --amount <LAMPORTS>
+arch-cli account airdrop --pubkey <PUBKEY> --amount <LAMPORTS>
 
 # Change account owner
 arch-cli account change-owner <ACCOUNT> <NEW_OWNER> <PAYER_KEYPAIR>
@@ -216,32 +280,38 @@ arch-cli get-block-height
 arch-cli get-group-key <PUBKEY>
 ```
 
-### Configuration Profiles
+### APL Token Operations
 ```bash
-# Create configuration profile
-arch-cli config create-profile <NAME> \
-    --bitcoin-node-endpoint <URL> \
-    --bitcoin-node-username <USER> \
-    --bitcoin-node-password <PASS> \
-    --bitcoin-network <mainnet|testnet|regtest> \
-    --arch-node-url <URL>
+# Token mint management
+arch-cli token create-mint --decimals <DECIMALS> --mint-authority <PATH> --keypair-path <PATH>
+arch-cli token show-mint <MINT_ADDRESS>
 
-# List profiles
-arch-cli config list-profiles
+# Token account management
+arch-cli token create-account --mint <MINT> --owner <PATH> --keypair-path <PATH>
+arch-cli token show-account <ACCOUNT_ADDRESS>
 
-# Update profile
-arch-cli config update-profile <NAME> [OPTIONS]
+# Token operations
+arch-cli token mint <MINT_ADDRESS> <AMOUNT> --authority <PATH> --keypair-path <PATH>
+arch-cli token transfer <SOURCE> <DESTINATION> <AMOUNT> --owner <PATH> --keypair-path <PATH>
+arch-cli token burn <ACCOUNT> <AMOUNT> --owner <PATH> --keypair-path <PATH>
 
-# Delete profile
-arch-cli config delete-profile <NAME>
+# Advanced features
+arch-cli token create-multisig <M> --signers <PATHS> --keypair-path <PATH>
+arch-cli token multisig-sign <MULTISIG> <TRANSACTION> --keypair-path <PATH>
+arch-cli token multisig-execute <MULTISIG> <TRANSACTION> --signers <PATHS> --keypair-path <PATH>
+
+# Utility commands
+arch-cli token balance <ACCOUNT>
+arch-cli token supply <MINT>
+arch-cli token amount-to-ui <MINT> <AMOUNT>
+arch-cli token ui-to-amount <MINT> <UI_AMOUNT>
 ```
 
 ## 🌐 Network Modes
 
 | Network Mode | Description | Use Case |
 |--------------|-------------|----------|
-| `localnet` | Local development with regtest Bitcoin | Local development and testing |
-| `devnet` | Development network | Development and integration testing |
+| `devnet` | Development network (default) | Development and integration testing |
 | `testnet` | Test network with Bitcoin testnet | Pre-production testing |
 | `mainnet` | Main production network | Production use (use with caution) |
 
@@ -251,7 +321,7 @@ arch-cli config delete-profile <NAME>
 ```bash
 # Basic configuration
 --data-dir ./.arch_data                    # Data directory
---network-mode testnet                     # Network mode
+--network-mode devnet                      # Network mode
 --rpc-bind-ip 127.0.0.1                   # RPC bind IP
 --rpc-bind-port 9002                      # RPC port
 
@@ -271,10 +341,11 @@ arch-cli config delete-profile <NAME>
 ### Environment Variables
 You can also use environment variables instead of command-line flags:
 ```bash
-export ARCH_NETWORK_MODE=testnet
+export ARCH_NETWORK_MODE=devnet
 export ARCH_RPC_BIND_PORT=9002
 export ARCH_DATA_DIR=./.arch_data
 export ARCH_TITAN_ENDPOINT=https://titan-public-http.test.arch.network
+export ARCH_PROFILE=my-profile
 ```
 
 ## 🎮 Next Steps
@@ -329,7 +400,7 @@ arch-cli show <PROGRAM_ADDRESS>
 arch-cli tx confirm <TX_ID>
 
 # Account management
-arch-cli account create --keypair-path ./account.json --airdrop 1000000000
+arch-cli account create --keypair-path ./account.json --airdrop
 arch-cli show <ACCOUNT_ADDRESS>
 
 # Network information
@@ -338,4 +409,8 @@ arch-cli get-block <BLOCK_HASH>
 
 # Stop local environment
 arch-cli orchestrate stop
+
+# Token operations
+arch-cli token create-mint --decimals 6 --mint-authority ./authority.json --keypair-path ./payer.json
+arch-cli token mint <MINT> 1000000 --authority ./authority.json --keypair-path ./payer.json
 ```
