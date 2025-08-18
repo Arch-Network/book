@@ -21,7 +21,7 @@ These options can be used with any command:
 
 ```bash
 # Specify network mode
-arch-cli --network-mode devnet|testnet|mainnet
+arch-cli --network-mode devnet|testnet|mainnet|localnet
 
 # Use configuration profile
 arch-cli --profile <PROFILE_NAME>
@@ -32,6 +32,12 @@ arch-cli --help
 # Show version
 arch-cli --version
 ```
+
+**Network Modes:**
+- `devnet`: Development network (default)
+- `testnet`: Test network
+- `mainnet`: Production network
+- `localnet`: Local development network
 
 ## Configuration Management
 
@@ -72,6 +78,13 @@ List all available configuration profiles:
 arch-cli config list-profiles
 ```
 
+### Show Profile
+Display detailed information about a specific profile:
+
+```bash
+arch-cli config show-profile <NAME>
+```
+
 ### Update Profile
 Update an existing profile's settings:
 
@@ -102,163 +115,128 @@ Set which profile is used by default:
 arch-cli config set-default-profile <NAME>
 ```
 
-## Validator Management
-
-### Start Validator
-Start a local validator node:
-
-```bash
-arch-cli validator-start [OPTIONS]
-```
-
-**Common Options:**
-- `--data-dir <PATH>`: Data directory for validator
-- `--network-mode <MODE>`: Network mode (devnet, testnet, mainnet)
-- `--rpc-bind-ip <IP>`: RPC bind IP address
-- `--rpc-bind-port <PORT>`: RPC bind port
-- `--titan-endpoint <URL>`: Titan HTTP endpoint
-- `--titan-socket-endpoint <HOST:PORT>`: Titan TCP endpoint
-- `--max-tx-pool-size <SIZE>`: Maximum transaction pool size
-- `--full-snapshot-reccurence <COUNT>`: Snapshot frequency
-- `--max-snapshots <COUNT>`: Maximum snapshots to keep
-
-**Example:**
-```bash
-arch-cli validator-start \
-    --network-mode testnet \
-    --data-dir ./.arch_data \
-    --rpc-bind-ip 127.0.0.1 \
-    --rpc-bind-port 9002 \
-    --titan-endpoint https://titan-public-http.test.arch.network \
-    --titan-socket-endpoint titan-public-tcp.test.arch.network:3030
-```
-
 ## Account Operations
 
 ### Create Account
 Create a new account:
 
 ```bash
-arch-cli account create --keypair-path <PATH> [--airdrop]
+arch-cli account create \
+    --keypair-path <PATH> \
+    --owner <OWNER> \
+    --lamports <LAMPORTS> \
+    --space <SPACE>
 ```
 
 **Arguments:**
-- `--keypair-path <PATH>`: Path to save the generated keypair file
-- `--airdrop`: Whether to airdrop 1 ARCH to the new account
-
-**Example:**
-```bash
-arch-cli account create --keypair-path ./my-account.json --airdrop
-```
+- `--keypair-path`: Path to the keypair file
+- `--owner`: Public key of the program that will own the account
+- `--lamports`: Initial balance in lamports
+- `--space`: Account size in bytes
 
 ### Fund Account
 Fund an existing account using the faucet:
 
 ```bash
 arch-cli account airdrop \
-    [--keypair-path <PATH> | --account <PUBKEY> | --pubkey <PUBKEY>] \
-    --amount <LAMPORTS>
+    --keypair-path <PATH> \
+    [--lamports <LAMPORTS>]
 ```
 
 **Arguments:**
-- `--keypair-path <PATH>`: Path to the keypair file to fund
-- `--account <PUBKEY>`: Account public key to fund (hex format)
-- `--pubkey <PUBKEY>`: Account public key to fund (hex format, alias for --account)
-- `--amount <LAMPORTS>`: Amount to airdrop (default: 1,000,000,000)
-
-**Examples:**
-```bash
-# Fund by keypair file
-arch-cli account airdrop --keypair-path ./my-account.json --amount 1000000000
-
-# Fund by public key
-arch-cli account airdrop --pubkey 02a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943c2b752a68e2a47e247c7 --amount 1000000000
-```
+- `--keypair-path`: Path to the keypair file
+- `--lamports`: Amount to airdrop (default: 1000000000 lamports)
 
 ### Change Account Owner
 Change the owner of an account:
 
 ```bash
-arch-cli account change-owner <ACCOUNT_ADDRESS> <NEW_OWNER> <PAYER_KEYPAIR>
+arch-cli account change-owner \
+    --keypair-path <PATH> \
+    --account <ACCOUNT> \
+    --new-owner <NEW_OWNER>
 ```
 
 **Arguments:**
-- `<ACCOUNT_ADDRESS>`: Address of the account to change ownership of
-- `<NEW_OWNER>`: New owner's public key
-- `<PAYER_KEYPAIR>`: Payer's keypair path
+- `--keypair-path`: Path to the payer's keypair file
+- `--account`: Public key of the account to change
+- `--new-owner`: Public key of the new owner
 
-### Assign UTXO
+### Assign UTXOs
 Assign UTXOs to an account:
 
 ```bash
-arch-cli account assign-utxo <ACCOUNT_PUBKEY>
+arch-cli account assign-utxo \
+    --keypair-path <PATH> \
+    --utxo <UTXO> \
+    --account <ACCOUNT>
 ```
 
 **Arguments:**
-- `<ACCOUNT_PUBKEY>`: Public key of the account to assign UTXOs to
+- `--keypair-path`: Path to the keypair file
+- `--utxo`: UTXO identifier
+- `--account`: Public key of the account
 
 ## Program Deployment
 
 ### Deploy Program
-Deploy a compiled program to the Arch Network:
+Deploy a compiled program to the network:
 
 ```bash
-arch-cli deploy [<ELF_PATH>] [--generate-if-missing] [--fund-authority]
+arch-cli deploy <PROGRAM_PATH>
 ```
 
 **Arguments:**
-- `<ELF_PATH>` (Optional): Path to the directory containing the ELF file and keypair
-- `--generate-if-missing`: Automatically generate program and authority keypair files
-- `--fund-authority`: Fund the authority account using the faucet
+- `<PROGRAM_PATH>`: Path to the directory containing the compiled program (.so file)
 
 **Example:**
 ```bash
-arch-cli deploy ./target/deploy/program.so --generate-if-missing --fund-authority
+arch-cli deploy examples/helloworld/
 ```
 
 ## Transaction Operations
 
-### Confirm Transaction
-Check the status of a transaction:
-
-```bash
-arch-cli tx confirm <TX_ID>
-```
-
-**Arguments:**
-- `<TX_ID>`: Transaction ID to confirm (32-byte hex string)
-
 ### Get Transaction
-Get transaction details:
+Retrieve transaction information:
 
 ```bash
-arch-cli tx get <TX_ID>
+arch-cli tx get <SIGNATURE>
 ```
 
 **Arguments:**
-- `<TX_ID>`: Transaction ID to retrieve
+- `<SIGNATURE>`: Transaction signature
+
+### Confirm Transaction
+Check if a transaction is confirmed:
+
+```bash
+arch-cli tx confirm <SIGNATURE>
+```
+
+**Arguments:**
+- `<SIGNATURE>`: Transaction signature
 
 ### Log Program Messages
-View program messages from a transaction:
+Log program messages for a transaction:
 
 ```bash
-arch-cli tx log-program-messages <TX_ID>
+arch-cli tx log-program-messages <SIGNATURE>
 ```
 
 **Arguments:**
-- `<TX_ID>`: Transaction ID to log
+- `<SIGNATURE>`: Transaction signature
 
 ## Block and Network Info
 
 ### Get Block
-Retrieve information about a specific block:
+Retrieve block information:
 
 ```bash
-arch-cli get-block <BLOCK_HASH>
+arch-cli get-block <SLOT>
 ```
 
 **Arguments:**
-- `<BLOCK_HASH>`: Block hash to retrieve (32-byte hex string)
+- `<SLOT>`: Block slot number
 
 ### Get Block Height
 Get the current block height:
@@ -268,47 +246,47 @@ arch-cli get-block-height
 ```
 
 ### Get Group Key
-Fetch the network's group verifying key:
+Fetch the network's account address:
 
 ```bash
 arch-cli get-group-key <PUBKEY>
 ```
 
 **Arguments:**
-- `<PUBKEY>`: Public key (not used in current implementation but kept for compatibility)
+- `<PUBKEY>`: Public key to use for group key calculation
 
-### Show Account/Program
-Display information about an account or program:
+### Show Account
+Display account information:
 
 ```bash
-arch-cli show <ADDRESS>
+arch-cli show <ACCOUNT_ADDRESS>
 ```
 
 **Arguments:**
-- `<ADDRESS>`: Address of the account or program to show
+- `<ACCOUNT_ADDRESS>`: Public key of the account to display
 
 ## APL Token Operations
 
-### Token Mint Management
+The Arch CLI provides comprehensive token management capabilities for APL (Arch Program Library) tokens. All token commands support the same global options as other CLI commands.
+
+### Mint Management
 
 #### Create Mint
 Create a new token mint:
 
 ```bash
 arch-cli token create-mint \
-    --decimals <DECIMALS> \
-    --mint-authority <PATH> \
     --keypair-path <PATH> \
-    [--freeze-authority <PATH>] \
-    [--mint-keypair-path <PATH>]
+    --decimals <DECIMALS> \
+    [--freeze-authority <AUTHORITY>] \
+    [--mint-authority <AUTHORITY>]
 ```
 
 **Arguments:**
-- `--decimals <DECIMALS>`: Number of decimal places (0-9)
-- `--mint-authority <PATH>`: Keypair path for mint authority
-- `--keypair-path <PATH>`: Keypair path for transaction signing
-- `--freeze-authority <PATH>`: Optional keypair path for freeze authority
-- `--mint-keypair-path <PATH>`: Optional keypair path for the mint account
+- `--keypair-path`: Path to the keypair file for the mint
+- `--decimals`: Number of decimal places (0-9)
+- `--freeze-authority`: Public key of the freeze authority (optional)
+- `--mint-authority`: Public key of the mint authority (optional)
 
 #### Show Mint
 Display mint information:
@@ -318,26 +296,26 @@ arch-cli token show-mint <MINT_ADDRESS>
 ```
 
 **Arguments:**
-- `<MINT_ADDRESS>`: Public key of the mint to display
+- `<MINT_ADDRESS>`: Public key of the mint
 
-### Token Account Management
+### Account Management
 
-#### Create Token Account
+#### Create Account
 Create a new token account:
 
 ```bash
 arch-cli token create-account \
+    --keypair-path <PATH> \
     --mint <MINT> \
-    --owner <PATH> \
-    --keypair-path <PATH>
+    [--owner <OWNER>]
 ```
 
 **Arguments:**
-- `--mint <MINT>`: Public key of the mint
-- `--owner <PATH>`: Keypair path for account owner
-- `--keypair-path <PATH>`: Keypair path for transaction signing
+- `--keypair-path`: Path to the keypair file for the account
+- `--mint`: Public key of the mint
+- `--owner`: Public key of the account owner (defaults to keypair owner)
 
-#### Show Token Account
+#### Show Account
 Display token account information:
 
 ```bash
@@ -347,114 +325,177 @@ arch-cli token show-account <ACCOUNT_ADDRESS>
 **Arguments:**
 - `<ACCOUNT_ADDRESS>`: Public key of the token account
 
-### Basic Token Operations
+### Token Operations
 
 #### Mint Tokens
 Mint tokens to an account:
 
 ```bash
-arch-cli token mint <MINT_ADDRESS> <AMOUNT> \
-    --authority <PATH> \
+arch-cli token mint \
     --keypair-path <PATH> \
-    [--account-address <ADDRESS>] \
-    [--auto-create-ata] \
-    [--multisig <ADDRESS>] \
-    [--signers <PATHS>]
+    --mint <MINT> \
+    --to <ACCOUNT> \
+    --amount <AMOUNT>
 ```
 
 **Arguments:**
-- `<MINT_ADDRESS>`: Public key of the mint
-- `<AMOUNT>`: Amount to mint (raw amount)
-- `--authority <PATH>`: Keypair path for mint authority
-- `--keypair-path <PATH>`: Keypair path for transaction signing
-- `--account-address <ADDRESS>`: Public key of destination account (optional)
-- `--auto-create-ata`: Whether to auto-create Associated Token Account
-- `--multisig <ADDRESS>`: Multisig authority address
-- `--signers <PATHS>`: Keypair paths for multisig signers
+- `--keypair-path`: Path to the mint authority's keypair file
+- `--mint`: Public key of the mint
+- `--to`: Public key of the destination account
+- `--amount`: Amount to mint (in raw units)
 
 #### Transfer Tokens
 Transfer tokens between accounts:
 
 ```bash
-arch-cli token transfer <SOURCE_ACCOUNT> <DESTINATION_ACCOUNT> <AMOUNT> \
-    --owner <PATH> \
+arch-cli token transfer \
     --keypair-path <PATH> \
-    [--multisig <ADDRESS>] \
-    [--signers <PATHS>]
+    --mint <MINT> \
+    --from <FROM_ACCOUNT> \
+    --to <TO_ACCOUNT> \
+    --amount <AMOUNT>
 ```
 
 **Arguments:**
-- `<SOURCE_ACCOUNT>`: Public key of source account
-- `<DESTINATION_ACCOUNT>`: Public key of destination account
-- `<AMOUNT>`: Amount to transfer (raw amount)
-- `--owner <PATH>`: Keypair path for account owner
-- `--keypair-path <PATH>`: Keypair path for transaction signing
-- `--multisig <ADDRESS>`: Multisig owner address
-- `--signers <PATHS>`: Keypair paths for multisig signers
+- `--keypair-path`: Path to the owner's keypair file
+- `--mint`: Public key of the mint
+- `--from`: Public key of the source account
+- `--to`: Public key of the destination account
+- `--amount`: Amount to transfer (in raw units)
 
 #### Burn Tokens
 Burn tokens from an account:
 
 ```bash
-arch-cli token burn <ACCOUNT_ADDRESS> <AMOUNT> \
-    --owner <PATH> \
+arch-cli token burn \
     --keypair-path <PATH> \
-    [--multisig <ADDRESS>] \
-    [--signers <PATHS>]
+    --mint <MINT> \
+    --from <ACCOUNT> \
+    --amount <AMOUNT>
 ```
 
 **Arguments:**
-- `<ACCOUNT_ADDRESS>`: Public key of the account to burn from
-- `<AMOUNT>`: Amount to burn (raw amount)
-- `--owner <PATH>`: Keypair path for account owner
-- `--keypair-path <PATH>`: Keypair path for transaction signing
-- `--multisig <ADDRESS>`: Multisig owner address
-- `--signers <PATHS>`: Keypair paths for multisig signers
+- `--keypair-path`: Path to the owner's keypair file
+- `--mint`: Public key of the mint
+- `--from`: Public key of the account to burn from
+- `--amount`: Amount to burn (in raw units)
 
-### Advanced Token Features
+### Delegation
 
-#### Multisig Operations
+#### Approve Delegate
+Approve a delegate for spending:
 
-##### Create Multisig
+```bash
+arch-cli token approve \
+    --keypair-path <PATH> \
+    --mint <MINT> \
+    --from <ACCOUNT> \
+    --delegate <DELEGATE> \
+    --amount <AMOUNT>
+```
+
+**Arguments:**
+- `--keypair-path`: Path to the owner's keypair file
+- `--mint`: Public key of the mint
+- `--from`: Public key of the source account
+- `--delegate`: Public key of the delegate
+- `--amount`: Amount the delegate can spend
+
+#### Revoke Delegate
+Revoke delegate authority:
+
+```bash
+arch-cli token revoke \
+    --keypair-path <PATH> \
+    --mint <MINT> \
+    --from <ACCOUNT>
+```
+
+**Arguments:**
+- `--keypair-path`: Path to the owner's keypair file
+- `--mint`: Public key of the mint
+- `--from`: Public key of the account
+
+### Account Control
+
+#### Freeze Account
+Freeze a token account:
+
+```bash
+arch-cli token freeze-account \
+    --keypair-path <PATH> \
+    --mint <MINT> \
+    --account <ACCOUNT>
+```
+
+**Arguments:**
+- `--keypair-path`: Path to the freeze authority's keypair file
+- `--mint`: Public key of the mint
+- `--account`: Public key of the account to freeze
+
+#### Thaw Account
+Thaw a frozen account:
+
+```bash
+arch-cli token thaw-account \
+    --keypair-path <PATH> \
+    --mint <MINT> \
+    --account <ACCOUNT>
+```
+
+**Arguments:**
+- `--keypair-path`: Path to the freeze authority's keypair file
+- `--mint`: Public key of the mint
+- `--account`: Public key of the account to thaw
+
+### Multisignature Operations
+
+#### Create Multisig
 Create a multisignature authority:
 
 ```bash
-arch-cli token create-multisig <M> --signers <PATHS> --keypair-path <PATH>
+arch-cli token create-multisig \
+    --keypair-path <PATH> \
+    --signers <SIGNERS> \
+    --threshold <THRESHOLD>
 ```
 
 **Arguments:**
-- `<M>`: Number of required signers
-- `--signers <PATHS>`: Keypair paths for signers
-- `--keypair-path <PATH>`: Keypair path for transaction signing
+- `--keypair-path`: Path to the keypair file for the multisig account
+- `--signers`: Comma-separated list of public keys
+- `--threshold`: Number of signatures required
 
-##### Sign Multisig Transaction
+#### Sign Multisig
 Sign a transaction with multisig:
 
 ```bash
-arch-cli token multisig-sign <MULTISIG_ADDRESS> <TRANSACTION> --keypair-path <PATH>
+arch-cli token multisig-sign \
+    --keypair-path <PATH> \
+    --multisig <MULTISIG> \
+    --transaction <TRANSACTION>
 ```
 
 **Arguments:**
-- `<MULTISIG_ADDRESS>`: Public key of the multisig account
-- `<TRANSACTION>`: Transaction to sign (base64 encoded)
-- `--keypair-path <PATH>`: Keypair path for the signer
+- `--keypair-path`: Path to the signer's keypair file
+- `--multisig`: Public key of the multisig account
+- `--transaction`: Transaction to sign
 
-##### Execute Multisig Transaction
+#### Execute Multisig
 Execute a signed multisig transaction:
 
 ```bash
-arch-cli token multisig-execute <MULTISIG_ADDRESS> <TRANSACTION> \
-    --signers <PATHS> \
-    --keypair-path <PATH>
+arch-cli token multisig-execute \
+    --keypair-path <PATH> \
+    --multisig <MULTISIG> \
+    --transaction <TRANSACTION>
 ```
 
 **Arguments:**
-- `<MULTISIG_ADDRESS>`: Public key of the multisig account
-- `<TRANSACTION>`: Transaction to execute (base64 encoded)
-- `--signers <PATHS>`: Keypair paths for signers
-- `--keypair-path <PATH>`: Keypair path for transaction signing
+- `--keypair-path`: Path to the executor's keypair file
+- `--multisig`: Public key of the multisig account
+- `--transaction`: Signed transaction to execute
 
-##### Show Multisig
+#### Show Multisig
 Display multisig account information:
 
 ```bash
@@ -464,50 +505,9 @@ arch-cli token multisig-show <MULTISIG_ADDRESS>
 **Arguments:**
 - `<MULTISIG_ADDRESS>`: Public key of the multisig account
 
-#### Authority Management
+### Utility Commands
 
-##### Approve Delegate
-Approve a delegate for spending:
-
-```bash
-arch-cli token approve <ACCOUNT_ADDRESS> <DELEGATE_ADDRESS> <AMOUNT> --owner <PATH>
-```
-
-**Arguments:**
-- `<ACCOUNT_ADDRESS>`: Public key of the account to approve
-- `<DELEGATE_ADDRESS>`: Public key of the delegate
-- `<AMOUNT>`: Amount to approve
-- `--owner <PATH>`: Keypair path for account owner
-
-##### Revoke Delegate
-Revoke delegate authority:
-
-```bash
-arch-cli token revoke <ACCOUNT_ADDRESS> --owner <PATH>
-```
-
-**Arguments:**
-- `<ACCOUNT_ADDRESS>`: Public key of the account to revoke
-- `--owner <PATH>`: Keypair path for account owner
-
-##### Freeze/Thaw Account
-Freeze or thaw a token account:
-
-```bash
-# Freeze account
-arch-cli token freeze-account <ACCOUNT_ADDRESS> --authority <PATH>
-
-# Thaw account
-arch-cli token thaw-account <ACCOUNT_ADDRESS> --authority <PATH>
-```
-
-**Arguments:**
-- `<ACCOUNT_ADDRESS>`: Public key of the account to freeze/thaw
-- `--authority <PATH>`: Keypair path for freeze authority
-
-#### Utility Commands
-
-##### Check Balance
+#### Balance
 Display token balance:
 
 ```bash
@@ -517,7 +517,7 @@ arch-cli token balance <ACCOUNT_ADDRESS>
 **Arguments:**
 - `<ACCOUNT_ADDRESS>`: Public key of the token account
 
-##### Check Supply
+#### Supply
 Display mint supply:
 
 ```bash
@@ -527,7 +527,7 @@ arch-cli token supply <MINT_ADDRESS>
 **Arguments:**
 - `<MINT_ADDRESS>`: Public key of the mint
 
-##### List Accounts
+#### List Accounts
 List token accounts for a mint:
 
 ```bash
@@ -537,170 +537,176 @@ arch-cli token accounts <MINT_ADDRESS>
 **Arguments:**
 - `<MINT_ADDRESS>`: Public key of the mint
 
-##### List Mints
+#### List Mints
 List all mints:
 
 ```bash
 arch-cli token mints
 ```
 
-##### Amount Conversion
+#### Amount Conversion
 Convert between raw and UI amounts:
 
 ```bash
 # Convert raw amount to UI format
-arch-cli token amount-to-ui <MINT_ADDRESS> <AMOUNT>
+arch-cli token amount-to-ui <MINT_ADDRESS> <RAW_AMOUNT>
 
 # Convert UI amount to raw format
 arch-cli token ui-to-amount <MINT_ADDRESS> <UI_AMOUNT>
 ```
 
-**Arguments:**
-- `<MINT_ADDRESS>`: Public key of the mint
-- `<AMOUNT>`: Raw amount to convert
-- `<UI_AMOUNT>`: UI amount to convert
+### Advanced Token Features
 
 #### Checked Operations
-For operations with decimal verification:
+Perform operations with decimal verification:
 
 ```bash
 # Transfer with decimal verification
-arch-cli token transfer-checked <SOURCE> <DESTINATION> <AMOUNT> <DECIMALS> --owner <PATH>
+arch-cli token transfer-checked \
+    --keypair-path <PATH> \
+    --mint <MINT> \
+    --from <FROM_ACCOUNT> \
+    --to <TO_ACCOUNT> \
+    --amount <AMOUNT> \
+    --decimals <DECIMALS>
 
 # Approve with decimal verification
-arch-cli token approve-checked <ACCOUNT> <DELEGATE> <AMOUNT> <DECIMALS> --owner <PATH>
+arch-cli token approve-checked \
+    --keypair-path <PATH> \
+    --mint <MINT> \
+    --from <ACCOUNT> \
+    --delegate <DELEGATE> \
+    --amount <AMOUNT> \
+    --decimals <DECIMALS>
 
 # Mint with decimal verification
-arch-cli token mint-to-checked <MINT> <ACCOUNT> <AMOUNT> <DECIMALS> --authority <PATH>
+arch-cli token mint-to-checked \
+    --keypair-path <PATH> \
+    --mint <MINT> \
+    --to <ACCOUNT> \
+    --amount <AMOUNT> \
+    --decimals <DECIMALS>
 
 # Burn with decimal verification
-arch-cli token burn-checked <ACCOUNT> <AMOUNT> <DECIMALS> --owner <PATH>
+arch-cli token burn-checked \
+    --keypair-path <PATH> \
+    --mint <MINT> \
+    --from <ACCOUNT> \
+    --amount <AMOUNT> \
+    --decimals <DECIMALS>
 ```
 
 #### Authority Management
-
-##### Set Authority
 Set authority on mint or account:
 
 ```bash
-arch-cli token set-authority <TARGET_ADDRESS> \
-    --authority-type <TYPE> \
-    --current-authority <PATH> \
-    [--new-authority <ADDRESS>]
+arch-cli token set-authority \
+    --keypair-path <PATH> \
+    --mint <MINT> \
+    --new-authority <NEW_AUTHORITY> \
+    --authority-type <TYPE>
 ```
 
 **Arguments:**
-- `<TARGET_ADDRESS>`: Public key of the mint or account
-- `--authority-type <TYPE>`: Type of authority to set
-- `--current-authority <PATH>`: Keypair path for current authority
-- `--new-authority <ADDRESS>`: New authority address (optional, use "none" to disable)
+- `--keypair-path`: Path to the current authority's keypair file
+- `--mint`: Public key of the mint or account
+- `--new-authority`: Public key of the new authority
+- `--authority-type`: Type of authority (mint, freeze, or account)
 
 #### Account Management
-
-##### Close Account
 Close a token account:
 
 ```bash
-arch-cli token close-account <ACCOUNT_ADDRESS> <DESTINATION_ADDRESS> --owner <PATH>
+arch-cli token close-account \
+    --keypair-path <PATH> \
+    --mint <MINT> \
+    --account <ACCOUNT>
 ```
 
 **Arguments:**
-- `<ACCOUNT_ADDRESS>`: Public key of the account to close
-- `<DESTINATION_ADDRESS>`: Public key of the destination for remaining SOL
-- `--owner <PATH>`: Keypair path for account owner
+- `--keypair-path`: Path to the owner's keypair file
+- `--mint`: Public key of the mint
+- `--account`: Public key of the account to close
 
 #### Batch Operations
-
-##### Batch Transfer
-Batch transfer tokens:
+Perform multiple operations at once:
 
 ```bash
-arch-cli token batch-transfer <TRANSFERS_FILE> --keypair-path <PATH>
+# Batch transfer tokens
+arch-cli token batch-transfer \
+    --keypair-path <PATH> \
+    --mint <MINT> \
+    --from <FROM_ACCOUNT> \
+    --transfers <TRANSFERS>
+
+# Batch mint tokens
+arch-cli token batch-mint \
+    --keypair-path <PATH> \
+    --mint <MINT> \
+    --mints <MINTS>
 ```
-
-**Arguments:**
-- `<TRANSFERS_FILE>`: JSON file containing transfer operations
-- `--keypair-path <PATH>`: Keypair path for transaction signing
-
-##### Batch Mint
-Batch mint tokens:
-
-```bash
-arch-cli token batch-mint <MINTS_FILE> --keypair-path <PATH>
-```
-
-**Arguments:**
-- `<MINTS_FILE>`: JSON file containing mint operations
-- `--keypair-path <PATH>`: Keypair path for transaction signing
 
 ## Orchestration Commands
 
-### Start Full Environment
-Start the complete local devnet (bitcoind, titan, local_validator):
+### Start Local Environment
+Start the complete local development environment:
 
 ```bash
-arch-cli orchestrate start [OPTIONS]
+arch-cli orchestrate start [--local <PATH>] [--no-bitcoind]
 ```
 
-**Options:**
-- `--local <PATH>`: Use local arch-network source code instead of remote image
-- `--force-rebuild`: Force rebuild of the local validator Docker image
-- `--rebuild-titan`: Force rebuild of the Titan Docker image
-- `--titan-image <IMAGE>`: Specify which Titan Docker image to use
-- `--no-bitcoind`: Skip starting bitcoind, use profile's Bitcoin RPC
+**Arguments:**
+- `--local <PATH>`: Path to local source code for building images
+- `--no-bitcoind`: Skip starting local Bitcoin node (use remote RPC)
 
 **Examples:**
 ```bash
-# Start with default images
+# Start with remote Bitcoin RPC
 arch-cli orchestrate start
 
 # Start with local source code
 arch-cli orchestrate start --local "$(pwd)"
 
-# Start with custom Titan image
-arch-cli orchestrate start --titan-image ghcr.io/arch-network/titan:latest
-
-# Start without bitcoind (use profile's Bitcoin RPC)
-arch-cli orchestrate start --no-bitcoind
+# Start without local bitcoind
+arch-cli orchestrate start --local "$(pwd)" --no-bitcoind
 ```
 
-### Stop Environment
-Stop the local devnet:
+### Stop Local Environment
+Stop all local services:
 
 ```bash
 arch-cli orchestrate stop
 ```
 
-### Reset Environment
-Reset the entire environment:
+### Validator Management
+Manage the local validator service:
 
 ```bash
-arch-cli orchestrate reset
-```
-
-This stops all services, removes all Docker volumes, and deletes local data directories.
-
-### Fine-Grained Control
-
-#### Validator Only Operations
-```bash
-# Start only the local_validator service
+# Start only the validator
 arch-cli orchestrate validator-start
 
-# Stop only the local_validator service
+# Stop only the validator
 arch-cli orchestrate validator-stop
 
-# Restart only the local_validator service
+# Restart only the validator
 arch-cli orchestrate validator-restart
 
-# Check validator status
+# Show validator status
 arch-cli orchestrate validator-status
+```
 
-# Reset only the local_validator
+### Reset Environment
+Reset the development environment:
+
+```bash
+# Reset entire environment
+arch-cli orchestrate reset
+
+# Reset only validator
 arch-cli orchestrate validator-reset
 ```
 
-#### Bitcoin Mining
+### Bitcoin Mining
 Mine Bitcoin blocks in regtest mode:
 
 ```bash
@@ -827,10 +833,35 @@ arch-cli --profile <NAME> get-block-height
 
 ## Version Compatibility
 
-This guide covers arch-cli version 1.85.0 and later. For older versions, please refer to the appropriate release documentation.
+This guide covers arch-cli version 0.5.5 and later. For older versions, please refer to the appropriate release documentation.
 
 **Minimum Requirements:**
 - Rust: 1.84.1+
 - Solana CLI: 2.2.14+
 - Docker: 20.10+ (for orchestration features)
 - OS: Linux, macOS, or Windows (WSL2)
+
+## Quick Reference
+
+### Common Commands
+```bash
+# Create and configure profile
+arch-cli config create-profile dev --bitcoin-node-endpoint http://127.0.0.1:18443 --bitcoin-node-username bitcoin --bitcoin-node-password password --bitcoin-network regtest --arch-node-url http://localhost:9002
+
+# Start local environment
+arch-cli orchestrate start --local "$(pwd)"
+
+# Create token mint
+arch-cli token create-mint --keypair-path ~/my-keypair.json --decimals 6
+
+# Deploy program
+arch-cli deploy examples/helloworld/
+
+# Check account
+arch-cli show <ACCOUNT_ADDRESS>
+```
+
+### Environment Variables
+- `ARCH_PROFILE`: Set default profile
+- `NETWORK_MODE`: Set default network mode
+- `PUBKEY`: Set default public key for some commands
