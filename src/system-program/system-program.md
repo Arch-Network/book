@@ -11,6 +11,31 @@ The System Program handles:
 - **Lamport Transfers**: Moving lamports (the base unit of value) between accounts
 - **Space Allocation**: Allocating data storage space for accounts
 
+## Built-in Programs
+
+Arch Network includes several built-in programs that provide essential functionality:
+
+### System Program
+The core system program for account management and basic operations.
+
+### APL Token Program
+Comprehensive token management with SPL token compatibility.
+
+### Associated Token Account (ATA) Program
+Automatic token account creation and management.
+
+### Compute Budget Program
+Transaction compute unit management and fee optimization.
+
+### Stake Program
+Validator staking and delegation management.
+
+### Vote Program
+Governance and voting mechanisms.
+
+### Loader Program
+Program deployment and upgrade management.
+
 ## Available Instructions
 
 ### CreateAccount
@@ -99,12 +124,21 @@ Anchors an existing account to a Bitcoin UTXO.
 **Account References:**
 1. `[WRITE, SIGNER]` Account to anchor
 
+**Example:**
+```rust
+let instruction = system_instruction::anchor(
+    &account_pubkey,
+    txid,       // Bitcoin transaction ID
+    vout,       // Bitcoin output index
+);
+```
+
 ### Transfer
 
-Transfers lamports from one account to another.
+Transfers lamports between accounts.
 
 **Parameters:**
-- `lamports: u64` - Amount to transfer
+- `lamports: u64` - Number of lamports to transfer
 
 **Account References:**
 1. `[WRITE, SIGNER]` Source account
@@ -115,83 +149,154 @@ Transfers lamports from one account to another.
 let instruction = system_instruction::transfer(
     &from_pubkey,
     &to_pubkey,
-    500_000,  // lamports to transfer
+    1_000_000,  // lamports
 );
 ```
 
-### Allocate
+## Program Interaction
 
-Allocates space in an account without funding it.
+### Using Built-in Programs
 
-**Parameters:**
-- `space: u64` - Number of bytes to allocate
-
-**Account References:**
-1. `[WRITE, SIGNER]` Account to allocate space for
-
-**Example:**
 ```rust
-let instruction = system_instruction::allocate(
+use arch_program::{
+    system_instruction,
+    system_program,
+    pubkey::Pubkey,
+};
+
+// Create a new account
+let create_account_ix = system_instruction::create_account(
+    &payer_pubkey,
+    &new_account_pubkey,
+    rent_exemption_amount,
+    space,
+    &owner_program_pubkey,
+);
+
+// Transfer lamports
+let transfer_ix = system_instruction::transfer(
+    &source_pubkey,
+    &destination_pubkey,
+    amount,
+);
+
+// Assign new owner
+let assign_ix = system_instruction::assign(
     &account_pubkey,
-    1024,  // bytes to allocate
+    &new_owner_pubkey,
 );
 ```
 
-## Error Handling
+### Program Addresses
 
-The System Program can return the following errors:
-
-- `AccountAlreadyInUse` - Account with the same address already exists
-- `ResultWithNegativeLamports` - Account doesn't have enough lamports for operation
-- `InvalidProgramId` - Cannot assign account to this program ID
-- `InvalidAccountDataLength` - Cannot allocate account data of this length
-- `MaxSeedLengthExceeded` - Requested seed length is too long
-- `AddressWithSeedMismatch` - Address doesn't match derived seed
-
-## Important Constants
-
-```rust
-// Minimum lamports required for any account
-pub const MIN_ACCOUNT_LAMPORTS: u64 = 1024;
-
-// Maximum permitted data length for accounts
-pub const MAX_PERMITTED_DATA_LENGTH: usize = 10 * 1024 * 1024; // 10MB
-```
+| Program | Address | Description |
+|---------|---------|-------------|
+| System | `11111111111111111111111111111111` | Core system operations |
+| APL Token | `apl-token00000000000000000000000` | Token management |
+| ATA | `ATokenGPvbdGVxr1b2hvUbsQ8U5V9kCA` | Associated token accounts |
+| Compute Budget | `ComputeBudget111111111111111111111111111111` | Compute unit management |
+| Stake | `Stake1111111111111111111111111111111111111111` | Staking operations |
+| Vote | `Vote111111111111111111111111111111111111111111` | Voting operations |
+| Loader | `BPFLoader1111111111111111111111111111111111` | Program deployment |
 
 ## Best Practices
 
-### Account Creation
-1. **Always fund with sufficient lamports**: Accounts need at least `MIN_ACCOUNT_LAMPORTS` to be created
-2. **Use appropriate space allocation**: Allocate only the space you need to minimize costs
-3. **Set correct ownership**: Ensure the owner program can properly manage the account
-
-### UTXO Integration
-1. **Verify UTXO existence**: Ensure the referenced Bitcoin UTXO exists and is confirmed
-2. **Use proper confirmation counts**: Wait for sufficient Bitcoin confirmations before using anchored accounts
-3. **Handle reorgs gracefully**: Account for potential Bitcoin reorganizations
+### Account Management
+1. **Proper Sizing**: Allocate appropriate space for account data
+2. **Rent Exemption**: Ensure accounts have sufficient lamports for rent exemption
+3. **Ownership**: Carefully manage account ownership transfers
+4. **UTXO Anchoring**: Use UTXO anchoring for Bitcoin integration
 
 ### Security Considerations
-1. **Validate signers**: Always verify that required accounts are properly signed
-2. **Check ownership**: Verify account ownership before operations
-3. **Handle edge cases**: Account for insufficient funds, invalid parameters, etc.
+1. **Authority Validation**: Always verify account authorities
+2. **Input Validation**: Validate all input parameters
+3. **Error Handling**: Implement proper error handling for failed operations
+4. **Access Control**: Restrict access to sensitive operations
 
-## Integration with Bitcoin
+### Performance Optimization
+1. **Batch Operations**: Group related operations when possible
+2. **Space Efficiency**: Minimize account space allocation
+3. **Compute Budget**: Use compute budget program for optimization
+4. **Caching**: Cache frequently accessed account data
 
-The System Program's UTXO anchoring functionality enables direct integration with Bitcoin:
+## Error Handling
 
-- **Account-UTXO Mapping**: Accounts can be directly linked to Bitcoin UTXOs
-- **Ownership Verification**: Bitcoin signatures can prove account ownership
-- **State Synchronization**: Account states can be synchronized with Bitcoin state
+### Common Errors
 
-This integration provides:
-- Native Bitcoin security guarantees
-- Direct UTXO management capabilities
-- Seamless Bitcoin transaction integration
-- Provable ownership and state anchoring
+| Error | Description | Resolution |
+|-------|-------------|------------|
+| `InsufficientFunds` | Account has insufficient lamports | Fund the account or reduce amount |
+| `InvalidAccountData` | Account data is invalid | Reinitialize the account |
+| `InvalidOwner` | Invalid account owner | Check ownership requirements |
+| `AccountInUse` | Account is already in use | Use a different account or wait |
 
-## Related Documentation
+### Error Recovery
 
-- [Account Model](../program/accounts.md) - Understanding Arch's account structure
-- [Instructions and Messages](../program/instructions-and-messages.md) - How instructions work
-- [Bitcoin Integration](../concepts/bitcoin-integration.md) - Bitcoin-native features
-- [UTXO Management](../program/utxo.md) - Working with Bitcoin UTXOs
+```rust
+use arch_program::system_instruction;
+
+match system_instruction::create_account(/* params */) {
+    Ok(instruction) => {
+        // Process instruction
+    }
+    Err(SystemError::InsufficientFunds) => {
+        // Handle insufficient funds
+    }
+    Err(SystemError::InvalidAccountData) => {
+        // Handle invalid account data
+    }
+    Err(e) => {
+        // Handle other errors
+    }
+}
+```
+
+## Integration Examples
+
+### Creating a Token Mint
+
+```rust
+// Create mint account
+let create_mint_ix = system_instruction::create_account(
+    &payer_pubkey,
+    &mint_pubkey,
+    rent_exemption_amount,
+    Mint::LEN as u64,
+    &apl_token::id(),
+);
+
+// Initialize mint (using APL token program)
+let init_mint_ix = apl_token::instruction::initialize_mint(
+    &apl_token::id(),
+    &mint_pubkey,
+    &mint_authority_pubkey,
+    None,
+    decimals,
+)?;
+```
+
+### Setting Up Associated Token Account
+
+```rust
+// Create ATA account
+let create_ata_ix = associated_token_account::instruction::create(
+    &payer_pubkey,
+    &owner_pubkey,
+    &mint_pubkey,
+    &token_program_id,
+);
+
+// Fund ATA account
+let fund_ata_ix = system_instruction::transfer(
+    &payer_pubkey,
+    &ata_pubkey,
+    rent_exemption_amount,
+);
+```
+
+## Next Steps
+
+- **Token Operations**: Learn about [APL Token Management](../guides/how-to-create-a-fungible-token.md)
+- **Program Development**: Explore [Writing Your First Program](../guides/writing-your-first-program.md)
+- **Advanced Features**: Discover [Core Programs](../concepts/architecture.md#core-programs)
+- **Integration**: Understand [Bitcoin Integration](../concepts/bitcoin-integration.md)

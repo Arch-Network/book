@@ -433,7 +433,7 @@ arch-cli tx log-program-messages <SIGNATURE>
 
 ## Next Steps
 
-- **Advanced Token Features**: Explore [APL Token Walkthrough Level 2](../../arch-cli/APL_TOKEN_WALKTHROUGH_LEVEL_2.md)
+- **Advanced Token Features**: Explore [APL Token Program](apl/token-program.md) for detailed program information
 - **Program Development**: Learn about [Writing Your First Program](writing-your-first-program.md)
 - **Testing**: Understand [Testing Strategies](testing-guide.md)
 - **Deployment**: Deploy to [Testnet and Mainnet](../getting-started/bitcoin-and-titan-setup.md)

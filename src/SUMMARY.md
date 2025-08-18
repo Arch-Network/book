@@ -30,6 +30,7 @@
 - [Network Architecture](concepts/network-architecture.md)
 - [Bitcoin Integration](concepts/bitcoin-integration.md)
 - [ROAST and FROST Consensus](concepts/consensus.md)
+- [Validator State Machine](concepts/validator-state-machine.md)
 - [Programs](program/program.md)
   - [UTXOs](program/utxo.md)
   - [Accounts](program/accounts.md)
