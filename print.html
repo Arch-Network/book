@@ -7954,6 +7954,199 @@ pub enum DKGStatus {
 <li>State tracking and synchronization</li>
 <li>Failure recovery and error handling</li>
 </ul>
+<h2 id="distributed-key-generation-dkg-deep-dive"><a class="header" href="#distributed-key-generation-dkg-deep-dive">Distributed Key Generation (DKG) Deep Dive</a></h2>
+<h3 id="what-is-dkg"><a class="header" href="#what-is-dkg">What is DKG?</a></h3>
+<p>Distributed Key Generation (DKG) is the cryptographic process that allows a group of validators to collectively generate a master key pair without any single validator knowing the complete private key. This is the foundation of Arch’s threshold signature scheme.</p>
+<h3 id="why-dkg-is-critical"><a class="header" href="#why-dkg-is-critical">Why DKG is Critical</a></h3>
+<p>In Arch’s consensus model:</p>
+<ul>
+<li><strong>No single point of failure</strong>: No validator can sign alone</li>
+<li><strong>Threshold security</strong>: Only a subset of validators (e.g., 2-of-3) need to cooperate</li>
+<li><strong>Distributed trust</strong>: The network’s security doesn’t depend on any single party</li>
+<li><strong>Bitcoin compatibility</strong>: Uses the same secp256k1 curve as Bitcoin</li>
+</ul>
+<h3 id="the-dkg-process-flow"><a class="header" href="#the-dkg-process-flow">The DKG Process Flow</a></h3>
+<h4 id="phase-1-network-initialization"><a class="header" href="#phase-1-network-initialization">Phase 1: Network Initialization</a></h4>
+<ol>
+<li><strong>Validator Startup</strong>: Each validator starts in <code>WaitingForDkg</code> state</li>
+<li><strong>Peer Discovery</strong>: Validators connect to each other and the bootnode</li>
+<li><strong>Whitelist Verification</strong>: All validators in the whitelist must be online</li>
+<li><strong>Leader Initiation</strong>: The designated leader triggers DKG when all peers are ready</li>
+</ol>
+<h4 id="phase-2-round-1---commitment-generation"><a class="header" href="#phase-2-round-1---commitment-generation">Phase 2: Round 1 - Commitment Generation</a></h4>
+<pre class="mermaid">sequenceDiagram
+    participant L as Leader
+    participant V1 as Validator 1
+    participant V2 as Validator 2
+    participant V3 as Validator 3
+    
+    L-&gt;&gt;V1: StartDKG message
+    L-&gt;&gt;V2: StartDKG message
+    L-&gt;&gt;V3: StartDKG message
+    
+    V1-&gt;&gt;L: Round1Package (commitments)
+    V2-&gt;&gt;L: Round1Package (commitments)
+    V3-&gt;&gt;L: Round1Package (commitments)
+    
+    L-&gt;&gt;V1: Broadcast all Round1Packages
+    L-&gt;&gt;V2: Broadcast all Round1Packages
+    L-&gt;&gt;V3: Broadcast all Round1Packages
+</pre>
+<p>Each validator:</p>
+<ul>
+<li>Generates a random secret share</li>
+<li>Creates polynomial commitments</li>
+<li>Broadcasts Round1 packages to all peers</li>
+<li>Waits for Round1 packages from all other validators</li>
+</ul>
+<h4 id="phase-3-round-2---key-generation"><a class="header" href="#phase-3-round-2---key-generation">Phase 3: Round 2 - Key Generation</a></h4>
+<pre class="mermaid">sequenceDiagram
+    participant V1 as Validator 1
+    participant V2 as Validator 2
+    participant V3 as Validator 3
+    
+    V1-&gt;&gt;V2: Round2Package (signed shares)
+    V1-&gt;&gt;V3: Round2Package (signed shares)
+    V2-&gt;&gt;V1: Round2Package (signed shares)
+    V2-&gt;&gt;V3: Round2Package (signed shares)
+    V3-&gt;&gt;V1: Round2Package (signed shares)
+    V3-&gt;&gt;V2: Round2Package (signed shares)
+</pre>
+<p>Each validator:</p>
+<ul>
+<li>Receives Round1 packages from all peers</li>
+<li>Computes their contribution to the final key</li>
+<li>Generates Round2 packages with signed shares</li>
+<li>Exchanges Round2 packages with all peers</li>
+</ul>
+<h4 id="phase-4-finalization"><a class="header" href="#phase-4-finalization">Phase 4: Finalization</a></h4>
+<pre class="mermaid">sequenceDiagram
+    participant V1 as Validator 1
+    participant V2 as Validator 2
+    participant V3 as Validator 3
+    
+    V1-&gt;&gt;V1: Compute final key packages
+    V2-&gt;&gt;V2: Compute final key packages
+    V3-&gt;&gt;V3: Compute final key packages
+    
+    V1-&gt;&gt;V1: Save pubkey_package.json
+    V2-&gt;&gt;V2: Save pubkey_package.json
+    V3-&gt;&gt;V3: Save pubkey_package.json
+</pre>
+<p>Each validator:</p>
+<ul>
+<li>Combines all Round2 packages</li>
+<li>Computes the final <code>PublicKeyPackage</code></li>
+<li>Saves the <code>pubkey_package.json</code> file</li>
+<li>Transitions to <code>Ready</code> state</li>
+</ul>
+<h3 id="the-pubkey_packagejson-file"><a class="header" href="#the-pubkey_packagejson-file">The <code>pubkey_package.json</code> File</a></h3>
+<h4 id="location-and-structure"><a class="header" href="#location-and-structure">Location and Structure</a></h4>
+<p>The <code>pubkey_package.json</code> file is automatically created in:</p>
+<pre><code>{data_dir}/{network_mode}/pubkey_package.json
+</code></pre>
+<p>For example: <code>./.arch_data/devnet/pubkey_package.json</code></p>
+<h4 id="file-format"><a class="header" href="#file-format">File Format</a></h4>
+<pre><code class="language-json">{
+  "verifying_key": {
+    "element": "02a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943c2b752a68e2a47e247c7"
+  },
+  "verifying_shares": {
+    "0000000000000000000000000000000000000000000000000000000000000001": {
+      "element": "02b8d9aa7c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0"
+    },
+    "0000000000000000000000000000000000000000000000000000000000000002": {
+      "element": "03c9eabb8d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1"
+    }
+  }
+}
+</code></pre>
+<h4 id="what-each-field-represents"><a class="header" href="#what-each-field-represents">What Each Field Represents</a></h4>
+<ul>
+<li><strong><code>verifying_key</code></strong>: The master public key for the entire validator set</li>
+<li><strong><code>verifying_shares</code></strong>: Individual public keys for each validator’s share</li>
+<li><strong><code>element</code> fields</strong>: secp256k1 curve points in compressed format</li>
+</ul>
+<h3 id="key-security-properties"><a class="header" href="#key-security-properties">Key Security Properties</a></h3>
+<h4 id="threshold-signing"><a class="header" href="#threshold-signing">Threshold Signing</a></h4>
+<ul>
+<li><strong>2-of-3 example</strong>: With 3 validators, only 2 need to cooperate to sign</li>
+<li><strong>No single point of failure</strong>: No validator can sign alone</li>
+<li><strong>Flexible thresholds</strong>: Can be configured for different security levels</li>
+</ul>
+<h4 id="cryptographic-guarantees"><a class="header" href="#cryptographic-guarantees">Cryptographic Guarantees</a></h4>
+<ul>
+<li><strong>Information theoretic security</strong>: Based on proven cryptographic principles</li>
+<li><strong>Forward secrecy</strong>: Compromised shares don’t reveal past signatures</li>
+<li><strong>Verifiable</strong>: All participants can verify the correctness of the process</li>
+</ul>
+<h3 id="dkg-failure-scenarios"><a class="header" href="#dkg-failure-scenarios">DKG Failure Scenarios</a></h3>
+<h4 id="network-partition"><a class="header" href="#network-partition">Network Partition</a></h4>
+<ul>
+<li>If validators can’t communicate, DKG fails</li>
+<li>Network must be restored before consensus can proceed</li>
+<li>Validators remain in <code>WaitingForDkg</code> state</li>
+</ul>
+<h4 id="insufficient-participation"><a class="header" href="#insufficient-participation">Insufficient Participation</a></h4>
+<ul>
+<li>If not enough validators are online, DKG cannot complete</li>
+<li>Minimum threshold must be met (e.g., 2 out of 3 validators)</li>
+<li>System waits for more validators to come online</li>
+</ul>
+<h4 id="malicious-behavior"><a class="header" href="#malicious-behavior">Malicious Behavior</a></h4>
+<ul>
+<li>Byzantine validators can cause DKG to fail</li>
+<li>System detects inconsistencies and aborts the process</li>
+<li>Failed DKG attempts are logged and can be investigated</li>
+</ul>
+<h3 id="resharing-and-key-rotation"><a class="header" href="#resharing-and-key-rotation">Resharing and Key Rotation</a></h3>
+<h4 id="when-resharing-occurs"><a class="header" href="#when-resharing-occurs">When Resharing Occurs</a></h4>
+<ul>
+<li><strong>Validator set changes</strong>: Adding or removing validators</li>
+<li><strong>Security concerns</strong>: Suspected compromise of existing shares</li>
+<li><strong>Regular rotation</strong>: Periodic key updates for security</li>
+</ul>
+<h4 id="resharing-process"><a class="header" href="#resharing-process">Resharing Process</a></h4>
+<ol>
+<li><strong>Initiation</strong>: Leader initiates resharing with new parameters</li>
+<li><strong>Share Distribution</strong>: Existing validators distribute new shares</li>
+<li><strong>Verification</strong>: New shares are verified against commitments</li>
+<li><strong>Update</strong>: New <code>pubkey_package.json</code> is generated and distributed</li>
+</ol>
+<h3 id="monitoring-and-debugging"><a class="header" href="#monitoring-and-debugging">Monitoring and Debugging</a></h3>
+<h4 id="dkg-status-tracking"><a class="header" href="#dkg-status-tracking">DKG Status Tracking</a></h4>
+<pre><pre class="playground"><code class="language-rust edition2021"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub enum DKGStatus {
+    Pending(String),           // Waiting to start
+    Ongoing(String),           // In progress
+    Failed(String, String),    // Failed with reason
+    Finished(String),          // Completed locally
+    NetworkCompleted(String),  // Completed globally
+}
+<span class="boring">}</span></code></pre></pre>
+<h4 id="common-issues-and-solutions"><a class="header" href="#common-issues-and-solutions">Common Issues and Solutions</a></h4>
+<ul>
+<li><strong>“Waiting for DKG”</strong>: Ensure all validators are online and connected</li>
+<li><strong>“DKG failed”</strong>: Check network connectivity and validator logs</li>
+<li><strong>Missing pubkey_package.json</strong>: DKG hasn’t completed successfully</li>
+</ul>
+<h3 id="integration-with-consensus"><a class="header" href="#integration-with-consensus">Integration with Consensus</a></h3>
+<h4 id="state-transitions"><a class="header" href="#state-transitions">State Transitions</a></h4>
+<pre><code>WaitingForDkg → Ready (after successful DKG)
+</code></pre>
+<h4 id="block-production"><a class="header" href="#block-production">Block Production</a></h4>
+<ul>
+<li>DKG must complete before any blocks can be produced</li>
+<li>The <code>verifying_key</code> is used to verify threshold signatures</li>
+<li>All validators must have identical <code>pubkey_package.json</code> files</li>
+</ul>
+<h4 id="epoch-management"><a class="header" href="#epoch-management">Epoch Management</a></h4>
+<ul>
+<li>DKG results are stored in the blockchain state</li>
+<li>Epoch transitions can trigger resharing operations</li>
+<li>Historical key packages are preserved for verification</li>
+</ul>
 <h2 id="tldr"><a class="header" href="#tldr">TL;DR</a></h2>
 <p>Arch’s consensus mechanism combines ROAST and FROST to provide a robust, Bitcoin-native consensus solution. Validators participate in a threshold signature scheme where blocks are produced by designated leaders and finalized through collective signing. The system maintains both safety and liveness through careful economic incentives and cryptographic guarantees, while ensuring complete compatibility with Bitcoin’s Schnorr signature scheme.</p>
 <h2 id="block-production-process"><a class="header" href="#block-production-process">Block Production Process</a></h2>
