@@ -1,0 +1,942 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Arch CLI Reference - The Arch Book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for the Arch Network - A Bitcoin-native computation environment">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item affix "><li class="part-title">Getting Started</li><li class="chapter-item "><a href="../getting-started/quick-start.html">🚀 Quick Start Guide</a></li><li class="chapter-item "><a href="../getting-started/bitcoin-and-titan-setup.html">🏗️ Validator Setup</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../getting-started/requirements.html">System Requirements</a></li><li class="chapter-item "><a href="../guides/how-to-configure-local-validator-bitcoin-testnet4.html">Setup Options</a></li><li class="chapter-item "><a href="../getting-started/validator-staking.html">Running Your Node</a></li></ol></li><li class="chapter-item "><li class="part-title">Program Development</li><li class="chapter-item "><a href="../guides/understanding-arch-programs.html">Understanding Arch Programs</a></li><li class="chapter-item "><a href="../getting-started/setting-up-a-project.html">Setting Up a Project</a></li><li class="chapter-item "><a href="../guides/writing-your-first-program.html">Writing Your First Program</a></li><li class="chapter-item "><a href="../guides/testing-guide.html">Testing Your Program</a></li><li class="chapter-item "><a href="../guides/guides.html">Program Examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../guides/how-to-create-a-fungible-token.html">Fungible Token</a></li><li class="chapter-item "><a href="../guides/how-to-write-oracle-program.html">Oracle Program</a></li><li class="chapter-item "><a href="../guides/how-to-build-runes-swap.html">Runes Swap</a></li><li class="chapter-item "><a href="../guides/how-to-build-lending-protocol.html">Lending Protocol</a></li></ol></li><li class="chapter-item "><li class="part-title">Arch Program Library (APL)</li><li class="chapter-item "><a href="../apl/introduction.html">Introduction</a></li><li class="chapter-item "><a href="../apl/token-program.html">Token Program</a></li><li class="chapter-item "><a href="../apl/associated-token-account.html">Associated Token Account Program</a></li><li class="chapter-item affix "><li class="part-title">Core Concepts</li><li class="chapter-item "><a href="../concepts/architecture.html">Architecture Overview</a></li><li class="chapter-item "><a href="../concepts/network-architecture.html">Network Architecture</a></li><li class="chapter-item "><a href="../concepts/bitcoin-integration.html">Bitcoin Integration</a></li><li class="chapter-item "><a href="../concepts/consensus.html">ROAST and FROST Consensus</a></li><li class="chapter-item "><a href="../program/program.html">Programs</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../program/utxo.html">UTXOs</a></li><li class="chapter-item "><a href="../program/accounts.html">Accounts</a></li><li class="chapter-item "><a href="../program/instructions-and-messages.html">Instructions</a></li><li class="chapter-item "><a href="../program/syscall.html">System Calls</a></li></ol></li><li class="chapter-item "><a href="../concepts/nodes.html">Node Operation</a></li><li class="chapter-item affix "><li class="part-title">SDK Reference</li><li class="chapter-item "><a href="../sdk/sdk.html">SDK Overview</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/typescript/getting-started.html">TypeScript SDK (Saturn)</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/typescript/api-reference.html">TypeScript API Reference</a></li><li class="chapter-item "><a href="../sdk/typescript/examples.html">TypeScript Examples</a></li><li class="chapter-item "><a href="../sdk/typescript/web3-integration.html">Web3 Integration</a></li></ol></li><li class="chapter-item "><a href="../sdk/rust/getting-started.html">Rust SDK</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/rust/api-reference.html">Rust API Reference</a></li><li class="chapter-item "><a href="../sdk/rust/examples.html">Rust Examples</a></li><li class="chapter-item "><a href="../sdk/rust/program-development.html">Program Development</a></li></ol></li><li class="chapter-item "><a href="../sdk/sdk.html">Core Types</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/pubkey.html">Pubkey</a></li><li class="chapter-item "><a href="../sdk/account.html">Account</a></li><li class="chapter-item "><a href="../sdk/instructions-and-messages.html">Instructions and Messages</a></li><li class="chapter-item "><a href="../sdk/runtime-transaction.html">Runtime Transaction</a></li><li class="chapter-item "><a href="../sdk/processed-transaction.html">Processed Transaction</a></li><li class="chapter-item "><a href="../sdk/signature.html">Signature</a></li></ol></li></ol></li><li class="chapter-item "><li class="part-title">Tools & CLI</li><li class="chapter-item expanded "><a href="../guides/arch-cli-reference.html" class="active">Arch CLI Reference</a></li><li class="chapter-item affix "><li class="part-title">Reference</li><li class="chapter-item "><a href="../rpc/rpc.html">API Reference</a></li><li class="chapter-item "><a href="../system-program/system-program.html">System Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../system-program/create-account.html">Account Creation</a></li><li class="chapter-item "><a href="../system-program/make-executable.html">Program Deployment</a></li></ol></li><li class="chapter-item "><li class="part-title">Resources</li><li class="chapter-item "><a href="../reference/troubleshooting.html">Troubleshooting</a></li><li class="chapter-item "><a href="../getting-started/faq.html">FAQ</a></li><li class="chapter-item "><a href="../getting-started/resources.html">External Resources</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Arch Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book/edit/main/src/guides/arch-cli-reference.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="arch-cli-reference-guide"><a class="header" href="#arch-cli-reference-guide">Arch CLI Reference Guide</a></h1>
+<p>This comprehensive guide covers all available commands and options in the Arch Network CLI tool.</p>
+<h2 id="table-of-contents"><a class="header" href="#table-of-contents">Table of Contents</a></h2>
+<ul>
+<li><a href="#global-options">Global Options</a></li>
+<li><a href="#configuration-management">Configuration Management</a></li>
+<li><a href="#validator-management">Validator Management</a></li>
+<li><a href="#account-operations">Account Operations</a></li>
+<li><a href="#program-deployment">Program Deployment</a></li>
+<li><a href="#transaction-operations">Transaction Operations</a></li>
+<li><a href="#block-and-network-info">Block and Network Info</a></li>
+<li><a href="#apl-token-operations">APL Token Operations</a></li>
+<li><a href="#orchestration-commands">Orchestration Commands</a></li>
+<li><a href="#error-reference">Error Reference</a></li>
+</ul>
+<h2 id="global-options"><a class="header" href="#global-options">Global Options</a></h2>
+<p>These options can be used with any command:</p>
+<pre><code class="language-bash"># Enable verbose output (default: true)
+arch-cli --verbose
+
+# Specify network mode
+arch-cli --network-mode devnet|testnet|mainnet
+
+# Use configuration profile
+arch-cli --profile &lt;PROFILE_NAME&gt;
+
+# Show help
+arch-cli --help
+
+# Show version
+arch-cli --version
+</code></pre>
+<h2 id="configuration-management"><a class="header" href="#configuration-management">Configuration Management</a></h2>
+<h3 id="create-profile"><a class="header" href="#create-profile">Create Profile</a></h3>
+<p>Create a new configuration profile for connecting to Bitcoin and Arch Network nodes:</p>
+<pre><code class="language-bash">arch-cli config create-profile &lt;NAME&gt; \
+    --bitcoin-node-endpoint &lt;URL&gt; \
+    --bitcoin-node-username &lt;USERNAME&gt; \
+    --bitcoin-node-password &lt;PASSWORD&gt; \
+    --bitcoin-network &lt;NETWORK&gt; \
+    --arch-node-url &lt;URL&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;NAME&gt;</code>: Name of the profile</li>
+<li><code>--bitcoin-node-endpoint</code>: Bitcoin node endpoint URL (e.g., “http://127.0.0.1:18443”)</li>
+<li><code>--bitcoin-node-username</code>: Bitcoin node RPC username</li>
+<li><code>--bitcoin-node-password</code>: Bitcoin node RPC password</li>
+<li><code>--bitcoin-network</code>: Bitcoin network (“mainnet”, “testnet”, or “regtest”)</li>
+<li><code>--arch-node-url</code>: Arch Network node URL</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">arch-cli config create-profile testnet \
+    --bitcoin-node-endpoint http://bitcoin-node.test.aws.archnetwork.xyz:49332 \
+    --bitcoin-node-username bitcoin \
+    --bitcoin-node-password uU1taFBTUvae96UCtA8YxAepYTFszYvYVSXK8xgzBs0 \
+    --bitcoin-network testnet \
+    --arch-node-url http://localhost:9002
+</code></pre>
+<h3 id="list-profiles"><a class="header" href="#list-profiles">List Profiles</a></h3>
+<p>List all available configuration profiles:</p>
+<pre><code class="language-bash">arch-cli config list-profiles
+</code></pre>
+<h3 id="update-profile"><a class="header" href="#update-profile">Update Profile</a></h3>
+<p>Update an existing profile’s settings:</p>
+<pre><code class="language-bash">arch-cli config update-profile &lt;NAME&gt; \
+    [--bitcoin-node-endpoint &lt;URL&gt;] \
+    [--bitcoin-node-username &lt;USERNAME&gt;] \
+    [--bitcoin-node-password &lt;PASSWORD&gt;] \
+    [--bitcoin-network &lt;NETWORK&gt;] \
+    [--arch-node-url &lt;URL&gt;]
+</code></pre>
+<p>All update arguments are optional. Only specified fields will be updated.</p>
+<h3 id="delete-profile"><a class="header" href="#delete-profile">Delete Profile</a></h3>
+<p>Delete a configuration profile:</p>
+<pre><code class="language-bash">arch-cli config delete-profile &lt;NAME&gt;
+</code></pre>
+<p><strong>Note:</strong> The default profile cannot be deleted.</p>
+<h3 id="set-default-profile"><a class="header" href="#set-default-profile">Set Default Profile</a></h3>
+<p>Set which profile is used by default:</p>
+<pre><code class="language-bash">arch-cli config set-default-profile &lt;NAME&gt;
+</code></pre>
+<h2 id="validator-management"><a class="header" href="#validator-management">Validator Management</a></h2>
+<h3 id="start-validator"><a class="header" href="#start-validator">Start Validator</a></h3>
+<p>Start a local validator node:</p>
+<pre><code class="language-bash">arch-cli validator-start [OPTIONS]
+</code></pre>
+<p><strong>Common Options:</strong></p>
+<ul>
+<li><code>--data-dir &lt;PATH&gt;</code>: Data directory for validator</li>
+<li><code>--network-mode &lt;MODE&gt;</code>: Network mode (devnet, testnet, mainnet)</li>
+<li><code>--rpc-bind-ip &lt;IP&gt;</code>: RPC bind IP address</li>
+<li><code>--rpc-bind-port &lt;PORT&gt;</code>: RPC bind port</li>
+<li><code>--titan-endpoint &lt;URL&gt;</code>: Titan HTTP endpoint</li>
+<li><code>--titan-socket-endpoint &lt;HOST:PORT&gt;</code>: Titan TCP endpoint</li>
+<li><code>--max-tx-pool-size &lt;SIZE&gt;</code>: Maximum transaction pool size</li>
+<li><code>--full-snapshot-reccurence &lt;COUNT&gt;</code>: Snapshot frequency</li>
+<li><code>--max-snapshots &lt;COUNT&gt;</code>: Maximum snapshots to keep</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">arch-cli validator-start \
+    --network-mode testnet \
+    --data-dir ./.arch_data \
+    --rpc-bind-ip 127.0.0.1 \
+    --rpc-bind-port 9002 \
+    --titan-endpoint https://titan-public-http.test.arch.network \
+    --titan-socket-endpoint titan-public-tcp.test.arch.network:3030
+</code></pre>
+<h2 id="account-operations"><a class="header" href="#account-operations">Account Operations</a></h2>
+<h3 id="create-account"><a class="header" href="#create-account">Create Account</a></h3>
+<p>Create a new account:</p>
+<pre><code class="language-bash">arch-cli account create --keypair-path &lt;PATH&gt; [--airdrop]
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>--keypair-path &lt;PATH&gt;</code>: Path to save the generated keypair file</li>
+<li><code>--airdrop</code>: Whether to airdrop 1 ARCH to the new account</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">arch-cli account create --keypair-path ./my-account.json --airdrop
+</code></pre>
+<h3 id="fund-account"><a class="header" href="#fund-account">Fund Account</a></h3>
+<p>Fund an existing account using the faucet:</p>
+<pre><code class="language-bash">arch-cli account airdrop \
+    [--keypair-path &lt;PATH&gt; | --account &lt;PUBKEY&gt; | --pubkey &lt;PUBKEY&gt;] \
+    --amount &lt;LAMPORTS&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>--keypair-path &lt;PATH&gt;</code>: Path to the keypair file to fund</li>
+<li><code>--account &lt;PUBKEY&gt;</code>: Account public key to fund (hex format)</li>
+<li><code>--pubkey &lt;PUBKEY&gt;</code>: Account public key to fund (hex format, alias for –account)</li>
+<li><code>--amount &lt;LAMPORTS&gt;</code>: Amount to airdrop (default: 1,000,000,000)</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-bash"># Fund by keypair file
+arch-cli account airdrop --keypair-path ./my-account.json --amount 1000000000
+
+# Fund by public key
+arch-cli account airdrop --pubkey 02a0434d9e47f3c86235477c7b1ae6ae5d3442d49b1943c2b752a68e2a47e247c7 --amount 1000000000
+</code></pre>
+<h3 id="change-account-owner"><a class="header" href="#change-account-owner">Change Account Owner</a></h3>
+<p>Change the owner of an account:</p>
+<pre><code class="language-bash">arch-cli account change-owner &lt;ACCOUNT_ADDRESS&gt; &lt;NEW_OWNER&gt; &lt;PAYER_KEYPAIR&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Address of the account to change ownership of</li>
+<li><code>&lt;NEW_OWNER&gt;</code>: New owner’s public key</li>
+<li><code>&lt;PAYER_KEYPAIR&gt;</code>: Payer’s keypair path</li>
+</ul>
+<h3 id="assign-utxo"><a class="header" href="#assign-utxo">Assign UTXO</a></h3>
+<p>Assign UTXOs to an account:</p>
+<pre><code class="language-bash">arch-cli account assign-utxo &lt;ACCOUNT_PUBKEY&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;ACCOUNT_PUBKEY&gt;</code>: Public key of the account to assign UTXOs to</li>
+</ul>
+<h2 id="program-deployment"><a class="header" href="#program-deployment">Program Deployment</a></h2>
+<h3 id="deploy-program"><a class="header" href="#deploy-program">Deploy Program</a></h3>
+<p>Deploy a compiled program to the Arch Network:</p>
+<pre><code class="language-bash">arch-cli deploy [&lt;ELF_PATH&gt;] [--generate-if-missing] [--fund-authority]
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;ELF_PATH&gt;</code> (Optional): Path to the directory containing the ELF file and keypair</li>
+<li><code>--generate-if-missing</code>: Automatically generate program and authority keypair files</li>
+<li><code>--fund-authority</code>: Fund the authority account using the faucet</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">arch-cli deploy ./target/deploy/program.so --generate-if-missing --fund-authority
+</code></pre>
+<h2 id="transaction-operations"><a class="header" href="#transaction-operations">Transaction Operations</a></h2>
+<h3 id="confirm-transaction"><a class="header" href="#confirm-transaction">Confirm Transaction</a></h3>
+<p>Check the status of a transaction:</p>
+<pre><code class="language-bash">arch-cli tx confirm &lt;TX_ID&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;TX_ID&gt;</code>: Transaction ID to confirm (32-byte hex string)</li>
+</ul>
+<h3 id="get-transaction"><a class="header" href="#get-transaction">Get Transaction</a></h3>
+<p>Get transaction details:</p>
+<pre><code class="language-bash">arch-cli tx get &lt;TX_ID&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;TX_ID&gt;</code>: Transaction ID to retrieve</li>
+</ul>
+<h3 id="log-program-messages"><a class="header" href="#log-program-messages">Log Program Messages</a></h3>
+<p>View program messages from a transaction:</p>
+<pre><code class="language-bash">arch-cli tx log-program-messages &lt;TX_ID&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;TX_ID&gt;</code>: Transaction ID to log</li>
+</ul>
+<h2 id="block-and-network-info"><a class="header" href="#block-and-network-info">Block and Network Info</a></h2>
+<h3 id="get-block"><a class="header" href="#get-block">Get Block</a></h3>
+<p>Retrieve information about a specific block:</p>
+<pre><code class="language-bash">arch-cli get-block &lt;BLOCK_HASH&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;BLOCK_HASH&gt;</code>: Block hash to retrieve (32-byte hex string)</li>
+</ul>
+<h3 id="get-block-height"><a class="header" href="#get-block-height">Get Block Height</a></h3>
+<p>Get the current block height:</p>
+<pre><code class="language-bash">arch-cli get-block-height
+</code></pre>
+<h3 id="get-group-key"><a class="header" href="#get-group-key">Get Group Key</a></h3>
+<p>Fetch the network’s group verifying key:</p>
+<pre><code class="language-bash">arch-cli get-group-key &lt;PUBKEY&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;PUBKEY&gt;</code>: Public key (not used in current implementation but kept for compatibility)</li>
+</ul>
+<h3 id="show-accountprogram"><a class="header" href="#show-accountprogram">Show Account/Program</a></h3>
+<p>Display information about an account or program:</p>
+<pre><code class="language-bash">arch-cli show &lt;ADDRESS&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;ADDRESS&gt;</code>: Address of the account or program to show</li>
+</ul>
+<h2 id="apl-token-operations"><a class="header" href="#apl-token-operations">APL Token Operations</a></h2>
+<h3 id="token-mint-management"><a class="header" href="#token-mint-management">Token Mint Management</a></h3>
+<h4 id="create-mint"><a class="header" href="#create-mint">Create Mint</a></h4>
+<p>Create a new token mint:</p>
+<pre><code class="language-bash">arch-cli token create-mint \
+    --decimals &lt;DECIMALS&gt; \
+    --mint-authority &lt;PATH&gt; \
+    --keypair-path &lt;PATH&gt; \
+    [--freeze-authority &lt;PATH&gt;] \
+    [--mint-keypair-path &lt;PATH&gt;]
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>--decimals &lt;DECIMALS&gt;</code>: Number of decimal places (0-9)</li>
+<li><code>--mint-authority &lt;PATH&gt;</code>: Keypair path for mint authority</li>
+<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
+<li><code>--freeze-authority &lt;PATH&gt;</code>: Optional keypair path for freeze authority</li>
+<li><code>--mint-keypair-path &lt;PATH&gt;</code>: Optional keypair path for the mint account</li>
+</ul>
+<h4 id="show-mint"><a class="header" href="#show-mint">Show Mint</a></h4>
+<p>Display mint information:</p>
+<pre><code class="language-bash">arch-cli token show-mint &lt;MINT_ADDRESS&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;MINT_ADDRESS&gt;</code>: Public key of the mint to display</li>
+</ul>
+<h3 id="token-account-management"><a class="header" href="#token-account-management">Token Account Management</a></h3>
+<h4 id="create-token-account"><a class="header" href="#create-token-account">Create Token Account</a></h4>
+<p>Create a new token account:</p>
+<pre><code class="language-bash">arch-cli token create-account \
+    --mint &lt;MINT&gt; \
+    --owner &lt;PATH&gt; \
+    --keypair-path &lt;PATH&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>--mint &lt;MINT&gt;</code>: Public key of the mint</li>
+<li><code>--owner &lt;PATH&gt;</code>: Keypair path for account owner</li>
+<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
+</ul>
+<h4 id="show-token-account"><a class="header" href="#show-token-account">Show Token Account</a></h4>
+<p>Display token account information:</p>
+<pre><code class="language-bash">arch-cli token show-account &lt;ACCOUNT_ADDRESS&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the token account</li>
+</ul>
+<h3 id="basic-token-operations"><a class="header" href="#basic-token-operations">Basic Token Operations</a></h3>
+<h4 id="mint-tokens"><a class="header" href="#mint-tokens">Mint Tokens</a></h4>
+<p>Mint tokens to an account:</p>
+<pre><code class="language-bash">arch-cli token mint &lt;MINT_ADDRESS&gt; &lt;AMOUNT&gt; \
+    --authority &lt;PATH&gt; \
+    --keypair-path &lt;PATH&gt; \
+    [--account-address &lt;ADDRESS&gt;] \
+    [--auto-create-ata] \
+    [--multisig &lt;ADDRESS&gt;] \
+    [--signers &lt;PATHS&gt;]
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;MINT_ADDRESS&gt;</code>: Public key of the mint</li>
+<li><code>&lt;AMOUNT&gt;</code>: Amount to mint (raw amount)</li>
+<li><code>--authority &lt;PATH&gt;</code>: Keypair path for mint authority</li>
+<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
+<li><code>--account-address &lt;ADDRESS&gt;</code>: Public key of destination account (optional)</li>
+<li><code>--auto-create-ata</code>: Whether to auto-create Associated Token Account</li>
+<li><code>--multisig &lt;ADDRESS&gt;</code>: Multisig authority address</li>
+<li><code>--signers &lt;PATHS&gt;</code>: Keypair paths for multisig signers</li>
+</ul>
+<h4 id="transfer-tokens"><a class="header" href="#transfer-tokens">Transfer Tokens</a></h4>
+<p>Transfer tokens between accounts:</p>
+<pre><code class="language-bash">arch-cli token transfer &lt;SOURCE_ACCOUNT&gt; &lt;DESTINATION_ACCOUNT&gt; &lt;AMOUNT&gt; \
+    --owner &lt;PATH&gt; \
+    --keypair-path &lt;PATH&gt; \
+    [--multisig &lt;ADDRESS&gt;] \
+    [--signers &lt;PATHS&gt;]
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;SOURCE_ACCOUNT&gt;</code>: Public key of source account</li>
+<li><code>&lt;DESTINATION_ACCOUNT&gt;</code>: Public key of destination account</li>
+<li><code>&lt;AMOUNT&gt;</code>: Amount to transfer (raw amount)</li>
+<li><code>--owner &lt;PATH&gt;</code>: Keypair path for account owner</li>
+<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
+<li><code>--multisig &lt;ADDRESS&gt;</code>: Multisig owner address</li>
+<li><code>--signers &lt;PATHS&gt;</code>: Keypair paths for multisig signers</li>
+</ul>
+<h4 id="burn-tokens"><a class="header" href="#burn-tokens">Burn Tokens</a></h4>
+<p>Burn tokens from an account:</p>
+<pre><code class="language-bash">arch-cli token burn &lt;ACCOUNT_ADDRESS&gt; &lt;AMOUNT&gt; \
+    --owner &lt;PATH&gt; \
+    --keypair-path &lt;PATH&gt; \
+    [--multisig &lt;ADDRESS&gt;] \
+    [--signers &lt;PATHS&gt;]
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the account to burn from</li>
+<li><code>&lt;AMOUNT&gt;</code>: Amount to burn (raw amount)</li>
+<li><code>--owner &lt;PATH&gt;</code>: Keypair path for account owner</li>
+<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
+<li><code>--multisig &lt;ADDRESS&gt;</code>: Multisig owner address</li>
+<li><code>--signers &lt;PATHS&gt;</code>: Keypair paths for multisig signers</li>
+</ul>
+<h3 id="advanced-token-features"><a class="header" href="#advanced-token-features">Advanced Token Features</a></h3>
+<h4 id="multisig-operations"><a class="header" href="#multisig-operations">Multisig Operations</a></h4>
+<h5 id="create-multisig"><a class="header" href="#create-multisig">Create Multisig</a></h5>
+<p>Create a multisignature authority:</p>
+<pre><code class="language-bash">arch-cli token create-multisig &lt;M&gt; --signers &lt;PATHS&gt; --keypair-path &lt;PATH&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;M&gt;</code>: Number of required signers</li>
+<li><code>--signers &lt;PATHS&gt;</code>: Keypair paths for signers</li>
+<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
+</ul>
+<h5 id="sign-multisig-transaction"><a class="header" href="#sign-multisig-transaction">Sign Multisig Transaction</a></h5>
+<p>Sign a transaction with multisig:</p>
+<pre><code class="language-bash">arch-cli token multisig-sign &lt;MULTISIG_ADDRESS&gt; &lt;TRANSACTION&gt; --keypair-path &lt;PATH&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;MULTISIG_ADDRESS&gt;</code>: Public key of the multisig account</li>
+<li><code>&lt;TRANSACTION&gt;</code>: Transaction to sign (base64 encoded)</li>
+<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for the signer</li>
+</ul>
+<h5 id="execute-multisig-transaction"><a class="header" href="#execute-multisig-transaction">Execute Multisig Transaction</a></h5>
+<p>Execute a signed multisig transaction:</p>
+<pre><code class="language-bash">arch-cli token multisig-execute &lt;MULTISIG_ADDRESS&gt; &lt;TRANSACTION&gt; \
+    --signers &lt;PATHS&gt; \
+    --keypair-path &lt;PATH&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;MULTISIG_ADDRESS&gt;</code>: Public key of the multisig account</li>
+<li><code>&lt;TRANSACTION&gt;</code>: Transaction to execute (base64 encoded)</li>
+<li><code>--signers &lt;PATHS&gt;</code>: Keypair paths for signers</li>
+<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
+</ul>
+<h5 id="show-multisig"><a class="header" href="#show-multisig">Show Multisig</a></h5>
+<p>Display multisig account information:</p>
+<pre><code class="language-bash">arch-cli token multisig-show &lt;MULTISIG_ADDRESS&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;MULTISIG_ADDRESS&gt;</code>: Public key of the multisig account</li>
+</ul>
+<h4 id="authority-management"><a class="header" href="#authority-management">Authority Management</a></h4>
+<h5 id="approve-delegate"><a class="header" href="#approve-delegate">Approve Delegate</a></h5>
+<p>Approve a delegate for spending:</p>
+<pre><code class="language-bash">arch-cli token approve &lt;ACCOUNT_ADDRESS&gt; &lt;DELEGATE_ADDRESS&gt; &lt;AMOUNT&gt; --owner &lt;PATH&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the account to approve</li>
+<li><code>&lt;DELEGATE_ADDRESS&gt;</code>: Public key of the delegate</li>
+<li><code>&lt;AMOUNT&gt;</code>: Amount to approve</li>
+<li><code>--owner &lt;PATH&gt;</code>: Keypair path for account owner</li>
+</ul>
+<h5 id="revoke-delegate"><a class="header" href="#revoke-delegate">Revoke Delegate</a></h5>
+<p>Revoke delegate authority:</p>
+<pre><code class="language-bash">arch-cli token revoke &lt;ACCOUNT_ADDRESS&gt; --owner &lt;PATH&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the account to revoke</li>
+<li><code>--owner &lt;PATH&gt;</code>: Keypair path for account owner</li>
+</ul>
+<h5 id="freezethaw-account"><a class="header" href="#freezethaw-account">Freeze/Thaw Account</a></h5>
+<p>Freeze or thaw a token account:</p>
+<pre><code class="language-bash"># Freeze account
+arch-cli token freeze-account &lt;ACCOUNT_ADDRESS&gt; --authority &lt;PATH&gt;
+
+# Thaw account
+arch-cli token thaw-account &lt;ACCOUNT_ADDRESS&gt; --authority &lt;PATH&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the account to freeze/thaw</li>
+<li><code>--authority &lt;PATH&gt;</code>: Keypair path for freeze authority</li>
+</ul>
+<h4 id="utility-commands"><a class="header" href="#utility-commands">Utility Commands</a></h4>
+<h5 id="check-balance"><a class="header" href="#check-balance">Check Balance</a></h5>
+<p>Display token balance:</p>
+<pre><code class="language-bash">arch-cli token balance &lt;ACCOUNT_ADDRESS&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the token account</li>
+</ul>
+<h5 id="check-supply"><a class="header" href="#check-supply">Check Supply</a></h5>
+<p>Display mint supply:</p>
+<pre><code class="language-bash">arch-cli token supply &lt;MINT_ADDRESS&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;MINT_ADDRESS&gt;</code>: Public key of the mint</li>
+</ul>
+<h5 id="list-accounts"><a class="header" href="#list-accounts">List Accounts</a></h5>
+<p>List token accounts for a mint:</p>
+<pre><code class="language-bash">arch-cli token accounts &lt;MINT_ADDRESS&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;MINT_ADDRESS&gt;</code>: Public key of the mint</li>
+</ul>
+<h5 id="list-mints"><a class="header" href="#list-mints">List Mints</a></h5>
+<p>List all mints:</p>
+<pre><code class="language-bash">arch-cli token mints
+</code></pre>
+<h5 id="amount-conversion"><a class="header" href="#amount-conversion">Amount Conversion</a></h5>
+<p>Convert between raw and UI amounts:</p>
+<pre><code class="language-bash"># Convert raw amount to UI format
+arch-cli token amount-to-ui &lt;MINT_ADDRESS&gt; &lt;AMOUNT&gt;
+
+# Convert UI amount to raw format
+arch-cli token ui-to-amount &lt;MINT_ADDRESS&gt; &lt;UI_AMOUNT&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;MINT_ADDRESS&gt;</code>: Public key of the mint</li>
+<li><code>&lt;AMOUNT&gt;</code>: Raw amount to convert</li>
+<li><code>&lt;UI_AMOUNT&gt;</code>: UI amount to convert</li>
+</ul>
+<h4 id="checked-operations"><a class="header" href="#checked-operations">Checked Operations</a></h4>
+<p>For operations with decimal verification:</p>
+<pre><code class="language-bash"># Transfer with decimal verification
+arch-cli token transfer-checked &lt;SOURCE&gt; &lt;DESTINATION&gt; &lt;AMOUNT&gt; &lt;DECIMALS&gt; --owner &lt;PATH&gt;
+
+# Approve with decimal verification
+arch-cli token approve-checked &lt;ACCOUNT&gt; &lt;DELEGATE&gt; &lt;AMOUNT&gt; &lt;DECIMALS&gt; --owner &lt;PATH&gt;
+
+# Mint with decimal verification
+arch-cli token mint-to-checked &lt;MINT&gt; &lt;ACCOUNT&gt; &lt;AMOUNT&gt; &lt;DECIMALS&gt; --authority &lt;PATH&gt;
+
+# Burn with decimal verification
+arch-cli token burn-checked &lt;ACCOUNT&gt; &lt;AMOUNT&gt; &lt;DECIMALS&gt; --owner &lt;PATH&gt;
+</code></pre>
+<h4 id="authority-management-1"><a class="header" href="#authority-management-1">Authority Management</a></h4>
+<h5 id="set-authority"><a class="header" href="#set-authority">Set Authority</a></h5>
+<p>Set authority on mint or account:</p>
+<pre><code class="language-bash">arch-cli token set-authority &lt;TARGET_ADDRESS&gt; \
+    --authority-type &lt;TYPE&gt; \
+    --current-authority &lt;PATH&gt; \
+    [--new-authority &lt;ADDRESS&gt;]
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;TARGET_ADDRESS&gt;</code>: Public key of the mint or account</li>
+<li><code>--authority-type &lt;TYPE&gt;</code>: Type of authority to set</li>
+<li><code>--current-authority &lt;PATH&gt;</code>: Keypair path for current authority</li>
+<li><code>--new-authority &lt;ADDRESS&gt;</code>: New authority address (optional, use “none” to disable)</li>
+</ul>
+<h4 id="account-management"><a class="header" href="#account-management">Account Management</a></h4>
+<h5 id="close-account"><a class="header" href="#close-account">Close Account</a></h5>
+<p>Close a token account:</p>
+<pre><code class="language-bash">arch-cli token close-account &lt;ACCOUNT_ADDRESS&gt; &lt;DESTINATION_ADDRESS&gt; --owner &lt;PATH&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Public key of the account to close</li>
+<li><code>&lt;DESTINATION_ADDRESS&gt;</code>: Public key of the destination for remaining SOL</li>
+<li><code>--owner &lt;PATH&gt;</code>: Keypair path for account owner</li>
+</ul>
+<h4 id="batch-operations"><a class="header" href="#batch-operations">Batch Operations</a></h4>
+<h5 id="batch-transfer"><a class="header" href="#batch-transfer">Batch Transfer</a></h5>
+<p>Batch transfer tokens:</p>
+<pre><code class="language-bash">arch-cli token batch-transfer &lt;TRANSFERS_FILE&gt; --keypair-path &lt;PATH&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;TRANSFERS_FILE&gt;</code>: JSON file containing transfer operations</li>
+<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
+</ul>
+<h5 id="batch-mint"><a class="header" href="#batch-mint">Batch Mint</a></h5>
+<p>Batch mint tokens:</p>
+<pre><code class="language-bash">arch-cli token batch-mint &lt;MINTS_FILE&gt; --keypair-path &lt;PATH&gt;
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>&lt;MINTS_FILE&gt;</code>: JSON file containing mint operations</li>
+<li><code>--keypair-path &lt;PATH&gt;</code>: Keypair path for transaction signing</li>
+</ul>
+<h2 id="orchestration-commands"><a class="header" href="#orchestration-commands">Orchestration Commands</a></h2>
+<h3 id="start-full-environment"><a class="header" href="#start-full-environment">Start Full Environment</a></h3>
+<p>Start the complete local devnet (bitcoind, titan, local_validator):</p>
+<pre><code class="language-bash">arch-cli orchestrate start [OPTIONS]
+</code></pre>
+<p><strong>Options:</strong></p>
+<ul>
+<li><code>--local &lt;PATH&gt;</code>: Use local arch-network source code instead of remote image</li>
+<li><code>--force-rebuild</code>: Force rebuild of the local validator Docker image</li>
+<li><code>--rebuild-titan</code>: Force rebuild of the Titan Docker image</li>
+<li><code>--titan-image &lt;IMAGE&gt;</code>: Specify which Titan Docker image to use</li>
+<li><code>--no-bitcoind</code>: Skip starting bitcoind, use profile’s Bitcoin RPC</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-bash"># Start with default images
+arch-cli orchestrate start
+
+# Start with local source code
+arch-cli orchestrate start --local "$(pwd)"
+
+# Start with custom Titan image
+arch-cli orchestrate start --titan-image ghcr.io/arch-network/titan:latest
+
+# Start without bitcoind (use profile's Bitcoin RPC)
+arch-cli orchestrate start --no-bitcoind
+</code></pre>
+<h3 id="stop-environment"><a class="header" href="#stop-environment">Stop Environment</a></h3>
+<p>Stop the local devnet:</p>
+<pre><code class="language-bash">arch-cli orchestrate stop
+</code></pre>
+<h3 id="reset-environment"><a class="header" href="#reset-environment">Reset Environment</a></h3>
+<p>Reset the entire environment:</p>
+<pre><code class="language-bash">arch-cli orchestrate reset
+</code></pre>
+<p>This stops all services, removes all Docker volumes, and deletes local data directories.</p>
+<h3 id="fine-grained-control"><a class="header" href="#fine-grained-control">Fine-Grained Control</a></h3>
+<h4 id="validator-only-operations"><a class="header" href="#validator-only-operations">Validator Only Operations</a></h4>
+<pre><code class="language-bash"># Start only the local_validator service
+arch-cli orchestrate validator-start
+
+# Stop only the local_validator service
+arch-cli orchestrate validator-stop
+
+# Restart only the local_validator service
+arch-cli orchestrate validator-restart
+
+# Check validator status
+arch-cli orchestrate validator-status
+
+# Reset only the local_validator
+arch-cli orchestrate validator-reset
+</code></pre>
+<h4 id="bitcoin-mining"><a class="header" href="#bitcoin-mining">Bitcoin Mining</a></h4>
+<p>Mine Bitcoin blocks in regtest mode:</p>
+<pre><code class="language-bash">arch-cli orchestrate mine-blocks [--num-blocks &lt;COUNT&gt;]
+</code></pre>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><code>--num-blocks &lt;COUNT&gt;</code>: Number of blocks to mine (default: 1)</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-bash"># Mine 1 block
+arch-cli orchestrate mine-blocks
+
+# Mine 10 blocks
+arch-cli orchestrate mine-blocks --num-blocks 10
+</code></pre>
+<h2 id="error-reference"><a class="header" href="#error-reference">Error Reference</a></h2>
+<h3 id="general-errors"><a class="header" href="#general-errors">General Errors</a></h3>
+<ul>
+<li><code>Invalid length</code>: Input data is not the correct length (usually for 32-byte hex strings)</li>
+<li><code>Failed to process result: &lt;operation&gt;</code>: Failed to process RPC response</li>
+<li><code>Failed to change account owner</code>: Failed to change the account’s owner</li>
+</ul>
+<h3 id="profile-errors"><a class="header" href="#profile-errors">Profile Errors</a></h3>
+<ul>
+<li><code>Profile not found</code>: The specified profile does not exist</li>
+<li><code>Invalid URL format</code>: The provided URL is not properly formatted</li>
+<li><code>Invalid Bitcoin network</code>: Bitcoin network must be one of: mainnet, testnet, regtest</li>
+<li><code>Cannot delete default profile</code>: The default profile cannot be deleted</li>
+</ul>
+<h3 id="deploy-command-errors"><a class="header" href="#deploy-command-errors">Deploy Command Errors</a></h3>
+<ul>
+<li><code>Invalid deploy path '&lt;PATH&gt;'</code>: The specified directory does not exist</li>
+<li><code>No .so file found in &lt;PATH&gt;</code>: No compiled program file found in the deploy directory</li>
+<li><code>Keypair file '&lt;PROGRAM_NAME&gt;-keypair.json' not found in &lt;PATH&gt;</code>: Missing keypair file</li>
+</ul>
+<h3 id="account-creation-errors"><a class="header" href="#account-creation-errors">Account Creation Errors</a></h3>
+<ul>
+<li><code>Missing required fields</code>: One or more required fields are missing</li>
+<li><code>Failed to create account</code>: General account creation failure</li>
+<li><code>Faucet funding failed</code>: Could not fund the account using the faucet</li>
+</ul>
+<h3 id="token-operation-errors"><a class="header" href="#token-operation-errors">Token Operation Errors</a></h3>
+<ul>
+<li><code>Invalid mint address</code>: The specified mint address is not valid</li>
+<li><code>Insufficient balance</code>: Account does not have enough tokens for the operation</li>
+<li><code>Invalid authority</code>: The provided authority is not valid for this operation</li>
+<li><code>Multisig validation failed</code>: Multisig operation validation failed</li>
+</ul>
+<h3 id="orchestration-errors"><a class="header" href="#orchestration-errors">Orchestration Errors</a></h3>
+<ul>
+<li><code>Docker not running</code>: Docker daemon is not running</li>
+<li><code>Port already in use</code>: Required ports are already occupied</li>
+<li><code>Image build failed</code>: Failed to build Docker image from local source</li>
+<li><code>Service startup failed</code>: Failed to start one or more services</li>
+</ul>
+<h2 id="best-practices"><a class="header" href="#best-practices">Best Practices</a></h2>
+<h3 id="configuration-profiles"><a class="header" href="#configuration-profiles">Configuration Profiles</a></h3>
+<ol>
+<li><strong>Use descriptive names</strong>: Name profiles based on their purpose (e.g., <code>dev-local</code>, <code>testnet-remote</code>)</li>
+<li><strong>Match network modes</strong>: Ensure profile’s Bitcoin network matches your CLI network mode</li>
+<li><strong>Secure credentials</strong>: Store sensitive information in profiles rather than command line</li>
+<li><strong>Environment variables</strong>: Use <code>ARCH_PROFILE</code> for automation scripts</li>
+</ol>
+<h3 id="token-operations"><a class="header" href="#token-operations">Token Operations</a></h3>
+<ol>
+<li><strong>Verify decimals</strong>: Always use the correct decimal places for your mint</li>
+<li><strong>Check authorities</strong>: Ensure you have the correct authority for operations</li>
+<li><strong>Use multisig</strong>: Implement multisig for high-value operations</li>
+<li><strong>Batch operations</strong>: Use batch commands for multiple similar operations</li>
+</ol>
+<h3 id="development-workflow"><a class="header" href="#development-workflow">Development Workflow</a></h3>
+<ol>
+<li><strong>Local development</strong>: Use <code>orchestrate start --local</code> for testing local changes</li>
+<li><strong>Profile management</strong>: Create separate profiles for different environments</li>
+<li><strong>Reset when needed</strong>: Use <code>orchestrate reset</code> to start with a clean state</li>
+<li><strong>Monitor logs</strong>: Use <code>--verbose</code> flag for detailed output during development</li>
+</ol>
+<h3 id="security-considerations"><a class="header" href="#security-considerations">Security Considerations</a></h3>
+<ol>
+<li><strong>Key management</strong>: Store keypairs securely and never share private keys</li>
+<li><strong>Network isolation</strong>: Use appropriate network modes for different use cases</li>
+<li><strong>Authority limits</strong>: Limit authority access to only what’s necessary</li>
+<li><strong>Regular updates</strong>: Keep arch-cli and dependencies updated</li>
+</ol>
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
+<h3 id="common-issues"><a class="header" href="#common-issues">Common Issues</a></h3>
+<h4 id="validator-wont-start"><a class="header" href="#validator-wont-start">Validator Won’t Start</a></h4>
+<pre><code class="language-bash"># Check if ports are available
+netstat -an | grep 9002
+
+# Check Docker status
+docker ps -a
+
+# Reset environment
+arch-cli orchestrate reset
+</code></pre>
+<h4 id="token-operations-fail"><a class="header" href="#token-operations-fail">Token Operations Fail</a></h4>
+<pre><code class="language-bash"># Verify mint exists
+arch-cli token show-mint &lt;MINT_ADDRESS&gt;
+
+# Check account balance
+arch-cli token balance &lt;ACCOUNT_ADDRESS&gt;
+
+# Verify authority
+arch-cli token show-account &lt;ACCOUNT_ADDRESS&gt;
+</code></pre>
+<h4 id="profile-issues"><a class="header" href="#profile-issues">Profile Issues</a></h4>
+<pre><code class="language-bash"># List all profiles
+arch-cli config list-profiles
+
+# Check profile details
+arch-cli config show-profile &lt;NAME&gt;
+
+# Test profile connection
+arch-cli --profile &lt;NAME&gt; get-block-height
+</code></pre>
+<h3 id="getting-help"><a class="header" href="#getting-help">Getting Help</a></h3>
+<ul>
+<li><strong>Discord Community</strong>: <a href="https://discord.gg/archnetwork">https://discord.gg/archnetwork</a></li>
+<li><strong>GitHub Issues</strong>: <a href="https://github.com/Arch-Network/arch-node/issues">https://github.com/Arch-Network/arch-node/issues</a></li>
+<li><strong>Documentation</strong>: <a href="https://docs.arch.network">https://docs.arch.network</a></li>
+</ul>
+<h2 id="version-compatibility"><a class="header" href="#version-compatibility">Version Compatibility</a></h2>
+<p>This guide covers arch-cli version 1.85.0 and later. For older versions, please refer to the appropriate release documentation.</p>
+<p><strong>Minimum Requirements:</strong></p>
+<ul>
+<li>Rust: 1.84.1+</li>
+<li>Solana CLI: 2.2.14+</li>
+<li>Docker: 20.10+ (for orchestration features)</li>
+<li>OS: Linux, macOS, or Windows (WSL2)</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../sdk/signature.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../rpc/rpc.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../sdk/signature.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../rpc/rpc.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/mermaid.min.js"></script>
+        <script src="../theme/mermaid-init.js"></script>
+        <script src="../theme/custom.js"></script>
+
+
+    </div>
+    </body>
+</html>
