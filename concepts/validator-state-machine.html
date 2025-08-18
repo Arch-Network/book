@@ -1,0 +1,484 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Validator State Machine - The Arch Book</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for the Arch Network - A Bitcoin-native computation environment">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/custom.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item affix "><li class="part-title">Getting Started</li><li class="chapter-item "><a href="../getting-started/quick-start.html">🚀 Quick Start Guide</a></li><li class="chapter-item "><a href="../getting-started/bitcoin-and-titan-setup.html">🏗️ Validator Setup</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../getting-started/requirements.html">System Requirements</a></li><li class="chapter-item "><a href="../guides/how-to-configure-local-validator-bitcoin-testnet4.html">Setup Options</a></li><li class="chapter-item "><a href="../getting-started/validator-staking.html">Running Your Node</a></li></ol></li><li class="chapter-item "><li class="part-title">Program Development</li><li class="chapter-item "><a href="../guides/understanding-arch-programs.html">Understanding Arch Programs</a></li><li class="chapter-item "><a href="../getting-started/setting-up-a-project.html">Setting Up a Project</a></li><li class="chapter-item "><a href="../guides/writing-your-first-program.html">Writing Your First Program</a></li><li class="chapter-item "><a href="../guides/testing-guide.html">Testing Your Program</a></li><li class="chapter-item "><a href="../guides/guides.html">Program Examples</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../guides/how-to-create-a-fungible-token.html">Fungible Token</a></li><li class="chapter-item "><a href="../guides/how-to-write-oracle-program.html">Oracle Program</a></li><li class="chapter-item "><a href="../guides/how-to-build-runes-swap.html">Runes Swap</a></li><li class="chapter-item "><a href="../guides/how-to-build-lending-protocol.html">Lending Protocol</a></li></ol></li><li class="chapter-item "><li class="part-title">Arch Program Library (APL)</li><li class="chapter-item "><a href="../apl/introduction.html">Introduction</a></li><li class="chapter-item "><a href="../apl/token-program.html">Token Program</a></li><li class="chapter-item "><a href="../apl/associated-token-account.html">Associated Token Account Program</a></li><li class="chapter-item affix "><li class="part-title">Core Concepts</li><li class="chapter-item "><a href="../concepts/architecture.html">Architecture Overview</a></li><li class="chapter-item "><a href="../concepts/network-architecture.html">Network Architecture</a></li><li class="chapter-item "><a href="../concepts/bitcoin-integration.html">Bitcoin Integration</a></li><li class="chapter-item "><a href="../concepts/consensus.html">ROAST and FROST Consensus</a></li><li class="chapter-item expanded "><a href="../concepts/validator-state-machine.html" class="active">Validator State Machine</a></li><li class="chapter-item "><a href="../program/program.html">Programs</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../program/utxo.html">UTXOs</a></li><li class="chapter-item "><a href="../program/accounts.html">Accounts</a></li><li class="chapter-item "><a href="../program/instructions-and-messages.html">Instructions</a></li><li class="chapter-item "><a href="../program/syscall.html">System Calls</a></li></ol></li><li class="chapter-item "><a href="../concepts/nodes.html">Node Operation</a></li><li class="chapter-item affix "><li class="part-title">SDK Reference</li><li class="chapter-item "><a href="../sdk/sdk.html">SDK Overview</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/typescript/getting-started.html">TypeScript SDK (Saturn)</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/typescript/api-reference.html">TypeScript API Reference</a></li><li class="chapter-item "><a href="../sdk/typescript/examples.html">TypeScript Examples</a></li><li class="chapter-item "><a href="../sdk/typescript/web3-integration.html">Web3 Integration</a></li></ol></li><li class="chapter-item "><a href="../sdk/rust/getting-started.html">Rust SDK</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/rust/api-reference.html">Rust API Reference</a></li><li class="chapter-item "><a href="../sdk/rust/examples.html">Rust Examples</a></li><li class="chapter-item "><a href="../sdk/rust/program-development.html">Program Development</a></li></ol></li><li class="chapter-item "><a href="../sdk/sdk.html">Core Types</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../sdk/pubkey.html">Pubkey</a></li><li class="chapter-item "><a href="../sdk/account.html">Account</a></li><li class="chapter-item "><a href="../sdk/instructions-and-messages.html">Instructions and Messages</a></li><li class="chapter-item "><a href="../sdk/runtime-transaction.html">Runtime Transaction</a></li><li class="chapter-item "><a href="../sdk/processed-transaction.html">Processed Transaction</a></li><li class="chapter-item "><a href="../sdk/signature.html">Signature</a></li></ol></li></ol></li><li class="chapter-item "><li class="part-title">Tools & CLI</li><li class="chapter-item "><a href="../guides/arch-cli-reference.html">Arch CLI Reference</a></li><li class="chapter-item affix "><li class="part-title">Reference</li><li class="chapter-item "><a href="../rpc/rpc.html">API Reference</a></li><li class="chapter-item "><a href="../system-program/system-program.html">System Program</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../system-program/create-account.html">Account Creation</a></li><li class="chapter-item "><a href="../system-program/make-executable.html">Program Deployment</a></li></ol></li><li class="chapter-item "><li class="part-title">Resources</li><li class="chapter-item "><a href="../reference/troubleshooting.html">Troubleshooting</a></li><li class="chapter-item "><a href="../getting-started/faq.html">FAQ</a></li><li class="chapter-item "><a href="../getting-started/resources.html">External Resources</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">The Arch Book</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/arch-network/book/edit/main/src/concepts/validator-state-machine.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="validator-state-machine"><a class="header" href="#validator-state-machine">Validator State Machine</a></h1>
+<p>This document describes the complete state machine for Arch Network validators, including all possible states and their transitions.</p>
+<h2 id="-state-diagram-overview"><a class="header" href="#-state-diagram-overview">📊 State Diagram Overview</a></h2>
+<p>The validator follows two main paths depending on whether Distributed Key Generation (DKG) has been completed:</p>
+<ul>
+<li><strong>DKG Path</strong>: For new validators that need to generate keys</li>
+<li><strong>Sync Path</strong>: For existing validators that need to synchronize with the network</li>
+</ul>
+<p>Both paths converge at the <code>Ready</code> state where validators can participate in consensus.</p>
+<h2 id="-validator-states"><a class="header" href="#-validator-states">🔄 Validator States</a></h2>
+<h3 id="initial-states"><a class="header" href="#initial-states">Initial States</a></h3>
+<h4 id="init"><a class="header" href="#init"><code>Init</code></a></h4>
+<ul>
+<li><strong>Purpose</strong>: Starting state when validator first boots up</li>
+<li><strong>Transitions to</strong>: <code>ConnectedToNetwork</code></li>
+<li><strong>Trigger</strong>: Network connection is established</li>
+</ul>
+<h4 id="connectedtonetwork"><a class="header" href="#connectedtonetwork"><code>ConnectedToNetwork</code></a></h4>
+<ul>
+<li><strong>Purpose</strong>: Network connection established, preparing for peer discovery</li>
+<li><strong>Transitions to</strong>: <code>WaitingForNetworkPeerId</code></li>
+<li><strong>Trigger</strong>: Peers discovered and topics subscribed</li>
+</ul>
+<h4 id="waitingfornetworkpeerid"><a class="header" href="#waitingfornetworkpeerid"><code>WaitingForNetworkPeerId</code></a></h4>
+<ul>
+<li><strong>Purpose</strong>: Waiting for network peer information from bootnode</li>
+<li><strong>Transitions to</strong>:
+<ul>
+<li><code>WaitingForWhitelistPeers</code> (if DKG not completed)</li>
+<li><code>WaitingForCurrentBlockHeight</code> (if DKG already completed)</li>
+<li><code>WaitingForNetworkPeerId</code> (retry on timeout)</li>
+</ul>
+</li>
+<li><strong>Trigger</strong>: Bootnode responds with network peer information</li>
+</ul>
+<h3 id="dkg-path-network-just-started"><a class="header" href="#dkg-path-network-just-started">DKG Path (Network just started)</a></h3>
+<h4 id="waitingforwhitelistpeers"><a class="header" href="#waitingforwhitelistpeers"><code>WaitingForWhitelistPeers</code></a></h4>
+<ul>
+<li><strong>Purpose</strong>: Waiting for all required whitelist peers to connect, this is required since DKG requires a full mesh network</li>
+<li><strong>Transitions to</strong>: <code>WaitingForDkg</code></li>
+<li><strong>Trigger</strong>: All whitelist peers are connected</li>
+</ul>
+<h4 id="waitingfordkg"><a class="header" href="#waitingfordkg"><code>WaitingForDkg</code></a></h4>
+<ul>
+<li><strong>Purpose</strong>: Distributed Key Generation process is running</li>
+<li><strong>Transitions to</strong>: <code>Ready</code></li>
+<li><strong>Trigger</strong>: DKG completes successfully and keys are generated</li>
+</ul>
+<h3 id="synchronization-module-block-generation-is-already-in-progress"><a class="header" href="#synchronization-module-block-generation-is-already-in-progress">Synchronization Module (Block generation is already in progress)</a></h3>
+<h4 id="waitingforcurrentblockheight"><a class="header" href="#waitingforcurrentblockheight"><code>WaitingForCurrentBlockHeight</code></a></h4>
+<ul>
+<li><strong>Purpose</strong>: Requesting and analyzing current block height from network peers</li>
+<li><strong>Transitions to</strong>:
+<ul>
+<li><code>Ready</code> (if already synchronized)</li>
+<li><code>ApplyingFullSnapshot</code> (if full sync needed)</li>
+<li><code>ApplyingIncrementalSnapshot</code> (if incremental sync needed)</li>
+<li><code>WaitingForCurrentBlockHeight</code> (retry on failure)</li>
+</ul>
+</li>
+<li><strong>Trigger</strong>: All peers sent responses, or request timed out</li>
+</ul>
+<h4 id="applyingfullsnapshot"><a class="header" href="#applyingfullsnapshot"><code>ApplyingFullSnapshot</code></a></h4>
+<ul>
+<li><strong>Purpose</strong>: Downloading and applying a complete network snapshot</li>
+<li><strong>Transitions to</strong>:
+<ul>
+<li><code>Ready</code> (if sync completes successfully)</li>
+<li><code>ApplyingIncrementalSnapshot</code> (if incremental sync needed after)</li>
+<li><code>ApplyingFullSnapshot</code> (retry/continue same snapshot)</li>
+</ul>
+</li>
+<li><strong>Trigger</strong>: Snapshot application completes or full snapshot acquisition fails</li>
+</ul>
+<h4 id="applyingincrementalsnapshot"><a class="header" href="#applyingincrementalsnapshot"><code>ApplyingIncrementalSnapshot</code></a></h4>
+<ul>
+<li><strong>Purpose</strong>: Downloading and applying incremental block data</li>
+<li><strong>Transitions to</strong>:
+<ul>
+<li><code>Ready</code> (if sync completes successfully)</li>
+<li><code>ApplyingIncrementalSnapshot</code> (continue syncing)</li>
+<li><code>WaitingForCurrentBlockHeight</code> (retry/restart sync)</li>
+</ul>
+</li>
+<li><strong>Trigger</strong>: Incremental sync completes or requires restart</li>
+</ul>
+<h3 id="final-states"><a class="header" href="#final-states">Final States</a></h3>
+<h4 id="ready"><a class="header" href="#ready"><code>Ready</code></a></h4>
+<ul>
+<li><strong>Purpose</strong>: 🎯 <strong>FINAL STATE</strong> - Validator is synchronized and can participate in consensus</li>
+<li><strong>Transitions to</strong>:
+<ul>
+<li><code>WaitingForCurrentBlockHeight</code> (if the validator somehow falls out of sync)</li>
+<li><code>Ready</code> (state refresh)</li>
+</ul>
+</li>
+<li><strong>Trigger</strong>: Node falls behind network or needs re-synchronization</li>
+</ul>
+<h4 id="listening"><a class="header" href="#listening"><code>Listening</code></a></h4>
+<ul>
+<li><strong>Purpose</strong>: 🎯 <strong>FINAL STATE FOR LISTENER NODES</strong> - Non-participating node that only observes</li>
+<li><strong>Transitions to</strong>:
+<ul>
+<li><code>WaitingForCurrentBlockHeight</code> (if sync required)</li>
+<li><code>Ready</code> (if promoted to full validator)</li>
+</ul>
+</li>
+<li><strong>Note</strong>: ⚠️ <strong>For listener nodes, <code>Listening</code> is the final state instead of <code>Ready</code></strong></li>
+</ul>
+<h2 id="-retry-and-recovery-patterns"><a class="header" href="#-retry-and-recovery-patterns">🔄 Retry and Recovery Patterns</a></h2>
+<h3 id="automatic-retries"><a class="header" href="#automatic-retries">Automatic Retries</a></h3>
+<ul>
+<li><strong><code>WaitingForNetworkPeerId</code></strong>: Retries on timeout</li>
+<li><strong><code>WaitingForCurrentBlockHeight</code></strong>: Retries on sync strategy failure</li>
+<li><strong><code>ApplyingFullSnapshot</code></strong>: Can retry or switch to incremental</li>
+<li><strong><code>ApplyingIncrementalSnapshot</code></strong>: Can retry or restart sync</li>
+</ul>
+<h3 id="recovery-strategies"><a class="header" href="#recovery-strategies">Recovery Strategies</a></h3>
+<ul>
+<li><strong>Network Failures</strong>: Automatic reconnection and peer rediscovery</li>
+<li><strong>Sync Failures</strong>: Fallback to full snapshot if incremental fails</li>
+<li><strong>DKG Failures</strong>: Restart DKG process with current peer set</li>
+<li><strong>State Corruption</strong>: Reset to last known good state</li>
+</ul>
+<h2 id="-state-transition-examples"><a class="header" href="#-state-transition-examples">🚀 State Transition Examples</a></h2>
+<h3 id="new-validator-joining-network"><a class="header" href="#new-validator-joining-network">New Validator Joining Network</a></h3>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Init
+    Init --&gt; ConnectedToNetwork
+    ConnectedToNetwork --&gt; WaitingForNetworkPeerId
+    WaitingForNetworkPeerId --&gt; WaitingForWhitelistPeers
+    WaitingForWhitelistPeers --&gt; WaitingForDkg
+    WaitingForDkg --&gt; Ready
+    Ready --&gt; [*]
+</pre>
+<h3 id="existing-validator-reconnecting"><a class="header" href="#existing-validator-reconnecting">Existing Validator Reconnecting</a></h3>
+<pre class="mermaid">stateDiagram-v2
+    [*] --&gt; Init
+    Init --&gt; ConnectedToNetwork
+    ConnectedToNetwork --&gt; WaitingForNetworkPeerId
+    WaitingForNetworkPeerId --&gt; WaitingForCurrentBlockHeight
+    WaitingForCurrentBlockHeight --&gt; ApplyingIncrementalSnapshot
+    ApplyingIncrementalSnapshot --&gt; Ready
+    Ready --&gt; [*]
+</pre>
+<h2 id="-monitoring-and-debugging"><a class="header" href="#-monitoring-and-debugging">🔧 Monitoring and Debugging</a></h2>
+<h3 id="state-monitoring"><a class="header" href="#state-monitoring">State Monitoring</a></h3>
+<pre><code class="language-bash"># Check validator status
+arch-cli orchestrate validator-status
+
+# View validator logs
+docker logs arch-validator
+
+# Check network connectivity
+arch-cli get-block-height
+</code></pre>
+<h3 id="common-state-issues"><a class="header" href="#common-state-issues">Common State Issues</a></h3>
+<h4 id="stuck-in-waitingfornetworkpeerid"><a class="header" href="#stuck-in-waitingfornetworkpeerid">Stuck in <code>WaitingForNetworkPeerId</code></a></h4>
+<ul>
+<li><strong>Cause</strong>: Bootnode not responding or network issues</li>
+<li><strong>Solution</strong>: Check network connectivity and bootnode status</li>
+</ul>
+<h4 id="stuck-in-waitingforwhitelistpeers"><a class="header" href="#stuck-in-waitingforwhitelistpeers">Stuck in <code>WaitingForWhitelistPeers</code></a></h4>
+<ul>
+<li><strong>Cause</strong>: Not all required peers are connected</li>
+<li><strong>Solution</strong>: Verify peer configuration and network topology</li>
+</ul>
+<h4 id="stuck-in-waitingfordkg"><a class="header" href="#stuck-in-waitingfordkg">Stuck in <code>WaitingForDkg</code></a></h4>
+<ul>
+<li><strong>Cause</strong>: DKG process hanging or failing</li>
+<li><strong>Solution</strong>: Check DKG logs and peer connectivity</li>
+</ul>
+<h4 id="stuck-in-sync-states"><a class="header" href="#stuck-in-sync-states">Stuck in Sync States</a></h4>
+<ul>
+<li><strong>Cause</strong>: Network partition or corrupted state</li>
+<li><strong>Solution</strong>: Reset validator and restart sync process</li>
+</ul>
+<h2 id="-performance-characteristics"><a class="header" href="#-performance-characteristics">📊 Performance Characteristics</a></h2>
+<h3 id="state-transition-times"><a class="header" href="#state-transition-times">State Transition Times</a></h3>
+<ul>
+<li><strong><code>Init</code> → <code>ConnectedToNetwork</code></strong>: &lt; 1 second</li>
+<li><strong><code>ConnectedToNetwork</code> → <code>WaitingForNetworkPeerId</code></strong>: 1-5 seconds</li>
+<li><strong><code>WaitingForNetworkPeerId</code> → <code>WaitingForWhitelistPeers</code></strong>: 5-30 seconds</li>
+<li><strong><code>WaitingForWhitelistPeers</code> → <code>WaitingForDkg</code></strong>: 10-60 seconds</li>
+<li><strong><code>WaitingForDkg</code> → <code>Ready</code></strong>: 1-5 minutes</li>
+<li><strong>Sync states</strong>: Variable based on network size and state</li>
+</ul>
+<h3 id="resource-requirements"><a class="header" href="#resource-requirements">Resource Requirements</a></h3>
+<ul>
+<li><strong>Memory</strong>: Increases during sync, stabilizes at <code>Ready</code></li>
+<li><strong>CPU</strong>: High during DKG and sync, low at <code>Ready</code></li>
+<li><strong>Network</strong>: High bandwidth during sync, moderate at <code>Ready</code></li>
+<li><strong>Storage</strong>: Grows with network state size</li>
+</ul>
+<h2 id="-security-considerations"><a class="header" href="#-security-considerations">🛡️ Security Considerations</a></h2>
+<h3 id="state-validation"><a class="header" href="#state-validation">State Validation</a></h3>
+<ul>
+<li><strong>Peer Authentication</strong>: Verify peer identities before state transitions</li>
+<li><strong>State Integrity</strong>: Validate all received state data</li>
+<li><strong>DKG Security</strong>: Ensure proper threshold signature setup</li>
+</ul>
+<h3 id="attack-prevention"><a class="header" href="#attack-prevention">Attack Prevention</a></h3>
+<ul>
+<li><strong>Sybil Attacks</strong>: Whitelist-based peer validation</li>
+<li><strong>State Corruption</strong>: Cryptographic verification of snapshots</li>
+<li><strong>Network Partition</strong>: Automatic detection and recovery</li>
+</ul>
+<h2 id="-best-practices"><a class="header" href="#-best-practices">🔄 Best Practices</a></h2>
+<h3 id="configuration"><a class="header" href="#configuration">Configuration</a></h3>
+<ol>
+<li><strong>Peer Configuration</strong>: Set appropriate whitelist peers</li>
+<li><strong>Timeout Values</strong>: Configure reasonable timeout values</li>
+<li><strong>Retry Limits</strong>: Set appropriate retry limits for each state</li>
+<li><strong>Logging</strong>: Enable detailed logging for debugging</li>
+</ol>
+<h3 id="monitoring"><a class="header" href="#monitoring">Monitoring</a></h3>
+<ol>
+<li><strong>State Tracking</strong>: Monitor state transitions</li>
+<li><strong>Performance Metrics</strong>: Track transition times</li>
+<li><strong>Error Rates</strong>: Monitor failure rates for each state</li>
+<li><strong>Resource Usage</strong>: Track resource consumption</li>
+</ol>
+<h3 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h3>
+<ol>
+<li><strong>Log Analysis</strong>: Review logs for error patterns</li>
+<li><strong>Network Diagnosis</strong>: Check network connectivity</li>
+<li><strong>Peer Validation</strong>: Verify peer configuration</li>
+<li><strong>State Reset</strong>: Reset validator if stuck in bad state</li>
+</ol>
+<h2 id="-related-documentation"><a class="header" href="#-related-documentation">📚 Related Documentation</a></h2>
+<ul>
+<li><a href="network-architecture.html">Network Architecture</a> - Understanding network topology</li>
+<li><a href="bitcoin-integration.html">Bitcoin Integration</a> - Bitcoin network integration</li>
+<li><a href="consensus.html">Consensus Protocol</a> - ROAST and FROST consensus</li>
+<li><a href="../getting-started/bitcoin-and-titan-setup.html">Validator Setup</a> - Setting up validators</li>
+<li><a href="../guides/arch-cli-reference.html">CLI Reference</a> - Managing validators via CLI</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../concepts/consensus.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../program/program.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../concepts/consensus.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../program/program.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+        <script>
+            window.playground_line_numbers = true;
+        </script>
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+        <script src="../ace.js"></script>
+        <script src="../editor.js"></script>
+        <script src="../mode-rust.js"></script>
+        <script src="../theme-dawn.js"></script>
+        <script src="../theme-tomorrow_night.js"></script>
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/mermaid.min.js"></script>
+        <script src="../theme/mermaid-init.js"></script>
+        <script src="../theme/custom.js"></script>
+
+
+    </div>
+    </body>
+</html>
