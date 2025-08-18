@@ -20,9 +20,6 @@ This comprehensive guide covers all available commands and options in the Arch N
 These options can be used with any command:
 
 ```bash
-# Enable verbose output (default: true)
-arch-cli --verbose
-
 # Specify network mode
 arch-cli --network-mode devnet|testnet|mainnet
 
@@ -775,7 +772,6 @@ arch-cli orchestrate mine-blocks --num-blocks 10
 1. **Local development**: Use `orchestrate start --local` for testing local changes
 2. **Profile management**: Create separate profiles for different environments
 3. **Reset when needed**: Use `orchestrate reset` to start with a clean state
-4. **Monitor logs**: Use `--verbose` flag for detailed output during development
 
 ### Security Considerations
 1. **Key management**: Store keypairs securely and never share private keys

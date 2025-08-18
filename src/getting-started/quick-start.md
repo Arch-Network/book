@@ -177,9 +177,6 @@ arch-cli get-block <BLOCK_HASH>
 
 ### Global Options
 ```bash
-# Enable verbose output (default: true)
-arch-cli --verbose
-
 # Specify network mode
 arch-cli --network-mode devnet|testnet|mainnet
 
