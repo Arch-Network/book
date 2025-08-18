@@ -55,6 +55,8 @@
     - [Processed Transaction](sdk/processed-transaction.md)
     - [Signature](sdk/signature.md)
 
+# Tools & CLI
+- [Arch CLI Reference](guides/arch-cli-reference.md)
 
 # Reference
 - [API Reference](rpc/rpc.md)

@@ -26,6 +26,11 @@ Configure your development environment to work with Bitcoin testnet4 for testing
 
 **Covers:** Testnet4 setup, validator configuration, ordinals support, runes protocol, and production considerations.
 
+### [Arch CLI Reference Guide](./arch-cli-reference.md)
+Complete reference for all Arch CLI commands, options, and features. Essential for developers working with the command-line interface.
+
+**Covers:** All CLI commands, configuration profiles, token operations, orchestration, troubleshooting, and best practices.
+
 ## Program Examples & Tutorials
 
 ### [Fungible Token Program](./how-to-create-a-fungible-token.md)
@@ -60,10 +65,12 @@ Build a complete DeFi lending platform with collateralized loans and interest ra
 1. **[Oracle Program](./how-to-write-oracle-program.md)** - External data integration
 2. **[Local Validator Setup](./how-to-configure-local-validator-bitcoin-testnet4.md)** - Advanced testing environments
 3. **[Runes Swap](./how-to-build-runes-swap.md)** - Bitcoin-native features
+4. **[Arch CLI Reference](./arch-cli-reference.md)** - Master the command-line interface
 
 ### For Advanced Developers
 1. **[Lending Protocol](./how-to-build-lending-protocol.md)** - Complex DeFi mechanics
 2. **All testing guides** - Production-ready development practices
+3. **[Arch CLI Reference](./arch-cli-reference.md)** - Advanced CLI operations and automation
 
 ## Quick Reference
 
@@ -73,6 +80,7 @@ Build a complete DeFi lending platform with collateralized loans and interest ra
 | Writing Your First Program | Beginner | 2-3 hours | Complete development cycle |
 | Testing Guide | Intermediate | 1-2 hours | Testing strategies |
 | Testnet4 Setup | Intermediate | 30 min | Advanced configuration |
+| Arch CLI Reference | All Levels | 1-2 hours | Command-line interface |
 | Fungible Token | Intermediate | 3-4 hours | Token standards |
 | Oracle Program | Intermediate | 2-3 hours | External data |
 | Runes Swap | Advanced | 4-6 hours | DEX mechanics |
@@ -84,18 +92,21 @@ Build a complete DeFi lending platform with collateralized loans and interest ra
 - **Set up your environment** following the [Quick Start Guide](../getting-started/quick-start.md)
 - **Understand Bitcoin basics** if you're new to Bitcoin development
 - **Review Rust fundamentals** if you're not familiar with Rust
+- **Familiarize yourself with the CLI** using the [Arch CLI Reference](./arch-cli-reference.md)
 
 ### Best Practices
 - **Start simple** - Begin with basic programs before building complex systems
 - **Test thoroughly** - Use the comprehensive testing strategies from our guides
 - **Follow security patterns** - Always validate inputs and handle errors gracefully
 - **Document your code** - Future you (and your team) will thank you
+- **Use CLI profiles** - Set up configuration profiles for different environments
 
 ### Getting Help
 - **Join our [Discord](https://discord.gg/archnetwork)** for real-time support
 - **Check the [API Reference](../rpc/rpc.md)** for detailed documentation
 - **Review [Core Concepts](../concepts/architecture.md)** for architectural guidance
 - **File issues** on [GitHub](https://github.com/Arch-Network/arch-node/issues) for bugs
+- **Use CLI help** - Run `arch-cli --help` or `arch-cli <command> --help` for command-specific help
 
 ## Contributing
 
@@ -112,6 +123,7 @@ Choose your path based on your experience level and goals:
 
 - **New to Arch?** Start with [Understanding Arch Programs](./understanding-arch-programs.md)
 - **Ready to code?** Jump into [Writing Your First Program](./writing-your-first-program.md)
+- **Need CLI help?** Check the [Arch CLI Reference](./arch-cli-reference.md)
 - **Building tokens?** Check out the [Fungible Token](./how-to-create-a-fungible-token.md) guide
 - **Interested in DeFi?** Try the [Lending Protocol](./how-to-build-lending-protocol.md) guide
 
