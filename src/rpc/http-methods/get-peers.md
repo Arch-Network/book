@@ -1,4 +1,4 @@
-# `getPeers`
+# `get_peers`
 
 > ️️⚠️ Note: This endpoint is not available for local validators.
 

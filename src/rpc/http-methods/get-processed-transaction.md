@@ -1,4 +1,4 @@
-# `getProcessedTransaction`
+# `get_processed_transaction`
 
 **Description:**  Fetches details of a processed transaction using a transaction ID.
 
@@ -37,4 +37,3 @@ http://localhost:9002/
   "id": "1"
 }
 ```
-

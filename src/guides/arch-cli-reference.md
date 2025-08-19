@@ -833,7 +833,7 @@ arch-cli --profile <NAME> get-block-height
 
 ## Version Compatibility
 
-This guide covers arch-cli version 0.5.5 and later. For older versions, please refer to the appropriate release documentation.
+This guide covers arch-cli version 0.5.6 and later. For older versions, please refer to the appropriate release documentation.
 
 **Minimum Requirements:**
 - Rust: 1.84.1+

@@ -1,13 +1,13 @@
-# `get_block_count`
+# `get_version`
 
-**Description:**  Retrieves the current block count.
+**Description:** Retrieves the version information of the node.
 
 **Method:** `POST`
 
 **Parameters:**
     None.
 
-**Returns:** The current block count as a number. 
+**Returns:** Version information object containing node version details.
 
 **Request:**
 ```bash
@@ -15,7 +15,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
 {
     "jsonrpc":"2.0",
     "id":1,
-    "method":"get_block_count",
+    "method":"get_version",
     "params":[]
 }' \
 http://localhost:9002/
@@ -25,7 +25,10 @@ http://localhost:9002/
 ```json
 {
   "jsonrpc": "2.0",
-  "result": 680000,
+  "result": {
+    "version": "0.5.0",
+    "build": "dev"
+  },
   "id": "1"
 }
 ```

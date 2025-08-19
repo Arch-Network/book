@@ -1,4 +1,4 @@
-# `getProgramAccounts`
+# `get_program_accounts`
 
 > ⚠️ Note: This endpoint is not available for local validators.
 

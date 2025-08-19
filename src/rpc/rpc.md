@@ -62,6 +62,7 @@ All RPC requests must be sent as HTTP `POST` requests with:
 - [`get_block_count`](#get_block_count) - Get current block count
 - [`get_block_hash`](#get_block_hash) - Get block hash by height
 - [`get_best_block_hash`](#get_best_block_hash) - Get latest block hash
+- [`get_best_finalized_block_hash`](#get_best_finalized_block_hash) - Get latest finalized block hash
 
 ### Network Operations
 - [`is_node_ready`](#is_node_ready) - Check node readiness
@@ -70,11 +71,16 @@ All RPC requests must be sent as HTTP `POST` requests with:
 - [`start_dkg`](#start_dkg) - Initiate Distributed Key Generation (leader only)
 - [`reset_network`](#reset_network) - Reset network state (leader only)
 
+### System Operations
+- [`get_version`](#get_version) - Get node version information
+
 ### Local Validator Specific Methods
 - [`get_arch_txid_from_btc_txid`](#get_arch_txid_from_btc_txid) - Map Bitcoin txid to Arch txid
 - [`get_transaction_report`](#get_transaction_report) - Get detailed transaction processing report
 - [`get_latest_tx_using_account`](#get_latest_tx_using_account) - Find most recent transaction for account
 - [`get_all_accounts`](#get_all_accounts) - Get all account public keys
+- [`get_transactions_by_block`](#get_transactions_by_block) - Get transactions from specific block
+- [`get_transactions_by_ids`](#get_transactions_by_ids) - Get multiple transactions by their IDs
 
 ---
 
@@ -168,6 +174,44 @@ Retrieves information for multiple accounts in a single request.
 1. `pubkeys` - Array of account public keys (32-byte arrays)
 
 **Returns:** Array of account information objects.
+
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_multiple_accounts",
+    "params":[
+        [
+            [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32],
+            [33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64]
+        ]
+    ]
+}' http://localhost:9002/
+```
+
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": [
+    {
+      "data": [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32],
+      "owner": [80,82,242,228,43,246,248,133,88,238,139,124,88,96,107,32,71,40,52,251,90,42,66,176,66,32,147,203,137,211,253,40],
+      "utxo": "txid:vout",
+      "is_executable": false
+    },
+    {
+      "data": [65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96],
+      "owner": [80,82,242,228,43,246,248,133,88,238,139,124,88,96,107,32,71,40,52,251,90,42,66,176,66,32,147,203,137,211,253,40],
+      "utxo": "txid:vout",
+      "is_executable": false
+    }
+  ],
+  "id": "1"
+}
+```
 
 ### request_airdrop
 
@@ -472,6 +516,87 @@ Retrieves the hash of the latest block.
 **Parameters:** None
 
 **Returns:** Latest block hash string
+
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_best_block_hash",
+    "params":[]
+}' http://localhost:9002/
+```
+
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "id": "1"
+}
+```
+
+### get_best_finalized_block_hash
+
+Retrieves the hash of the latest finalized block.
+
+**Parameters:** None
+
+**Returns:** Latest finalized block hash string
+
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_best_finalized_block_hash",
+    "params":[]
+}' http://localhost:9002/
+```
+
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "id": "1"
+}
+```
+
+## System Operations
+
+### get_version
+
+Retrieves the version information of the node.
+
+**Parameters:** None
+
+**Returns:** Version information object containing node version details.
+
+**Example:**
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '
+{
+    "jsonrpc":"2.0",
+    "id":1,
+    "method":"get_version",
+    "params":[]
+}' http://localhost:9002/
+```
+
+**Response:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "version": "0.5.0",
+    "build": "dev"
+  },
+  "id": "1"
+}
+```
 
 ## Network Operations
 

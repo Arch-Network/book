@@ -1,4 +1,4 @@
-# `getBlock`
+# `get_block`
 
 **Description:**  Retrieves block data based on a block hash.
 
@@ -35,4 +35,3 @@ http://localhost:9002/
   "id": "1"
 }
 ```
-

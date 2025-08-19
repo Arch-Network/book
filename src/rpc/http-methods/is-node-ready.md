@@ -1,4 +1,4 @@
-# `isNodeReady`
+# `is_node_ready`
 
 **Description:** Checks if the node is ready to process requests.
 

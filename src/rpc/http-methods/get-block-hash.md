@@ -1,4 +1,4 @@
-# `getBlockHash`
+# `get_block_hash`
 
 **Description:**  Retrieves the block hash at a specific block height.
 
@@ -29,4 +29,3 @@ http://localhost:9002/
   "id": "1"
 }
 ```
-

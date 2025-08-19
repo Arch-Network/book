@@ -1,4 +1,4 @@
-# `getAccountAddress`
+# `get_account_address`
 
 **Description:**  Fetches the account address associated with a public key.
 

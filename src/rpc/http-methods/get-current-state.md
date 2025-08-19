@@ -1,4 +1,4 @@
-# `getCurrentState`
+# `get_current_state`
 
 > ️️⚠️ Note: This endpoint is not available for local validators.
 
