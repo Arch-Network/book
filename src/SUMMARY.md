@@ -61,6 +61,7 @@
 
 # Reference
 - [API Reference](rpc/rpc.md)
+  - [RPC Method Availability](rpc/rpc-method-availability.md)
 - [System Program](system-program/system-program.md)
   - [Account Creation](system-program/create-account.md)
   - [Program Deployment](system-program/make-executable.md)
