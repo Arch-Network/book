@@ -14,9 +14,11 @@ If these checks pass, the transaction is forwarded to the rest of the nodes for 
 **Method:** `POST`
 
 **Parameters:**
-    `params: <serialized_object>` - A serialized [Runtime Transaction] object representing the transaction to be sent.
+    `transaction: <RuntimeTransaction>` - A [Runtime Transaction] object representing the transaction to be sent.
 
 **Returns:** A string containing the transaction IDs (`txid`) of the submitted transaction.
+
+**Availability:** Available in both `validator` and `local_validator` crates.
 
 **Request:**
 ```bash
@@ -25,9 +27,16 @@ curl -vL POST -H 'Content-Type: application/json' -d '
   "jsonrpc":"2.0",
   "id":1,
   "method":"send_transaction",
-  "params": [
-    [1,2,3,4,...]
-  ]
+  "params": {
+    "version": 0,
+    "signatures": [],
+    "message": {
+      "header": {...},
+      "account_keys": [...],
+      "recent_blockhash": "...",
+      "instructions": [...]
+    }
+  }
 }' \
 http://localhost:9002/
 ```

@@ -8,6 +8,8 @@ The Arch Network provides a comprehensive JSON-RPC API for interacting with vali
 - Monitor network state and readiness
 - Manage validator operations
 
+> **📋 RPC Method Availability**: For a complete list of which RPC methods are available in the `validator` vs `local_validator` crates, along with their correct parameter formats, see the [RPC Method Availability Guide](./rpc-method-availability.md).
+
 ## API Endpoints
 
 ### Default Configuration

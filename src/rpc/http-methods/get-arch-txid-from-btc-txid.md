@@ -5,9 +5,11 @@
 **Method:** `POST`
 
 **Parameters:**
-1. `btc_txid` - Bitcoin transaction ID as a string
+    `btc_txid: <string>` - Bitcoin transaction ID as a string
 
 **Returns:** The corresponding Arch Network transaction ID as a string.
+
+**Availability:** Available in both `validator` and `local_validator` crates.
 
 **Request:**
 ```bash
@@ -16,11 +18,9 @@ curl -vL POST -H 'Content-Type: application/json' -d '
     "jsonrpc":"2.0",
     "id":1,
     "method":"get_arch_txid_from_btc_txid",
-    "params":[
-        "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    ]
+    "params":"1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
 }' \
-http://localhost:9001/
+http://localhost:9002/
 ```
 
 **Response:**
@@ -31,5 +31,3 @@ http://localhost:9001/
   "id": "1"
 }
 ```
-
-**Note:** This method is only available on local validators (port 9001).

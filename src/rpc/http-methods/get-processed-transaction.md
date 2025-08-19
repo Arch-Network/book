@@ -11,6 +11,8 @@
 
 **Error Handling:** Returns `undefined` if the transaction is not found (404).
 
+**Availability:** Available in both `validator` and `local_validator` crates.
+
 **Request:**
 ```bash
 curl -vL POST -H 'Content-Type: application/json' -d '
@@ -18,9 +20,7 @@ curl -vL POST -H 'Content-Type: application/json' -d '
     "jsonrpc":"2.0",
     "id":1,
     "method":"get_processed_transaction",
-    "params":[
-        "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    ]
+    "params":"1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
 }' \
 http://localhost:9002/
 ```

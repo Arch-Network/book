@@ -5,9 +5,11 @@
 **Method:** `POST`
 
 **Parameters:**
-1. `txid` - Transaction ID as a string
+    `txid: <string>` - Transaction ID as a string
 
 **Returns:** Detailed transaction processing report with status and processing details.
+
+**Availability:** Available in both `validator` and `local_validator` crates.
 
 **Request:**
 ```bash
@@ -16,11 +18,9 @@ curl -vL POST -H 'Content-Type: application/json' -d '
     "jsonrpc":"2.0",
     "id":1,
     "method":"get_transaction_report",
-    "params":[
-        "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
-    ]
+    "params":"1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
 }' \
-http://localhost:9001/
+http://localhost:9002/
 ```
 
 **Response:**
@@ -37,5 +37,3 @@ http://localhost:9001/
   "id": "1"
 }
 ```
-
-**Note:** This method is only available on local validators (port 9001).
