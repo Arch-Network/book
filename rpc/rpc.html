@@ -501,7 +501,7 @@
     "id":1,
     "method":"get_processed_transaction",
     "params":[
-        "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        "3q2uY8ZkW7x6v5t4s3r2q1p0n9m8l7k6j5h4g3f2e1d0c9b8a7Z"
     ]
 }' http://localhost:9002/
 </code></pre>
@@ -552,7 +552,7 @@
     "id":1,
     "method":"get_transactions_by_block",
     "params":[{
-        "block_hash": "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
+        "block_hash": "4D2u8Yx7Wv6T5R4E3Q2W1E2R3T4Y5U6I7O8P9A0S1D2F3G4H5J6K7L8",
         "limit": 50,
         "offset": 0
     }]
@@ -577,8 +577,8 @@
     "method":"get_transactions_by_ids",
     "params":[{
         "txids": [
-            "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-            "fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"
+            "5H3K2L1M9N8B7V6C5X4Z3A2S1D0F9G8H7J6K5L4M3N2B1V0C9X",
+            "7Y6T5R4E3W2Q1A2S3D4F5G6H7J8K9L0P1Q2W3E4R5T6Y7U8I9O"
         ]
     }]
 }' http://localhost:9002/
@@ -599,7 +599,7 @@
     "id":1,
     "method":"get_block",
     "params":[
-        "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f" 
+        "4D2u8Yx7Wv6T5R4E3Q2W1E2R3T4Y5U6I7O8P9A0S1D2F3G4H5J6K7L8" 
     ]
 }' http://localhost:9002/
 </code></pre>
@@ -656,7 +656,7 @@
 <p><strong>Response:</strong></p>
 <pre><code class="language-json">{
   "jsonrpc": "2.0",
-  "result": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "result": "9xB3oYqYq2y8pHsmwqZkD4pKQyP6b6m7x8Q2F3G5H7J9K2M4N6P8Q0R2T4V6X8Z",
   "id": "1"
 }
 </code></pre>
@@ -676,7 +676,7 @@
 <p><strong>Response:</strong></p>
 <pre><code class="language-json">{
   "jsonrpc": "2.0",
-  "result": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "result": "9xB3oYqYq2y8pHsmwqZkD4pKQyP6b6m7x8Q2F3G5H7J9K2M4N6P8Q0R2T4V6X8Z",
   "id": "1"
 }
 </code></pre>
@@ -810,7 +810,7 @@
 <p>Finds the most recent transaction involving a specific account.</p>
 <p><strong>Parameters:</strong></p>
 <ol>
-<li><code>account_pubkey</code> - Account public key as hex string</li>
+<li><code>account_pubkey</code> - Account public key as base58 string (32 bytes)</li>
 </ol>
 <p><strong>Returns:</strong> Optional transaction ID string (null if not found)</p>
 <p><strong>Example:</strong></p>
@@ -825,7 +825,7 @@
 <h3 id="get_all_accounts"><a class="header" href="#get_all_accounts">get_all_accounts</a></h3>
 <p>Retrieves all account public keys in the database.</p>
 <p><strong>Parameters:</strong> None</p>
-<p><strong>Returns:</strong> Array of account public key hex strings</p>
+<p><strong>Returns:</strong> Array of account public keys (base58 strings)</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
 {

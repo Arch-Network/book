@@ -3917,6 +3917,9 @@ mod debug_tests {
 <li><strong>Use advanced features</strong> like multisig, freezing, and batch operations</li>
 </ul>
 <h2 id="overview-2"><a class="header" href="#overview-2">Overview</a></h2>
+<blockquote>
+<p>Note: All arch-cli addresses, public keys, transaction IDs, and block hashes are base58 (32 bytes for IDs/pubkeys).</p>
+</blockquote>
 <p>The APL Token Program is Arch Network’s native token standard, providing:</p>
 <ul>
 <li><strong>SPL Token Compatibility</strong>: Based on Solana’s proven token standard</li>
@@ -3935,7 +3938,7 @@ mod debug_tests {
 </ul>
 <h2 id="apl-token-program-id"><a class="header" href="#apl-token-program-id">APL Token Program ID</a></h2>
 <p>The APL Token Program has a fixed program ID:</p>
-<pre><code class="language-text">apl-token00000000000000000000000
+<pre><code class="language-text">AplToken111111111111111111111111
 </code></pre>
 <h2 id="quick-start-create-your-first-token"><a class="header" href="#quick-start-create-your-first-token">Quick Start: Create Your First Token</a></h2>
 <h3 id="step-1-start-local-environment"><a class="header" href="#step-1-start-local-environment">Step 1: Start Local Environment</a></h3>
@@ -4263,7 +4266,7 @@ arch-cli tx log-program-messages &lt;SIGNATURE&gt;
 </ul>
 <h2 id="next-steps-3"><a class="header" href="#next-steps-3">Next Steps</a></h2>
 <ul>
-<li><strong>Advanced Token Features</strong>: Explore <a href="guides/apl/token-program.html">APL Token Program</a> for detailed program information</li>
+<li><strong>Advanced Token Features</strong>: Explore <a href="guides/../apl/token-program.html">APL Token Program</a> for detailed program information</li>
 <li><strong>Program Development</strong>: Learn about <a href="guides/writing-your-first-program.html">Writing Your First Program</a></li>
 <li><strong>Testing</strong>: Understand <a href="guides/testing-guide.html">Testing Strategies</a></li>
 <li><strong>Deployment</strong>: Deploy to <a href="guides/../getting-started/bitcoin-and-titan-setup.html">Testnet and Mainnet</a></li>
@@ -5986,7 +5989,7 @@ fn select_utxos_for_withdrawal(
 <li>Account freezing and thawing</li>
 </ul>
 <h2 id="program-id"><a class="header" href="#program-id">Program ID</a></h2>
-<pre><code class="language-text">apl-token00000000000000000000000
+<pre><code class="language-text">AplToken111111111111111111111111
 </code></pre>
 <h2 id="account-types"><a class="header" href="#account-types">Account Types</a></h2>
 <h3 id="mint-account"><a class="header" href="#mint-account">Mint Account</a></h3>
@@ -13679,6 +13682,9 @@ arch-cli --help
 # Show version
 arch-cli --version
 </code></pre>
+<blockquote>
+<p>Note: All user-facing identifiers in arch-cli (addresses, public keys, transaction IDs, block hashes) are base58.</p>
+</blockquote>
 <p><strong>Network Modes:</strong></p>
 <ul>
 <li><code>devnet</code>: Development network (default)</li>
@@ -13808,36 +13814,36 @@ arch-cli --version
 <h2 id="transaction-operations"><a class="header" href="#transaction-operations">Transaction Operations</a></h2>
 <h3 id="get-transaction"><a class="header" href="#get-transaction">Get Transaction</a></h3>
 <p>Retrieve transaction information:</p>
-<pre><code class="language-bash">arch-cli tx get &lt;SIGNATURE&gt;
+<pre><code class="language-bash">arch-cli tx get &lt;TX_ID&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;SIGNATURE&gt;</code>: Transaction signature</li>
+<li><code>&lt;TX_ID&gt;</code>: Transaction ID (base58, 32 bytes)</li>
 </ul>
 <h3 id="confirm-transaction"><a class="header" href="#confirm-transaction">Confirm Transaction</a></h3>
 <p>Check if a transaction is confirmed:</p>
-<pre><code class="language-bash">arch-cli tx confirm &lt;SIGNATURE&gt;
+<pre><code class="language-bash">arch-cli tx confirm &lt;TX_ID&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;SIGNATURE&gt;</code>: Transaction signature</li>
+<li><code>&lt;TX_ID&gt;</code>: Transaction ID (base58, 32 bytes)</li>
 </ul>
 <h3 id="log-program-messages"><a class="header" href="#log-program-messages">Log Program Messages</a></h3>
 <p>Log program messages for a transaction:</p>
-<pre><code class="language-bash">arch-cli tx log-program-messages &lt;SIGNATURE&gt;
+<pre><code class="language-bash">arch-cli tx log-program-messages &lt;TX_ID&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;SIGNATURE&gt;</code>: Transaction signature</li>
+<li><code>&lt;TX_ID&gt;</code>: Transaction ID (base58, 32 bytes)</li>
 </ul>
 <h2 id="block-and-network-info"><a class="header" href="#block-and-network-info">Block and Network Info</a></h2>
 <h3 id="get-block"><a class="header" href="#get-block">Get Block</a></h3>
 <p>Retrieve block information:</p>
-<pre><code class="language-bash">arch-cli get-block &lt;SLOT&gt;
+<pre><code class="language-bash">arch-cli get-block &lt;BLOCK_HASH&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;SLOT&gt;</code>: Block slot number</li>
+<li><code>&lt;BLOCK_HASH&gt;</code>: Block hash (base58, 32 bytes)</li>
 </ul>
 <h3 id="get-block-height"><a class="header" href="#get-block-height">Get Block Height</a></h3>
 <p>Get the current block height:</p>
@@ -14242,7 +14248,7 @@ arch-cli orchestrate mine-blocks --num-blocks 10
 <h2 id="error-reference"><a class="header" href="#error-reference">Error Reference</a></h2>
 <h3 id="general-errors"><a class="header" href="#general-errors">General Errors</a></h3>
 <ul>
-<li><code>Invalid length</code>: Input data is not the correct length (usually for 32-byte hex strings)</li>
+<li><code>Invalid length</code>: Input data is not the correct length (usually for base58 strings encoding 32 bytes)</li>
 <li><code>Failed to process result: &lt;operation&gt;</code>: Failed to process RPC response</li>
 <li><code>Failed to change account owner</code>: Failed to change the account’s owner</li>
 </ul>
@@ -14696,7 +14702,7 @@ arch-cli show &lt;ACCOUNT_ADDRESS&gt;
     "id":1,
     "method":"get_processed_transaction",
     "params":[
-        "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        "3q2uY8ZkW7x6v5t4s3r2q1p0n9m8l7k6j5h4g3f2e1d0c9b8a7Z"
     ]
 }' http://localhost:9002/
 </code></pre>
@@ -14747,7 +14753,7 @@ arch-cli show &lt;ACCOUNT_ADDRESS&gt;
     "id":1,
     "method":"get_transactions_by_block",
     "params":[{
-        "block_hash": "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
+        "block_hash": "4D2u8Yx7Wv6T5R4E3Q2W1E2R3T4Y5U6I7O8P9A0S1D2F3G4H5J6K7L8",
         "limit": 50,
         "offset": 0
     }]
@@ -14772,8 +14778,8 @@ arch-cli show &lt;ACCOUNT_ADDRESS&gt;
     "method":"get_transactions_by_ids",
     "params":[{
         "txids": [
-            "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-            "fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"
+            "5H3K2L1M9N8B7V6C5X4Z3A2S1D0F9G8H7J6K5L4M3N2B1V0C9X",
+            "7Y6T5R4E3W2Q1A2S3D4F5G6H7J8K9L0P1Q2W3E4R5T6Y7U8I9O"
         ]
     }]
 }' http://localhost:9002/
@@ -14794,7 +14800,7 @@ arch-cli show &lt;ACCOUNT_ADDRESS&gt;
     "id":1,
     "method":"get_block",
     "params":[
-        "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f" 
+        "4D2u8Yx7Wv6T5R4E3Q2W1E2R3T4Y5U6I7O8P9A0S1D2F3G4H5J6K7L8" 
     ]
 }' http://localhost:9002/
 </code></pre>
@@ -14851,7 +14857,7 @@ arch-cli show &lt;ACCOUNT_ADDRESS&gt;
 <p><strong>Response:</strong></p>
 <pre><code class="language-json">{
   "jsonrpc": "2.0",
-  "result": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "result": "9xB3oYqYq2y8pHsmwqZkD4pKQyP6b6m7x8Q2F3G5H7J9K2M4N6P8Q0R2T4V6X8Z",
   "id": "1"
 }
 </code></pre>
@@ -14871,7 +14877,7 @@ arch-cli show &lt;ACCOUNT_ADDRESS&gt;
 <p><strong>Response:</strong></p>
 <pre><code class="language-json">{
   "jsonrpc": "2.0",
-  "result": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "result": "9xB3oYqYq2y8pHsmwqZkD4pKQyP6b6m7x8Q2F3G5H7J9K2M4N6P8Q0R2T4V6X8Z",
   "id": "1"
 }
 </code></pre>
@@ -15005,7 +15011,7 @@ arch-cli show &lt;ACCOUNT_ADDRESS&gt;
 <p>Finds the most recent transaction involving a specific account.</p>
 <p><strong>Parameters:</strong></p>
 <ol>
-<li><code>account_pubkey</code> - Account public key as hex string</li>
+<li><code>account_pubkey</code> - Account public key as base58 string (32 bytes)</li>
 </ol>
 <p><strong>Returns:</strong> Optional transaction ID string (null if not found)</p>
 <p><strong>Example:</strong></p>
@@ -15020,7 +15026,7 @@ arch-cli show &lt;ACCOUNT_ADDRESS&gt;
 <h3 id="get_all_accounts"><a class="header" href="#get_all_accounts">get_all_accounts</a></h3>
 <p>Retrieves all account public keys in the database.</p>
 <p><strong>Parameters:</strong> None</p>
-<p><strong>Returns:</strong> Array of account public key hex strings</p>
+<p><strong>Returns:</strong> Array of account public keys (base58 strings)</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">curl -X POST -H 'Content-Type: application/json' -d '
 {
@@ -15355,8 +15361,8 @@ let assign_ix = system_instruction::assign(
 <h3 id="program-addresses"><a class="header" href="#program-addresses">Program Addresses</a></h3>
 <div class="table-wrapper"><table><thead><tr><th>Program</th><th>Address</th><th>Description</th></tr></thead><tbody>
 <tr><td>System</td><td><code>11111111111111111111111111111111</code></td><td>Core system operations</td></tr>
-<tr><td>APL Token</td><td><code>apl-token00000000000000000000000</code></td><td>Token management</td></tr>
-<tr><td>ATA</td><td><code>ATokenGPvbdGVxr1b2hvUbsQ8U5V9kCA</code></td><td>Associated token accounts</td></tr>
+<tr><td>APL Token</td><td><code>AplToken111111111111111111111111</code></td><td>Token management</td></tr>
+<tr><td>ATA</td><td><code>AssociatedTokenAccount1111111111</code></td><td>Associated token accounts</td></tr>
 <tr><td>Compute Budget</td><td><code>ComputeBudget111111111111111111111111111111</code></td><td>Compute unit management</td></tr>
 <tr><td>Stake</td><td><code>Stake1111111111111111111111111111111111111111</code></td><td>Staking operations</td></tr>
 <tr><td>Vote</td><td><code>Vote111111111111111111111111111111111111111111</code></td><td>Voting operations</td></tr>
