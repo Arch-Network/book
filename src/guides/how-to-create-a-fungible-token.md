@@ -36,7 +36,7 @@ Before starting, ensure you have:
 
 The APL Token Program has a fixed program ID:
 ```text
-apl-token00000000000000000000000
+AplToken111111111111111111111111
 ```
 
 ## Quick Start: Create Your First Token

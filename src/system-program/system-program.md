@@ -192,8 +192,8 @@ let assign_ix = system_instruction::assign(
 | Program | Address | Description |
 |---------|---------|-------------|
 | System | `11111111111111111111111111111111` | Core system operations |
-| APL Token | `apl-token00000000000000000000000` | Token management |
-| ATA | `ATokenGPvbdGVxr1b2hvUbsQ8U5V9kCA` | Associated token accounts |
+| APL Token | `AplToken111111111111111111111111` | Token management |
+| ATA | `AssociatedTokenAccount1111111111` | Associated token accounts |
 | Compute Budget | `ComputeBudget111111111111111111111111111111` | Compute unit management |
 | Stake | `Stake1111111111111111111111111111111111111111` | Staking operations |
 | Vote | `Vote111111111111111111111111111111111111111111` | Voting operations |

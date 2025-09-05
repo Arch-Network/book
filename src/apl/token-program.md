@@ -14,7 +14,7 @@ The Token Program enables:
 ## Program ID
 
 ```text
-apl-token00000000000000000000000
+AplToken111111111111111111111111
 ```
 
 ## Account Types
