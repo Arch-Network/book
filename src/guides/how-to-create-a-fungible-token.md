@@ -14,6 +14,8 @@ By the end of this guide, you'll understand how to:
 - **Use advanced features** like multisig, freezing, and batch operations
 
 ## Overview
+> Note: All arch-cli addresses, public keys, transaction IDs, and block hashes are base58 (32 bytes for IDs/pubkeys).
+
 
 The APL Token Program is Arch Network's native token standard, providing:
 - **SPL Token Compatibility**: Based on Solana's proven token standard
@@ -34,7 +36,7 @@ Before starting, ensure you have:
 
 The APL Token Program has a fixed program ID:
 ```text
-apl-token00000000000000000000000
+AplToken111111111111111111111111
 ```
 
 ## Quick Start: Create Your First Token
@@ -433,7 +435,7 @@ arch-cli tx log-program-messages <SIGNATURE>
 
 ## Next Steps
 
-- **Advanced Token Features**: Explore [APL Token Program](apl/token-program.md) for detailed program information
+- **Advanced Token Features**: Explore [APL Token Program](../apl/token-program.md) for detailed program information
 - **Program Development**: Learn about [Writing Your First Program](writing-your-first-program.md)
 - **Testing**: Understand [Testing Strategies](testing-guide.md)
 - **Deployment**: Deploy to [Testnet and Mainnet](../getting-started/bitcoin-and-titan-setup.md)

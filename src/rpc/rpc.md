@@ -351,7 +351,7 @@ curl -X POST -H 'Content-Type: application/json' -d '
     "id":1,
     "method":"get_processed_transaction",
     "params":[
-        "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+        "3q2uY8ZkW7x6v5t4s3r2q1p0n9m8l7k6j5h4g3f2e1d0c9b8a7Z"
     ]
 }' http://localhost:9002/
 ```
@@ -404,7 +404,7 @@ curl -X POST -H 'Content-Type: application/json' -d '
     "id":1,
     "method":"get_transactions_by_block",
     "params":[{
-        "block_hash": "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f",
+        "block_hash": "4D2u8Yx7Wv6T5R4E3Q2W1E2R3T4Y5U6I7O8P9A0S1D2F3G4H5J6K7L8",
         "limit": 50,
         "offset": 0
     }]
@@ -430,8 +430,8 @@ curl -X POST -H 'Content-Type: application/json' -d '
     "method":"get_transactions_by_ids",
     "params":[{
         "txids": [
-            "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-            "fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"
+            "5H3K2L1M9N8B7V6C5X4Z3A2S1D0F9G8H7J6K5L4M3N2B1V0C9X",
+            "7Y6T5R4E3W2Q1A2S3D4F5G6H7J8K9L0P1Q2W3E4R5T6Y7U8I9O"
         ]
     }]
 }' http://localhost:9002/
@@ -457,7 +457,7 @@ curl -X POST -H 'Content-Type: application/json' -d '
     "id":1,
     "method":"get_block",
     "params":[
-        "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f" 
+        "4D2u8Yx7Wv6T5R4E3Q2W1E2R3T4Y5U6I7O8P9A0S1D2F3G4H5J6K7L8" 
     ]
 }' http://localhost:9002/
 ```
@@ -534,7 +534,7 @@ curl -X POST -H 'Content-Type: application/json' -d '
 ```json
 {
   "jsonrpc": "2.0",
-  "result": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "result": "9xB3oYqYq2y8pHsmwqZkD4pKQyP6b6m7x8Q2F3G5H7J9K2M4N6P8Q0R2T4V6X8Z",
   "id": "1"
 }
 ```
@@ -562,7 +562,7 @@ curl -X POST -H 'Content-Type: application/json' -d '
 ```json
 {
   "jsonrpc": "2.0",
-  "result": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "result": "9xB3oYqYq2y8pHsmwqZkD4pKQyP6b6m7x8Q2F3G5H7J9K2M4N6P8Q0R2T4V6X8Z",
   "id": "1"
 }
 ```
@@ -750,7 +750,7 @@ curl -X POST -H 'Content-Type: application/json' -d '
 Finds the most recent transaction involving a specific account.
 
 **Parameters:**
-1. `account_pubkey` - Account public key as hex string
+1. `account_pubkey` - Account public key as base58 string (32 bytes)
 
 **Returns:** Optional transaction ID string (null if not found)
 
@@ -771,7 +771,7 @@ Retrieves all account public keys in the database.
 
 **Parameters:** None
 
-**Returns:** Array of account public key hex strings
+**Returns:** Array of account public keys (base58 strings)
 
 **Example:**
 ```bash
