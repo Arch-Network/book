@@ -33,6 +33,8 @@ arch-cli --help
 arch-cli --version
 ```
 
+> Note: All user-facing identifiers in arch-cli (addresses, public keys, transaction IDs, block hashes) are base58.
+
 **Network Modes:**
 - `devnet`: Development network (default)
 - `testnet`: Test network
@@ -200,31 +202,31 @@ arch-cli deploy examples/helloworld/
 Retrieve transaction information:
 
 ```bash
-arch-cli tx get <SIGNATURE>
+arch-cli tx get <TX_ID>
 ```
 
 **Arguments:**
-- `<SIGNATURE>`: Transaction signature
+- `<TX_ID>`: Transaction ID (base58, 32 bytes)
 
 ### Confirm Transaction
 Check if a transaction is confirmed:
 
 ```bash
-arch-cli tx confirm <SIGNATURE>
+arch-cli tx confirm <TX_ID>
 ```
 
 **Arguments:**
-- `<SIGNATURE>`: Transaction signature
+- `<TX_ID>`: Transaction ID (base58, 32 bytes)
 
 ### Log Program Messages
 Log program messages for a transaction:
 
 ```bash
-arch-cli tx log-program-messages <SIGNATURE>
+arch-cli tx log-program-messages <TX_ID>
 ```
 
 **Arguments:**
-- `<SIGNATURE>`: Transaction signature
+- `<TX_ID>`: Transaction ID (base58, 32 bytes)
 
 ## Block and Network Info
 
@@ -232,11 +234,11 @@ arch-cli tx log-program-messages <SIGNATURE>
 Retrieve block information:
 
 ```bash
-arch-cli get-block <SLOT>
+arch-cli get-block <BLOCK_HASH>
 ```
 
 **Arguments:**
-- `<SLOT>`: Block slot number
+- `<BLOCK_HASH>`: Block hash (base58, 32 bytes)
 
 ### Get Block Height
 Get the current block height:
@@ -728,7 +730,7 @@ arch-cli orchestrate mine-blocks --num-blocks 10
 ## Error Reference
 
 ### General Errors
-- `Invalid length`: Input data is not the correct length (usually for 32-byte hex strings)
+- `Invalid length`: Input data is not the correct length (usually for base58 strings encoding 32 bytes)
 - `Failed to process result: <operation>`: Failed to process RPC response
 - `Failed to change account owner`: Failed to change the account's owner
 

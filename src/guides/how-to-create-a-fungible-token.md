@@ -14,6 +14,8 @@ By the end of this guide, you'll understand how to:
 - **Use advanced features** like multisig, freezing, and batch operations
 
 ## Overview
+> Note: All arch-cli addresses, public keys, transaction IDs, and block hashes are base58 (32 bytes for IDs/pubkeys).
+
 
 The APL Token Program is Arch Network's native token standard, providing:
 - **SPL Token Compatibility**: Based on Solana's proven token standard
