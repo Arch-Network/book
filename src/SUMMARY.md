@@ -48,7 +48,7 @@
     - [Rust API Reference](sdk/rust/api-reference.md)
     - [Rust Examples](sdk/rust/examples.md)
     - [Program Development](sdk/rust/program-development.md)
-  - [Core Types](sdk/sdk.md#shared-concepts)
+  - [Core Types](sdk/core-types.md)
     - [Pubkey](sdk/pubkey.md)
     - [Account](sdk/account.md)
     - [Instructions and Messages](sdk/instructions-and-messages.md)

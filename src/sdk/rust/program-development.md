@@ -46,7 +46,7 @@ my-program/
 
 ### Basic Program Structure
 
-```rust
+```rust,ignore
 // src/lib.rs
 use arch_program::{
     account_info::{next_account_info, AccountInfo},
@@ -101,7 +101,7 @@ tokio = { version = "1", features = ["full"] }
 
 ### Define Instructions
 
-```rust
+```rust,ignore
 // src/instruction.rs
 use borsh::{BorshDeserialize, BorshSerialize};
 use arch_program::{
@@ -146,7 +146,7 @@ impl MyInstruction {
 
 ### Process Instructions
 
-```rust
+```rust,ignore
 // src/processor.rs
 use arch_program::{
     account_info::{next_account_info, AccountInfo},
@@ -222,7 +222,7 @@ impl Processor {
 
 ### Define State Structures
 
-```rust
+```rust,ignore
 // src/state.rs
 use borsh::{BorshDeserialize, BorshSerialize};
 use arch_program::{
@@ -262,7 +262,7 @@ impl MyState {
 
 ### Program-Derived Addresses (PDAs)
 
-```rust
+```rust,ignore
 use arch_program::{
     pubkey::Pubkey,
     program_error::ProgramError,
@@ -327,7 +327,7 @@ fn process_create_pda(
 
 ### Making CPI Calls
 
-```rust
+```rust,ignore
 use arch_program::{
     account_info::AccountInfo,
     instruction::{AccountMeta, Instruction},
@@ -387,7 +387,7 @@ pub fn transfer_from_pda(
 
 ### Custom Errors
 
-```rust
+```rust,ignore
 // src/error.rs
 use thiserror::Error;
 use arch_program::program_error::ProgramError;
@@ -421,7 +421,7 @@ impl From<MyError> for ProgramError {
 
 ### Account Validation
 
-```rust
+```rust,ignore
 pub fn check_account_owner(
     account: &AccountInfo,
     expected_owner: &Pubkey,
@@ -452,7 +452,7 @@ pub fn check_writable(account: &AccountInfo) -> ProgramResult {
 
 ### Arithmetic Safety
 
-```rust
+```rust,ignore
 pub fn safe_add(a: u64, b: u64) -> Result<u64, ProgramError> {
     a.checked_add(b)
         .ok_or_else(|| MyError::Overflow.into())
@@ -473,7 +473,7 @@ pub fn safe_mul(a: u64, b: u64) -> Result<u64, ProgramError> {
 
 ### Unit Tests
 
-```rust
+```rust,ignore
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -502,7 +502,7 @@ mod tests {
 
 ### Integration Tests
 
-```rust
+```rust,ignore
 // tests/integration.rs
 use arch_sdk::{
     signature::{Keypair, Signer},
@@ -582,7 +582,7 @@ arch program deploy \
 
 Programs can be made upgradeable by using a proxy pattern:
 
-```rust
+```rust,ignore
 // Proxy program that delegates to implementation
 pub fn process_proxy(
     program_id: &Pubkey,

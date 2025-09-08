@@ -28,10 +28,7 @@ The following RPC methods are available in both `validator` and `local_validator
 - `get_transactions_by_block` - Single BlockTransactionsParams object
 - `get_transactions_by_ids` - Single TransactionsByIdsParams object
 - `get_version` - No parameters
-- `get_arch_txid_from_btc_txid` - Single string parameter (Bitcoin transaction ID)
-- `get_transaction_report` - Single string parameter (transaction ID)
-- `get_latest_tx_using_account` - Single string parameter (account public key)
-- `get_all_accounts` - No parameters
+- `get_network_pubkey` - No parameters
 
 ### Available Only in Validator Crate
 
@@ -39,6 +36,22 @@ The following RPC methods are **only available** in the `validator` crate:
 
 - `get_peers` - No parameters
 - `get_current_state` - No parameters
+
+### Available Only in Local Validator Crate
+
+The following RPC methods are available only in the `local_validator` crate (development/debug helpers):
+
+- `get_arch_txid_from_btc_txid` - Single string parameter (Bitcoin transaction ID)
+- `get_transaction_report` - Single string parameter (transaction ID)
+- `get_latest_tx_using_account` - Single string parameter (account public key)
+- `get_all_accounts` - No parameters
+
+### Deprecated or Not Exposed
+
+The following legacy methods are not currently exposed via RPC in the validator:
+
+- `start_dkg`
+- `reset_network`
 
 ## Parameter Format Patterns
 

@@ -125,7 +125,7 @@ For advanced users who want more control over the validator process:
    ```
 
 2. **Verify Directory Structure**:
-   ```
+   ```text
    arch-testnet4-validator/
    ├── ebpf/
    │   └── system_program.so

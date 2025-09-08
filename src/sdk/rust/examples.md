@@ -6,7 +6,7 @@ This page provides practical examples of using the native Arch Network Rust SDK 
 
 ### Account Management
 
-```rust
+```rust,ignore
 use arch_sdk::{Connection, Keypair, Account};
 use arch_program::pubkey::Pubkey;
 use anyhow::Result;
@@ -50,7 +50,7 @@ async fn main() -> Result<()> {
 
 ### UTXO Operations
 
-```rust
+```rust,ignore
 use arch_sdk::{Connection, Utxo};
 use arch_program::pubkey::Pubkey;
 use std::str::FromStr;
@@ -85,7 +85,7 @@ async fn utxo_operations() -> Result<()> {
 
 ### Transaction Building
 
-```rust
+```rust,ignore
 use arch_sdk::{Connection, Keypair, Transaction};
 use arch_program::{
     instruction::Instruction,
@@ -150,7 +150,7 @@ async fn build_complex_transaction() -> Result<()> {
 
 ### State Management Program
 
-```rust
+```rust,ignore
 use arch_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint,
@@ -249,7 +249,7 @@ fn process_increment(
 
 ### Cross-Program Invocation (CPI)
 
-```rust
+```rust,ignore
 use arch_program::{
     account_info::AccountInfo,
     program::{invoke, invoke_signed},
@@ -320,7 +320,7 @@ pub fn release_escrow(
 
 ### Concurrent Operations
 
-```rust
+```rust,ignore
 use futures::future::{join_all, try_join_all};
 use std::sync::Arc;
 use tokio::task::JoinHandle;
@@ -394,7 +394,7 @@ where
 
 ### Custom Error Handling
 
-```rust
+```rust,ignore
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -446,7 +446,7 @@ where
 
 ### Integration Tests
 
-```rust
+```rust,ignore
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -490,7 +490,7 @@ mod tests {
 
 ### Connection Pooling
 
-```rust
+```rust,ignore
 use std::sync::Arc;
 use dashmap::DashMap;
 

@@ -52,7 +52,7 @@ Creates a new account with the specified parameters.
 2. `[WRITE, SIGNER]` New account to create
 
 **Example:**
-```rust
+```rust,ignore
 use arch_program::{
     system_instruction,
     pubkey::Pubkey,
@@ -83,7 +83,7 @@ Creates a new account and anchors it to a specific Bitcoin UTXO.
 2. `[WRITE, SIGNER]` New account to create
 
 **Example:**
-```rust
+```rust,ignore
 let instruction = system_instruction::create_account_with_anchor(
     &from_pubkey,
     &to_pubkey,
@@ -106,7 +106,7 @@ Changes the owner of an existing account.
 1. `[WRITE, SIGNER]` Account to reassign
 
 **Example:**
-```rust
+```rust,ignore
 let instruction = system_instruction::assign(
     &account_pubkey,
     &new_owner_pubkey,
@@ -125,7 +125,7 @@ Anchors an existing account to a Bitcoin UTXO.
 1. `[WRITE, SIGNER]` Account to anchor
 
 **Example:**
-```rust
+```rust,ignore
 let instruction = system_instruction::anchor(
     &account_pubkey,
     txid,       // Bitcoin transaction ID
@@ -145,7 +145,7 @@ Transfers lamports between accounts.
 2. `[WRITE]` Destination account
 
 **Example:**
-```rust
+```rust,ignore
 let instruction = system_instruction::transfer(
     &from_pubkey,
     &to_pubkey,
@@ -157,7 +157,7 @@ let instruction = system_instruction::transfer(
 
 ### Using Built-in Programs
 
-```rust
+```rust,ignore
 use arch_program::{
     system_instruction,
     system_program,
@@ -232,7 +232,7 @@ let assign_ix = system_instruction::assign(
 
 ### Error Recovery
 
-```rust
+```rust,ignore
 use arch_program::system_instruction;
 
 match system_instruction::create_account(/* params */) {
@@ -255,7 +255,7 @@ match system_instruction::create_account(/* params */) {
 
 ### Creating a Token Mint
 
-```rust
+```rust,ignore
 // Create mint account
 let create_mint_ix = system_instruction::create_account(
     &payer_pubkey,
@@ -277,7 +277,7 @@ let init_mint_ix = apl_token::instruction::initialize_mint(
 
 ### Setting Up Associated Token Account
 
-```rust
+```rust,ignore
 // Create ATA account
 let create_ata_ix = associated_token_account::instruction::create(
     &payer_pubkey,

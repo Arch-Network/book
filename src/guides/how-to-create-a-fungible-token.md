@@ -334,7 +334,7 @@ borsh = { version = "1.5.1", features = ["derive"] }
 
 ### Create Token Programmatically
 
-```rust
+```rust,ignore
 use apl_token::{
     instruction,
     state::{Mint, Account},

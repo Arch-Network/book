@@ -39,7 +39,7 @@ crate-type = ["cdylib", "lib"]
 ### 2. Program Dependencies and Imports
 
 **src/lib.rs**
-```rust
+```rust,ignore
 use arch_program::{
     account::AccountInfo,
     bitcoin::{self, absolute::LockTime, transaction::Version, Transaction},
@@ -65,7 +65,7 @@ use borsh::{BorshDeserialize, BorshSerialize};
 
 ### 3. Program Data Structures
 
-```rust
+```rust,ignore
 /// Parameters sent to our Hello World program
 #[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
 pub struct HelloWorldParams {
@@ -104,7 +104,7 @@ impl GreetingAccount {
 
 ### 4. Custom Error Handling
 
-```rust
+```rust,ignore
 /// Custom errors for our Hello World program
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum HelloWorldError {
@@ -152,7 +152,7 @@ fn validate_name(name: &str) -> Result<(), HelloWorldError> {
 
 ### 5. Program Entry Point and Logic
 
-```rust
+```rust,ignore
 // Register our program's entry point
 entrypoint!(process_instruction);
 
@@ -301,13 +301,13 @@ fn handle_bitcoin_transaction(
 ## Program Architecture Breakdown
 
 ### 1. **Entrypoint Pattern**
-```rust
+```rust,ignore
 entrypoint!(process_instruction);
 ```
 Every Arch program needs exactly one entry point. The `entrypoint!` macro registers your `process_instruction` function as the program's main entry point.
 
 ### 2. **Function Signature**
-```rust
+```rust,ignore
 pub fn process_instruction(
     _program_id: &Pubkey,
     accounts: &[AccountInfo],
@@ -322,7 +322,7 @@ pub fn process_instruction(
 
 ### 3. **Account Validation**
 Always validate accounts before use:
-```rust
+```rust,ignore
 // Check account count
 if accounts.len() != expected_count {
     return Err(ProgramError::NotEnoughAccountKeys);
@@ -339,7 +339,7 @@ if !account.is_signer {
 ```
 
 ### 4. **State Management**
-```rust
+```rust,ignore
 // Read existing state
 let data = MyState::try_from_slice(&account.data.borrow())?;
 
@@ -353,7 +353,7 @@ account.data.borrow_mut().copy_from_slice(&serialized);
 
 ### 5. **Bitcoin Integration**
 Every state change must be committed to Bitcoin:
-```rust
+```rust,ignore
 // Create Bitcoin transaction
 let mut tx = Transaction { /* ... */ };
 
@@ -369,7 +369,7 @@ set_transaction_to_sign(accounts, TransactionToSign { /* ... */ })?;
 Create comprehensive tests for your program:
 
 **tests/integration_test.rs**
-```rust
+```rust,ignore
 use arch_sdk::helper::sign_and_send_instruction;
 use arch_test_sdk::{
     get_balance_bitcoin, initialize_client, Account, Balance
@@ -457,7 +457,7 @@ fn test_error_handling() {
 ## Common Patterns
 
 ### Program-Derived Addresses (PDAs)
-```rust
+```rust,ignore
 let (pda, bump) = Pubkey::find_program_address(
     &[b"greeting", user.key.as_ref()],
     program_id
@@ -465,13 +465,13 @@ let (pda, bump) = Pubkey::find_program_address(
 ```
 
 ### Cross-Program Invocation (CPI)
-```rust
+```rust,ignore
 let instruction = system_instruction::create_account(/* ... */);
 invoke(&instruction, &[account1, account2, system_program])?;
 ```
 
 ### Multiple Instructions
-```rust
+```rust,ignore
 match MyInstruction::try_from_slice(instruction_data)? {
     MyInstruction::Initialize { .. } => process_initialize(accounts)?,
     MyInstruction::Update { .. } => process_update(accounts)?,

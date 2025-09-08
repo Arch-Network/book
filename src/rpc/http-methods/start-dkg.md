@@ -1,34 +1,5 @@
-# `startDkg`
+# `start_dkg` (not currently exposed)
 
-> ️️⚠️ Note: This endpoint is not available for local validators.
+This endpoint is not currently exposed by the validator's RPC server. It may appear in older docs or client stubs but is unavailable in the running node.
 
-**Description:** Initiates the Distributed Key Generation (DKG) process.
-
-**Method:** `POST`
-
-**Parameters:**
-    None.
-
-**Returns:** A success message if the DKG process is initiated.
-
-**Request:**
-```bash
-curl -vL POST -H 'Content-Type: application/json' -d '
-{
-    "jsonrpc":"2.0",
-    "id":1,
-    "method":"start_dkg",
-    "params":[]
-}' \
-http://localhost:9002/
-```
-
-**Response:**
-```json
-{
-  "jsonrpc": "2.0",
-  "result": "DKG process initiated",
-  "id": "1"
-}
-```
-
+Use `get_network_pubkey` to retrieve the network verifying key. No replacement RPC exists for starting DKG via public API.

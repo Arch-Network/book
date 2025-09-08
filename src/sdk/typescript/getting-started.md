@@ -94,8 +94,8 @@ node connect.js
 ```
 
 Example output:
-```
-🔌 Connecting to Arch node at http://localhost:9002...
+```text
+Connecting to Arch node at http://localhost:9002...
 
 ✓ Current block count: 57230
 ✓ Best block hash: 349e8a42cdc98d05d427ba8fe8efcfd13e875591f1f1f111960a991f3add8105

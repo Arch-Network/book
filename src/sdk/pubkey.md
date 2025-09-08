@@ -4,7 +4,7 @@ A `Pubkey` represents a public key in the Arch Network, serving as a unique iden
 
 ## Overview
 
-```rust
+```rust,ignore
 #[derive(Clone, Debug, Eq, PartialEq, BorshSerialize, BorshDeserialize, Serialize, Deserialize)]
 pub struct Pubkey([u8; 32]);
 ```
@@ -126,7 +126,7 @@ console.log('Bump:', bump);
 
 ### Using PDAs in Programs
 
-```rust
+```rust,ignore
 use arch_sdk::{Pubkey, ProgramError};
 
 // Derive PDA in program
