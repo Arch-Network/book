@@ -60,3 +60,4 @@ command = "mdbook-mermaid"
 
 [rust]
 edition = "2021"
+test = false

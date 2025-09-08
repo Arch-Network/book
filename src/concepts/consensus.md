@@ -147,7 +147,7 @@ Each validator:
 
 #### Location and Structure
 The `pubkey_package.json` file is automatically created in:
-```
+```text
 {data_dir}/{network_mode}/pubkey_package.json
 ```
 
@@ -238,8 +238,8 @@ pub enum DKGStatus {
 ### Integration with Consensus
 
 #### State Transitions
-```
-WaitingForDkg → Ready (after successful DKG)
+```text
+WaitingForDkg -> Ready (after successful DKG)
 ```
 
 #### Block Production

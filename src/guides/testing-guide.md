@@ -15,7 +15,7 @@ Testing Arch programs involves multiple layers:
 
 ### Test Directory Structure
 
-```
+```text
 my-program/
 ├── program/
 │   ├── src/

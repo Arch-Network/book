@@ -94,15 +94,15 @@ node connect.js
 ```
 
 Example output:
-```
-🔌 Connecting to Arch node at http://localhost:9002...
+```text
+Connecting to Arch node at http://localhost:9002...
 
-✓ Current block count: 57230
-✓ Best block hash: 349e8a42cdc98d05d427ba8fe8efcfd13e875591f1f1f111960a991f3add8105
-✓ Block hash at height 57229: 349e8a42cdc98d05d427ba8fe8efcfd13e875591f1f1f111960a991f3add8105
+Current block count: 57230
+Best block hash: 349e8a42cdc98d05d427ba8fe8efcfd13e875591f1f1f111960a991f3add8105
+Block hash at height 57229: 349e8a42cdc98d05d427ba8fe8efcfd13e875591f1f1f111960a991f3add8105
 
-✅ Successfully connected to Arch node!
-📊 Network is active with 57230 blocks
+Successfully connected to Arch node!
+Network is active with 57230 blocks
 ```
 
 ## Creating Accounts

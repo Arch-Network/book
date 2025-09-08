@@ -62,7 +62,7 @@ crate-type = ["cdylib", "lib"]
 ### 1.3 Project Structure
 
 Your project should look like this:
-```
+```text
 my-counter-program/
 ├── program/
 │   ├── src/
