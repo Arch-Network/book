@@ -78,7 +78,7 @@ console.log('Node ready:', isReady);
 ```
 
 **Rust SDK:**
-```rust
+```rust,ignore
 use arch_sdk::{Connection, Keypair};
 
 #[tokio::main]

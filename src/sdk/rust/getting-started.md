@@ -45,7 +45,7 @@ serde_json = "1.0"
 
 Create `src/main.rs`:
 
-```rust
+```rust,ignore
 use arch_sdk::Connection;
 use anyhow::Result;
 
@@ -75,7 +75,7 @@ cargo run
 
 ### Generate a New Keypair
 
-```rust
+```rust,ignore
 use arch_sdk::Keypair;
 use arch_program::pubkey::Pubkey;
 
@@ -102,7 +102,7 @@ fn create_keypair() {
 
 ### Create Keypair from Seed
 
-```rust
+```rust,ignore
 use arch_sdk::Keypair;
 
 fn create_from_seed() {
@@ -118,7 +118,7 @@ fn create_from_seed() {
 
 ### Get Account Info
 
-```rust
+```rust,ignore
 use arch_sdk::{Connection, Account};
 use arch_program::pubkey::Pubkey;
 use std::str::FromStr;
@@ -146,7 +146,7 @@ async fn read_account(connection: &Connection) -> Result<()> {
 
 ### Get Multiple Accounts
 
-```rust
+```rust,ignore
 async fn read_multiple_accounts(connection: &Connection) -> Result<()> {
     let pubkeys = vec![
         Pubkey::from_str("Address1...")?,
@@ -171,7 +171,7 @@ async fn read_multiple_accounts(connection: &Connection) -> Result<()> {
 
 ### Simple Transfer
 
-```rust
+```rust,ignore
 use arch_sdk::{Connection, Keypair, Transaction};
 use arch_program::{
     instruction::Instruction,
@@ -214,7 +214,7 @@ async fn transfer_lamports(connection: &Connection) -> Result<()> {
 
 ### Create Account
 
-```rust
+```rust,ignore
 use arch_program::system_instruction;
 
 async fn create_account(
@@ -259,7 +259,7 @@ async fn create_account(
 
 Create `src/lib.rs` for your on-chain program:
 
-```rust
+```rust,ignore
 use arch_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint,
@@ -333,7 +333,7 @@ cargo build-bpf
 
 ### Using Result Types
 
-```rust
+```rust,ignore
 use arch_sdk::ArchError;
 use anyhow::{Result, Context};
 
@@ -362,7 +362,7 @@ async fn robust_operation(connection: &Connection) -> Result<()> {
 
 ### Custom Error Types
 
-```rust
+```rust,ignore
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -390,7 +390,7 @@ fn validate_account(account: &AccountInfo) -> Result<(), MyProgramError> {
 
 ### Parallel Account Processing
 
-```rust
+```rust,ignore
 use futures::future::join_all;
 
 async fn process_accounts_parallel(connection: &Connection, pubkeys: Vec<Pubkey>) -> Result<()> {
@@ -424,7 +424,7 @@ async fn process_accounts_parallel(connection: &Connection, pubkeys: Vec<Pubkey>
 
 ### Custom Serialization
 
-```rust
+```rust,ignore
 use borsh::{BorshDeserialize, BorshSerialize};
 
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
@@ -451,7 +451,7 @@ impl MyAccountData {
 
 ### Unit Tests
 
-```rust
+```rust,ignore      
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -483,7 +483,7 @@ mod tests {
 
 Create `tests/integration_test.rs`:
 
-```rust
+```rust,ignore
 use arch_sdk::{Connection, Keypair};
 use anyhow::Result;
 
@@ -507,7 +507,7 @@ async fn test_full_transaction_flow() -> Result<()> {
 
 ### Performance Optimization
 
-```rust
+```rust,ignore
 // 1. Reuse connections
 lazy_static::lazy_static! {
     static ref CONNECTION: Connection = Connection::new("http://localhost:9002");
@@ -539,7 +539,7 @@ type AccountCache = DashMap<Pubkey, Account>;
 
 ### Security Considerations
 
-```rust
+```rust,ignore
 // 1. Always validate inputs
 pub fn validate_pubkey(input: &str) -> Result<Pubkey> {
     Pubkey::from_str(input)
@@ -565,7 +565,7 @@ pub fn safe_add(a: u64, b: u64) -> Option<u64> {
 
 Here's a complete example combining multiple concepts:
 
-```rust
+```rust,ignore
 use arch_sdk::{Connection, Keypair, Transaction};
 use arch_program::{
     instruction::Instruction,

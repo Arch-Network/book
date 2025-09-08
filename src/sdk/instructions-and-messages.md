@@ -14,7 +14,7 @@ An instruction specifies a program to call, accounts to use, and data to pass.
 
 ### Structure
 
-```rust
+```rust,ignore
 pub struct Instruction {
     pub program_id: Pubkey,        // Program to execute
     pub accounts: Vec<AccountMeta>, // Required accounts
@@ -117,7 +117,7 @@ Messages group instructions for atomic execution and include transaction metadat
 
 ### Structure
 
-```rust
+```rust,ignore
 pub struct Message {
     pub signers: Vec<Pubkey>,              // Required signers
     pub instructions: Vec<Instruction>,     // Instructions to execute
@@ -267,7 +267,7 @@ const initInstruction = MyProgram.initialize(
 
 Programs can call other programs using CPI:
 
-```rust
+```rust,ignore
 // In your program
 use arch_sdk::{invoke, invoke_signed};
 

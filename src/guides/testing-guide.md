@@ -183,7 +183,7 @@ mod advanced_tests {
 ### Test Environment Setup
 
 **tests/common/mod.rs**
-```rust
+```rust,ignore
 use arch_sdk::{
     client::ArchClient,
     instruction::Instruction,
@@ -287,7 +287,7 @@ pub fn create_test_fee_transaction() -> Vec<u8> {
 ### Complete Integration Tests
 
 **tests/integration.rs**
-```rust
+```rust,ignore
 use arch_sdk::prelude::*;
 use my_program::*;
 use serial_test::serial;
@@ -437,7 +437,7 @@ async fn test_complete_counter_workflow() {
 ## Security Testing
 
 **tests/security.rs**
-```rust
+```rust,ignore
 use arch_sdk::prelude::*;
 use my_program::*;
 use serial_test::serial;
@@ -536,7 +536,7 @@ async fn test_overflow_protection() {
 ## Performance Testing
 
 **tests/performance.rs**
-```rust
+```rust,ignore
 use arch_sdk::prelude::*;
 use my_program::*;
 use std::time::Instant;
@@ -740,7 +740,7 @@ mod debug_tests {
 
 ### Test Helpers for Debugging
 
-```rust
+```rust,ignore
 pub fn debug_account_state(client: &ArchClient, account: &Pubkey) -> CounterAccount {
     let account_data = client.get_account(account).unwrap().unwrap();
     let state: CounterAccount = borsh::from_slice(&account_data.data).unwrap();

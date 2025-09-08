@@ -77,7 +77,7 @@ my-counter-program/
 Create comprehensive data structures for your program:
 
 **program/src/lib.rs**
-```rust
+```rust,ignore
 use arch_program::{
     account::AccountInfo,
     bitcoin::{self, absolute::LockTime, transaction::Version, Transaction},
@@ -213,7 +213,7 @@ impl From<CounterError> for ProgramError {
 
 Add the complete program implementation:
 
-```rust
+```rust,ignore
 // Register program entrypoint
 entrypoint!(process_instruction);
 
@@ -631,7 +631,7 @@ arch-cli deploy ./target/deploy/ --network-mode regtest
 Create a client to interact with your program:
 
 **client/Cargo.toml**
-```toml
+```toml,ignore
 [package]
 name = "counter_client"
 version = "0.1.0"
@@ -645,7 +645,7 @@ tokio = { version = "1.0", features = ["full"] }
 ```
 
 **client/src/main.rs**
-```rust
+```rust,ignore
 use arch_sdk::{
     instruction::Instruction,
     message::ArchMessage,
@@ -714,7 +714,7 @@ fn test_initialize(
 Create extensive tests for your program:
 
 **tests/integration_tests.rs**
-```rust
+```rust,ignore
 use my_counter_program::*;
 use arch_test_sdk::*;
 

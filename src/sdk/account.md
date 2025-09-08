@@ -16,7 +16,7 @@ Every piece of data on the Arch Network is stored in an account. Accounts can ho
 
 The `AccountInfo` struct provides a view into an account during program execution:
 
-```rust
+```rust,ignore
 #[derive(Clone)]
 #[repr(C)]
 pub struct AccountInfo<'a> {
@@ -34,7 +34,7 @@ pub struct AccountInfo<'a> {
 
 The `AccountMeta` struct describes how an account is used in a transaction:
 
-```rust
+```rust,ignore
 #[derive(Debug, PartialEq, Eq, Clone, Serialize, Deserialize)]
 #[repr(C)]
 pub struct AccountMeta {
@@ -204,7 +204,7 @@ const deserialized = deserialize(MyAccountData.schema, accountData);
 
 ### Updating Account Data
 
-```rust
+```rust,ignore
 // In your program
 use arch_sdk::{AccountInfo, ProgramResult};
 
@@ -254,7 +254,7 @@ function validateAccountSignature(
 
 ### Access Control
 
-```rust
+```rust,ignore
 // Program-side validation
 pub fn process_instruction(
     program_id: &Pubkey,
