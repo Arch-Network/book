@@ -13,7 +13,7 @@ The Arch Network provides a comprehensive JSON-RPC API for interacting with vali
 ## API Endpoints
 
 ### Default Configuration
-- **Default Port**: `9002` for validator nodes, `9001` for local validators
+- **Default Port**: `9001` for validator nodes, `9002` for local validators
 - **Endpoint URL**: `http://localhost:9002` (or your node's IP address)
 - **Protocol**: HTTP POST with JSON-RPC 2.0
 
@@ -70,8 +70,7 @@ All RPC requests must be sent as HTTP `POST` requests with:
 - [`is_node_ready`](#is_node_ready) - Check node readiness
 - [`get_peers`](#get_peers) - Get connected network peers
 - [`get_current_state`](#get_current_state) - Get current validator node state
-- [`start_dkg`](#start_dkg) - Initiate Distributed Key Generation (leader only)
-- [`reset_network`](#reset_network) - Reset network state (leader only)
+- [`get_network_pubkey`](#get_network_pubkey) - Get the network verifying key
 
 ### System Operations
 - [`get_version`](#get_version) - Get node version information
@@ -659,15 +658,13 @@ curl -X POST -H 'Content-Type: application/json' -d '
 }' http://localhost:9002/
 ```
 
-### start_dkg
+### get_network_pubkey
 
-Initiates the Distributed Key Generation (DKG) process.
+Returns the current network verifying key as a hex string.
 
 **Parameters:** None
 
-**Returns:** Success message if the DKG process is initiated
-
-**Note:** Not available for local validators.
+**Returns:** Hex-encoded verifying key string
 
 **Example:**
 ```bash
@@ -675,28 +672,7 @@ curl -X POST -H 'Content-Type: application/json' -d '
 {
     "jsonrpc":"2.0",
     "id":1,
-    "method":"start_dkg",
-    "params":[]
-}' http://localhost:9002/
-```
-
-### reset_network
-
-Resets the network state.
-
-**Parameters:** None
-
-**Returns:** Success message if the network reset is successful
-
-**Note:** Only callable by the Leader node. Not available for local validators.
-
-**Example:**
-```bash
-curl -X POST -H 'Content-Type: application/json' -d '
-{
-    "jsonrpc":"2.0",
-    "id":1,
-    "method":"reset_network",
+    "method":"get_network_pubkey",
     "params":[]
 }' http://localhost:9002/
 ```
