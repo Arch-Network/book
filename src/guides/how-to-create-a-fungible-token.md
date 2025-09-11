@@ -85,13 +85,16 @@ arch-cli account airdrop --keypair-path ~/DEMO_KEYS/payer.key
 ### Step 4: Create Token Mint
 
 ```bash
-# Create a new token mint with 6 decimals
+# Create a new token mint with 6 decimals (SPL-style)
+# Provide the mint authority and payer; optionally provide a mint keypair
 arch-cli token create-mint \
-    --keypair-path ~/DEMO_KEYS/mint.key \
-    --decimals 6
+  --decimals 6 \
+  --mint-authority ~/DEMO_KEYS/mint_authority.key \
+  --mint-keypair-path ~/DEMO_KEYS/mint.key \
+  --keypair-path  ~/DEMO_KEYS/payer.key
 
-# Save the mint address
-export MINT=$(arch-cli token show-mint ~/DEMO_KEYS/mint.key | grep "Mint:" | awk '{print $2}')
+# Save the mint address (disable colors to parse reliably)
+export MINT=$(NO_COLOR=1 arch-cli token show-mint ~/DEMO_KEYS/mint.key | awk -F': ' '/^Address:/{print $2}')
 echo "Mint address: $MINT"
 ```
 
@@ -100,23 +103,27 @@ echo "Mint address: $MINT"
 ```bash
 # Create an Associated Token Account (ATA) for the mint authority
 arch-cli token create-account \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT"
+  --mint "$MINT" \
+  --owner ~/DEMO_KEYS/mint_authority.key \
+  --keypair-path  ~/DEMO_KEYS/payer.key
 
-# Save the ATA address
-export ATA=$(arch-cli token show-account ~/DEMO_KEYS/mint_authority.key | grep "Address:" | awk '{print $2}')
+# Save the ATA address from the command output
+export ATA=$(NO_COLOR=1 arch-cli token create-account \
+  --mint "$MINT" \
+  --owner ~/DEMO_KEYS/mint_authority.key \
+  --keypair-path  ~/DEMO_KEYS/payer.key \
+  | awk -F': ' '/^Account Address:/{print $2; exit}')
 echo "Token account: $ATA"
 ```
 
 ### Step 6: Mint Initial Supply
 
 ```bash
-# Mint 1,000,000 tokens (1,000,000 raw units with 6 decimals = 1.000000 tokens)
-arch-cli token mint \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --to "$ATA" \
-    --amount 1000000
+# Mint 1,000,000 raw units (with 6 decimals = 1.000000 tokens)
+# Uses positional args for mint address and amount, and auto-creates ATA if needed
+arch-cli token mint "$MINT" 1000000 \
+  --authority ~/DEMO_KEYS/mint_authority.key \
+  --auto-create-ata
 ```
 
 ### Step 7: Verify Your Token
@@ -140,68 +147,62 @@ arch-cli token supply "$MINT"
 # Create a recipient account
 openssl rand -out ~/DEMO_KEYS/recipient.key 32
 
-# Create ATA for recipient
+# Create ATA for recipient (payer funds creation)
 arch-cli token create-account \
-    --keypair-path ~/DEMO_KEYS/recipient.key \
-    --mint "$MINT"
+  --mint "$MINT" \
+  --owner ~/DEMO_KEYS/recipient.key \
+  --keypair-path  ~/DEMO_KEYS/payer.key
 
-# Get recipient ATA
-export RECIPIENT_ATA=$(arch-cli token show-account ~/DEMO_KEYS/recipient.key | grep "Address:" | awk '{print $2}')
+# Get recipient ATA from output
+export RECIPIENT_ATA=$(NO_COLOR=1 arch-cli token create-account \
+  --mint "$MINT" \
+  --owner ~/DEMO_KEYS/recipient.key \
+  --keypair-path  ~/DEMO_KEYS/payer.key \
+  | awk -F': ' '/^Account Address:/{print $2; exit}')
 
-# Transfer 100,000 tokens (0.100000 with 6 decimals)
-arch-cli token transfer \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --from "$ATA" \
-    --to "$RECIPIENT_ATA" \
-    --amount 100000
+# Transfer 100,000 raw units (0.100000 with 6 decimals)
+# Uses positional args for source, destination, amount; provide the owner keypair
+arch-cli token transfer "$ATA" "$RECIPIENT_ATA" 100000 \
+  --owner ~/DEMO_KEYS/mint_authority.key
 ```
 
 ### Delegation and Approval
 
 ```bash
-# Approve a delegate to spend up to 500,000 tokens
-arch-cli token approve \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --from "$ATA" \
-    --delegate ~/DEMO_KEYS/recipient.key \
-    --amount 500000
+# Approve a delegate to spend up to 500,000 raw units
+# Provide the delegate's base58 public key (32-byte). If you only have a key file,
+# run a one-time airdrop with that key to print its public key, then use that value here.
+export DELEGATE_PUBKEY=<RECIPIENT_PUBKEY_BASE58>
+arch-cli token approve "$ATA" "$DELEGATE_PUBKEY" 500000 \
+  --owner ~/DEMO_KEYS/mint_authority.key
 
 # Later, revoke the delegation
-arch-cli token revoke \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --from "$ATA"
+arch-cli token revoke "$ATA" \
+  --owner ~/DEMO_KEYS/mint_authority.key
 ```
 
 ### Account Control
 
 ```bash
 # Freeze the account (requires freeze authority)
-arch-cli token freeze-account \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --account "$ATA"
+arch-cli token freeze-account "$ATA" \
+  --authority ~/DEMO_KEYS/mint_authority.key
 
 # Thaw the account
-arch-cli token thaw-account \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --account "$ATA"
+arch-cli token thaw-account "$ATA" \
+  --authority ~/DEMO_KEYS/freeze_authority.key
 ```
 
 ### Multisignature Operations
 
 ```bash
 # Create a multisig with 2-of-3 threshold
-arch-cli token create-multisig \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --signers "key1,key2,key3" \
-    --threshold 2
+arch-cli token create-multisig 2 \
+  --signers ~/DEMO_KEYS/mint_authority.key,~/DEMO_KEYS/new_mint_authority.key,~/DEMO_KEYS/freeze_authority.key \
+  --keypair-path ~/DEMO_KEYS/payer.key
 
-# Save multisig address
-export MULTISIG=$(arch-cli token multisig-show <MULTISIG_ADDRESS> | grep "Address:" | awk '{print $2}')
+# Show multisig account details
+arch-cli token multisig-show <MULTISIG_ADDRESS>
 
 # Sign a transaction with multisig
 arch-cli token multisig-sign \
@@ -242,36 +243,30 @@ arch-cli token mint-to-checked \
 #### Batch Operations
 
 ```bash
-# Batch transfer to multiple accounts
-arch-cli token batch-transfer \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --from "$ATA" \
-    --transfers '[{"to":"account1","amount":100000},{"to":"account2","amount":200000}]'
+# Prepare JSON files and pass their paths to the batch commands
+# Example transfers.json: [{"source_account":"<SRC>","destination_account":"<DST>","amount":12345,"owner_keypair_path":"~/DEMO_KEYS/mint_authority.key"}]
+arch-cli token batch-transfer ./transfers.json \
+  --keypair-path ~/DEMO_KEYS/payer.key
 
-# Batch mint to multiple accounts
-arch-cli token batch-mint \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --mints '[{"to":"account1","amount":100000},{"to":"account2","amount":200000}]'
+# Example mints.json: [{"mint_address":"<MINT>","account_address":"<DST>","amount":1000000,"authority_keypair_path":"~/DEMO_KEYS/mint_authority.key"}]
+arch-cli token batch-mint ./mints.json \
+  --keypair-path ~/DEMO_KEYS/payer.key
 ```
 
 #### Authority Management
 
 ```bash
 # Set new mint authority
-arch-cli token set-authority \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --new-authority <NEW_AUTHORITY_PUBKEY> \
-    --authority-type mint
+arch-cli token set-authority "$MINT" \
+  --authority-type mint \
+  --new-authority <NEW_AUTHORITY_PUBKEY_BASE58> \
+  --current-authority ~/DEMO_KEYS/mint_authority.key
 
 # Set new freeze authority
-arch-cli token set-authority \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --new-authority <NEW_FREEZE_AUTHORITY> \
-    --authority-type freeze
+arch-cli token set-authority "$MINT" \
+  --authority-type freeze \
+  --new-authority <NEW_FREEZE_AUTHORITY_BASE58> \
+  --current-authority ~/DEMO_KEYS/mint_authority.key
 ```
 
 ## Utility Commands
@@ -294,10 +289,8 @@ arch-cli token ui-to-amount "$MINT" 1.5      # UI to raw
 
 ```bash
 # Close a token account (reclaims rent)
-arch-cli token close-account \
-    --keypair-path ~/DEMO_KEYS/recipient.key \
-    --mint "$MINT" \
-    --account "$RECIPIENT_ATA"
+arch-cli token close-account "$RECIPIENT_ATA" <DESTINATION_PUBKEY> \
+  --owner ~/DEMO_KEYS/mint_authority.key
 ```
 
 ## Programmatic Token Creation

@@ -278,44 +278,46 @@ Create a new token mint:
 
 ```bash
 arch-cli token create-mint \
-    --keypair-path <PATH> \
-    --decimals <DECIMALS> \
-    [--freeze-authority <AUTHORITY>] \
-    [--mint-authority <AUTHORITY>]
+  --decimals <DECIMALS> \
+  --mint-authority <MINT_AUTHORITY_KEYPAIR_PATH> \
+  [--freeze-authority <FREEZE_AUTHORITY_KEYPAIR_PATH>] \
+  [--mint-keypair-path <MINT_KEYPAIR_PATH>] \
+  --keypair-path <PAYER_KEYPAIR_PATH>
 ```
 
 **Arguments:**
-- `--keypair-path`: Path to the keypair file for the mint
 - `--decimals`: Number of decimal places (0-9)
-- `--freeze-authority`: Public key of the freeze authority (optional)
-- `--mint-authority`: Public key of the mint authority (optional)
+- `--mint-authority`: Keypair path for the mint authority
+- `--freeze-authority`: Keypair path for the freeze authority (optional)
+- `--mint-keypair-path`: Keypair path for the mint account (optional; if omitted, generated in-memory)
+- `--keypair-path`: Keypair path for the fee payer
 
 #### Show Mint
 Display mint information:
 
 ```bash
-arch-cli token show-mint <MINT_ADDRESS>
+arch-cli token show-mint <MINT_ADDRESS_OR_MINT_KEYPAIR_PATH>
 ```
 
 **Arguments:**
-- `<MINT_ADDRESS>`: Public key of the mint
+- `<MINT_ADDRESS_OR_MINT_KEYPAIR_PATH>`: Base58 mint address (32 bytes) or a keypair file path from which the address is derived
 
 ### Account Management
 
 #### Create Account
-Create a new token account:
+Create a new token account (Associated Token Account for an owner and mint):
 
 ```bash
 arch-cli token create-account \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    [--owner <OWNER>]
+  --mint <MINT_ADDRESS> \
+  --owner <OWNER_KEYPAIR_PATH> \
+  --keypair-path <PAYER_KEYPAIR_PATH>
 ```
 
 **Arguments:**
-- `--keypair-path`: Path to the keypair file for the account
-- `--mint`: Public key of the mint
-- `--owner`: Public key of the account owner (defaults to keypair owner)
+- `--mint`: Base58 public key of the mint (32 bytes)
+- `--owner`: Keypair path for the wallet that will own the token account
+- `--keypair-path`: Keypair path for the fee payer
 
 #### Show Account
 Display token account information:
@@ -333,54 +335,58 @@ arch-cli token show-account <ACCOUNT_ADDRESS>
 Mint tokens to an account:
 
 ```bash
-arch-cli token mint \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --to <ACCOUNT> \
-    --amount <AMOUNT>
+arch-cli token mint <MINT_ADDRESS> <AMOUNT> \
+  --authority <MINT_AUTHORITY_KEYPAIR_PATH> \
+  [--account-address <ACCOUNT_ADDRESS>] \
+  [--auto-create-ata] \
+  [--multisig <MULTISIG_ADDRESS>] \
+  [--signers <SIGNER1_KEYPAIR_PATH,SIGNER2_KEYPAIR_PATH,...>] \
+  [--keypair-path <FEE_PAYER_KEYPAIR_PATH>]
 ```
 
 **Arguments:**
-- `--keypair-path`: Path to the mint authority's keypair file
-- `--mint`: Public key of the mint
-- `--to`: Public key of the destination account
-- `--amount`: Amount to mint (in raw units)
+- `<MINT_ADDRESS>`: Base58 public key of the mint (32 bytes)
+- `<AMOUNT>`: Amount to mint (raw units)
+- `--authority`: Keypair path for the mint authority
+- `--account-address`: Base58 token account address; if omitted, mints to the mint authority's ATA
+- `--auto-create-ata`: Create the ATA if it does not exist
+- `--multisig`: Base58 multisig authority address (when mint authority is multisig)
+- `--signers`: Comma-separated list of signer keypair paths for multisig
+- `--keypair-path`: Fee payer keypair path (optional)
 
 #### Transfer Tokens
 Transfer tokens between accounts:
 
 ```bash
-arch-cli token transfer \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --from <FROM_ACCOUNT> \
-    --to <TO_ACCOUNT> \
-    --amount <AMOUNT>
+arch-cli token transfer <SOURCE_ACCOUNT> <DESTINATION_ACCOUNT> <AMOUNT> \
+  --owner <OWNER_KEYPAIR_PATH> \
+  [--multisig <MULTISIG_ADDRESS>] \
+  [--signers <SIGNER1_KEYPAIR_PATH,SIGNER2_KEYPAIR_PATH,...>] \
+  [--keypair-path <FEE_PAYER_KEYPAIR_PATH>]
 ```
 
 **Arguments:**
-- `--keypair-path`: Path to the owner's keypair file
-- `--mint`: Public key of the mint
-- `--from`: Public key of the source account
-- `--to`: Public key of the destination account
-- `--amount`: Amount to transfer (in raw units)
+- `<SOURCE_ACCOUNT>`: Base58 token account address
+- `<DESTINATION_ACCOUNT>`: Base58 token account address
+- `<AMOUNT>`: Amount to transfer (raw units)
+- `--owner`: Keypair path for the source account owner
+- `--multisig`, `--signers`, `--keypair-path`: As described above
 
 #### Burn Tokens
 Burn tokens from an account:
 
 ```bash
-arch-cli token burn \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --from <ACCOUNT> \
-    --amount <AMOUNT>
+arch-cli token burn <ACCOUNT_ADDRESS> <AMOUNT> \
+  --owner <OWNER_KEYPAIR_PATH> \
+  [--multisig <MULTISIG_ADDRESS>] \
+  [--signers <SIGNER1_KEYPAIR_PATH,SIGNER2_KEYPAIR_PATH,...>] \
+  [--keypair-path <FEE_PAYER_KEYPAIR_PATH>]
 ```
 
 **Arguments:**
-- `--keypair-path`: Path to the owner's keypair file
-- `--mint`: Public key of the mint
-- `--from`: Public key of the account to burn from
-- `--amount`: Amount to burn (in raw units)
+- `<ACCOUNT_ADDRESS>`: Base58 token account address
+- `<AMOUNT>`: Amount to burn (raw units)
+- `--owner`: Keypair path for the account owner
 
 ### Delegation
 
@@ -388,35 +394,27 @@ arch-cli token burn \
 Approve a delegate for spending:
 
 ```bash
-arch-cli token approve \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --from <ACCOUNT> \
-    --delegate <DELEGATE> \
-    --amount <AMOUNT>
+arch-cli token approve <ACCOUNT_ADDRESS> <DELEGATE_ADDRESS> <AMOUNT> \
+  --owner <OWNER_KEYPAIR_PATH>
 ```
 
 **Arguments:**
-- `--keypair-path`: Path to the owner's keypair file
-- `--mint`: Public key of the mint
-- `--from`: Public key of the source account
-- `--delegate`: Public key of the delegate
-- `--amount`: Amount the delegate can spend
+- `<ACCOUNT_ADDRESS>`: Base58 token account address
+- `<DELEGATE_ADDRESS>`: Base58 public key of the delegate (32 bytes)
+- `<AMOUNT>`: Allowance (raw units)
+- `--owner`: Keypair path for the account owner
 
 #### Revoke Delegate
 Revoke delegate authority:
 
 ```bash
-arch-cli token revoke \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --from <ACCOUNT>
+arch-cli token revoke <ACCOUNT_ADDRESS> \
+  --owner <OWNER_KEYPAIR_PATH>
 ```
 
 **Arguments:**
-- `--keypair-path`: Path to the owner's keypair file
-- `--mint`: Public key of the mint
-- `--from`: Public key of the account
+- `<ACCOUNT_ADDRESS>`: Base58 token account address
+- `--owner`: Keypair path for the account owner
 
 ### Account Control
 
@@ -424,31 +422,25 @@ arch-cli token revoke \
 Freeze a token account:
 
 ```bash
-arch-cli token freeze-account \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --account <ACCOUNT>
+arch-cli token freeze-account <ACCOUNT_ADDRESS> \
+  --authority <FREEZE_AUTHORITY_KEYPAIR_PATH>
 ```
 
 **Arguments:**
-- `--keypair-path`: Path to the freeze authority's keypair file
-- `--mint`: Public key of the mint
-- `--account`: Public key of the account to freeze
+- `<ACCOUNT_ADDRESS>`: Base58 token account address
+- `--authority`: Keypair path for the freeze authority
 
 #### Thaw Account
 Thaw a frozen account:
 
 ```bash
-arch-cli token thaw-account \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --account <ACCOUNT>
+arch-cli token thaw-account <ACCOUNT_ADDRESS> \
+  --authority <FREEZE_AUTHORITY_KEYPAIR_PATH>
 ```
 
 **Arguments:**
-- `--keypair-path`: Path to the freeze authority's keypair file
-- `--mint`: Public key of the mint
-- `--account`: Public key of the account to thaw
+- `<ACCOUNT_ADDRESS>`: Base58 token account address
+- `--authority`: Keypair path for the freeze authority
 
 ### Multisignature Operations
 
@@ -456,16 +448,15 @@ arch-cli token thaw-account \
 Create a multisignature authority:
 
 ```bash
-arch-cli token create-multisig \
-    --keypair-path <PATH> \
-    --signers <SIGNERS> \
-    --threshold <THRESHOLD>
+arch-cli token create-multisig <M_OF_N> \
+  --signers <SIGNER1_KEYPAIR_PATH,SIGNER2_KEYPAIR_PATH,...> \
+  --keypair-path <PAYER_KEYPAIR_PATH>
 ```
 
 **Arguments:**
-- `--keypair-path`: Path to the keypair file for the multisig account
-- `--signers`: Comma-separated list of public keys
-- `--threshold`: Number of signatures required
+- `<M_OF_N>`: Number of signatures required
+- `--signers`: Comma-separated list of signer keypair paths
+- `--keypair-path`: Fee payer keypair path
 
 #### Sign Multisig
 Sign a transaction with multisig:
@@ -564,88 +555,62 @@ Perform operations with decimal verification:
 
 ```bash
 # Transfer with decimal verification
-arch-cli token transfer-checked \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --from <FROM_ACCOUNT> \
-    --to <TO_ACCOUNT> \
-    --amount <AMOUNT> \
-    --decimals <DECIMALS>
+arch-cli token transfer-checked <SOURCE_ACCOUNT> <DESTINATION_ACCOUNT> <AMOUNT> <DECIMALS> \
+  --owner <OWNER_KEYPAIR_PATH>
 
 # Approve with decimal verification
-arch-cli token approve-checked \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --from <ACCOUNT> \
-    --delegate <DELEGATE> \
-    --amount <AMOUNT> \
-    --decimals <DECIMALS>
+arch-cli token approve-checked <ACCOUNT_ADDRESS> <DELEGATE_ADDRESS> <AMOUNT> <DECIMALS> \
+  --owner <OWNER_KEYPAIR_PATH>
 
 # Mint with decimal verification
-arch-cli token mint-to-checked \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --to <ACCOUNT> \
-    --amount <AMOUNT> \
-    --decimals <DECIMALS>
+arch-cli token mint-to-checked <MINT_ADDRESS> <ACCOUNT_ADDRESS> <AMOUNT> <DECIMALS> \
+  --authority <MINT_AUTHORITY_KEYPAIR_PATH>
 
 # Burn with decimal verification
-arch-cli token burn-checked \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --from <ACCOUNT> \
-    --amount <AMOUNT> \
-    --decimals <DECIMALS>
+arch-cli token burn-checked <ACCOUNT_ADDRESS> <AMOUNT> <DECIMALS> \
+  --owner <OWNER_KEYPAIR_PATH>
 ```
 
 #### Authority Management
-Set authority on mint or account:
+Set authority on a mint or account:
 
 ```bash
-arch-cli token set-authority \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --new-authority <NEW_AUTHORITY> \
-    --authority-type <TYPE>
+arch-cli token set-authority <TARGET_ADDRESS> \
+  --authority-type <mint|freeze|account_owner|close_account> \
+  --new-authority <NEW_AUTHORITY_BASE58|none> \
+  --current-authority <CURRENT_AUTHORITY_KEYPAIR_PATH>
 ```
 
 **Arguments:**
-- `--keypair-path`: Path to the current authority's keypair file
-- `--mint`: Public key of the mint or account
-- `--new-authority`: Public key of the new authority
-- `--authority-type`: Type of authority (mint, freeze, or account)
+- `<TARGET_ADDRESS>`: Base58 mint or account address
+- `--authority-type`: Type of authority to set
+- `--new-authority`: Base58 address of new authority, or `none`
+- `--current-authority`: Keypair path for the current authority
 
 #### Account Management
 Close a token account:
 
 ```bash
-arch-cli token close-account \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --account <ACCOUNT>
+arch-cli token close-account <ACCOUNT_ADDRESS> <DESTINATION_PUBKEY> \
+  --owner <OWNER_KEYPAIR_PATH>
 ```
 
 **Arguments:**
-- `--keypair-path`: Path to the owner's keypair file
-- `--mint`: Public key of the mint
-- `--account`: Public key of the account to close
+- `<ACCOUNT_ADDRESS>`: Base58 token account address
+- `<DESTINATION_PUBKEY>`: Base58 public key to receive reclaimed lamports
+- `--owner`: Keypair path for the account owner
 
 #### Batch Operations
 Perform multiple operations at once:
 
 ```bash
-# Batch transfer tokens
-arch-cli token batch-transfer \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --from <FROM_ACCOUNT> \
-    --transfers <TRANSFERS>
+# Batch transfer tokens (JSON file path)
+arch-cli token batch-transfer <TRANSFERS_JSON_PATH> \
+  --keypair-path <PAYER_KEYPAIR_PATH>
 
-# Batch mint tokens
-arch-cli token batch-mint \
-    --keypair-path <PATH> \
-    --mint <MINT> \
-    --mints <MINTS>
+# Batch mint tokens (JSON file path)
+arch-cli token batch-mint <MINTS_JSON_PATH> \
+  --keypair-path <PAYER_KEYPAIR_PATH>
 ```
 
 ## Orchestration Commands
