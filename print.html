@@ -3911,32 +3911,39 @@ openssl rand -out ~/DEMO_KEYS/mint.key 32
 arch-cli account airdrop --keypair-path ~/DEMO_KEYS/payer.key
 </code></pre>
 <h3 id="step-4-create-token-mint"><a class="header" href="#step-4-create-token-mint">Step 4: Create Token Mint</a></h3>
-<pre><code class="language-bash"># Create a new token mint with 6 decimals
+<pre><code class="language-bash"># Create a new token mint with 6 decimals (SPL-style)
+# Provide the mint authority and payer; optionally provide a mint keypair
 arch-cli token create-mint \
-    --keypair-path ~/DEMO_KEYS/mint.key \
-    --decimals 6
+  --decimals 6 \
+  --mint-authority ~/DEMO_KEYS/mint_authority.key \
+  --mint-keypair-path ~/DEMO_KEYS/mint.key \
+  --keypair-path  ~/DEMO_KEYS/payer.key
 
-# Save the mint address
-export MINT=$(arch-cli token show-mint ~/DEMO_KEYS/mint.key | grep "Mint:" | awk '{print $2}')
+# Save the mint address (disable colors to parse reliably)
+export MINT=$(NO_COLOR=1 arch-cli token show-mint ~/DEMO_KEYS/mint.key | awk -F': ' '/^Address:/{print $2}')
 echo "Mint address: $MINT"
 </code></pre>
 <h3 id="step-5-create-token-account"><a class="header" href="#step-5-create-token-account">Step 5: Create Token Account</a></h3>
 <pre><code class="language-bash"># Create an Associated Token Account (ATA) for the mint authority
 arch-cli token create-account \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT"
+  --mint "$MINT" \
+  --owner ~/DEMO_KEYS/mint_authority.key \
+  --keypair-path  ~/DEMO_KEYS/payer.key
 
-# Save the ATA address
-export ATA=$(arch-cli token show-account ~/DEMO_KEYS/mint_authority.key | grep "Address:" | awk '{print $2}')
+# Save the ATA address from the command output
+export ATA=$(NO_COLOR=1 arch-cli token create-account \
+  --mint "$MINT" \
+  --owner ~/DEMO_KEYS/mint_authority.key \
+  --keypair-path  ~/DEMO_KEYS/payer.key \
+  | awk -F': ' '/^Account Address:/{print $2; exit}')
 echo "Token account: $ATA"
 </code></pre>
 <h3 id="step-6-mint-initial-supply"><a class="header" href="#step-6-mint-initial-supply">Step 6: Mint Initial Supply</a></h3>
-<pre><code class="language-bash"># Mint 1,000,000 tokens (1,000,000 raw units with 6 decimals = 1.000000 tokens)
-arch-cli token mint \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --to "$ATA" \
-    --amount 1000000
+<pre><code class="language-bash"># Mint 1,000,000 raw units (with 6 decimals = 1.000000 tokens)
+# Uses positional args for mint address and amount, and auto-creates ATA if needed
+arch-cli token mint "$MINT" 1000000 \
+  --authority ~/DEMO_KEYS/mint_authority.key \
+  --auto-create-ata
 </code></pre>
 <h3 id="step-7-verify-your-token"><a class="header" href="#step-7-verify-your-token">Step 7: Verify Your Token</a></h3>
 <pre><code class="language-bash"># Check mint information
@@ -3953,59 +3960,53 @@ arch-cli token supply "$MINT"
 <pre><code class="language-bash"># Create a recipient account
 openssl rand -out ~/DEMO_KEYS/recipient.key 32
 
-# Create ATA for recipient
+# Create ATA for recipient (payer funds creation)
 arch-cli token create-account \
-    --keypair-path ~/DEMO_KEYS/recipient.key \
-    --mint "$MINT"
+  --mint "$MINT" \
+  --owner ~/DEMO_KEYS/recipient.key \
+  --keypair-path  ~/DEMO_KEYS/payer.key
 
-# Get recipient ATA
-export RECIPIENT_ATA=$(arch-cli token show-account ~/DEMO_KEYS/recipient.key | grep "Address:" | awk '{print $2}')
+# Get recipient ATA from output
+export RECIPIENT_ATA=$(NO_COLOR=1 arch-cli token create-account \
+  --mint "$MINT" \
+  --owner ~/DEMO_KEYS/recipient.key \
+  --keypair-path  ~/DEMO_KEYS/payer.key \
+  | awk -F': ' '/^Account Address:/{print $2; exit}')
 
-# Transfer 100,000 tokens (0.100000 with 6 decimals)
-arch-cli token transfer \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --from "$ATA" \
-    --to "$RECIPIENT_ATA" \
-    --amount 100000
+# Transfer 100,000 raw units (0.100000 with 6 decimals)
+# Uses positional args for source, destination, amount; provide the owner keypair
+arch-cli token transfer "$ATA" "$RECIPIENT_ATA" 100000 \
+  --owner ~/DEMO_KEYS/mint_authority.key
 </code></pre>
 <h3 id="delegation-and-approval"><a class="header" href="#delegation-and-approval">Delegation and Approval</a></h3>
-<pre><code class="language-bash"># Approve a delegate to spend up to 500,000 tokens
-arch-cli token approve \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --from "$ATA" \
-    --delegate ~/DEMO_KEYS/recipient.key \
-    --amount 500000
+<pre><code class="language-bash"># Approve a delegate to spend up to 500,000 raw units
+# Provide the delegate's base58 public key (32-byte). If you only have a key file,
+# run a one-time airdrop with that key to print its public key, then use that value here.
+export DELEGATE_PUBKEY=&lt;RECIPIENT_PUBKEY_BASE58&gt;
+arch-cli token approve "$ATA" "$DELEGATE_PUBKEY" 500000 \
+  --owner ~/DEMO_KEYS/mint_authority.key
 
 # Later, revoke the delegation
-arch-cli token revoke \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --from "$ATA"
+arch-cli token revoke "$ATA" \
+  --owner ~/DEMO_KEYS/mint_authority.key
 </code></pre>
 <h3 id="account-control"><a class="header" href="#account-control">Account Control</a></h3>
 <pre><code class="language-bash"># Freeze the account (requires freeze authority)
-arch-cli token freeze-account \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --account "$ATA"
+arch-cli token freeze-account "$ATA" \
+  --authority ~/DEMO_KEYS/mint_authority.key
 
 # Thaw the account
-arch-cli token thaw-account \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --account "$ATA"
+arch-cli token thaw-account "$ATA" \
+  --authority ~/DEMO_KEYS/freeze_authority.key
 </code></pre>
 <h3 id="multisignature-operations"><a class="header" href="#multisignature-operations">Multisignature Operations</a></h3>
 <pre><code class="language-bash"># Create a multisig with 2-of-3 threshold
-arch-cli token create-multisig \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --signers "key1,key2,key3" \
-    --threshold 2
+arch-cli token create-multisig 2 \
+  --signers ~/DEMO_KEYS/mint_authority.key,~/DEMO_KEYS/new_mint_authority.key,~/DEMO_KEYS/freeze_authority.key \
+  --keypair-path ~/DEMO_KEYS/payer.key
 
-# Save multisig address
-export MULTISIG=$(arch-cli token multisig-show &lt;MULTISIG_ADDRESS&gt; | grep "Address:" | awk '{print $2}')
+# Show multisig account details
+arch-cli token multisig-show &lt;MULTISIG_ADDRESS&gt;
 
 # Sign a transaction with multisig
 arch-cli token multisig-sign \
@@ -4039,33 +4040,27 @@ arch-cli token mint-to-checked \
     --decimals 6
 </code></pre>
 <h4 id="batch-operations"><a class="header" href="#batch-operations">Batch Operations</a></h4>
-<pre><code class="language-bash"># Batch transfer to multiple accounts
-arch-cli token batch-transfer \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --from "$ATA" \
-    --transfers '[{"to":"account1","amount":100000},{"to":"account2","amount":200000}]'
+<pre><code class="language-bash"># Prepare JSON files and pass their paths to the batch commands
+# Example transfers.json: [{"source_account":"&lt;SRC&gt;","destination_account":"&lt;DST&gt;","amount":12345,"owner_keypair_path":"~/DEMO_KEYS/mint_authority.key"}]
+arch-cli token batch-transfer ./transfers.json \
+  --keypair-path ~/DEMO_KEYS/payer.key
 
-# Batch mint to multiple accounts
-arch-cli token batch-mint \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --mints '[{"to":"account1","amount":100000},{"to":"account2","amount":200000}]'
+# Example mints.json: [{"mint_address":"&lt;MINT&gt;","account_address":"&lt;DST&gt;","amount":1000000,"authority_keypair_path":"~/DEMO_KEYS/mint_authority.key"}]
+arch-cli token batch-mint ./mints.json \
+  --keypair-path ~/DEMO_KEYS/payer.key
 </code></pre>
 <h4 id="authority-management"><a class="header" href="#authority-management">Authority Management</a></h4>
 <pre><code class="language-bash"># Set new mint authority
-arch-cli token set-authority \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --new-authority &lt;NEW_AUTHORITY_PUBKEY&gt; \
-    --authority-type mint
+arch-cli token set-authority "$MINT" \
+  --authority-type mint \
+  --new-authority &lt;NEW_AUTHORITY_PUBKEY_BASE58&gt; \
+  --current-authority ~/DEMO_KEYS/mint_authority.key
 
 # Set new freeze authority
-arch-cli token set-authority \
-    --keypair-path ~/DEMO_KEYS/mint_authority.key \
-    --mint "$MINT" \
-    --new-authority &lt;NEW_FREEZE_AUTHORITY&gt; \
-    --authority-type freeze
+arch-cli token set-authority "$MINT" \
+  --authority-type freeze \
+  --new-authority &lt;NEW_FREEZE_AUTHORITY_BASE58&gt; \
+  --current-authority ~/DEMO_KEYS/mint_authority.key
 </code></pre>
 <h2 id="utility-commands"><a class="header" href="#utility-commands">Utility Commands</a></h2>
 <h3 id="information-and-queries"><a class="header" href="#information-and-queries">Information and Queries</a></h3>
@@ -4081,10 +4076,8 @@ arch-cli token ui-to-amount "$MINT" 1.5      # UI to raw
 </code></pre>
 <h3 id="account-lifecycle"><a class="header" href="#account-lifecycle">Account Lifecycle</a></h3>
 <pre><code class="language-bash"># Close a token account (reclaims rent)
-arch-cli token close-account \
-    --keypair-path ~/DEMO_KEYS/recipient.key \
-    --mint "$MINT" \
-    --account "$RECIPIENT_ATA"
+arch-cli token close-account "$RECIPIENT_ATA" &lt;DESTINATION_PUBKEY&gt; \
+  --owner ~/DEMO_KEYS/mint_authority.key
 </code></pre>
 <h2 id="programmatic-token-creation"><a class="header" href="#programmatic-token-creation">Programmatic Token Creation</a></h2>
 <p>For developers who want to create tokens programmatically, here’s how to use the APL token program directly:</p>
@@ -13686,39 +13679,41 @@ arch-cli --version
 <h4 id="create-mint"><a class="header" href="#create-mint">Create Mint</a></h4>
 <p>Create a new token mint:</p>
 <pre><code class="language-bash">arch-cli token create-mint \
-    --keypair-path &lt;PATH&gt; \
-    --decimals &lt;DECIMALS&gt; \
-    [--freeze-authority &lt;AUTHORITY&gt;] \
-    [--mint-authority &lt;AUTHORITY&gt;]
+  --decimals &lt;DECIMALS&gt; \
+  --mint-authority &lt;MINT_AUTHORITY_KEYPAIR_PATH&gt; \
+  [--freeze-authority &lt;FREEZE_AUTHORITY_KEYPAIR_PATH&gt;] \
+  [--mint-keypair-path &lt;MINT_KEYPAIR_PATH&gt;] \
+  --keypair-path &lt;PAYER_KEYPAIR_PATH&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path</code>: Path to the keypair file for the mint</li>
 <li><code>--decimals</code>: Number of decimal places (0-9)</li>
-<li><code>--freeze-authority</code>: Public key of the freeze authority (optional)</li>
-<li><code>--mint-authority</code>: Public key of the mint authority (optional)</li>
+<li><code>--mint-authority</code>: Keypair path for the mint authority</li>
+<li><code>--freeze-authority</code>: Keypair path for the freeze authority (optional)</li>
+<li><code>--mint-keypair-path</code>: Keypair path for the mint account (optional; if omitted, generated in-memory)</li>
+<li><code>--keypair-path</code>: Keypair path for the fee payer</li>
 </ul>
 <h4 id="show-mint"><a class="header" href="#show-mint">Show Mint</a></h4>
 <p>Display mint information:</p>
-<pre><code class="language-bash">arch-cli token show-mint &lt;MINT_ADDRESS&gt;
+<pre><code class="language-bash">arch-cli token show-mint &lt;MINT_ADDRESS_OR_MINT_KEYPAIR_PATH&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>&lt;MINT_ADDRESS&gt;</code>: Public key of the mint</li>
+<li><code>&lt;MINT_ADDRESS_OR_MINT_KEYPAIR_PATH&gt;</code>: Base58 mint address (32 bytes) or a keypair file path from which the address is derived</li>
 </ul>
 <h3 id="account-management-5"><a class="header" href="#account-management-5">Account Management</a></h3>
 <h4 id="create-account-2"><a class="header" href="#create-account-2">Create Account</a></h4>
-<p>Create a new token account:</p>
+<p>Create a new token account (Associated Token Account for an owner and mint):</p>
 <pre><code class="language-bash">arch-cli token create-account \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    [--owner &lt;OWNER&gt;]
+  --mint &lt;MINT_ADDRESS&gt; \
+  --owner &lt;OWNER_KEYPAIR_PATH&gt; \
+  --keypair-path &lt;PAYER_KEYPAIR_PATH&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path</code>: Path to the keypair file for the account</li>
-<li><code>--mint</code>: Public key of the mint</li>
-<li><code>--owner</code>: Public key of the account owner (defaults to keypair owner)</li>
+<li><code>--mint</code>: Base58 public key of the mint (32 bytes)</li>
+<li><code>--owner</code>: Keypair path for the wallet that will own the token account</li>
+<li><code>--keypair-path</code>: Keypair path for the fee payer</li>
 </ul>
 <h4 id="show-account-1"><a class="header" href="#show-account-1">Show Account</a></h4>
 <p>Display token account information:</p>
@@ -13731,122 +13726,111 @@ arch-cli --version
 <h3 id="token-operations-1"><a class="header" href="#token-operations-1">Token Operations</a></h3>
 <h4 id="mint-tokens"><a class="header" href="#mint-tokens">Mint Tokens</a></h4>
 <p>Mint tokens to an account:</p>
-<pre><code class="language-bash">arch-cli token mint \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --to &lt;ACCOUNT&gt; \
-    --amount &lt;AMOUNT&gt;
+<pre><code class="language-bash">arch-cli token mint &lt;MINT_ADDRESS&gt; &lt;AMOUNT&gt; \
+  --authority &lt;MINT_AUTHORITY_KEYPAIR_PATH&gt; \
+  [--account-address &lt;ACCOUNT_ADDRESS&gt;] \
+  [--auto-create-ata] \
+  [--multisig &lt;MULTISIG_ADDRESS&gt;] \
+  [--signers &lt;SIGNER1_KEYPAIR_PATH,SIGNER2_KEYPAIR_PATH,...&gt;] \
+  [--keypair-path &lt;FEE_PAYER_KEYPAIR_PATH&gt;]
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path</code>: Path to the mint authority’s keypair file</li>
-<li><code>--mint</code>: Public key of the mint</li>
-<li><code>--to</code>: Public key of the destination account</li>
-<li><code>--amount</code>: Amount to mint (in raw units)</li>
+<li><code>&lt;MINT_ADDRESS&gt;</code>: Base58 public key of the mint (32 bytes)</li>
+<li><code>&lt;AMOUNT&gt;</code>: Amount to mint (raw units)</li>
+<li><code>--authority</code>: Keypair path for the mint authority</li>
+<li><code>--account-address</code>: Base58 token account address; if omitted, mints to the mint authority’s ATA</li>
+<li><code>--auto-create-ata</code>: Create the ATA if it does not exist</li>
+<li><code>--multisig</code>: Base58 multisig authority address (when mint authority is multisig)</li>
+<li><code>--signers</code>: Comma-separated list of signer keypair paths for multisig</li>
+<li><code>--keypair-path</code>: Fee payer keypair path (optional)</li>
 </ul>
 <h4 id="transfer-tokens"><a class="header" href="#transfer-tokens">Transfer Tokens</a></h4>
 <p>Transfer tokens between accounts:</p>
-<pre><code class="language-bash">arch-cli token transfer \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --from &lt;FROM_ACCOUNT&gt; \
-    --to &lt;TO_ACCOUNT&gt; \
-    --amount &lt;AMOUNT&gt;
+<pre><code class="language-bash">arch-cli token transfer &lt;SOURCE_ACCOUNT&gt; &lt;DESTINATION_ACCOUNT&gt; &lt;AMOUNT&gt; \
+  --owner &lt;OWNER_KEYPAIR_PATH&gt; \
+  [--multisig &lt;MULTISIG_ADDRESS&gt;] \
+  [--signers &lt;SIGNER1_KEYPAIR_PATH,SIGNER2_KEYPAIR_PATH,...&gt;] \
+  [--keypair-path &lt;FEE_PAYER_KEYPAIR_PATH&gt;]
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path</code>: Path to the owner’s keypair file</li>
-<li><code>--mint</code>: Public key of the mint</li>
-<li><code>--from</code>: Public key of the source account</li>
-<li><code>--to</code>: Public key of the destination account</li>
-<li><code>--amount</code>: Amount to transfer (in raw units)</li>
+<li><code>&lt;SOURCE_ACCOUNT&gt;</code>: Base58 token account address</li>
+<li><code>&lt;DESTINATION_ACCOUNT&gt;</code>: Base58 token account address</li>
+<li><code>&lt;AMOUNT&gt;</code>: Amount to transfer (raw units)</li>
+<li><code>--owner</code>: Keypair path for the source account owner</li>
+<li><code>--multisig</code>, <code>--signers</code>, <code>--keypair-path</code>: As described above</li>
 </ul>
 <h4 id="burn-tokens"><a class="header" href="#burn-tokens">Burn Tokens</a></h4>
 <p>Burn tokens from an account:</p>
-<pre><code class="language-bash">arch-cli token burn \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --from &lt;ACCOUNT&gt; \
-    --amount &lt;AMOUNT&gt;
+<pre><code class="language-bash">arch-cli token burn &lt;ACCOUNT_ADDRESS&gt; &lt;AMOUNT&gt; \
+  --owner &lt;OWNER_KEYPAIR_PATH&gt; \
+  [--multisig &lt;MULTISIG_ADDRESS&gt;] \
+  [--signers &lt;SIGNER1_KEYPAIR_PATH,SIGNER2_KEYPAIR_PATH,...&gt;] \
+  [--keypair-path &lt;FEE_PAYER_KEYPAIR_PATH&gt;]
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path</code>: Path to the owner’s keypair file</li>
-<li><code>--mint</code>: Public key of the mint</li>
-<li><code>--from</code>: Public key of the account to burn from</li>
-<li><code>--amount</code>: Amount to burn (in raw units)</li>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Base58 token account address</li>
+<li><code>&lt;AMOUNT&gt;</code>: Amount to burn (raw units)</li>
+<li><code>--owner</code>: Keypair path for the account owner</li>
 </ul>
 <h3 id="delegation-1"><a class="header" href="#delegation-1">Delegation</a></h3>
 <h4 id="approve-delegate"><a class="header" href="#approve-delegate">Approve Delegate</a></h4>
 <p>Approve a delegate for spending:</p>
-<pre><code class="language-bash">arch-cli token approve \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --from &lt;ACCOUNT&gt; \
-    --delegate &lt;DELEGATE&gt; \
-    --amount &lt;AMOUNT&gt;
+<pre><code class="language-bash">arch-cli token approve &lt;ACCOUNT_ADDRESS&gt; &lt;DELEGATE_ADDRESS&gt; &lt;AMOUNT&gt; \
+  --owner &lt;OWNER_KEYPAIR_PATH&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path</code>: Path to the owner’s keypair file</li>
-<li><code>--mint</code>: Public key of the mint</li>
-<li><code>--from</code>: Public key of the source account</li>
-<li><code>--delegate</code>: Public key of the delegate</li>
-<li><code>--amount</code>: Amount the delegate can spend</li>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Base58 token account address</li>
+<li><code>&lt;DELEGATE_ADDRESS&gt;</code>: Base58 public key of the delegate (32 bytes)</li>
+<li><code>&lt;AMOUNT&gt;</code>: Allowance (raw units)</li>
+<li><code>--owner</code>: Keypair path for the account owner</li>
 </ul>
 <h4 id="revoke-delegate"><a class="header" href="#revoke-delegate">Revoke Delegate</a></h4>
 <p>Revoke delegate authority:</p>
-<pre><code class="language-bash">arch-cli token revoke \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --from &lt;ACCOUNT&gt;
+<pre><code class="language-bash">arch-cli token revoke &lt;ACCOUNT_ADDRESS&gt; \
+  --owner &lt;OWNER_KEYPAIR_PATH&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path</code>: Path to the owner’s keypair file</li>
-<li><code>--mint</code>: Public key of the mint</li>
-<li><code>--from</code>: Public key of the account</li>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Base58 token account address</li>
+<li><code>--owner</code>: Keypair path for the account owner</li>
 </ul>
 <h3 id="account-control-1"><a class="header" href="#account-control-1">Account Control</a></h3>
 <h4 id="freeze-account"><a class="header" href="#freeze-account">Freeze Account</a></h4>
 <p>Freeze a token account:</p>
-<pre><code class="language-bash">arch-cli token freeze-account \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --account &lt;ACCOUNT&gt;
+<pre><code class="language-bash">arch-cli token freeze-account &lt;ACCOUNT_ADDRESS&gt; \
+  --authority &lt;FREEZE_AUTHORITY_KEYPAIR_PATH&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path</code>: Path to the freeze authority’s keypair file</li>
-<li><code>--mint</code>: Public key of the mint</li>
-<li><code>--account</code>: Public key of the account to freeze</li>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Base58 token account address</li>
+<li><code>--authority</code>: Keypair path for the freeze authority</li>
 </ul>
 <h4 id="thaw-account"><a class="header" href="#thaw-account">Thaw Account</a></h4>
 <p>Thaw a frozen account:</p>
-<pre><code class="language-bash">arch-cli token thaw-account \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --account &lt;ACCOUNT&gt;
+<pre><code class="language-bash">arch-cli token thaw-account &lt;ACCOUNT_ADDRESS&gt; \
+  --authority &lt;FREEZE_AUTHORITY_KEYPAIR_PATH&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path</code>: Path to the freeze authority’s keypair file</li>
-<li><code>--mint</code>: Public key of the mint</li>
-<li><code>--account</code>: Public key of the account to thaw</li>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Base58 token account address</li>
+<li><code>--authority</code>: Keypair path for the freeze authority</li>
 </ul>
 <h3 id="multisignature-operations-1"><a class="header" href="#multisignature-operations-1">Multisignature Operations</a></h3>
 <h4 id="create-multisig"><a class="header" href="#create-multisig">Create Multisig</a></h4>
 <p>Create a multisignature authority:</p>
-<pre><code class="language-bash">arch-cli token create-multisig \
-    --keypair-path &lt;PATH&gt; \
-    --signers &lt;SIGNERS&gt; \
-    --threshold &lt;THRESHOLD&gt;
+<pre><code class="language-bash">arch-cli token create-multisig &lt;M_OF_N&gt; \
+  --signers &lt;SIGNER1_KEYPAIR_PATH,SIGNER2_KEYPAIR_PATH,...&gt; \
+  --keypair-path &lt;PAYER_KEYPAIR_PATH&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path</code>: Path to the keypair file for the multisig account</li>
-<li><code>--signers</code>: Comma-separated list of public keys</li>
-<li><code>--threshold</code>: Number of signatures required</li>
+<li><code>&lt;M_OF_N&gt;</code>: Number of signatures required</li>
+<li><code>--signers</code>: Comma-separated list of signer keypair paths</li>
+<li><code>--keypair-path</code>: Fee payer keypair path</li>
 </ul>
 <h4 id="sign-multisig"><a class="header" href="#sign-multisig">Sign Multisig</a></h4>
 <p>Sign a transaction with multisig:</p>
@@ -13923,81 +13907,55 @@ arch-cli token ui-to-amount &lt;MINT_ADDRESS&gt; &lt;UI_AMOUNT&gt;
 <h4 id="checked-operations"><a class="header" href="#checked-operations">Checked Operations</a></h4>
 <p>Perform operations with decimal verification:</p>
 <pre><code class="language-bash"># Transfer with decimal verification
-arch-cli token transfer-checked \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --from &lt;FROM_ACCOUNT&gt; \
-    --to &lt;TO_ACCOUNT&gt; \
-    --amount &lt;AMOUNT&gt; \
-    --decimals &lt;DECIMALS&gt;
+arch-cli token transfer-checked &lt;SOURCE_ACCOUNT&gt; &lt;DESTINATION_ACCOUNT&gt; &lt;AMOUNT&gt; &lt;DECIMALS&gt; \
+  --owner &lt;OWNER_KEYPAIR_PATH&gt;
 
 # Approve with decimal verification
-arch-cli token approve-checked \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --from &lt;ACCOUNT&gt; \
-    --delegate &lt;DELEGATE&gt; \
-    --amount &lt;AMOUNT&gt; \
-    --decimals &lt;DECIMALS&gt;
+arch-cli token approve-checked &lt;ACCOUNT_ADDRESS&gt; &lt;DELEGATE_ADDRESS&gt; &lt;AMOUNT&gt; &lt;DECIMALS&gt; \
+  --owner &lt;OWNER_KEYPAIR_PATH&gt;
 
 # Mint with decimal verification
-arch-cli token mint-to-checked \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --to &lt;ACCOUNT&gt; \
-    --amount &lt;AMOUNT&gt; \
-    --decimals &lt;DECIMALS&gt;
+arch-cli token mint-to-checked &lt;MINT_ADDRESS&gt; &lt;ACCOUNT_ADDRESS&gt; &lt;AMOUNT&gt; &lt;DECIMALS&gt; \
+  --authority &lt;MINT_AUTHORITY_KEYPAIR_PATH&gt;
 
 # Burn with decimal verification
-arch-cli token burn-checked \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --from &lt;ACCOUNT&gt; \
-    --amount &lt;AMOUNT&gt; \
-    --decimals &lt;DECIMALS&gt;
+arch-cli token burn-checked &lt;ACCOUNT_ADDRESS&gt; &lt;AMOUNT&gt; &lt;DECIMALS&gt; \
+  --owner &lt;OWNER_KEYPAIR_PATH&gt;
 </code></pre>
 <h4 id="authority-management-1"><a class="header" href="#authority-management-1">Authority Management</a></h4>
-<p>Set authority on mint or account:</p>
-<pre><code class="language-bash">arch-cli token set-authority \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --new-authority &lt;NEW_AUTHORITY&gt; \
-    --authority-type &lt;TYPE&gt;
+<p>Set authority on a mint or account:</p>
+<pre><code class="language-bash">arch-cli token set-authority &lt;TARGET_ADDRESS&gt; \
+  --authority-type &lt;mint|freeze|account_owner|close_account&gt; \
+  --new-authority &lt;NEW_AUTHORITY_BASE58|none&gt; \
+  --current-authority &lt;CURRENT_AUTHORITY_KEYPAIR_PATH&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path</code>: Path to the current authority’s keypair file</li>
-<li><code>--mint</code>: Public key of the mint or account</li>
-<li><code>--new-authority</code>: Public key of the new authority</li>
-<li><code>--authority-type</code>: Type of authority (mint, freeze, or account)</li>
+<li><code>&lt;TARGET_ADDRESS&gt;</code>: Base58 mint or account address</li>
+<li><code>--authority-type</code>: Type of authority to set</li>
+<li><code>--new-authority</code>: Base58 address of new authority, or <code>none</code></li>
+<li><code>--current-authority</code>: Keypair path for the current authority</li>
 </ul>
 <h4 id="account-management-6"><a class="header" href="#account-management-6">Account Management</a></h4>
 <p>Close a token account:</p>
-<pre><code class="language-bash">arch-cli token close-account \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --account &lt;ACCOUNT&gt;
+<pre><code class="language-bash">arch-cli token close-account &lt;ACCOUNT_ADDRESS&gt; &lt;DESTINATION_PUBKEY&gt; \
+  --owner &lt;OWNER_KEYPAIR_PATH&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
-<li><code>--keypair-path</code>: Path to the owner’s keypair file</li>
-<li><code>--mint</code>: Public key of the mint</li>
-<li><code>--account</code>: Public key of the account to close</li>
+<li><code>&lt;ACCOUNT_ADDRESS&gt;</code>: Base58 token account address</li>
+<li><code>&lt;DESTINATION_PUBKEY&gt;</code>: Base58 public key to receive reclaimed lamports</li>
+<li><code>--owner</code>: Keypair path for the account owner</li>
 </ul>
 <h4 id="batch-operations-1"><a class="header" href="#batch-operations-1">Batch Operations</a></h4>
 <p>Perform multiple operations at once:</p>
-<pre><code class="language-bash"># Batch transfer tokens
-arch-cli token batch-transfer \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --from &lt;FROM_ACCOUNT&gt; \
-    --transfers &lt;TRANSFERS&gt;
+<pre><code class="language-bash"># Batch transfer tokens (JSON file path)
+arch-cli token batch-transfer &lt;TRANSFERS_JSON_PATH&gt; \
+  --keypair-path &lt;PAYER_KEYPAIR_PATH&gt;
 
-# Batch mint tokens
-arch-cli token batch-mint \
-    --keypair-path &lt;PATH&gt; \
-    --mint &lt;MINT&gt; \
-    --mints &lt;MINTS&gt;
+# Batch mint tokens (JSON file path)
+arch-cli token batch-mint &lt;MINTS_JSON_PATH&gt; \
+  --keypair-path &lt;PAYER_KEYPAIR_PATH&gt;
 </code></pre>
 <h2 id="orchestration-commands"><a class="header" href="#orchestration-commands">Orchestration Commands</a></h2>
 <h3 id="start-local-environment"><a class="header" href="#start-local-environment">Start Local Environment</a></h3>
