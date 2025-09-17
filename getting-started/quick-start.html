@@ -302,10 +302,10 @@ arch-cli orchestrate mine-blocks --num-blocks 1
 </code></pre>
 <h3 id="4-build-and-deploy-your-program"><a class="header" href="#4-build-and-deploy-your-program">4. Build and Deploy Your Program</a></h3>
 <pre><code class="language-bash"># Build the example program
-cargo build-sbf
+cd program/ &amp;&amp; cargo build-sbf
 
 # Deploy to your local network
-arch-cli deploy target/deploy/
+arch-cli deploy target/sbpf-solana-solana/release
 </code></pre>
 <h3 id="5-test-your-program"><a class="header" href="#5-test-your-program">5. Test Your Program</a></h3>
 <pre><code class="language-bash"># Check the deployed program
