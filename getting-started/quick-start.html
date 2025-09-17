@@ -305,11 +305,11 @@ arch-cli orchestrate mine-blocks --num-blocks 1
 cd program/ &amp;&amp; cargo build-sbf
 
 # Deploy to your local network
-arch-cli deploy target/sbpf-solana-solana/release
+arch-cli deploy target/sbpf-solana-solana/release --generate-if-missing --fund-authority
 </code></pre>
 <h3 id="5-test-your-program"><a class="header" href="#5-test-your-program">5. Test Your Program</a></h3>
 <pre><code class="language-bash"># Check the deployed program
-arch-cli show &lt;PROGRAM_ID&gt;
+arch-cli show &lt;PROGRAM_ID_BASE58&gt;
 
 # Run the program (if it has a client)
 cargo run
