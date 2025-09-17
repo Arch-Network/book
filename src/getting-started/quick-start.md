@@ -57,6 +57,9 @@ This starts a complete local development environment with:
 
 **Advanced Options:**
 ```bash
+# Use the orchestrate command for full local devnet
+arch-cli orchestrate start
+
 # Use local source code for development
 arch-cli orchestrate start --local "$(pwd)"
 
@@ -80,8 +83,11 @@ arch-cli config create-profile testnet \
     --arch-node-url http://localhost:9002 \
     --titan-url http://127.0.0.1:3030
 
-# 2. Start local Arch environment (no local bitcoind)
-arch-cli --profile testnet orchestrate start --local "$(pwd)" --no-bitcoind
+# 2. Set the profile as default
+arch-cli config set-default-profile testnet
+
+# 3. Start local Arch environment (no local bitcoind)
+arch-cli orchestrate start --local "$(pwd)" --no-bitcoind
 ```
 
 #### Option C: Devnet (Full Local Stack)
