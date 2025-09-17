@@ -302,7 +302,7 @@ arch-cli orchestrate mine-blocks --num-blocks 1
 </code></pre>
 <h3 id="4-build-and-deploy-your-program"><a class="header" href="#4-build-and-deploy-your-program">4. Build and Deploy Your Program</a></h3>
 <pre><code class="language-bash"># Build the example program
-cargo build-bpf
+cargo build-sbf
 
 # Deploy to your local network
 arch-cli deploy target/deploy/
@@ -341,7 +341,7 @@ netstat -an | grep 18443
 <p><strong>Build failures:</strong></p>
 <pre><code class="language-bash"># Clean and rebuild
 cargo clean
-cargo build-bpf
+cargo build-sbf
 
 # Check Rust version
 rustc --version  # Should be 1.84.1+

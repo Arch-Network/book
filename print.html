@@ -468,7 +468,7 @@ arch-cli orchestrate mine-blocks --num-blocks 1
 </code></pre>
 <h3 id="4-build-and-deploy-your-program"><a class="header" href="#4-build-and-deploy-your-program">4. Build and Deploy Your Program</a></h3>
 <pre><code class="language-bash"># Build the example program
-cargo build-bpf
+cargo build-sbf
 
 # Deploy to your local network
 arch-cli deploy target/deploy/
@@ -507,7 +507,7 @@ netstat -an | grep 18443
 <p><strong>Build failures:</strong></p>
 <pre><code class="language-bash"># Clean and rebuild
 cargo clean
-cargo build-bpf
+cargo build-sbf
 
 # Check Rust version
 rustc --version  # Should be 1.84.1+
@@ -11216,7 +11216,7 @@ no-entrypoint = []
 arch_program = "0.5.4"
 </code></pre>
 <p>Build the program:</p>
-<pre><code class="language-bash">cargo build-bpf
+<pre><code class="language-bash">cargo build-sbf
 </code></pre>
 <h2 id="error-handling-8"><a class="header" href="#error-handling-8">Error Handling</a></h2>
 <h3 id="using-result-types"><a class="header" href="#using-result-types">Using Result Types</a></h3>
@@ -12517,7 +12517,7 @@ async fn test_initialize() {
 <h2 id="building-and-deploying"><a class="header" href="#building-and-deploying">Building and Deploying</a></h2>
 <h3 id="build-your-program"><a class="header" href="#build-your-program">Build Your Program</a></h3>
 <pre><code class="language-bash"># Build for BPF target
-cargo build-bpf
+cargo build-sbf
 
 # Output will be in target/deploy/my_program.so
 </code></pre>
