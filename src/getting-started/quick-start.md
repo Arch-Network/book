@@ -137,10 +137,10 @@ arch-cli orchestrate mine-blocks --num-blocks 1
 
 ```bash
 # Build the example program
-cargo build-sbf
+cd program/ && cargo build-sbf
 
 # Deploy to your local network
-arch-cli deploy target/deploy/
+arch-cli deploy target/sbpf-solana-solana/release
 ```
 
 ### 5. Test Your Program
