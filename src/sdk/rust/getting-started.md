@@ -326,7 +326,7 @@ arch_program = "0.5.4"
 
 Build the program:
 ```bash
-cargo build-bpf
+cargo build-sbf
 ```
 
 ## Error Handling

@@ -558,7 +558,7 @@ async fn test_initialize() {
 
 ```bash
 # Build for BPF target
-cargo build-bpf
+cargo build-sbf
 
 # Output will be in target/deploy/my_program.so
 ```

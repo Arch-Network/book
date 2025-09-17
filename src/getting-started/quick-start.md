@@ -137,7 +137,7 @@ arch-cli orchestrate mine-blocks --num-blocks 1
 
 ```bash
 # Build the example program
-cargo build-bpf
+cargo build-sbf
 
 # Deploy to your local network
 arch-cli deploy target/deploy/
@@ -187,7 +187,7 @@ netstat -an | grep 18443
 ```bash
 # Clean and rebuild
 cargo clean
-cargo build-bpf
+cargo build-sbf
 
 # Check Rust version
 rustc --version  # Should be 1.84.1+
