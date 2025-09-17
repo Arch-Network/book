@@ -235,7 +235,10 @@ arch-cli orchestrate start
 <li>Local validator</li>
 </ul>
 <p><strong>Advanced Options:</strong></p>
-<pre><code class="language-bash"># Use local source code for development
+<pre><code class="language-bash"># Use the orchestrate command for full local devnet
+arch-cli orchestrate start
+
+# Use local source code for development
 arch-cli orchestrate start --local "$(pwd)"
 
 # Skip bitcoind and use remote Bitcoin RPC
@@ -255,8 +258,11 @@ arch-cli config create-profile testnet \
     --arch-node-url http://localhost:9002 \
     --titan-url http://127.0.0.1:3030
 
-# 2. Start local Arch environment (no local bitcoind)
-arch-cli --profile testnet orchestrate start --local "$(pwd)" --no-bitcoind
+# 2. Set the profile as default
+arch-cli config set-default-profile testnet
+
+# 3. Start local Arch environment (no local bitcoind)
+arch-cli orchestrate start --local "$(pwd)" --no-bitcoind
 </code></pre>
 <h4 id="option-c-devnet-full-local-stack"><a class="header" href="#option-c-devnet-full-local-stack">Option C: Devnet (Full Local Stack)</a></h4>
 <p>For devnet, you’ll need to run your own Bitcoin regtest node and Titan indexer:</p>
