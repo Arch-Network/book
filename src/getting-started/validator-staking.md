@@ -175,8 +175,8 @@ cli --version
 
 **Testnet:**
 ```bash
---bitcoin-rpc-endpoint bitcoin-node.test.aws.archnetwork.xyz \
---bitcoin-rpc-port 49332 \
+--bitcoin-rpc-endpoint bitcoin-rpc.test.arch.network \
+--bitcoin-rpc-port 80 \
 --bitcoin-rpc-username bitcoin \
 --bitcoin-rpc-password your_password \
 --bitcoin-rpc-wallet testwallet

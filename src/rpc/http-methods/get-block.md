@@ -5,7 +5,7 @@
 **Method:** `POST`
 
 **Parameters:**
-    `blockHash: <string>` - A string representing the block hash.
+    `blockHash: <string>` - The block hash string. Client libraries pass this as a single-element array parameter per JSON-RPC conventions.
 
 **Returns:** A `Block` object or `undefined` if the block is not found.
 

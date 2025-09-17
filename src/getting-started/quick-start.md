@@ -73,9 +73,9 @@ For testnet development with remote Bitcoin node:
 ```bash
 # 1. Create a configuration profile
 arch-cli config create-profile testnet \
-    --bitcoin-node-endpoint http://bitcoin-node.test.aws.archnetwork.xyz:49332 \
+    --bitcoin-node-endpoint http://bitcoin-rpc.test.arch.network:80 \
     --bitcoin-node-username bitcoin \
-    --bitcoin-node-password uU1taFBTUvae96UCtA8YxAepYTFszYvYVSXK8xgzBs0 \
+    --bitcoin-node-password 0F_Ed53o4kR7nxh3xNaSQx-2M3TY16L55mz5y9fjdrk \
     --bitcoin-network testnet \
     --arch-node-url http://localhost:9002
 

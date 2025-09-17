@@ -66,9 +66,9 @@ arch-cli config create-profile <NAME> \
 **Example:**
 ```bash
 arch-cli config create-profile testnet \
-    --bitcoin-node-endpoint http://bitcoin-node.test.aws.archnetwork.xyz:49332 \
+    --bitcoin-node-endpoint http://bitcoin-rpc.test.arch.network:80 \
     --bitcoin-node-username bitcoin \
-    --bitcoin-node-password uU1taFBTUvae96UCtA8YxAepYTFszYvYVSXK8xgzBs0 \
+    --bitcoin-node-password 0F_Ed53o4kR7nxh3xNaSQx-2M3TY16L55mz5y9fjdrk \
     --bitcoin-network testnet \
     --arch-node-url http://localhost:9002
 ```
@@ -190,6 +190,10 @@ arch-cli deploy <PROGRAM_PATH>
 
 **Arguments:**
 - `<PROGRAM_PATH>`: Path to the directory containing the compiled program (.so file)
+
+Notes:
+- If keypairs are missing, you can use `--generate-if-missing` to auto-generate them.
+- By default (non-mainnet), the deploy command automatically creates and funds the authority account if it does not exist, or funds it if its balance is insufficient for deployment. On mainnet, auto-funding is disabled and the authority must be pre-funded. You can disable auto-funding explicitly with `--no-autofund`.
 
 **Example:**
 ```bash
