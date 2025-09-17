@@ -229,7 +229,8 @@ arch-cli --version
     --bitcoin-node-username &lt;USERNAME&gt; \
     --bitcoin-node-password &lt;PASSWORD&gt; \
     --bitcoin-network &lt;NETWORK&gt; \
-    --arch-node-url &lt;URL&gt;
+    --arch-node-url &lt;URL&gt; \
+    --titan-url &lt;URL&gt;
 </code></pre>
 <p><strong>Arguments:</strong></p>
 <ul>
@@ -239,6 +240,7 @@ arch-cli --version
 <li><code>--bitcoin-node-password</code>: Bitcoin node RPC password</li>
 <li><code>--bitcoin-network</code>: Bitcoin network (“mainnet”, “testnet”, or “regtest”)</li>
 <li><code>--arch-node-url</code>: Arch Network node URL</li>
+<li><code>--titan-url</code>: Titan node URL (default: “http://127.0.0.1:3030”)</li>
 </ul>
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">arch-cli config create-profile testnet \
@@ -246,7 +248,8 @@ arch-cli --version
     --bitcoin-node-username bitcoin \
     --bitcoin-node-password 0F_Ed53o4kR7nxh3xNaSQx-2M3TY16L55mz5y9fjdrk \
     --bitcoin-network testnet \
-    --arch-node-url http://localhost:9002
+    --arch-node-url http://localhost:9002 \
+    --titan-url http://127.0.0.1:3030
 </code></pre>
 <h3 id="list-profiles"><a class="header" href="#list-profiles">List Profiles</a></h3>
 <p>List all available configuration profiles:</p>
@@ -862,7 +865,7 @@ arch-cli --profile &lt;NAME&gt; get-block-height
 <h2 id="quick-reference"><a class="header" href="#quick-reference">Quick Reference</a></h2>
 <h3 id="common-commands"><a class="header" href="#common-commands">Common Commands</a></h3>
 <pre><code class="language-bash"># Create and configure profile
-arch-cli config create-profile dev --bitcoin-node-endpoint http://127.0.0.1:18443 --bitcoin-node-username bitcoin --bitcoin-node-password password --bitcoin-network regtest --arch-node-url http://localhost:9002
+arch-cli config create-profile dev --bitcoin-node-endpoint http://127.0.0.1:18443 --bitcoin-node-username bitcoin --bitcoin-node-password password --bitcoin-network regtest --arch-node-url http://localhost:9002 --titan-url http://127.0.0.1:3030
 
 # Start local environment
 arch-cli orchestrate start --local "$(pwd)"
