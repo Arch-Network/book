@@ -77,7 +77,8 @@ arch-cli config create-profile testnet \
     --bitcoin-node-username bitcoin \
     --bitcoin-node-password 0F_Ed53o4kR7nxh3xNaSQx-2M3TY16L55mz5y9fjdrk \
     --bitcoin-network testnet \
-    --arch-node-url http://localhost:9002
+    --arch-node-url http://localhost:9002 \
+    --titan-url http://127.0.0.1:3030
 
 # 2. Start local Arch environment (no local bitcoind)
 arch-cli --profile testnet orchestrate start --local "$(pwd)" --no-bitcoind

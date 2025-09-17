@@ -199,7 +199,7 @@ pub struct SecurityParams {
 arch-cli orchestrate start --local "$(pwd)"
 
 # Use configuration profiles for different environments
-arch-cli config create-profile dev --bitcoin-node-endpoint http://127.0.0.1:18443
+arch-cli config create-profile dev --bitcoin-node-endpoint http://127.0.0.1:18443 --titan-url http://127.0.0.1:3030
 
 # Deploy and test programs
 arch-cli deploy target/deploy/

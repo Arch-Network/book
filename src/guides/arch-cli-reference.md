@@ -52,7 +52,8 @@ arch-cli config create-profile <NAME> \
     --bitcoin-node-username <USERNAME> \
     --bitcoin-node-password <PASSWORD> \
     --bitcoin-network <NETWORK> \
-    --arch-node-url <URL>
+    --arch-node-url <URL> \
+    --titan-url <URL>
 ```
 
 **Arguments:**
@@ -62,6 +63,7 @@ arch-cli config create-profile <NAME> \
 - `--bitcoin-node-password`: Bitcoin node RPC password
 - `--bitcoin-network`: Bitcoin network ("mainnet", "testnet", or "regtest")
 - `--arch-node-url`: Arch Network node URL
+- `--titan-url`: Titan node URL (default: "http://127.0.0.1:3030")
 
 **Example:**
 ```bash
@@ -70,7 +72,8 @@ arch-cli config create-profile testnet \
     --bitcoin-node-username bitcoin \
     --bitcoin-node-password 0F_Ed53o4kR7nxh3xNaSQx-2M3TY16L55mz5y9fjdrk \
     --bitcoin-network testnet \
-    --arch-node-url http://localhost:9002
+    --arch-node-url http://localhost:9002 \
+    --titan-url http://127.0.0.1:3030
 ```
 
 ### List Profiles
@@ -817,7 +820,7 @@ This guide covers arch-cli version 0.5.6 and later. For older versions, please r
 ### Common Commands
 ```bash
 # Create and configure profile
-arch-cli config create-profile dev --bitcoin-node-endpoint http://127.0.0.1:18443 --bitcoin-node-username bitcoin --bitcoin-node-password password --bitcoin-network regtest --arch-node-url http://localhost:9002
+arch-cli config create-profile dev --bitcoin-node-endpoint http://127.0.0.1:18443 --bitcoin-node-username bitcoin --bitcoin-node-password password --bitcoin-network regtest --arch-node-url http://localhost:9002 --titan-url http://127.0.0.1:3030
 
 # Start local environment
 arch-cli orchestrate start --local "$(pwd)"

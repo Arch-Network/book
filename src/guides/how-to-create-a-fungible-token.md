@@ -61,7 +61,8 @@ arch-cli config create-profile local \
     --bitcoin-node-username bitcoin \
     --bitcoin-node-password bitcoinpass \
     --bitcoin-network regtest \
-    --arch-node-url http://localhost:9002
+    --arch-node-url http://localhost:9002 \
+    --titan-url http://127.0.0.1:3030
 
 # Set as default profile
 arch-cli config set-default-profile local
