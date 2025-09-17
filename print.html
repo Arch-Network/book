@@ -414,9 +414,9 @@ arch-cli orchestrate start --force-rebuild
 <p>For testnet development with remote Bitcoin node:</p>
 <pre><code class="language-bash"># 1. Create a configuration profile
 arch-cli config create-profile testnet \
-    --bitcoin-node-endpoint http://bitcoin-node.test.aws.archnetwork.xyz:49332 \
+    --bitcoin-node-endpoint http://bitcoin-rpc.test.arch.network:80 \
     --bitcoin-node-username bitcoin \
-    --bitcoin-node-password uU1taFBTUvae96UCtA8YxAepYTFszYvYVSXK8xgzBs0 \
+    --bitcoin-node-password 0F_Ed53o4kR7nxh3xNaSQx-2M3TY16L55mz5y9fjdrk \
     --bitcoin-network testnet \
     --arch-node-url http://localhost:9002
 
@@ -1309,8 +1309,8 @@ sudo mv cli /usr/local/bin/
 --bitcoin-rpc-wallet testwallet
 </code></pre>
 <p><strong>Testnet:</strong></p>
-<pre><code class="language-bash">--bitcoin-rpc-endpoint bitcoin-node.test.aws.archnetwork.xyz \
---bitcoin-rpc-port 49332 \
+<pre><code class="language-bash">--bitcoin-rpc-endpoint bitcoin-rpc.test.arch.network \
+--bitcoin-rpc-port 80 \
 --bitcoin-rpc-username bitcoin \
 --bitcoin-rpc-password your_password \
 --bitcoin-rpc-wallet testwallet
@@ -13521,9 +13521,9 @@ arch-cli --version
 </ul>
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">arch-cli config create-profile testnet \
-    --bitcoin-node-endpoint http://bitcoin-node.test.aws.archnetwork.xyz:49332 \
+    --bitcoin-node-endpoint http://bitcoin-rpc.test.arch.network:80 \
     --bitcoin-node-username bitcoin \
-    --bitcoin-node-password uU1taFBTUvae96UCtA8YxAepYTFszYvYVSXK8xgzBs0 \
+    --bitcoin-node-password 0F_Ed53o4kR7nxh3xNaSQx-2M3TY16L55mz5y9fjdrk \
     --bitcoin-network testnet \
     --arch-node-url http://localhost:9002
 </code></pre>
@@ -13615,6 +13615,11 @@ arch-cli --version
 <p><strong>Arguments:</strong></p>
 <ul>
 <li><code>&lt;PROGRAM_PATH&gt;</code>: Path to the directory containing the compiled program (.so file)</li>
+</ul>
+<p>Notes:</p>
+<ul>
+<li>If keypairs are missing, you can use <code>--generate-if-missing</code> to auto-generate them.</li>
+<li>By default (non-mainnet), the deploy command automatically creates and funds the authority account if it does not exist, or funds it if its balance is insufficient for deployment. On mainnet, auto-funding is disabled and the authority must be pre-funded. You can disable auto-funding explicitly with <code>--no-autofund</code>.</li>
 </ul>
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">arch-cli deploy examples/helloworld/
