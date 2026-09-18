@@ -534,4 +534,4 @@ completeExample().catch(console.error);
 
 - **NPM Package**: [@saturnbtcio/arch-sdk](https://www.npmjs.com/package/@saturnbtcio/arch-sdk)
 - **GitHub Repository**: [saturnbtc/arch-typescript-sdk](https://github.com/saturnbtc/arch-typescript-sdk)
-- **Discord**: [Arch Network Discord](https://discord.gg/archnetwork) 
+- **Discord**: [Arch Network Discord](https://discord.gg/arch) 

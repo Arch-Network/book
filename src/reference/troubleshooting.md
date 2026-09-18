@@ -210,7 +210,7 @@ arch-cli account <ACCOUNT_ADDRESS>
 If you're still experiencing issues:
 
 1. Check the [GitHub Issues](https://github.com/arch-network/arch-node/issues)
-2. Join the [Discord Community](https://discord.gg/arch-network)
+2. Join the [Discord Community](https://discord.gg/arch)
 3. Review the [API Documentation](https://docs.arch.network)
 
 Remember to provide relevant information when seeking help:

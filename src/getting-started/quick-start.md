@@ -23,7 +23,7 @@ arch-cli --version
 docker --version
 ```
 
-> 💡 Note: If you encounter any issues during installation, join our [Discord](https://discord.gg/archnetwork) for support.
+> 💡 Note: If you encounter any issues during installation, join our [Discord](https://discord.gg/arch) for support.
 
 ## 🚀 Quick Start Project
 
@@ -164,7 +164,7 @@ cargo run
 - **Learn More**: Check out our [Program Development Guide](guides/writing-your-first-program.md)
 - **Token Development**: Explore [APL Token Creation](guides/how-to-create-a-fungible-token.md)
 - **Examples**: Browse more examples in the [examples directory](https://github.com/Arch-Network/arch-examples)
-- **Community**: Join our [Discord](https://discord.gg/archnetwork) for support and updates
+- **Community**: Join our [Discord](https://discord.gg/arch) for support and updates
 
 ## 🔧 Troubleshooting
 
@@ -210,7 +210,7 @@ arch-cli orchestrate validator-status
 
 ### Getting Help
 
-- **Discord**: [https://discord.gg/archnetwork](https://discord.gg/archnetwork)
+- **Discord**: [https://discord.gg/arch](https://discord.gg/arch)
 - **GitHub Issues**: [https://github.com/Arch-Network/arch-node/issues](https://github.com/Arch-Network/arch-node/issues)
 - **Documentation**: [https://docs.arch.network](https://docs.arch.network)
 

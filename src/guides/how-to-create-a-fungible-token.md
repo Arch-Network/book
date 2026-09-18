@@ -423,7 +423,7 @@ arch-cli tx log-program-messages <SIGNATURE>
 
 ### Getting Help
 
-- **Discord Community**: [https://discord.gg/archnetwork](https://discord.gg/archnetwork)
+- **Discord Community**: [https://discord.gg/arch](https://discord.gg/arch)
 - **GitHub Issues**: [https://github.com/Arch-Network/arch-node/issues](https://github.com/Arch-Network/arch-node/issues)
 - **Documentation**: [https://docs.arch.network](https://docs.arch.network)
 

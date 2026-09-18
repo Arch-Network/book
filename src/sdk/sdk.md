@@ -160,7 +160,7 @@ While both SDKs interact with the same Arch Network, they have different APIs an
 - **Examples**: [Rust Examples](https://github.com/arch-network/arch-network/examples)
 
 ### General Support
-- **Discord**: [Arch Network Discord](https://discord.gg/archnetwork)
+- **Discord**: [Arch Network Discord](https://discord.gg/arch)
 - **Forum**: [Arch Network Forum](https://forum.arch.network)
 - **Stack Overflow**: Tag with `arch-network`
 

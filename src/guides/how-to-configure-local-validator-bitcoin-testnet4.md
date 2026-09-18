@@ -299,7 +299,7 @@ arch-cli validator-start --network-mode testnet
 1. **Deploy Your First Program**: Follow the [Writing Your First Program](./writing-your-first-program.md) guide
 2. **Test Thoroughly**: Use the [Testing Guide](./testing-guide.md) for comprehensive testing
 3. **Explore Examples**: Check out [advanced examples](./guides.md) for complex scenarios
-4. **Join the Community**: Get help on [Discord](https://discord.gg/archnetwork) if you run into issues
+4. **Join the Community**: Get help on [Discord](https://discord.gg/arch) if you run into issues
 
 ## Additional Resources
 
@@ -308,4 +308,4 @@ arch-cli validator-start --network-mode testnet
 - [Ordinals Documentation](https://docs.ordinals.com/)
 - [Runes Protocol Guide](https://runes.com/)
 
-**Need Help?** Join our [Discord community](https://discord.gg/archnetwork) or file issues on our [GitHub](https://github.com/Arch-Network/arch-node/issues).
+**Need Help?** Join our [Discord community](https://discord.gg/arch) or file issues on our [GitHub](https://github.com/Arch-Network/arch-node/issues).

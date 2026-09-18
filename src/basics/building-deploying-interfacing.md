@@ -367,4 +367,4 @@ Once you've created your frontend application, you can start it using your prefe
 
 <!-- External -->
 [eBPF]: https://ebpf.io/
-[Discord dev-chat]: https://discord.com/channels/1241112027963986001/1270921925991989268
+[Discord dev-chat]: https://discord.gg/arch

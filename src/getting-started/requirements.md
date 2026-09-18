@@ -128,5 +128,5 @@ sh -c "$(curl -sSfL https://release.solana.com/stable/install)"
 ## Need Help?
 
 - Check our [Troubleshooting Guide](troubleshooting.md)
-- Join our [Discord dev-chat](https://discord.com/channels/1241112027963986001/1270921925991989268)
+- Join our [Discord dev-chat](https://discord.gg/arch)
 - Review the [Arch Network CLI documentation](https://github.com/arch-network/arch-node/releases)
