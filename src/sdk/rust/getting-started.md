@@ -649,4 +649,4 @@ Now that you understand the basics of the Rust SDK:
 - **Documentation**: [docs.rs/arch_sdk](https://docs.rs/arch_sdk)
 - **GitHub**: [arch-network/arch-network](https://github.com/arch-network/arch-network)
 - **Examples**: [Arch Network Examples](https://github.com/arch-network/arch-network/tree/main/examples)
-- **Discord**: [Arch Network Discord](https://discord.gg/archnetwork) 
+- **Discord**: [Arch Network Discord](https://discord.gg/arch) 

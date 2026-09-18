@@ -145,7 +145,7 @@ Technical documentation:
 
 <div class="help-box">
 <ul>
-<li><a href="https://discord.gg/archnetwork">Join our Discord</a></li>
+<li><a href="https://discord.gg/arch">Join our Discord</a></li>
 <li><a href="concepts/architecture.md">Read the Architecture Overview</a></li>
 <li><a href="guides/writing-your-first-program.md">View Example Programs</a></li>
 <li><a href="concepts/network-architecture.md#monitoring-and-telemetry">Check Network Status</a></li>

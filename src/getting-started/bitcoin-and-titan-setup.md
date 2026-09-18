@@ -319,7 +319,7 @@ Once your validator is running:
 1. **Deploy Your First Program**: Follow the [Quick Start Guide](./quick-start.md)
 2. **Explore RPC Methods**: Check the [RPC API Reference](../rpc/rpc.md)  
 3. **Build Advanced Programs**: See [Program Development](../guides/understanding-arch-programs.md)
-4. **Join the Community**: Connect on [Discord](https://discord.gg/archnetwork)
+4. **Join the Community**: Connect on [Discord](https://discord.gg/arch)
 
 ## 🎉 Congratulations!
 
@@ -329,4 +329,4 @@ You now have a complete Arch Network validator node running! You're ready to:
 - Explore Bitcoin-native applications
 - Build the future of Bitcoin programmability
 
-For additional help, join our [Discord community](https://discord.gg/archnetwork) or visit our [GitHub repository](https://github.com/Arch-Network).
+For additional help, join our [Discord community](https://discord.gg/arch) or visit our [GitHub repository](https://github.com/Arch-Network).

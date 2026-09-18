@@ -73,7 +73,7 @@ If you encounter issues:
    # Check Titan
    curl http://localhost:3002/blocks/tip/height
    ```
-3. Visit our [Discord](https://discord.gg/archnetwork) for help
+3. Visit our [Discord](https://discord.gg/arch) for help
 
 ## 📚 Next Steps
 
